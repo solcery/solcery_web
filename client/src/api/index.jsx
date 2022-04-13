@@ -14,7 +14,7 @@ const appendParams = (value, url, path = []) => {
 		})
 		return;
 	};
-	if (path.length == 0) throw new Error('toUrl error');
+	if (!path.length) throw new Error('toUrl error');
 	
 	let name = path.shift();
 	if (path.length > 0) {

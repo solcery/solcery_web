@@ -10,29 +10,34 @@ export const ValueRender = (props) => {
 	var [valueSize, setValueSize] = useState(props.defaultValue?.length || 0);
 
 	const onChange = (newValue, index, type) => {
-		value[index] = newValue;
-		setValue(value)
-		var res = value.filter((value) => value)
-		props.onChange && props.onChange(res)
+		value[index][type] = newValue;
+		setValue(value);
+		var res = value.filter((entry) => entry.key && entry.value);
+		props.onChange && props.onChange(res);
 	}
 
 	const removeElement = (index) => {
-		//TODO
+		// TODO;
 	}
 
 	const addNewElement = () => {
-		value.push(undefined)
-		setValueSize(valueSize + 1)
-		setValue(value)
+		value.push({});
+		setValueSize(valueSize + 1);
+		setValue(value);
 	}
 
 	if (!props.onChange) return (
 		<>
-			<p>Array:</p>
+			<p>Map:</p>
 			{value.map((val, index) => 
 				<div key = { index }>
-					[0] => <props.type.valueType.valueRender
-						defaultValue = { val }
+					<props.type.keyType.valueRender
+						defaultValue = { val.key }
+						type = { props.type.keyType }
+					/>
+					 => 
+					<props.type.valueType.valueRender
+						defaultValue = { val.value }
 						type = { props.type.valueType }
 					/>
 				</div>
@@ -41,36 +46,29 @@ export const ValueRender = (props) => {
 	);
 	return (
 		<>
-			{value.map((val, index) => 
-				<div key={index}>
+			{value.map((entry, index) => 
+				<div key = { index }>
 					<Button onClick = { () => { removeElement(index) } }>
 						{ REMOVE_ELEMENT_BUTTON_LABEL }
 					</Button>
+					<props.type.keyType.valueRender 
+						defaultValue = { entry.key }
+						type = { props.type.keyType }
+						onChange = { (newValue) => { 
+							onChange(newValue, index, 'key') 
+						}}
+					/> => 
 					<props.type.valueType.valueRender 
-						defaultValue = { val }
+						defaultValue = { entry.value }
 						type = { props.type.valueType }
-						onChange={(newValue) => { 
-							onChange(newValue, index) 
+						onChange = { (newValue) => { 
+							onChange(newValue, index, 'value')
 						}}
 					/>
 				</div>
 			)}
-			<Button onClick = { addNewElement }>
+			<Button onClick = { addNewElement } >
 				{ ADD_ELEMENT_BUTTON_LABEL }
 			</Button>
-		</>
-	);
+		</>);
 }
-
-
-// export const TypedataRender = (props: {
-//	 defaultValue?: any, 
-//	 onChange?: (newValue: any) => void,
-// }) => {
-//	 const onChange = (newValue: SType) => {
-//		 props.onChange && props.onChange(new SArray({ subtype: newValue }))
-//	 }
-//	 return (
-//		 <TypeSelector defaultValue={props.defaultValue && props.defaultValue.subtype} onChange={onChange}/>
-//	 )
-// }

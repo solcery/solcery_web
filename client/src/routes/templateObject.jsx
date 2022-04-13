@@ -16,20 +16,14 @@ export default function TemplateObject() {
 	useEffect(() => {
 		SageAPI.template.getObjectById(templateCode, objectId).then(setObject);
 		SageAPI.template.getSchema(templateCode).then((data) => setTemplate(new Template(data)));
-	}, []);
+	}, [ objectId, templateCode ]);
 
 	const save = () => {
 		SageAPI.template.updateObjectById(templateCode, objectId, object.fields).then((res) => { 
-			console.log('SUCCESS');
 			if (res.modifiedCount) {
 				navigate(`/template.${template.code}`) 
 			}
 		});
-		// fetch(`/api/template?template=${templateCode}&command=update&objectId=${objectId}&${params.toString()}`)
-		//	 .then((response) => response.json())
-		//	 .then((data) => {
-		//		 console.log('SUCCESS')
-		//	 });
 	}
 
 	if (!template || !object) return (<>NO DATA</>); // TODO
@@ -56,6 +50,7 @@ export default function TemplateObject() {
 					render={(text, record) => <record.field.type.valueRender
 						defaultValue = { record.value }
 						onChange = {(value) => { object.fields[record.field.code] = value } }
+						type = { record.field.type }
 					/>}
 				/>
 			</Table>

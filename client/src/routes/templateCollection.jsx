@@ -11,13 +11,12 @@ export default function TemplateCollection() {
 	let navigate = useNavigate();
 	let { templateCode } = useParams();
 	const [ objects, setObjects ] = useState(undefined);
-	const [ schema, setSchema ] = useState(undefined);
 	const [ template, setTemplate ] = useState(undefined)
 	
 	useEffect(() => {
 		SageAPI.template.getObjects(templateCode).then(setObjects);
 		SageAPI.template.getSchema(templateCode).then((data) => setTemplate(new Template(data)));
-	}, []);
+	}, [ templateCode ]);
 
 	if (!template || !objects) return (<>NO DATA</>);
 
@@ -51,6 +50,7 @@ export default function TemplateCollection() {
 					dataIndex={field.code}
 					render = {(_, object) => <field.type.valueRender
 						defaultValue = { object.fields[field.code] }
+						type = { field.type }
 					/>}
 				/>)}
 			 <Column 

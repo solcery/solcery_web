@@ -8,6 +8,5 @@ class SEnum {
 	valueRender = ValueRender;
 };
 
-
-SType.registe('SEnum', SEnum);
+SType.register('SEnum', SEnum);
 export { SEnum }

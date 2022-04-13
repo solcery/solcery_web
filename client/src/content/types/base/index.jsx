@@ -1,5 +1,3 @@
-import { ValueRender } from './components'
-
 const _stypebyclassname = {}
 
 export const SType = {

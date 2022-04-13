@@ -9,9 +9,13 @@ export const ValueRender = (props) => {
 		props.onChange && props.onChange(newValue);
 	}
 
-	if (!props.onChange) return <Image width = { props.type.previewWidth } src = { props.defaultValue } />;
+	if (!props.onChange) {
+		if (props.defaultValue)
+			return <Image width = { props.type.previewWidth } src = { props.defaultValue } />;
+		return <></>;
+	}
 
-	return 
+	return (
 		<>
 			<Image width = { props.type.previewWidth } src = { value }/>
 			<Input 
@@ -21,5 +25,6 @@ export const ValueRender = (props) => {
 					onChange(event.target.value) 
 				}}
 			/>
-		</>;
+		</>
+	);
 }

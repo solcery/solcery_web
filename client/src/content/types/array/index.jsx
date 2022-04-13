@@ -8,6 +8,5 @@ class SArray {
 	valueRender = ValueRender;
 };
 
-
 SType.register('SArray', SArray);
 export { SArray }
