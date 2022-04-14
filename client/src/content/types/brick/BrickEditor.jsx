@@ -26,14 +26,18 @@ export const BrickEditor = (props) => {
 	const [ brickTree, setBrickTree ] = useState(props.brickTree)
 	const { fitView } = useZoomPanHelper()
 
-	const onChange = (bt) => {
+	const onChange = useCallback((bt) => {
 		setBrickTree(bt)
 		if (props.onChange) props.onChange(bt)
-	}
+	}, [ props ]);
 
 	const reset = () => {
 		onChange(initBrickTree)
 	}
+
+	const sleepAndFit = useCallback(() => {
+		new Promise(resolve => setTimeout(resolve, 50)).then(() => { fitView() })
+	}, [ fitView ]);
 
 	const addBrick = useCallback((brickSignature, bt, parentBrick, paramID) => {
 		if (!props.onChange || !active) return;
@@ -52,7 +56,7 @@ export const BrickEditor = (props) => {
 		} else {
 			onChange(brick)
 		}
-	}, [ active, props ]);
+	}, [ active, props, onChange ]);
 
 	const removeBrick = useCallback((bt, parentBrick, paramCode) => {
 		if (!props.onChange || !active) return;
@@ -64,14 +68,14 @@ export const BrickEditor = (props) => {
 			sleepAndFit()
 			onChange(null)
 		}
-	}, [ props, active ]);
+	}, [ props, active, onChange, sleepAndFit ]);
 
 	const onPaste = useCallback((pastedBrickTree, bt, parentBrick, paramCode) => {
 		if (!props.onChange || !active) return;
 
 		if (parentBrick) {
 			const brickSignature = props.brickLibrary[parentBrick.type][parentBrick.func];
-			const param = brickSignature.params.find(param => param.code == paramCode);
+			const param = brickSignature.params.find(param => param.code === paramCode);
 			if (param.type.brickType === pastedBrickTree.type) {
 				parentBrick.params[paramCode] = pastedBrickTree;
 				onChange(JSON.parse(JSON.stringify(bt)))
@@ -88,7 +92,7 @@ export const BrickEditor = (props) => {
 				notify({ message: "Unable to paste brick tree: incompatible brick types.", color: '#FFDDDD'})
 			}
 		}
-	}, [ props, active ]);
+	}, [ props, active, onChange, sleepAndFit ]);
 
 	const makeAddButtonElement = useCallback((brickID, brickType, brickTree, parentBrick, paramCode) => {
 		return {
@@ -106,7 +110,7 @@ export const BrickEditor = (props) => {
 				onPaste: onPaste,
 			}
 		};
-	}, [ brickTree, active, props.brickLibrary, props.brickClass, addBrick, onPaste]);
+	}, [ props.brickLibrary, props.brickClass, addBrick, onPaste ]);
 
 	const makeAddButtonWithEdgeElements = useCallback((brickID, brickType, brickTree, parentBrick,
 														 parentBrickID, paramCode) => {
@@ -139,7 +143,7 @@ export const BrickEditor = (props) => {
 				readonly: !active || !props.onChange,
 			}
 		}
-	}, [brickTree, props.brickLibrary, props.brickClass, removeBrick, onPaste]);
+	}, [ active, onChange, props.onChange, brickTree, props.brickLibrary, props.brickClass, removeBrick, onPaste]);
 
 	const makeBrickWithEdgeElements = useCallback((brickID, brick, brickTree, parentBrick,
 													 parentBrickID, paramID) => {
@@ -182,7 +186,7 @@ export const BrickEditor = (props) => {
 		processBrick(brickTree);
 
 		return elements;
-	}, [props.brickLibrary, active, props.brickClass, makeAddButtonWithEdgeElements, makeBrickWithEdgeElements]);
+	}, [props.brickLibrary, makeAddButtonWithEdgeElements, makeBrickWithEdgeElements]);
 
 	const onNodeSizesChange = (nodeSizesByID) => {
 		const rootNodePos = { 'x': width * 0.5, 'y': height * 0.1 };
@@ -203,11 +207,11 @@ export const BrickEditor = (props) => {
 		if (editorRef.current) {
 			editorRef.current.style.visibility = 'hidden';
 		}
-	}, [brickTree, makeBrickTreeElements, makeAddButtonElement]);
+	}, [ props.type.brickType, brickTree, makeBrickTreeElements, makeAddButtonElement]);
 
 	useEffect(() => {
 		sleepAndFit()
-	}, [ active ])
+	}, [ active, sleepAndFit ])
 
 	useEffect(() => {
 		if (state.isLayouted && editorRef.current) {
@@ -219,10 +223,6 @@ export const BrickEditor = (props) => {
 	const onLoad = (reactFlowInstance) => {
 		sleepAndFit()
 	};
-
-	const sleepAndFit = () => {
-		new Promise(resolve => setTimeout(resolve, 50)).then(() => { fitView() })
-	}
 
 	const enable = () => {
 		setActive(true)

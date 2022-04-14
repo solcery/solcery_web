@@ -19,6 +19,6 @@ export default function LayoutHelper(props) {
 				props.onNodeSizesChange(nodeSizesByID);
 			}
 		}
-	});
+	}, [ nodes, lastNodeSizesByIDJSON, props ]);
 	return null;
 };

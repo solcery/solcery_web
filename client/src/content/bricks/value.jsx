@@ -47,7 +47,7 @@ addBrickSig({
   params: [
     { code: 'name', name: 'Name', type: SType.from('SString') },
   ],
-  func: generic.arg,
+  run: generic.arg,
 })
 
 // value.conditional
@@ -204,7 +204,6 @@ addBrickSig({ // TODO: reuse code
     let limit = runBrick(params.limit, ctx)
     let objs = []
     let oldObj = ctx.object 
-    let amount = 0
     let objects = [...ctx.game.objects.values()]
     generic.shuffle(objects)
     while (limit > 0 && objects.length > 0) {
@@ -250,18 +249,18 @@ addBrickSig({ // TODO: reuse code
     { code: 'fallback', name: 'Fallback', type: SType.from('SBrick<value>') }
   ],
   run: (params, ctx) => {
-    let old_object = ctx.object 
-    let amount = 0
+    let old_object = ctx.object
     let objects = [...ctx.game.objects.values()]
     generic.shuffle(objects)
     let result = Number.NEGATIVE_INFINITY
     for (let obj of objects) {
-      if (runBrick(params.iter_condition, ctx)) {
-        result = Math.min(runBrick(params.value, ctx), result)
-      }
+    	ctx.object = obj
+	    if (runBrick(params.iter_condition, ctx)) {
+	    	result = Math.min(runBrick(params.value, ctx), result)
+	    }
     }
     ctx.object = old_object
-    if (result == Number.NEGATIVE_INFINITY) {
+    if (result === Number.NEGATIVE_INFINITY) {
       result = runBrick(params.fallback, ctx)
     }
     return result
@@ -278,18 +277,18 @@ addBrickSig({ // TODO: reuse code
     { code: 'fallback', name: 'Fallback', type: SType.from('SBrick<value>') }
   ],
   run: (params, ctx) => {
-    let old_object = ctx.object 
-    let amount = 0
+    let old_object = ctx.object
     let objects = [...ctx.game.objects.values()]
     generic.shuffle(objects)
     let result = Number.POSITIVE_INFINITY
     for (let obj of objects) {
-      if (runBrick(params.iter_condition, ctx)) {
-        result = Math.max(runBrick(params.value, ctx), result)
-      }
+    	ctx.object = obj
+    	if (runBrick(params.iter_condition, ctx)) {
+    		result = Math.max(runBrick(params.value, ctx), result)
+    	}
     }
     ctx.object = old_object
-    if (result == Number.POSITIVE_INFINITY) {
+    if (result === Number.POSITIVE_INFINITY) {
       result = runBrick(params.fallback, ctx)
     }
     return result

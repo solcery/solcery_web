@@ -6,11 +6,10 @@ import { notify } from "../../../components/notification";
 export default function Brick(props) {
 
 	const brick = props.data.brick;
-	const brickClass = props.data.brickClass;
 	let brickSignature = props.data.brickLibrary[brick.type][brick.func]
-	// if (!brickSignature) {
-	// 	brickSignature = defaultBricksByType.get(brick.type)
-	// }
+	if (!brickSignature) {
+		brickSignature = defaultBricksByType[brick.type] // TODO
+	}
 	let nestedParams = [];
 	let inlineParams = [];
 	brickSignature.params.forEach((param) => {

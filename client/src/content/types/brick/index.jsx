@@ -19,6 +19,8 @@ export const generic = {}
 
 export const bricks = {}
 
+export const defaultBricksByType = {}
+
 generic.arg = () => {
 
 }

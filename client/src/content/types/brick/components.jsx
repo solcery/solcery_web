@@ -1,11 +1,9 @@
-import ReactFlow, { ReactFlowProvider } from 'react-flow-renderer';
+import { ReactFlowProvider } from 'react-flow-renderer';
 import { BrickEditor } from './BrickEditor';
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { bricks } from "./index"
 
 export const ValueRender = (props) => {
-
-  let brickType = props.type.brickType
   if (!props.onChange && !props.defaultValue) return <p>Empty</p>
 	return (
     <>

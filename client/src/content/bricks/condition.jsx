@@ -10,7 +10,7 @@ addBrickSig({
     { code: 'value', name: 'Value', type: SType.from('SBool') }, //TODO
   ],
   run: (params, ctx) => {
-    return params.value != 0
+    return params.value
   }
 })
 
@@ -118,10 +118,9 @@ addBrickSig({ // TODO: reuse code
   run: (params, ctx) => {
     let limit = runBrick(params.limit, ctx)
     let objs = []
-    let oldObj = ctx.object 
-    let amount = 0
+    let oldObj = ctx.object
     let objects = [...ctx.game.objects.values()]
-    generic.shuffle(objects)
+    generic.shuffle (objects)
     while (limit > 0 && objects.length > 0) {
       ctx.object = objects.pop()
       if (runBrick(params.iter_condition, ctx)) {
@@ -151,10 +150,9 @@ addBrickSig({ // TODO: reuse code
   run: (params, ctx) => {
     let limit = runBrick(params.limit, ctx)
     let objs = []
-    let oldObj = ctx.object 
-    let amount = 0
+    let oldObj = ctx.object
     let objects = [...ctx.game.objects.values()]
-    generic.shuffle(objects)
+    generic.shuffle (objects)
     while (limit > 0 && objects.length > 0) {
       ctx.object = objects.pop()
       if (runBrick(params.iter_condition, ctx)) {

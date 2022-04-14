@@ -1,6 +1,5 @@
 export function insertTable(table, path, value) {
     path.reduce((acc, pathElement, idx) => {
-        console.log(acc)
         if (idx < path.length -1) {
             // We're not at the final element of path, add a new object if necessary
             if (!acc[pathElement]) acc[pathElement] = {};

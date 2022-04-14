@@ -84,7 +84,6 @@ addBrickSig({
 		let limit = runBrick(params.limit, ctx)
 		let objs = []
 		let oldObj = ctx.object 
-		let amount = 0
 		let objects = [...ctx.game.objects.values()]
 		generic.shuffle(objects)
 		while (limit > 0 && objects.length > 0) {
@@ -231,6 +230,7 @@ addBrickSig({
 		let card_type	= runBrick(params.card_type, ctx)
 		let place = runBrick(params.place, ctx)
 		let newObj = ctx.game.createEntity(card_type)
+		newObj.attrs.place = place
 		let oldObj = ctx.object
 		ctx.object = newObj
 		runBrick(params.action, ctx)
