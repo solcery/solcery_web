@@ -28,7 +28,7 @@ const fetchApiCall = function(request, response, params) {
   solceryAPI(response, moduleName, params)
 }
 
-require('./api/templates')(apiLibrary)
+require('./api/project')(apiLibrary)
 require('./api/template')(apiLibrary)
 
 // Multi-process to utilize all CPU cores.

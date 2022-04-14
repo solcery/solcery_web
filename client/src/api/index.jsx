@@ -1,9 +1,9 @@
-import { templates } from './templates';
+import { project } from './project';
 import { template } from './template';
 const API_PATH = '/api';
 
 export const SageAPI = {
-	templates: templates,
+	project: project,
 	template: template,
 };
 

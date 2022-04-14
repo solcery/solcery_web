@@ -6,9 +6,7 @@ export const TopMenu = () => {
 	const [ templates, setTemplates ] = useState([]);
 
 	useEffect(() => {
-		SageAPI.templates.getAll().then((data) => {
-			setTemplates(data)
-		})
+		SageAPI.project.getAllTemplates().then(setTemplates)
 	}, []);
 
 	return (

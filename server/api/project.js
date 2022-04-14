@@ -1,6 +1,6 @@
 const db = require("../db/connection");
 
-const getAll = async function(response, params) {
+const getAllTemplates = async function(response, params) {
     let result = db
     	.getDb("project_eclipse")
         .collection("templates")
@@ -10,7 +10,7 @@ const getAll = async function(response, params) {
 }
 
 module.exports = function(api) {
-	api.templates = (params) => {
-        if (params.command == 'getAll') return getAll;
+	api.project = (params) => {
+        if (params.command == 'getAllTemplates') return getAllTemplates;
     }
 }
