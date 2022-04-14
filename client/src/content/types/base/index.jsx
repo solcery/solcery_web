@@ -1,9 +1,18 @@
 const _stypebyclassname = {}
 
-const _buildstype = (name, data = {}) => {
-	let classConstructor = _stypebyclassname[name];
+const fromObject = (src) => {
+	let classConstructor = _stypebyclassname[src.name];
 	if (!classConstructor) throw new Error('Error building stype from data!');
-	return new classConstructor(data)
+	return new classConstructor(src.data)
+}
+
+
+const fromString = (src) => {
+	let fromIndex = src.indexOf('<') + 1;
+	let toIndex = src.lastIndexOf('>');
+	let name = src.replace(/ *\<[^)]*\> */g, "");
+	let data = fromIndex > 0 ? src.substring(fromIndex, toIndex) : undefined;
+	return _stypebyclassname[name].fromString(data)
 }
 
 export const SType = {
@@ -11,16 +20,13 @@ export const SType = {
 		_stypebyclassname[classname] = constructor;
 	},
 
-
-	// TODO: fromJSON
 	
 	from: (src) => {
 		switch (typeof src) {
 			case 'string':
-				return _buildstype(src, {});
-				break;
+				return fromString(src)
 			case 'object':
-				return _buildstype(src.name, src.data);
+				return fromObject(src);
 			default:
 				throw new Error("Unknown type definition from mongo")
 		}

@@ -17,17 +17,6 @@ const nodeTypes = {
 
 export const BrickEditor = (props) => {
 
-
-// props: {
-// 	width,
-// 	height
-// 	brickSignatures,
-// 	brickClass,
-// 	brickType,
-// 	brickTree?,
-// 	onChange?: (brickTree) => void
-// }
-
 	const [ active, setActive ] = useState(false)
 	let width = active ? window.innerWidth : props.width;
 	let height = active ? window.innerHeight : props.height;
@@ -65,11 +54,11 @@ export const BrickEditor = (props) => {
 		}
 	}, [ active, props ]);
 
-	const removeBrick = useCallback((bt, parentBrick, paramID) => {
+	const removeBrick = useCallback((bt, parentBrick, paramCode) => {
 		if (!props.onChange || !active) return;
 
 		if (parentBrick) {
-			parentBrick.params[paramID] = null;
+			parentBrick.params[paramCode] = null;
 			onChange(JSON.parse(JSON.stringify(bt)))
 		} else {
 			sleepAndFit()
@@ -81,7 +70,7 @@ export const BrickEditor = (props) => {
 		if (!props.onChange || !active) return;
 
 		if (parentBrick) {
-			const brickSignature = props.brickSignatures[parentBrick.type][parentBrick.func];
+			const brickSignature = props.brickLibrary[parentBrick.type][parentBrick.func];
 			const param = brickSignature.params.find(param => param.code == paramCode);
 			if (param.type.brickType === pastedBrickTree.type) {
 				parentBrick.params[paramCode] = pastedBrickTree;
@@ -90,9 +79,14 @@ export const BrickEditor = (props) => {
 			} else {
 				notify({ message: "Unable to paste brick tree: incompatible brick types.", color: '#FFDDDD'})
 			}
-		} else if (pastedBrickTree.type === props.brickType) { //??
-			sleepAndFit()
-			onChange(pastedBrickTree)
+		} else {
+			if (pastedBrickTree.type === props.type.brickType) {
+				sleepAndFit()
+				onChange(pastedBrickTree)
+				notify({ message: "Pasted successfully", color: '#DDFFDD'})
+			} else {
+				notify({ message: "Unable to paste brick tree: incompatible brick types.", color: '#FFDDDD'})
+			}
 		}
 	}, [ props, active ]);
 
@@ -102,7 +96,7 @@ export const BrickEditor = (props) => {
 			type: 'add',
 			position: { x: 0, y: 0 },
 			data: {
-				brickSignatures: props.brickSignatures,
+				brickLibrary: props.brickLibrary,
 				brickClass: props.brickClass,
 				brickType,
 				brickTree,
@@ -112,7 +106,7 @@ export const BrickEditor = (props) => {
 				onPaste: onPaste,
 			}
 		};
-	}, [ brickTree, active, props.brickSignatures, props.brickClass, addBrick, onPaste]);
+	}, [ brickTree, active, props.brickLibrary, props.brickClass, addBrick, onPaste]);
 
 	const makeAddButtonWithEdgeElements = useCallback((brickID, brickType, brickTree, parentBrick,
 														 parentBrickID, paramCode) => {
@@ -133,7 +127,7 @@ export const BrickEditor = (props) => {
 			type: 'brick',
 			position: { x: 0, y: 0 },
 			data: {
-				brickSignatures: props.brickSignatures,
+				brickLibrary: props.brickLibrary,
 				brickClass: props.brickClass,
 				brick,
 				parentBrick,
@@ -145,7 +139,7 @@ export const BrickEditor = (props) => {
 				readonly: !active || !props.onChange,
 			}
 		}
-	}, [brickTree, props.brickSignatures, props.brickClass, removeBrick, onPaste]);
+	}, [brickTree, props.brickLibrary, props.brickClass, removeBrick, onPaste]);
 
 	const makeBrickWithEdgeElements = useCallback((brickID, brick, brickTree, parentBrick,
 													 parentBrickID, paramID) => {
@@ -168,7 +162,7 @@ export const BrickEditor = (props) => {
 		const processBrick = (brick, parentBrickID = null, parentBrick = null, paramCode = '') => {
 			const brickID = Number(++brickUniqueID).toString();
 			elements.push(...makeBrickWithEdgeElements(brickID, brick, brickTree, parentBrick, parentBrickID, paramCode));
-			let brickSignature = props.brickSignatures[brick.type][brick.func];
+			let brickSignature = props.brickLibrary[brick.type][brick.func];
 			if (!brickSignature) {
 				return elements;
 			}
@@ -188,7 +182,7 @@ export const BrickEditor = (props) => {
 		processBrick(brickTree);
 
 		return elements;
-	}, [props.brickSignatures, active, props.brickClass, makeAddButtonWithEdgeElements, makeBrickWithEdgeElements]);
+	}, [props.brickLibrary, active, props.brickClass, makeAddButtonWithEdgeElements, makeBrickWithEdgeElements]);
 
 	const onNodeSizesChange = (nodeSizesByID) => {
 		const rootNodePos = { 'x': width * 0.5, 'y': height * 0.1 };
@@ -203,7 +197,7 @@ export const BrickEditor = (props) => {
 		if (brickTree) {
 			elements = makeBrickTreeElements(brickTree);
 		}	else {
-			elements = [makeAddButtonElement(Number(++brickUniqueID).toString(), props.brickType, null, null, 0)];
+			elements = [makeAddButtonElement(Number(++brickUniqueID).toString(), props.type.brickType, null, null, 0)];
 		}
 		setState({ elements: elements, isLayouted: false });
 		if (editorRef.current) {

@@ -7,7 +7,7 @@ export default function Brick(props) {
 
 	const brick = props.data.brick;
 	const brickClass = props.data.brickClass;
-	let brickSignature = props.data.brickSignatures[brick.type][brick.func]
+	let brickSignature = props.data.brickLibrary[brick.type][brick.func]
 	// if (!brickSignature) {
 	// 	brickSignature = defaultBricksByType.get(brick.type)
 	// }

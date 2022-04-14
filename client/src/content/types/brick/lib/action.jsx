@@ -1,29 +1,83 @@
 import { SType } from '../../index'
-import { addBricks } from '../index'
+import { addBrickSig, bricks } from '../index'
+import { insertTable } from '../../../../utils';
 
-const action = {}
 
-action.void = {
-	type: 'action',
-	code: 'void',
-	name: 'Void',
-	func: () => {},
-	params: []
-}
+// insertTable(bricks, [ 'action', 'void' ], {
+// 	type: 'action',
+// 	func: 'void',
+// 	params: {},
+// 	run: () => {}
+// })
 
-action.two = {
-	type: 'action',
-	code: 'two',
-	name: 'Two actions',
-	params: [
-		{ code: 'action1', name: 'Action #1', type: SType.from({ name: "SBrick", data: { brickType: "action" } }) },
-		{ code: 'action2', name: 'Action #2', type: SType.from({ name: "SBrick", data: { brickType: "action" } }) },
-	],
-	func: (params, ctx) => {
-		//applyBrick(params.action1, ctx)
-		//applyBrick(params.action2, ctx)
-	}
-}
+// console.log(b)
+
+// export default {}
+
+// console.log(addBrickSig)
+// addBrickSig({
+//   type: 'action',
+//   func: 'void',
+//   name: 'Void',
+//   params: [],
+//   run: () => {}
+// })
+
+// addBrickSig({
+//   type: 'action',
+//   func: 'two',
+//   name: 'Two actions',
+//   params: [
+//     { code: 'action1', name: 'Action #1', type: SType.from({ name: "SBrick", data: { brickType: "action" } }) },
+//     { code: 'action3', name: 'Action #2', type: SType.from({ name: "SBrick", data: { brickType: "action" } }) }
+//   ],
+//   run: (params, ctx) => {
+//     //applyBrick(params.action1, ctx)
+//     //applyBrick(params.action2, ctx)
+//   }
+// })
+
+// addBrickSig({
+//   type: 'action',
+//   func: 'string',
+//   name: 'String',
+//   params: [
+//     { code: 'str', name: 'String', type: SType.from('SString')},
+//   ],
+//   run: (params, ctx) => {
+//     //applyBrick(params.action1, ctx)
+//     //applyBrick(params.action2, ctx)
+//   }
+// })
+
+// addBrickSig({
+//   type: 'action',
+//   func: 'fourbools',
+//   name: 'Fourbools',
+//   params: [
+//     { code: 'bool1', name: 'Bool1', type: SType.from('SBool')},
+//     { code: 'bool2', name: 'Bool2', type: SType.from('SBool')},
+//     { code: 'bool3', name: 'Bool3', type: SType.from('SBool')},
+//     { code: 'bool4', name: 'Bool4', type: SType.from('SBool')},
+//   ],
+//   run: (params, ctx) => {
+//     //applyBrick(params.action1, ctx)
+//     //applyBrick(params.action2, ctx)
+//   }
+// })
+
+// addBrickSig({
+//   type: 'action',
+//   func: 'image',
+//   name: 'Image',
+//   params: [
+//     { code: 'image', name: 'Image', type: SType.from('SImage')},
+//   ],
+//   run: (params, ctx) => {
+//     //applyBrick(params.action1, ctx)
+//     //applyBrick(params.action2, ctx)
+//   }
+// })
 
 //addBricks({ action });
 

@@ -2,23 +2,21 @@ import ReactFlow, { ReactFlowProvider } from 'react-flow-renderer';
 import { BrickEditor } from './BrickEditor';
 import React, { useState, useEffect } from "react";
 import { getBricks, bricks } from "./index"
-import { ValueRenderParams } from '../index'
 
 export const ValueRender = (props) => {
 
   let brickType = props.type.brickType
-  if (!props.onChange && !props.defaultValue)
-    return <p>Empty</p>
+  if (!props.onChange && !props.defaultValue) return <p>Empty</p>
 	return (
     <>
       <ReactFlowProvider>
         <BrickEditor
-          width={300}
-          height={200}
-          brickSignatures={bricks}
-          brickTree={props.defaultValue}
-          brickType={brickType}
-          onChange={props.onChange}
+          width = { 300 }
+          height = { 200 }
+          brickLibrary = { bricks }
+          brickTree = { props.defaultValue }
+          type = { props.type }
+          onChange = { props.onChange }
         />
       </ReactFlowProvider>
     </>

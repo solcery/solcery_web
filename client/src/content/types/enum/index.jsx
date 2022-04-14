@@ -2,6 +2,7 @@ import { SType } from '../base'
 import { ValueRender } from './components'
 
 class SEnum {
+	static fromString = data => new SEnum({ values: data.split('') });
 	constructor(data) {
 		this.values = data.values;
 	}

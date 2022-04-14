@@ -1,7 +1,10 @@
-import { SType } from '../base'
-import { ValueRender } from './components'
+import { SType } from '../base';
+import { ValueRender } from './components';
+import { insertTable } from '../../../utils';
 
 class SBrick {
+  static fromString = data => new SBrick({ brickType: data });
+  
   constructor(data) {
     this.brickType = data.brickType;
   }
@@ -14,13 +17,8 @@ export { SBrick }
 
 export const bricks = {}
 
-export const getBricks = () => {
-  return bricks;
-};
-
 export const addBrickSig = (brickSig) => {
-  if (!bricks[brickSig.type]) bricks[brickSig.type] = {};
-  bricks[brickSig.type][brickSig.func] = brickSig;
+  insertTable(bricks, [ brickSig.type, brickSig.func ], brickSig);
 }
 
 export const addBricks = (bricksToAdd) => {
@@ -32,31 +30,29 @@ export const addBricks = (bricksToAdd) => {
   })  
 }
 
-const action = {}
-
-action.void = {
+addBrickSig({
   type: 'action',
   func: 'void',
   name: 'Void',
-  run: () => {},
-  params: []
-}
+  params: [],
+  run: () => {}
+})
 
-action.two = {
+addBrickSig({
   type: 'action',
   func: 'two',
   name: 'Two actions',
   params: [
-    { code: 'action1', name: 'Action #1', type: SType.from({ name: "SBrick", data: { brickType: "action" } }) },
-    { code: 'action3', name: 'Action #2', type: SType.from({ name: "SBrick", data: { brickType: "action" } }) }
+    { code: 'action1', name: 'Action #1', type: SType.from('SBrick<action>') },
+    { code: 'action3', name: 'Action #2', type: SType.from('SBrick<action>') }
   ],
   run: (params, ctx) => {
     //applyBrick(params.action1, ctx)
     //applyBrick(params.action2, ctx)
   }
-}
+})
 
-action.string = {
+addBrickSig({
   type: 'action',
   func: 'string',
   name: 'String',
@@ -67,9 +63,9 @@ action.string = {
     //applyBrick(params.action1, ctx)
     //applyBrick(params.action2, ctx)
   }
-}
+})
 
-action.fourbools = {
+addBrickSig({
   type: 'action',
   func: 'fourbools',
   name: 'Fourbools',
@@ -83,9 +79,9 @@ action.fourbools = {
     //applyBrick(params.action1, ctx)
     //applyBrick(params.action2, ctx)
   }
-}
+})
 
-action.image = {
+addBrickSig({
   type: 'action',
   func: 'image',
   name: 'Image',
@@ -96,9 +92,103 @@ action.image = {
     //applyBrick(params.action1, ctx)
     //applyBrick(params.action2, ctx)
   }
-}
+})
 
-addBricks({ action });
+addBrickSig({
+  type: 'action',
+  func: 'array',
+  name: 'Array',
+  params: [
+    { code: 'array', name: 'Array', type: SType.from('SArray<SArray<SImage>>')},
+  ],
+  run: (params, ctx) => {
+    //applyBrick(params.action1, ctx)
+    //applyBrick(params.action2, ctx)
+  }
+})
+
+
+
+
+
+
+
+
+
+
+// addBrickSig({
+//   type: 'action',
+//   func: 'void',
+//   params: {
+//     action1: []
+//   }
+// })
+
+
+// addBrickSig({
+//   type: 'action',
+//   func: 'void',
+//   name: 'Void',
+//   run: () => {},
+//   params: []
+// })
+
+// addBrickSig({
+//   type: 'action',
+//   func: 'two',
+//   name: 'Two actions',
+//   params: [
+//     { code: 'action1', name: 'Action #1', type: SType.from({ name: "SBrick", data: { brickType: "action" } }) },
+//     { code: 'action3', name: 'Action #2', type: SType.from({ name: "SBrick", data: { brickType: "action" } }) }
+//   ],
+//   run: (params, ctx) => {
+//     //applyBrick(params.action1, ctx)
+//     //applyBrick(params.action2, ctx)
+//   }
+// })
+
+// addBrickSig({
+//   type: 'action',
+//   func: 'string',
+//   name: 'String',
+//   params: [
+//     { code: 'str', name: 'String', type: SType.from('SString')},
+//   ],
+//   run: (params, ctx) => {
+//     //applyBrick(params.action1, ctx)
+//     //applyBrick(params.action2, ctx)
+//   }
+// })
+
+// addBrickSig({
+//   type: 'action',
+//   func: 'fourbools',
+//   name: 'Fourbools',
+//   params: [
+//     { code: 'bool1', name: 'Bool1', type: SType.from('SBool')},
+//     { code: 'bool2', name: 'Bool2', type: SType.from('SBool')},
+//     { code: 'bool3', name: 'Bool3', type: SType.from('SBool')},
+//     { code: 'bool4', name: 'Bool4', type: SType.from('SBool')},
+//   ],
+//   run: (params, ctx) => {
+//     //applyBrick(params.action1, ctx)
+//     //applyBrick(params.action2, ctx)
+//   }
+// })
+
+// addBrickSig({
+//   type: 'action',
+//   func: 'image',
+//   name: 'Image',
+//   params: [
+//     { code: 'image', name: 'Image', type: SType.from('SImage')},
+//   ],
+//   run: (params, ctx) => {
+//     //applyBrick(params.action1, ctx)
+//     //applyBrick(params.action2, ctx)
+//   }
+// })
+
 
 // export const applyBrick = (brick, ctx) => {
 //   let params = {}
@@ -119,3 +209,5 @@ addBricks({ action });
 //     throw new Error("Trying to apply unexistent brick")
 //   return brickSignature.func(params, ctx)
 // }
+
+export * from './lib/action'

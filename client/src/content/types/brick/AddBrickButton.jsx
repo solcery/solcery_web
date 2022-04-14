@@ -4,7 +4,7 @@ import Select from 'react-select';
 
 export default function AddBrickButton(props) {
 	const brickType = props.data.brickType; // TODO: type
-	const brickSignaturesOfType = props.data.brickSignatures[brickType];
+	const brickSignaturesOfType = props.data.brickLibrary[brickType];
 
 	const [ isNodeTypeSelectorVisible, setNodeTypeSelectorVisible ] = useState(false);
 
@@ -22,7 +22,7 @@ export default function AddBrickButton(props) {
 	const onBrickSubtypeSelected = (option) => {
 		const subtype = option.value;
 		const brickSignature = brickSignaturesOfType[subtype];
-		props.data.onBrickSubtypeSelected(brickSignature, props.data.brickTree, props.data.parentBrick, props.data.paramID);
+		props.data.onBrickSubtypeSelected(brickSignature, props.data.brickTree, props.data.parentBrick, props.data.paramCode);
 		setNodeTypeSelectorVisible(false);
 	};
 
