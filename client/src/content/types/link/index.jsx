@@ -6,6 +6,7 @@ class SLink {
     this.templateCode = data.templateCode;
   }
   valueRender = ValueRender;
+  default = undefined;
 };
 
 SType.register('SLink', SLink);

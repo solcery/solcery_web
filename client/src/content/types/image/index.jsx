@@ -7,6 +7,7 @@ class SImage {
 		this.previewWidth = data.previewWidth || DEFAULT_PREVIEW_WIDTH;
 	}
 	valueRender = ValueRender;
+	default = '';
 };
 
 SType.register('SImage', SImage);

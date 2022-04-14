@@ -3,6 +3,7 @@ import { ValueRender } from './components'
 
 class SInt {
 	valueRender = ValueRender;
+	default = 0;
 };
 
 

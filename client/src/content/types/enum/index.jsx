@@ -6,6 +6,7 @@ class SEnum {
 		this.values = data.values;
 	}
 	valueRender = ValueRender;
+	default = 0;
 };
 
 SType.register('SEnum', SEnum);

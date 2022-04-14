@@ -3,6 +3,7 @@ import { ValueRender } from './components'
 
 class SBool {
   valueRender = ValueRender;
+  default = false;
 };
 
 SType.register('SBool', SBool);

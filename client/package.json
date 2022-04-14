@@ -6,11 +6,15 @@
     "antd": "^4.19.5",
     "craco": "^0.0.3",
     "craco-less": "^2.0.0",
+    "dagre": "^0.8.5",
     "less": "^4.1.2",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
+    "react-flow-renderer": "9.6.6",
     "react-router-dom": "^6.3.0",
-    "react-scripts": "^4.0.3"
+    "react-scripts": "^4.0.3",
+    "react-select": "^5.3.0",
+    "sass": "^1.50.0"
   },
   "scripts": {
     "start": "craco start",

@@ -19,7 +19,10 @@ export default function TemplateObject() {
 	}, [ objectId, templateCode ]);
 
 	const save = () => {
+		console.log('save')
+		console.log(object.fields)
 		SageAPI.template.updateObjectById(templateCode, objectId, object.fields).then((res) => { 
+			console.log(res)
 			if (res.modifiedCount) {
 				navigate(`/template.${template.code}`) 
 			}
@@ -34,6 +37,7 @@ export default function TemplateObject() {
 			value: object.fields[field.code]
 		}
 	})
+	console.log(object)
 	return (
 		<>
 			<Table dataSource={tableData}>

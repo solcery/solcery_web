@@ -7,6 +7,7 @@ class SMap {
     this.keyType = SType.from(data.keyType);
   }
   valueRender = ValueRender;
+  default = [];
 };
 
 SType.register('SMap', SMap);
