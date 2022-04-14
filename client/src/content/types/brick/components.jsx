@@ -1,7 +1,7 @@
 import ReactFlow, { ReactFlowProvider } from 'react-flow-renderer';
 import { BrickEditor } from './BrickEditor';
 import React, { useState, useEffect } from "react";
-import { getBricks, bricks } from "./index"
+import { bricks } from "./index"
 
 export const ValueRender = (props) => {
 

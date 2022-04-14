@@ -8,6 +8,8 @@ const fromObject = (src) => {
 
 
 const fromString = (src) => {
+	console.log(src)
+	console.log(_stypebyclassname)
 	let fromIndex = src.indexOf('<') + 1;
 	let toIndex = src.lastIndexOf('>');
 	let name = src.replace(/ *\<[^)]*\> */g, "");

@@ -57,7 +57,7 @@ export default function AddBrickButton(props) {
 					} catch {}
 					if (!pastedBrickTree) return;
 					
-					props.data.onPaste(pastedBrickTree, props.data.brickTree, props.data.parentBrick, props.data.paramID);
+					props.data.onPaste(pastedBrickTree, props.data.brickTree, props.data.parentBrick, props.data.paramCode);
 				});
 			}
 		};
