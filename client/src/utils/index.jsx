@@ -1,12 +1,18 @@
-export function insertTable(table, path, value) {
+export function insertTable(table, value, ...path) {
     path.reduce((acc, pathElement, idx) => {
         if (idx < path.length -1) {
-            // We're not at the final element of path, add a new object if necessary
             if (!acc[pathElement]) acc[pathElement] = {};
         } else {
-            // We're at the last pathElement, set the value, e.g. 'slotter'
             acc[pathElement] = value;
         }
+        return acc[pathElement];
+    }, table)
+}
+
+export function getTable(table, ...path) {
+    return path.reduce((acc, pathElement, idx) => {
+        if (!acc) return undefined;
+        if (!acc[pathElement]) return undefined;
         return acc[pathElement];
     }, table)
 }

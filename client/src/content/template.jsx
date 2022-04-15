@@ -13,4 +13,22 @@ export class Template {
 			}
 		}
 	}
+
+	construct = (object, meta) => {
+		let result = {}
+		let objectId = object._id;
+		let intId = meta.linkToIds[objectId]
+		if (!intId) {
+			intId = Object.keys(meta.linkToIds).length + 1
+			meta.linkToIds[objectId] = intId
+		}
+		result.id = intId
+		for (let field of Object.values(this.fields)) {
+			if (object.fields[field.code]) {
+				result[field.code] = field.type.construct(object.fields[field.code], meta)
+			}
+		}
+		console.log(result)
+		return result
+	}
 }

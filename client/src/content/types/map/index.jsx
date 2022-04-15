@@ -15,6 +15,12 @@ class SMap {
     this.valueType = SType.from(data.valueType);
     this.keyType = SType.from(data.keyType);
   }
+  construct = (value, meta) => value.map(val => {
+    return {
+      key: this.keyType.construct(val.key, meta),
+      value: this.valueType.construct(val.value, meta)
+    }
+  })
   valueRender = ValueRender;
   default = [];
 };

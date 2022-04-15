@@ -29,6 +29,14 @@ export default function TemplateObject() {
 		});
 	}
 
+	const construct = () => {
+		if (template && object) {
+			template.construct(object, { 
+				linkToIds: {}
+			})
+		}
+	}
+
 	if (!template || !object) return (<>NO DATA</>); // TODO
 	let tableData = Object.values(template.fields).map(field => {
 		return {
@@ -37,7 +45,6 @@ export default function TemplateObject() {
 			value: object.fields[field.code]
 		}
 	})
-	console.log(object)
 	return (
 		<>
 			<Table dataSource={tableData}>
@@ -59,6 +66,7 @@ export default function TemplateObject() {
 				/>
 			</Table>
 			<Button onClick={save}>SAVE</Button>
+			<Button onClick={construct}>CONSTRUCT</Button>
 		</>
 	);
 }

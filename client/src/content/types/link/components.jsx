@@ -20,7 +20,7 @@ export const ValueRender = (props) => {
 	}, [ props.defaultValue, props.type ])
 
 	useEffect(() => { 
-		SageAPI.template.getObjects(props.type.templateCode).then(res => {
+		SageAPI.template.getAllObjects(props.type.templateCode).then(res => {
 			setObjects(res.map(object => {
 				return {
 					id: object._id,

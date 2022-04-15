@@ -6,6 +6,7 @@ class SEnum {
 	constructor(data) {
 		this.values = data.values;
 	}
+	construct = (value, meta) => value;
 	valueRender = ValueRender;
 	default = 0;
 };

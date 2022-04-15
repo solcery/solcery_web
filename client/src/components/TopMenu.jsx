@@ -12,6 +12,12 @@ export const TopMenu = () => {
 	return (
 		<>
 		<Menu mode="horizontal">
+			<Menu.Item key='project'>
+				<a href='project'>project</a>
+			</Menu.Item>
+			<Menu.Item key='play'>
+				<a href='play'>PLAY</a>
+			</Menu.Item>
 			{templates.map(template =>
 			<Menu.Item key={template.code}>
 					<a href={`template.${template.code}`}>{template.name}</a>

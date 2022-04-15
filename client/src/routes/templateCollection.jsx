@@ -14,7 +14,7 @@ export default function TemplateCollection() {
 	const [ template, setTemplate ] = useState(undefined)
 	
 	useEffect(() => {
-		SageAPI.template.getObjects(templateCode).then(setObjects);
+		SageAPI.template.getAllObjects(templateCode).then(setObjects);
 		SageAPI.template.getSchema(templateCode).then((data) => setTemplate(new Template(data)));
 	}, [ templateCode ]);
 

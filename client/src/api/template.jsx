@@ -3,7 +3,7 @@ import { apiCall, postApiCall } from './index'
 const MODULE_NAME = 'template';
 export const template = {}
 
-template.getObjects = (templateCode) => {
+template.getAllObjects = (templateCode) => {
 	return apiCall(MODULE_NAME, 'getAll', { templateCode })
 }
 
