@@ -33,12 +33,26 @@ const getSchema = async function(response, params) {
   response.json(schema)
 }
 
+const create = async function(response, params) { // TODO: validate
+  object = {
+    _id: new ObjectId(),
+    fields: {},
+  };
+  db
+    .getDb('project_eclipse')
+    .collection(params.templateCode)
+    .insertOne(object, function(err, res) {
+    if (err) throw err;
+    response.json(res);
+  });
+}
+
 const update = async function(response, params) { // TODO: validate
   var query = { _id: ObjectId(params.objectId) };
   var values = { $set: { fields : params.fields } };
   db
     .getDb('project_eclipse')
-    .collection("cards")
+    .collection(params.templateCode)
     .updateOne(query, values, function(err, res) {
     if (err) throw err;
     response.json(res);
@@ -56,7 +70,7 @@ const clone = async function(response, params) { // TODO: validate
   object._id = new ObjectId();
   db
     .getDb('project_eclipse')
-    .collection("cards")
+    .collection(params.templateCode)
     .insertOne(object, function(err, res) {
     if (err) throw err;
     response.json(res);
@@ -82,6 +96,7 @@ module.exports = function(api) {
     if (params.command == 'getSchema') return getSchema;
     if (params.command == 'update') return update;
     if (params.command == 'clone') return clone;
+    if (params.command == 'create') return create;
     if (params.command == 'remove') return remove;  
   }
 }

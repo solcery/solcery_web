@@ -19,6 +19,10 @@ template.updateObjectById = (templateCode, objectId, fields) => {
 	return postApiCall(MODULE_NAME, 'update', { templateCode, objectId, fields });
 }
 
+template.create = (templateCode) => {
+	return apiCall(MODULE_NAME, 'create', { templateCode });
+}
+
 template.clone = (templateCode, objectId) => {
 	return apiCall(MODULE_NAME, 'clone', { templateCode, objectId });
 }

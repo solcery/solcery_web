@@ -230,7 +230,7 @@ addBrickSig({
 		let card_type	= runBrick(params.card_type, ctx)
 		let place = runBrick(params.place, ctx)
 		let newObj = ctx.game.createEntity(card_type)
-		newObj.attrs.place = place
+		newObj.attrs.place = place;
 		let oldObj = ctx.object
 		ctx.object = newObj
 		runBrick(params.action, ctx)

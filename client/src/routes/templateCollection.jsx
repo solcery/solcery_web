@@ -33,27 +33,28 @@ export default function TemplateCollection() {
 		tableData.push(objectData)
 	}
 	return (
-		<Table 
-			dataSource={tableData}
-			onRow={(record, rowIndex) => {
-				return {
-					onDoubleClick: event => { 
-						navigate(`/template.${template.code}.${record.id}`) 
-					}
-				};
-			}}
-		>
-			{Object.values(template.fields).map(field => 
+		<>
+			<Table 
+				dataSource={tableData}
+				onRow={(record, rowIndex) => {
+					return {
+						onDoubleClick: event => { 
+							navigate(`/template.${template.code}.${record.id}`) 
+						}
+					};
+				}}
+			>
+				{Object.values(template.fields).map(field => 
+					<Column 
+						title={field.name} 
+						key={field.code} 
+						dataIndex={field.code}
+						render = {(_, object) => <field.type.valueRender
+							defaultValue = { object.fields[field.code] }
+							type = { field.type }
+						/>}
+					/>)}
 				<Column 
-					title={field.name} 
-					key={field.code} 
-					dataIndex={field.code}
-					render = {(_, object) => <field.type.valueRender
-						defaultValue = { object.fields[field.code] }
-						type = { field.type }
-					/>}
-				/>)}
-			 <Column 
 					title="Actions"
 					key="actions"
 					render={(_, object) =>
@@ -82,8 +83,19 @@ export default function TemplateCollection() {
 							}}>
 							Delete
 						</Button>
-					</div>} //TODO: delete: accountCleanup, confirmation
+					</div>} 
 				/>
-		</Table>
+			</Table>
+			<Button 
+				onClick={() => { 
+					SageAPI.template.create(templateCode).then((res) => {
+						if (res.insertedId) {
+							navigate(`/template.${template.code}.${res.insertedId}`);
+						}
+					});
+				}}>
+				Create
+			</Button>
+		</>
 	);
 }
