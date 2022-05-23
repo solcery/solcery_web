@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { Session } from '../game';
 import gameContent from '../game/game_content.json';
 import Unity, { UnityContext } from "react-unity-webgl";
+import './progress.css';
 
 const unityPlayContext = new UnityContext({
   loaderUrl: "game/WebGl.loader.js",
@@ -11,9 +12,17 @@ const unityPlayContext = new UnityContext({
   streamingAssetsUrl: "StreamingAssets",
 })
 
+CSS.registerProperty({
+  name: "--p",
+  syntax: "<integer>",
+  initialValue: 0,
+  inherits: true,
+});
+
 export default function Play() {
 	const [ gameSession, setGameSession ] = useState(new Session(gameContent, [ 1 ]))
-
+	const [ loading, setLoading ] = useState(false);
+	
 	const sendDiffLog = (diffLog, send = true) => {
 		let states = diffLog.map((state, index) => {
 			return {
@@ -66,10 +75,23 @@ export default function Play() {
 		sendDiffLog(gameSession.game.diffLog)
 	});
 
+	useEffect(function () {
+    unityPlayContext.on("progress", setLoading);
+  }, []);
+
 	return (
+
 		!gameSession ? <></> :
-		<div style={{ width: '100%' }}>
-			<Unity tabIndex={3} style={{ width: '100%' }} unityContext={unityPlayContext} />
-		</div>
+	
+			<div className = 'splash-bg'>
+			{loading < 1 && 
+					<div className = 'progress'>
+						<p className = 'progress-caption'> Loading Eclipse </p>
+						<div className = 'progress-containter'>
+					  	<div className = 'progress-value' style={{ width: `${loading * 100}%` }}></div>
+						</div>
+					</div>}
+				<Unity tabIndex={3} style={{ width: '100%' }} unityContext={unityPlayContext} />
+			</div>
 	);
 }
