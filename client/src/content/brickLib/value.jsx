@@ -270,7 +270,7 @@ export const basicValues = [
       for (let obj of objects) {
         ctx.object = obj
         if (runtime.execBrick(params.iter_condition, ctx)) {
-          result = Math.min(runtime.execBrick(params.value, ctx), result)
+          result = Math.max(runtime.execBrick(params.value, ctx), result)
         }
       }
       ctx.object = old_object
@@ -284,7 +284,7 @@ export const basicValues = [
     type: 2,
     subtype: 17,
     lib: 'value',
-    func: 'iter_max',
+    func: 'iter_min',
     name: 'Min Iterator',
     params: [
       { code: 'iter_condition',name: 'Iteration Condition', type: 'SBrick<condition>' },
@@ -299,7 +299,7 @@ export const basicValues = [
       for (let obj of objects) {
         ctx.object = obj
         if (runtime.execBrick(params.iter_condition, ctx)) {
-          result = Math.max(runtime.execBrick(params.value, ctx), result)
+          result = Math.min(runtime.execBrick(params.value, ctx), result)
         }
       }
       ctx.object = old_object
