@@ -16,7 +16,6 @@ const nodeTypes = {
 };
 
 export const BrickEditor = (props) => {
-	console.log(props.onChange)
 	const [ active, setActive ] = useState(false)
 	let width = active ? window.innerWidth : props.width;
 	let height = active ? window.innerHeight : props.height;

@@ -30,7 +30,7 @@ export class BrickRuntime {
     basicConditions.forEach(brick => insertTable(this.bricks, brick, brick.lib, brick.func))
     basicValues.forEach(brick => insertTable(this.bricks, brick, brick.lib, brick.func))
     if (!content) return;
-    for (let obj of Object.values(content.customBricks)) {
+    for (let obj of Object.values(content.customBricks)) { // TODO: wrong
       let brick = {
         type: obj.brick.type,
         subtype: 10000 + obj.id,

@@ -10,13 +10,16 @@ class SLink {
   }
 
   construct = (value, meta) => {
-    let intId = meta.linkToIds[value];
-    if (!intId) {
-      intId = Object.keys(meta.linkToIds).length + 1
-      meta.linkToIds[value] = intId
+    if (meta.target === 'unity') {
+      let intId = meta.linkToIds[value];
+      if (!intId) {
+        intId = Object.keys(meta.linkToIds).length + 1;
+        meta.linkToIds[value] = intId;
+      }
+      return intId;
     }
-    return intId
-  };
+    return value;
+  }
 
   valueRender = ValueRender;
   default = undefined;

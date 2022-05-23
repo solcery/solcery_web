@@ -19,7 +19,6 @@ const objectToArray = (obj) => {
   })
 }
 
-
 export class Session {
   content = undefined;
   game = undefined;

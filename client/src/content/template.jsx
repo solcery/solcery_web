@@ -28,7 +28,6 @@ export class Template {
 				result[field.code] = field.type.construct(object.fields[field.code], meta)
 			}
 		}
-		console.log(result)
 		return result
 	}
 }

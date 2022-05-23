@@ -7,7 +7,7 @@ class SImage {
 	constructor(data) {
 		this.previewWidth = data.previewWidth || DEFAULT_PREVIEW_WIDTH;
 	}
-	construct = value => value;
+	construct = (value, meta) => value;
 	valueRender = ValueRender;
 	default = '';
 };
