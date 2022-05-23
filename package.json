@@ -8,6 +8,7 @@
   "scripts": {
     "start": "cd client/ && yarn start",
     "debug": "yarn build & yarn start",
+    "build": "cd client/ && yarn && yarn build"
   },
   "cacheDirectories": [
     "node_modules",
