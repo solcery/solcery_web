@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { Handle, Position } from 'react-flow-renderer';
-import { notify } from "../../../components/notification";
+import { notify } from "../../../../components/notification";
 
 export default function Brick(props) {
 
@@ -9,6 +9,8 @@ export default function Brick(props) {
 	// if (!brickSignature) {
 	// 	brickSignature = defaultBricksByType[brick.func] // TODO
 	// }
+	// console.log(props.data.brickLibrary)
+	// console.log(brickSignature)
 	let nestedParams = [];
 	let inlineParams = [];
 	brickSignature.params.forEach((param) => {
@@ -16,6 +18,7 @@ export default function Brick(props) {
 		else inlineParams.push(param);
 	});
 
+	// console.log(inlineParams);
 	const onRemoveButtonClicked = () => {
 		props.data.onRemoveButtonClicked(props.data.brickTree, props.data.parentBrick, props.data.paramCode);
 	};
@@ -65,6 +68,7 @@ export default function Brick(props) {
 			window.removeEventListener('keyup', onKeyUp);
 		};
 	});
+	console.log(inlineParams)
 	return (
 		<div className={ props.data.readonly ? "brick" : "brick brick-active" } onPointerEnter={() => isHovered = true} onPointerLeave={() => isHovered = false}>
 			<div className={ props.data.readonly ? "remove-button" : "remove-button remove-button-active" } onClick={onRemoveButtonClicked}>x</div>
@@ -74,8 +78,8 @@ export default function Brick(props) {
 					<div>{param.name}</div>
 					<param.type.valueRender 
 						type = { param.type }
-						defaultValue = { brick.params[param.code] } 
-						onChange={ !props.data.readonly ?
+						defaultValue = { param.readonly ? param.value : brick.params[param.code] } 
+						onChange={ (!param.readonly && !props.data.readonly) ?
 						(value) => {
 							brick.params[param.code] = value
 							props.data.onChange()

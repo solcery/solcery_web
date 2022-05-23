@@ -5,7 +5,7 @@ import Brick from './Brick';
 import { Button } from 'antd';
 import LayoutHelper from './LayoutHelper';
 import makeLayoutedElements from './dagreLayout';
-import { notify } from "../../../components/notification";
+import { notify } from "../../../../components/notification";
 import './BrickEditor.scss';
 
 let brickUniqueID = 0;
@@ -16,7 +16,6 @@ const nodeTypes = {
 };
 
 export const BrickEditor = (props) => {
-
 	const [ active, setActive ] = useState(false)
 	let width = active ? window.innerWidth : props.width;
 	let height = active ? window.innerHeight : props.height;
@@ -166,8 +165,6 @@ export const BrickEditor = (props) => {
 		const processBrick = (brick, parentBrickID = null, parentBrick = null, paramCode = '') => {
 			const brickID = Number(++brickUniqueID).toString();
 			elements.push(...makeBrickWithEdgeElements(brickID, brick, brickTree, parentBrick, parentBrickID, paramCode));
-			console.log(props.brickLibrary)
-			console.log(brick)
 			let brickSignature = props.brickLibrary[brick.lib][brick.func];
 			if (!brickSignature) {
 				return elements;
@@ -203,13 +200,13 @@ export const BrickEditor = (props) => {
 		if (brickTree) {
 			elements = makeBrickTreeElements(brickTree);
 		}	else {
-			elements = [makeAddButtonElement(Number(++brickUniqueID).toString(), props.type.brickType, null, null, 0)];
+			elements = [makeAddButtonElement(Number(++brickUniqueID).toString(), props.brickType, null, null, 0)];
 		}
 		setState({ elements: elements, isLayouted: false });
 		if (editorRef.current) {
 			editorRef.current.style.visibility = 'hidden';
 		}
-	}, [ props.type.brickType, brickTree, makeBrickTreeElements, makeAddButtonElement]);
+	}, [ brickTree, makeBrickTreeElements, makeAddButtonElement, props.brickType]);
 
 	useEffect(() => {
 		sleepAndFit()

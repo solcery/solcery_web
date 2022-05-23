@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from 'antd';
 
 const ADD_ELEMENT_BUTTON_LABEL = ' + ';
@@ -9,21 +9,29 @@ export const ValueRender = (props) => {
 	var [value, setValue] = useState(props.defaultValue || [])
 	var [valueSize, setValueSize] = useState(props.defaultValue?.length || 0);
 
-	const onChange = (newValue, index, type) => {
-		value[index][type] = newValue;
-		setValue(value);
-		var res = value.filter((entry) => entry.key && entry.value);
+	const sendValue = (value) => {
+		var res = value.filter((entry) => entry.key !== undefined && entry.value !== undefined);
 		props.onChange && props.onChange(res);
 	}
 
+	const onChange = (newValue, index, type) => {
+		value[index][type] = newValue;
+		setValue(value);
+		sendValue(value);
+	}
+	
 	const removeElement = (index) => {
 		// TODO;
 	}
 
 	const addNewElement = () => {
-		value.push({});
+		value.push({
+			key: props.type.keyType.default,
+			value: props.type.valueType.default,
+		});
 		setValueSize(valueSize + 1);
 		setValue(value);
+		sendValue(value);
 	}
 
 	if (!props.onChange) return (

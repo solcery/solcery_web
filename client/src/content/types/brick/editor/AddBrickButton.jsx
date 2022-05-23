@@ -20,8 +20,10 @@ export default function AddBrickButton(props) {
 	};
 
 	const onBrickSubtypeSelected = (option) => {
-		const subtype = option.value;
-		const brickSignature = brickSignaturesOfType[subtype];
+		console.log(option)
+		const func = option.value;
+		const brickSignature = brickSignaturesOfType[func];
+		console.log(brickSignature)
 		props.data.onBrickSubtypeSelected(brickSignature, props.data.brickTree, props.data.parentBrick, props.data.paramCode);
 		setNodeTypeSelectorVisible(false);
 	};
@@ -71,8 +73,8 @@ export default function AddBrickButton(props) {
 		};
 	});
 
-	const selectorOptions = Object.values(brickSignaturesOfType).map(sig => {
-		return { value: sig.func, label: sig.name };
+	const selectorOptions = Object.entries(brickSignaturesOfType).map(([name, sig]) => {
+		return { value: name, label: sig.name };
 	});
 	return (
 		<>
