@@ -1,9 +1,12 @@
+import { useState, useEffect } from 'react';
 import { ReactFlowProvider } from 'react-flow-renderer';
 import { BrickEditor } from './BrickEditor';
 import React from "react";
-import { bricks } from "./index"
+import { BrickLibrary } from '../../brickLib'
 
 export const ValueRender = (props) => {
+  const [ brickLib, setBrickLib ] = useState(new BrickLibrary())
+
   if (!props.onChange && !props.defaultValue) return <p>Empty</p>
 	return (
     <>
@@ -11,7 +14,7 @@ export const ValueRender = (props) => {
         <BrickEditor
           width = { 300 }
           height = { 200 }
-          brickLibrary = { bricks }
+          brickLibrary = { brickLib.bricks }
           brickTree = { props.defaultValue }
           type = { props.type }
           onChange = { props.onChange }

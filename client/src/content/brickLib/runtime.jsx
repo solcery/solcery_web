@@ -26,9 +26,9 @@ export const generic = {
 export class BrickRuntime {
   bricks = {};
   constructor(content) {
-    basicActions.forEach(brick => insertTable(this.bricks, brick, brick.type, brick.subtype))
-    basicConditions.forEach(brick => insertTable(this.bricks, brick, brick.type, brick.subtype))
-    basicValues.forEach(brick => insertTable(this.bricks, brick, brick.type, brick.subtype))
+    basicActions.forEach(brick => insertTable(this.bricks, brick, brick.lib, brick.func))
+    basicConditions.forEach(brick => insertTable(this.bricks, brick, brick.lib, brick.func))
+    basicValues.forEach(brick => insertTable(this.bricks, brick, brick.lib, brick.func))
     if (!content) return;
     for (let obj of Object.values(content.customBricks)) {
       let brick = {
@@ -59,7 +59,7 @@ export class BrickRuntime {
     for (let param of brick.params) {
       params[param.name] = param.value
     }
-    let func = this.bricks[brick.type][brick.subtype].exec
+    let func = this.bricks[brick.lib][brick.func].exec
     return func(this, params, ctx)
   }
 }

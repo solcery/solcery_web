@@ -42,7 +42,7 @@ export const BrickEditor = (props) => {
 	const addBrick = useCallback((brickSignature, bt, parentBrick, paramID) => {
 		if (!props.onChange || !active) return;
 		const brick = {
-			type: brickSignature.type,
+			lib: brickSignature.lib,
 			func: brickSignature.func,
 			params: {}
 		};
@@ -74,9 +74,9 @@ export const BrickEditor = (props) => {
 		if (!props.onChange || !active) return;
 
 		if (parentBrick) {
-			const brickSignature = props.brickLibrary[parentBrick.type][parentBrick.func];
+			const brickSignature = props.brickLibrary[parentBrick.lib][parentBrick.func];
 			const param = brickSignature.params.find(param => param.code === paramCode);
-			if (param.type.brickType === pastedBrickTree.type) {
+			if (param.type.brickType === pastedBrickTree.lib) {
 				parentBrick.params[paramCode] = pastedBrickTree;
 				onChange(JSON.parse(JSON.stringify(bt)))
 				notify({ message: "Pasted successfully", color: '#DDFFDD'})
@@ -166,7 +166,9 @@ export const BrickEditor = (props) => {
 		const processBrick = (brick, parentBrickID = null, parentBrick = null, paramCode = '') => {
 			const brickID = Number(++brickUniqueID).toString();
 			elements.push(...makeBrickWithEdgeElements(brickID, brick, brickTree, parentBrick, parentBrickID, paramCode));
-			let brickSignature = props.brickLibrary[brick.type][brick.func];
+			console.log(props.brickLibrary)
+			console.log(brick)
+			let brickSignature = props.brickLibrary[brick.lib][brick.func];
 			if (!brickSignature) {
 				return elements;
 			}

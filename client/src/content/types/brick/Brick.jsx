@@ -1,19 +1,17 @@
 import { useEffect } from 'react';
 import { Handle, Position } from 'react-flow-renderer';
-import { defaultBricksByType } from './index'
 import { notify } from "../../../components/notification";
 
 export default function Brick(props) {
 
 	const brick = props.data.brick;
-	let brickSignature = props.data.brickLibrary[brick.type][brick.func]
-	if (!brickSignature) {
-		brickSignature = defaultBricksByType[brick.type] // TODO
-	}
+	let brickSignature = props.data.brickLibrary[brick.lib][brick.func]
+	// if (!brickSignature) {
+	// 	brickSignature = defaultBricksByType[brick.func] // TODO
+	// }
 	let nestedParams = [];
 	let inlineParams = [];
 	brickSignature.params.forEach((param) => {
-
 		if (param.type.brickType) nestedParams.push(param); // TODO appropriate check
 		else inlineParams.push(param);
 	});
