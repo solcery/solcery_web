@@ -5,7 +5,6 @@ import Select from 'react-select';
 export default function AddBrickButton(props) {
 	const brickType = props.data.brickType; // TODO: type
 	const brickSignaturesOfType = props.data.brickLibrary[brickType];
-
 	const [ isNodeTypeSelectorVisible, setNodeTypeSelectorVisible ] = useState(false);
 
 	// stopPropagation() is used extensively below to correctly handle config selector hiding on any click outside of it
@@ -20,10 +19,8 @@ export default function AddBrickButton(props) {
 	};
 
 	const onBrickSubtypeSelected = (option) => {
-		console.log(option)
 		const func = option.value;
 		const brickSignature = brickSignaturesOfType[func];
-		console.log(brickSignature)
 		props.data.onBrickSubtypeSelected(brickSignature, props.data.brickTree, props.data.parentBrick, props.data.paramCode);
 		setNodeTypeSelectorVisible(false);
 	};
@@ -72,6 +69,7 @@ export default function AddBrickButton(props) {
 			window.removeEventListener('keyup', onKeyUp);
 		};
 	});
+
 
 	const selectorOptions = Object.entries(brickSignaturesOfType).map(([name, sig]) => {
 		return { value: name, label: sig.name };

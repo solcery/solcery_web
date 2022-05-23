@@ -46,9 +46,8 @@ export const BrickEditor = (props) => {
 			params: {}
 		};
 		brickSignature.params.forEach((param) => {
-			brick.params[param.code] = param.type.default;
+			brick.params[param.code] = param.value ?? param.type.default;
 		});
-
 		if (parentBrick) {
 			parentBrick.params[paramID] = brick;
 			onChange(JSON.parse(JSON.stringify(bt)))

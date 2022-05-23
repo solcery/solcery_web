@@ -1,29 +1,13 @@
 import { ReactFlowProvider } from 'react-flow-renderer';
 import { BrickEditor } from '../editor/BrickEditor';
 import React, { useState, useEffect } from "react";
-import { BrickLibrary } from "../../../brickLib";
+import { BrickLibrary, paramFromMapEntry } from "../../../brickLib";
 import { Select } from 'antd';
 import { SType } from '../../base';
 import { insertTable } from '../../../../utils';
+import { useBrickLibrary } from '../../../../contexts/brickLibrary';
 
 const { Option } = Select;
-
-function camelCase(str) {
-  return str.replace(/(?:^\w|[A-Z]|\b\w)/g, function(word, index)
-  {
-    return index == 0 ? word.toLowerCase() : word.toUpperCase();
-  }).replace(/\s+/g, '');
-}
-
-
-const paramFromMapEntry = (entry) => {
-  const brickTypes = [ 'action', 'condition', 'value' ];
-  return {
-    code: camelCase(entry.key),
-    name: entry.key,
-    type: SType.from(`SBrick<${brickTypes[entry.value]}>`),
-  }
-}
 
 const argFromParam = (param) => {
   return {
@@ -57,21 +41,8 @@ export const ValueRender = (props) => {
   const [ brickType, setBrickType ] = useState(props.defaultValue && props.defaultValue.brickType);
   const [ brickParams, setBrickParams ] = useState(props.defaultValue ? props.defaultValue.brickParams : []);
   const [ brickTree, setBrickTree ] = useState(props.defaultValue && props.defaultValue.brickTree);
-  const [ brickLibrary, setBrickLibrary ] = useState(new BrickLibrary())
+  const { brickLibrary } = useBrickLibrary();
   const [ brickLib, setBrickLib ] = useState(undefined)
-
-  // useEffect(() => {
-  //   SageAPI.template.getAllObjects('customBricks').then(res => {
-  //     setCustomBrickLib(res.filter(obj => obj.fields.brick && obj.fields.brick.brickTree).map(obj => {
-  //       return {
-  //         type: obj.fields.brick.brickTree.type,
-  //         func: `custom.${obj._id}`,
-  //         name: obj.fields.title,
-  //         params: obj.fields.brick.brickParams.map(entry => paramFromMapEntry(entry))
-  //       }
-  //     }))
-  //   })
-  // }, [])
 
   const onChange = (newValue) => {
     if (props.onChange) props.onChange(newValue);
@@ -83,8 +54,9 @@ export const ValueRender = (props) => {
 
   useEffect(() => {
     if (!brickLibrary) return;
+    console.log(brickLibrary);
     let bricks = {}
-    for (let [ libname, funcs ] of Object.entries(brickLibrary.bricks)) {
+    for (let [ libname, funcs ] of Object.entries(brickLibrary)) {
       bricks[libname] = Object.assign({}, funcs)
     }
     let params = brickParams.filter(entry => entry.key !== '').map(entry => paramFromMapEntry(entry));
