@@ -16843,9 +16843,9 @@
                         {
                           "name": "Action",
                           "value": {
-                            "name": "Action.[502] ~Move & Link Token to [PlaceId]",
+                            "name": "Action.[881] ~TECH Move & Link Token to [PlaceId]",
                             "type": 0,
-                            "subtype": 10502,
+                            "subtype": 10881,
                             "params": [
                               {
                                 "name": "Target Place",
@@ -16930,9 +16930,9 @@
                               {
                                 "name": "Action",
                                 "value": {
-                                  "name": "Action.[502] ~Move & Link Token to [PlaceId]",
+                                  "name": "Action.[881] ~TECH Move & Link Token to [PlaceId]",
                                   "type": 0,
-                                  "subtype": 10502,
+                                  "subtype": 10881,
                                   "params": [
                                     {
                                       "name": "Target Place",
@@ -17017,9 +17017,9 @@
                                     {
                                       "name": "Action",
                                       "value": {
-                                        "name": "Action.[502] ~Move & Link Token to [PlaceId]",
+                                        "name": "Action.[881] ~TECH Move & Link Token to [PlaceId]",
                                         "type": 0,
-                                        "subtype": 10502,
+                                        "subtype": 10881,
                                         "params": [
                                           {
                                             "name": "Target Place",
@@ -17104,9 +17104,9 @@
                                           {
                                             "name": "Action",
                                             "value": {
-                                              "name": "Action.[502] ~Move & Link Token to [PlaceId]",
+                                              "name": "Action.[881] ~TECH Move & Link Token to [PlaceId]",
                                               "type": 0,
-                                              "subtype": 10502,
+                                              "subtype": 10881,
                                               "params": [
                                                 {
                                                   "name": "Target Place",
@@ -17191,9 +17191,9 @@
                                                 {
                                                   "name": "Action",
                                                   "value": {
-                                                    "name": "Action.[502] ~Move & Link Token to [PlaceId]",
+                                                    "name": "Action.[881] ~TECH Move & Link Token to [PlaceId]",
                                                     "type": 0,
-                                                    "subtype": 10502,
+                                                    "subtype": 10881,
                                                     "params": [
                                                       {
                                                         "name": "Target Place",
@@ -17278,9 +17278,9 @@
                                                       {
                                                         "name": "Action",
                                                         "value": {
-                                                          "name": "Action.[502] ~Move & Link Token to [PlaceId]",
+                                                          "name": "Action.[881] ~TECH Move & Link Token to [PlaceId]",
                                                           "type": 0,
-                                                          "subtype": 10502,
+                                                          "subtype": 10881,
                                                           "params": [
                                                             {
                                                               "name": "Target Place",
@@ -17358,9 +17358,9 @@
                                                       {
                                                         "name": "Action",
                                                         "value": {
-                                                          "name": "Action.[502] ~Move & Link Token to [PlaceId]",
+                                                          "name": "Action.[881] ~TECH Move & Link Token to [PlaceId]",
                                                           "type": 0,
-                                                          "subtype": 10502,
+                                                          "subtype": 10881,
                                                           "params": [
                                                             {
                                                               "name": "Target Place",
@@ -21250,12 +21250,6 @@
         "id": 812
       },
       {
-        "name": "BG texture",
-        "enabled": true,
-        "picture": "https://i.ibb.co/W5FbwRh/wooden-texture.jpg",
-        "id": 821
-      },
-      {
         "name": "Confirm",
         "enabled": true,
         "description": "Showcase OK button",
@@ -22022,7 +22016,7 @@
       {
         "name": "MD - Eclipse",
         "enabled": true,
-        "cardType": 776,
+        "cardType": 785,
         "place": 1,
         "amount": 1,
         "preset": "tech demo",
@@ -22524,15 +22518,6 @@
         "id": 641
       },
       {
-        "name": "Tokens in Storage -- Shields",
-        "enabled": true,
-        "cardType": 223,
-        "place": 6,
-        "amount": 5,
-        "preset": "loogris layout",
-        "id": 655
-      },
-      {
         "name": "Msg - Victory",
         "enabled": true,
         "cardType": 676,
@@ -22569,15 +22554,6 @@
         "id": 690
       },
       {
-        "name": "BG",
-        "enabled": true,
-        "cardType": 821,
-        "place": 66,
-        "amount": 1,
-        "preset": "core",
-        "id": 822
-      },
-      {
         "name": "Button - Showcase OK",
         "enabled": true,
         "cardType": 861,
@@ -22585,6 +22561,24 @@
         "amount": 1,
         "preset": "core",
         "id": 866
+      },
+      {
+        "name": "Test Creature 1",
+        "enabled": true,
+        "cardType": 258,
+        "place": 22,
+        "amount": 1,
+        "preset": "test creatures",
+        "id": 879
+      },
+      {
+        "name": "MD -- Shield",
+        "enabled": true,
+        "cardType": 223,
+        "place": 1,
+        "amount": 1,
+        "preset": "tech demo",
+        "id": 882
       }
     ]
   },
@@ -41082,7 +41076,7 @@
                       "params": [
                         {
                           "name": "var_name",
-                          "value": "reactive_tokens"
+                          "value": "reactive_tokens_on_target"
                         },
                         {
                           "name": "value",
@@ -41212,66 +41206,76 @@
             {
               "name": "Action",
               "value": {
-                "name": "Action.Loop",
+                "name": "Action.Two actions",
                 "type": 0,
-                "subtype": 3,
+                "subtype": 1,
                 "params": [
                   {
-                    "name": "counter_var",
-                    "value": "slot_counter"
-                  },
-                  {
-                    "name": "iterations",
+                    "name": "action1",
                     "value": {
-                      "name": "Value.[515] ~Number of Tokens with [Cond] on [Card Id] ",
-                      "type": 2,
-                      "subtype": 10515,
+                      "name": "Action.Set variable",
+                      "type": 0,
+                      "subtype": 6,
                       "params": [
                         {
-                          "name": "Card Id",
-                          "value": {
-                            "name": "Value.Variable",
-                            "type": 2,
-                            "subtype": 1,
-                            "params": [
-                              {
-                                "name": "var_name",
-                                "value": "linked_card_id"
-                              }
-                            ]
-                          }
+                          "name": "var_name",
+                          "value": "reactive_tokens_linked"
                         },
                         {
-                          "name": "Cond",
+                          "name": "value",
                           "value": {
-                            "name": "Condition.Greater than",
-                            "type": 1,
-                            "subtype": 3,
+                            "name": "Value.[515] ~Number of Tokens with [Cond] on [Card Id] ",
+                            "type": 2,
+                            "subtype": 10515,
                             "params": [
                               {
-                                "name": "value1",
+                                "name": "Card Id",
                                 "value": {
-                                  "name": "Value.Attribute",
+                                  "name": "Value.Variable",
                                   "type": 2,
-                                  "subtype": 2,
+                                  "subtype": 1,
                                   "params": [
                                     {
-                                      "name": "attr_name",
-                                      "value": "reactive"
+                                      "name": "var_name",
+                                      "value": "linked_card_id"
                                     }
                                   ]
                                 }
                               },
                               {
-                                "name": "value2",
+                                "name": "Cond",
                                 "value": {
-                                  "name": "Value.Constant",
-                                  "type": 2,
-                                  "subtype": 0,
+                                  "name": "Condition.Greater than",
+                                  "type": 1,
+                                  "subtype": 3,
                                   "params": [
                                     {
-                                      "name": "value",
-                                      "value": 0
+                                      "name": "value1",
+                                      "value": {
+                                        "name": "Value.Attribute",
+                                        "type": 2,
+                                        "subtype": 2,
+                                        "params": [
+                                          {
+                                            "name": "attr_name",
+                                            "value": "reactive"
+                                          }
+                                        ]
+                                      }
+                                    },
+                                    {
+                                      "name": "value2",
+                                      "value": {
+                                        "name": "Value.Constant",
+                                        "type": 2,
+                                        "subtype": 0,
+                                        "params": [
+                                          {
+                                            "name": "value",
+                                            "value": 0
+                                          }
+                                        ]
+                                      }
                                     }
                                   ]
                                 }
@@ -41283,54 +41287,39 @@
                     }
                   },
                   {
-                    "name": "action",
+                    "name": "action2",
                     "value": {
-                      "name": "Action.Iterator",
+                      "name": "Action.Loop",
                       "type": 0,
-                      "subtype": 5,
+                      "subtype": 3,
                       "params": [
                         {
-                          "name": "condition",
+                          "name": "counter_var",
+                          "value": "slot_counter"
+                        },
+                        {
+                          "name": "iterations",
                           "value": {
-                            "name": "Condition.And",
-                            "type": 1,
-                            "subtype": 7,
+                            "name": "Value.Variable",
+                            "type": 2,
+                            "subtype": 1,
                             "params": [
                               {
-                                "name": "cond1",
-                                "value": {
-                                  "name": "Condition.[153] #006:Not equal",
-                                  "type": 1,
-                                  "subtype": 10153,
-                                  "params": [
-                                    {
-                                      "name": "Value 1",
-                                      "value": {
-                                        "name": "Value.Card Id",
-                                        "type": 2,
-                                        "subtype": 11,
-                                        "params": []
-                                      }
-                                    },
-                                    {
-                                      "name": "Value 2",
-                                      "value": {
-                                        "name": "Value.Variable",
-                                        "type": 2,
-                                        "subtype": 1,
-                                        "params": [
-                                          {
-                                            "name": "var_name",
-                                            "value": "token_id"
-                                          }
-                                        ]
-                                      }
-                                    }
-                                  ]
-                                }
-                              },
+                                "name": "var_name",
+                                "value": "reactive_tokens_linked"
+                              }
+                            ]
+                          }
+                        },
+                        {
+                          "name": "action",
+                          "value": {
+                            "name": "Action.Iterator",
+                            "type": 0,
+                            "subtype": 5,
+                            "params": [
                               {
-                                "name": "cond2",
+                                "name": "condition",
                                 "value": {
                                   "name": "Condition.And",
                                   "type": 1,
@@ -41339,82 +41328,29 @@
                                     {
                                       "name": "cond1",
                                       "value": {
-                                        "name": "Condition.And",
+                                        "name": "Condition.[153] #006:Not equal",
                                         "type": 1,
-                                        "subtype": 7,
+                                        "subtype": 10153,
                                         "params": [
                                           {
-                                            "name": "cond1",
+                                            "name": "Value 1",
                                             "value": {
-                                              "name": "Condition.Equal",
-                                              "type": 1,
-                                              "subtype": 2,
-                                              "params": [
-                                                {
-                                                  "name": "value1",
-                                                  "value": {
-                                                    "name": "Value.Attribute",
-                                                    "type": 2,
-                                                    "subtype": 2,
-                                                    "params": [
-                                                      {
-                                                        "name": "attr_name",
-                                                        "value": "linked_card_id"
-                                                      }
-                                                    ]
-                                                  }
-                                                },
-                                                {
-                                                  "name": "value2",
-                                                  "value": {
-                                                    "name": "Value.Variable",
-                                                    "type": 2,
-                                                    "subtype": 1,
-                                                    "params": [
-                                                      {
-                                                        "name": "var_name",
-                                                        "value": "target_card_id"
-                                                      }
-                                                    ]
-                                                  }
-                                                }
-                                              ]
+                                              "name": "Value.Card Id",
+                                              "type": 2,
+                                              "subtype": 11,
+                                              "params": []
                                             }
                                           },
                                           {
-                                            "name": "cond2",
+                                            "name": "Value 2",
                                             "value": {
-                                              "name": "Condition.Greater than",
-                                              "type": 1,
-                                              "subtype": 3,
+                                              "name": "Value.Variable",
+                                              "type": 2,
+                                              "subtype": 1,
                                               "params": [
                                                 {
-                                                  "name": "value1",
-                                                  "value": {
-                                                    "name": "Value.Attribute",
-                                                    "type": 2,
-                                                    "subtype": 2,
-                                                    "params": [
-                                                      {
-                                                        "name": "attr_name",
-                                                        "value": "reactive"
-                                                      }
-                                                    ]
-                                                  }
-                                                },
-                                                {
-                                                  "name": "value2",
-                                                  "value": {
-                                                    "name": "Value.Constant",
-                                                    "type": 2,
-                                                    "subtype": 0,
-                                                    "params": [
-                                                      {
-                                                        "name": "value",
-                                                        "value": 0
-                                                      }
-                                                    ]
-                                                  }
+                                                  "name": "var_name",
+                                                  "value": "token_id"
                                                 }
                                               ]
                                             }
@@ -41432,33 +41368,33 @@
                                           {
                                             "name": "cond1",
                                             "value": {
-                                              "name": "Condition.Equal",
+                                              "name": "Condition.And",
                                               "type": 1,
-                                              "subtype": 2,
+                                              "subtype": 7,
                                               "params": [
                                                 {
-                                                  "name": "value1",
+                                                  "name": "cond1",
                                                   "value": {
-                                                    "name": "Value.Attribute",
-                                                    "type": 2,
+                                                    "name": "Condition.Equal",
+                                                    "type": 1,
                                                     "subtype": 2,
                                                     "params": [
                                                       {
-                                                        "name": "attr_name",
-                                                        "value": "slot"
-                                                      }
-                                                    ]
-                                                  }
-                                                },
-                                                {
-                                                  "name": "value2",
-                                                  "value": {
-                                                    "name": "Value.Addition",
-                                                    "type": 2,
-                                                    "subtype": 5,
-                                                    "params": [
-                                                      {
                                                         "name": "value1",
+                                                        "value": {
+                                                          "name": "Value.Attribute",
+                                                          "type": 2,
+                                                          "subtype": 2,
+                                                          "params": [
+                                                            {
+                                                              "name": "attr_name",
+                                                              "value": "linked_card_id"
+                                                            }
+                                                          ]
+                                                        }
+                                                      },
+                                                      {
+                                                        "name": "value2",
                                                         "value": {
                                                           "name": "Value.Variable",
                                                           "type": 2,
@@ -41466,7 +41402,31 @@
                                                           "params": [
                                                             {
                                                               "name": "var_name",
-                                                              "value": "slot_counter"
+                                                              "value": "target_card_id"
+                                                            }
+                                                          ]
+                                                        }
+                                                      }
+                                                    ]
+                                                  }
+                                                },
+                                                {
+                                                  "name": "cond2",
+                                                  "value": {
+                                                    "name": "Condition.Greater than",
+                                                    "type": 1,
+                                                    "subtype": 3,
+                                                    "params": [
+                                                      {
+                                                        "name": "value1",
+                                                        "value": {
+                                                          "name": "Value.Attribute",
+                                                          "type": 2,
+                                                          "subtype": 2,
+                                                          "params": [
+                                                            {
+                                                              "name": "attr_name",
+                                                              "value": "reactive"
                                                             }
                                                           ]
                                                         }
@@ -41480,7 +41440,7 @@
                                                           "params": [
                                                             {
                                                               "name": "value",
-                                                              "value": 1
+                                                              "value": 0
                                                             }
                                                           ]
                                                         }
@@ -41494,34 +41454,106 @@
                                           {
                                             "name": "cond2",
                                             "value": {
-                                              "name": "Condition.[151] #004:Lesser or equal",
+                                              "name": "Condition.And",
                                               "type": 1,
-                                              "subtype": 10151,
+                                              "subtype": 7,
                                               "params": [
                                                 {
-                                                  "name": "Value 1",
+                                                  "name": "cond1",
                                                   "value": {
-                                                    "name": "Value.Variable",
-                                                    "type": 2,
-                                                    "subtype": 1,
+                                                    "name": "Condition.Equal",
+                                                    "type": 1,
+                                                    "subtype": 2,
                                                     "params": [
                                                       {
-                                                        "name": "var_name",
-                                                        "value": "token_destroyed"
+                                                        "name": "value1",
+                                                        "value": {
+                                                          "name": "Value.Attribute",
+                                                          "type": 2,
+                                                          "subtype": 2,
+                                                          "params": [
+                                                            {
+                                                              "name": "attr_name",
+                                                              "value": "slot"
+                                                            }
+                                                          ]
+                                                        }
+                                                      },
+                                                      {
+                                                        "name": "value2",
+                                                        "value": {
+                                                          "name": "Value.Addition",
+                                                          "type": 2,
+                                                          "subtype": 5,
+                                                          "params": [
+                                                            {
+                                                              "name": "value1",
+                                                              "value": {
+                                                                "name": "Value.Variable",
+                                                                "type": 2,
+                                                                "subtype": 1,
+                                                                "params": [
+                                                                  {
+                                                                    "name": "var_name",
+                                                                    "value": "slot_counter"
+                                                                  }
+                                                                ]
+                                                              }
+                                                            },
+                                                            {
+                                                              "name": "value2",
+                                                              "value": {
+                                                                "name": "Value.Constant",
+                                                                "type": 2,
+                                                                "subtype": 0,
+                                                                "params": [
+                                                                  {
+                                                                    "name": "value",
+                                                                    "value": 1
+                                                                  }
+                                                                ]
+                                                              }
+                                                            }
+                                                          ]
+                                                        }
                                                       }
                                                     ]
                                                   }
                                                 },
                                                 {
-                                                  "name": "Value 2",
+                                                  "name": "cond2",
                                                   "value": {
-                                                    "name": "Value.Constant",
-                                                    "type": 2,
-                                                    "subtype": 0,
+                                                    "name": "Condition.[151] #004:Lesser or equal",
+                                                    "type": 1,
+                                                    "subtype": 10151,
                                                     "params": [
                                                       {
-                                                        "name": "value",
-                                                        "value": 0
+                                                        "name": "Value 1",
+                                                        "value": {
+                                                          "name": "Value.Variable",
+                                                          "type": 2,
+                                                          "subtype": 1,
+                                                          "params": [
+                                                            {
+                                                              "name": "var_name",
+                                                              "value": "token_destroyed"
+                                                            }
+                                                          ]
+                                                        }
+                                                      },
+                                                      {
+                                                        "name": "Value 2",
+                                                        "value": {
+                                                          "name": "Value.Constant",
+                                                          "type": 2,
+                                                          "subtype": 0,
+                                                          "params": [
+                                                            {
+                                                              "name": "value",
+                                                              "value": 0
+                                                            }
+                                                          ]
+                                                        }
                                                       }
                                                     ]
                                                   }
@@ -41534,29 +41566,29 @@
                                     }
                                   ]
                                 }
-                              }
-                            ]
-                          }
-                        },
-                        {
-                          "name": "action",
-                          "value": {
-                            "name": "Action.[498] Trigger event 'Token Added' + build context",
-                            "type": 0,
-                            "subtype": 10498,
-                            "params": []
-                          }
-                        },
-                        {
-                          "name": "limit",
-                          "value": {
-                            "name": "Value.Constant",
-                            "type": 2,
-                            "subtype": 0,
-                            "params": [
+                              },
                               {
-                                "name": "value",
-                                "value": 1
+                                "name": "action",
+                                "value": {
+                                  "name": "Action.[498] Trigger event 'Token Added' + build context",
+                                  "type": 0,
+                                  "subtype": 10498,
+                                  "params": []
+                                }
+                              },
+                              {
+                                "name": "limit",
+                                "value": {
+                                  "name": "Value.Constant",
+                                  "type": 2,
+                                  "subtype": 0,
+                                  "params": [
+                                    {
+                                      "name": "value",
+                                      "value": 1
+                                    }
+                                  ]
+                                }
                               }
                             ]
                           }
@@ -44583,6 +44615,709 @@
           ]
         },
         "id": 877
+      },
+      {
+        "name": "~TECH Move & Link Token to [PlaceId]",
+        "enabled": true,
+        "brick": {
+          "name": "Action.If-Then-Else",
+          "type": 0,
+          "subtype": 2,
+          "params": [
+            {
+              "name": "if",
+              "value": {
+                "name": "Condition.Or",
+                "type": 1,
+                "subtype": 6,
+                "params": [
+                  {
+                    "name": "cond1",
+                    "value": {
+                      "name": "Condition.Greater than",
+                      "type": 1,
+                      "subtype": 3,
+                      "params": [
+                        {
+                          "name": "value1",
+                          "value": {
+                            "name": "Value.Sum Iterator",
+                            "type": 2,
+                            "subtype": 14,
+                            "params": [
+                              {
+                                "name": "iter_condition",
+                                "value": {
+                                  "name": "Condition.And",
+                                  "type": 1,
+                                  "subtype": 7,
+                                  "params": [
+                                    {
+                                      "name": "cond1",
+                                      "value": {
+                                        "name": "Condition.[155] #008:Is in place [X]",
+                                        "type": 1,
+                                        "subtype": 10155,
+                                        "params": [
+                                          {
+                                            "name": "Place Id",
+                                            "value": {
+                                              "name": "Value.Argument",
+                                              "type": 2,
+                                              "subtype": 3,
+                                              "params": [
+                                                {
+                                                  "name": "name",
+                                                  "value": "Target Place"
+                                                }
+                                              ]
+                                            }
+                                          }
+                                        ]
+                                      }
+                                    },
+                                    {
+                                      "name": "cond2",
+                                      "value": {
+                                        "name": "Condition.[343] Can Receive Tokens",
+                                        "type": 1,
+                                        "subtype": 10343,
+                                        "params": []
+                                      }
+                                    }
+                                  ]
+                                }
+                              },
+                              {
+                                "name": "target_value",
+                                "value": {
+                                  "name": "Value.Constant",
+                                  "type": 2,
+                                  "subtype": 0,
+                                  "params": [
+                                    {
+                                      "name": "value",
+                                      "value": 1
+                                    }
+                                  ]
+                                }
+                              },
+                              {
+                                "name": "limit",
+                                "value": {
+                                  "name": "Value.Constant",
+                                  "type": 2,
+                                  "subtype": 0,
+                                  "params": [
+                                    {
+                                      "name": "value",
+                                      "value": 1
+                                    }
+                                  ]
+                                }
+                              }
+                            ]
+                          }
+                        },
+                        {
+                          "name": "value2",
+                          "value": {
+                            "name": "Value.Constant",
+                            "type": 2,
+                            "subtype": 0,
+                            "params": [
+                              {
+                                "name": "value",
+                                "value": 0
+                              }
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "name": "cond2",
+                    "value": {
+                      "name": "Condition.Equal",
+                      "type": 1,
+                      "subtype": 2,
+                      "params": [
+                        {
+                          "name": "value1",
+                          "value": {
+                            "name": "Value.Argument",
+                            "type": 2,
+                            "subtype": 3,
+                            "params": [
+                              {
+                                "name": "name",
+                                "value": "Target Place"
+                              }
+                            ]
+                          }
+                        },
+                        {
+                          "name": "value2",
+                          "value": {
+                            "name": "Value.[168] Place 06. Token Storage",
+                            "type": 2,
+                            "subtype": 10168,
+                            "params": []
+                          }
+                        }
+                      ]
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "name": "then",
+              "value": {
+                "name": "Action.Two actions",
+                "type": 0,
+                "subtype": 1,
+                "params": [
+                  {
+                    "name": "action1",
+                    "value": {
+                      "name": "Action.Two actions",
+                      "type": 0,
+                      "subtype": 1,
+                      "params": [
+                        {
+                          "name": "action1",
+                          "value": {
+                            "name": "Action.Set variable",
+                            "type": 0,
+                            "subtype": 6,
+                            "params": [
+                              {
+                                "name": "var_name",
+                                "value": "target_card_id"
+                              },
+                              {
+                                "name": "value",
+                                "value": {
+                                  "name": "Value.Constant",
+                                  "type": 2,
+                                  "subtype": 0,
+                                  "params": [
+                                    {
+                                      "name": "value",
+                                      "value": 0
+                                    }
+                                  ]
+                                }
+                              }
+                            ]
+                          }
+                        },
+                        {
+                          "name": "action2",
+                          "value": {
+                            "name": "Action.Set variable",
+                            "type": 0,
+                            "subtype": 6,
+                            "params": [
+                              {
+                                "name": "var_name",
+                                "value": "token_id"
+                              },
+                              {
+                                "name": "value",
+                                "value": {
+                                  "name": "Value.Card Id",
+                                  "type": 2,
+                                  "subtype": 11,
+                                  "params": []
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "name": "action2",
+                    "value": {
+                      "name": "Action.Two actions",
+                      "type": 0,
+                      "subtype": 1,
+                      "params": [
+                        {
+                          "name": "action1",
+                          "value": {
+                            "name": "Action.Iterator",
+                            "type": 0,
+                            "subtype": 5,
+                            "params": [
+                              {
+                                "name": "condition",
+                                "value": {
+                                  "name": "Condition.And",
+                                  "type": 1,
+                                  "subtype": 7,
+                                  "params": [
+                                    {
+                                      "name": "cond1",
+                                      "value": {
+                                        "name": "Condition.[155] #008:Is in place [X]",
+                                        "type": 1,
+                                        "subtype": 10155,
+                                        "params": [
+                                          {
+                                            "name": "Place Id",
+                                            "value": {
+                                              "name": "Value.Argument",
+                                              "type": 2,
+                                              "subtype": 3,
+                                              "params": [
+                                                {
+                                                  "name": "name",
+                                                  "value": "Target Place"
+                                                }
+                                              ]
+                                            }
+                                          }
+                                        ]
+                                      }
+                                    },
+                                    {
+                                      "name": "cond2",
+                                      "value": {
+                                        "name": "Condition.[343] Can Receive Tokens",
+                                        "type": 1,
+                                        "subtype": 10343,
+                                        "params": []
+                                      }
+                                    }
+                                  ]
+                                }
+                              },
+                              {
+                                "name": "action",
+                                "value": {
+                                  "name": "Action.Set variable",
+                                  "type": 0,
+                                  "subtype": 6,
+                                  "params": [
+                                    {
+                                      "name": "var_name",
+                                      "value": "target_card_id"
+                                    },
+                                    {
+                                      "name": "value",
+                                      "value": {
+                                        "name": "Value.Card Id",
+                                        "type": 2,
+                                        "subtype": 11,
+                                        "params": []
+                                      }
+                                    }
+                                  ]
+                                }
+                              },
+                              {
+                                "name": "limit",
+                                "value": {
+                                  "name": "Value.Constant",
+                                  "type": 2,
+                                  "subtype": 0,
+                                  "params": [
+                                    {
+                                      "name": "value",
+                                      "value": 1
+                                    }
+                                  ]
+                                }
+                              }
+                            ]
+                          }
+                        },
+                        {
+                          "name": "action2",
+                          "value": {
+                            "name": "Action.Two actions",
+                            "type": 0,
+                            "subtype": 1,
+                            "params": [
+                              {
+                                "name": "action1",
+                                "value": {
+                                  "name": "Action.[568] ~Show Token Fly Animation",
+                                  "type": 0,
+                                  "subtype": 10568,
+                                  "params": []
+                                }
+                              },
+                              {
+                                "name": "action2",
+                                "value": {
+                                  "name": "Action.Two actions",
+                                  "type": 0,
+                                  "subtype": 1,
+                                  "params": [
+                                    {
+                                      "name": "action1",
+                                      "value": {
+                                        "name": "Action.Set attribute",
+                                        "type": 0,
+                                        "subtype": 7,
+                                        "params": [
+                                          {
+                                            "name": "attr_name",
+                                            "value": "place"
+                                          },
+                                          {
+                                            "name": "value",
+                                            "value": {
+                                              "name": "Value.Argument",
+                                              "type": 2,
+                                              "subtype": 3,
+                                              "params": [
+                                                {
+                                                  "name": "name",
+                                                  "value": "Target Place"
+                                                }
+                                              ]
+                                            }
+                                          }
+                                        ]
+                                      }
+                                    },
+                                    {
+                                      "name": "action2",
+                                      "value": {
+                                        "name": "Action.If-Then-Else",
+                                        "type": 0,
+                                        "subtype": 2,
+                                        "params": [
+                                          {
+                                            "name": "if",
+                                            "value": {
+                                              "name": "Condition.Greater than",
+                                              "type": 1,
+                                              "subtype": 3,
+                                              "params": [
+                                                {
+                                                  "name": "value1",
+                                                  "value": {
+                                                    "name": "Value.Variable",
+                                                    "type": 2,
+                                                    "subtype": 1,
+                                                    "params": [
+                                                      {
+                                                        "name": "var_name",
+                                                        "value": "target_card_id"
+                                                      }
+                                                    ]
+                                                  }
+                                                },
+                                                {
+                                                  "name": "value2",
+                                                  "value": {
+                                                    "name": "Value.Constant",
+                                                    "type": 2,
+                                                    "subtype": 0,
+                                                    "params": [
+                                                      {
+                                                        "name": "value",
+                                                        "value": 0
+                                                      }
+                                                    ]
+                                                  }
+                                                }
+                                              ]
+                                            }
+                                          },
+                                          {
+                                            "name": "then",
+                                            "value": {
+                                              "name": "Action.Two actions",
+                                              "type": 0,
+                                              "subtype": 1,
+                                              "params": [
+                                                {
+                                                  "name": "action1",
+                                                  "value": {
+                                                    "name": "Action.[504] ~Link Token to [Card Id]",
+                                                    "type": 0,
+                                                    "subtype": 10504,
+                                                    "params": [
+                                                      {
+                                                        "name": "Card Id",
+                                                        "value": {
+                                                          "name": "Value.Variable",
+                                                          "type": 2,
+                                                          "subtype": 1,
+                                                          "params": [
+                                                            {
+                                                              "name": "var_name",
+                                                              "value": "target_card_id"
+                                                            }
+                                                          ]
+                                                        }
+                                                      }
+                                                    ]
+                                                  }
+                                                },
+                                                {
+                                                  "name": "action2",
+                                                  "value": {
+                                                    "name": "Action.Two actions",
+                                                    "type": 0,
+                                                    "subtype": 1,
+                                                    "params": [
+                                                      {
+                                                        "name": "action1",
+                                                        "value": {
+                                                          "name": "Action.Set attribute",
+                                                          "type": 0,
+                                                          "subtype": 7,
+                                                          "params": [
+                                                            {
+                                                              "name": "attr_name",
+                                                              "value": "anim_token_fly"
+                                                            },
+                                                            {
+                                                              "name": "value",
+                                                              "value": {
+                                                                "name": "Value.Constant",
+                                                                "type": 2,
+                                                                "subtype": 0,
+                                                                "params": [
+                                                                  {
+                                                                    "name": "value",
+                                                                    "value": 0
+                                                                  }
+                                                                ]
+                                                              }
+                                                            }
+                                                          ]
+                                                        }
+                                                      },
+                                                      {
+                                                        "name": "action2",
+                                                        "value": {
+                                                          "name": "Action.[145] #002:If-then",
+                                                          "type": 0,
+                                                          "subtype": 10145,
+                                                          "params": [
+                                                            {
+                                                              "name": "Condition",
+                                                              "value": {
+                                                                "name": "Condition.Greater than",
+                                                                "type": 1,
+                                                                "subtype": 3,
+                                                                "params": [
+                                                                  {
+                                                                    "name": "value1",
+                                                                    "value": {
+                                                                      "name": "Value.Attribute",
+                                                                      "type": 2,
+                                                                      "subtype": 2,
+                                                                      "params": [
+                                                                        {
+                                                                          "name": "attr_name",
+                                                                          "value": "to_destroy"
+                                                                        }
+                                                                      ]
+                                                                    }
+                                                                  },
+                                                                  {
+                                                                    "name": "value2",
+                                                                    "value": {
+                                                                      "name": "Value.Constant",
+                                                                      "type": 2,
+                                                                      "subtype": 0,
+                                                                      "params": [
+                                                                        {
+                                                                          "name": "value",
+                                                                          "value": 0
+                                                                        }
+                                                                      ]
+                                                                    }
+                                                                  }
+                                                                ]
+                                                              }
+                                                            },
+                                                            {
+                                                              "name": "Action",
+                                                              "value": {
+                                                                "name": "Action.[557] Remove Tokens and shift others",
+                                                                "type": 0,
+                                                                "subtype": 10557,
+                                                                "params": []
+                                                              }
+                                                            }
+                                                          ]
+                                                        }
+                                                      }
+                                                    ]
+                                                  }
+                                                }
+                                              ]
+                                            }
+                                          },
+                                          {
+                                            "name": "else",
+                                            "value": {
+                                              "name": "Action.Two actions",
+                                              "type": 0,
+                                              "subtype": 1,
+                                              "params": [
+                                                {
+                                                  "name": "action1",
+                                                  "value": {
+                                                    "name": "Action.[504] ~Link Token to [Card Id]",
+                                                    "type": 0,
+                                                    "subtype": 10504,
+                                                    "params": [
+                                                      {
+                                                        "name": "Card Id",
+                                                        "value": {
+                                                          "name": "Value.Variable",
+                                                          "type": 2,
+                                                          "subtype": 1,
+                                                          "params": [
+                                                            {
+                                                              "name": "var_name",
+                                                              "value": "token_id"
+                                                            }
+                                                          ]
+                                                        }
+                                                      }
+                                                    ]
+                                                  }
+                                                },
+                                                {
+                                                  "name": "action2",
+                                                  "value": {
+                                                    "name": "Action.Two actions",
+                                                    "type": 0,
+                                                    "subtype": 1,
+                                                    "params": [
+                                                      {
+                                                        "name": "action1",
+                                                        "value": {
+                                                          "name": "Action.Set attribute",
+                                                          "type": 0,
+                                                          "subtype": 7,
+                                                          "params": [
+                                                            {
+                                                              "name": "attr_name",
+                                                              "value": "anim_token_fly"
+                                                            },
+                                                            {
+                                                              "name": "value",
+                                                              "value": {
+                                                                "name": "Value.Constant",
+                                                                "type": 2,
+                                                                "subtype": 0,
+                                                                "params": [
+                                                                  {
+                                                                    "name": "value",
+                                                                    "value": 0
+                                                                  }
+                                                                ]
+                                                              }
+                                                            }
+                                                          ]
+                                                        }
+                                                      },
+                                                      {
+                                                        "name": "action2",
+                                                        "value": {
+                                                          "name": "Action.[145] #002:If-then",
+                                                          "type": 0,
+                                                          "subtype": 10145,
+                                                          "params": [
+                                                            {
+                                                              "name": "Condition",
+                                                              "value": {
+                                                                "name": "Condition.Greater than",
+                                                                "type": 1,
+                                                                "subtype": 3,
+                                                                "params": [
+                                                                  {
+                                                                    "name": "value1",
+                                                                    "value": {
+                                                                      "name": "Value.Attribute",
+                                                                      "type": 2,
+                                                                      "subtype": 2,
+                                                                      "params": [
+                                                                        {
+                                                                          "name": "attr_name",
+                                                                          "value": "to_destroy"
+                                                                        }
+                                                                      ]
+                                                                    }
+                                                                  },
+                                                                  {
+                                                                    "name": "value2",
+                                                                    "value": {
+                                                                      "name": "Value.Constant",
+                                                                      "type": 2,
+                                                                      "subtype": 0,
+                                                                      "params": [
+                                                                        {
+                                                                          "name": "value",
+                                                                          "value": 0
+                                                                        }
+                                                                      ]
+                                                                    }
+                                                                  }
+                                                                ]
+                                                              }
+                                                            },
+                                                            {
+                                                              "name": "Action",
+                                                              "value": {
+                                                                "name": "Action.[557] Remove Tokens and shift others",
+                                                                "type": 0,
+                                                                "subtype": 10557,
+                                                                "params": []
+                                                              }
+                                                            }
+                                                          ]
+                                                        }
+                                                      }
+                                                    ]
+                                                  }
+                                                }
+                                              ]
+                                            }
+                                          }
+                                        ]
+                                      }
+                                    }
+                                  ]
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "name": "else",
+              "value": {
+                "name": "Action.[556] Delete Token",
+                "type": 0,
+                "subtype": 10556,
+                "params": []
+              }
+            }
+          ]
+        },
+        "id": 881
       },
       {
         "name": "#001:True",

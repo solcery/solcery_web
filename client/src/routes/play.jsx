@@ -31,6 +31,8 @@ export default function Play() {
 				value: state,
 			}
 		})
+		console.log('Sending states to unity client');
+		console.log(JSON.stringify(states));
 		if (send) clientCommand('UpdateGameState', { states });
 	}
 
@@ -65,7 +67,6 @@ export default function Play() {
 	unityPlayContext.on("OnUnityLoaded", async () => {
 		let content = gameSession.content.client
 		clientCommand("UpdateGameContent", content)
-		console.log(gameSession)
 		sendDiffLog(gameSession.game.diffLog)
 	});
 
