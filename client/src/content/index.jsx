@@ -1,3 +1,3 @@
 export * from './types';
 export * from './template';
-export * from './bricks';
+export * from './brickLib';
