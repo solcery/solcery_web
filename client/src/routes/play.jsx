@@ -12,7 +12,6 @@ const unityPlayContext = new UnityContext({
 })
 
 export default function Play() {
-
 	const [ gameSession, setGameSession ] = useState(new Session(gameContent, [ 1 ]))
 
 	const sendDiffLog = (diffLog, send = true) => {
