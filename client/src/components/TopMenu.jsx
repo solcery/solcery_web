@@ -1,6 +1,7 @@
-import { Menu } from "antd"
-import React, { useEffect, useState } from "react"
-import { SageAPI } from '../api'
+import { Menu } from "antd";
+import React, { useEffect, useState } from "react";
+
+import { SageAPI } from '../api';
 
 export const TopMenu = () => {
 	const [ templates, setTemplates ] = useState([]);
@@ -9,8 +10,7 @@ export const TopMenu = () => {
 		SageAPI.project.getAllTemplates().then(setTemplates)
 	}, []);
 
-	return (
-		<>
+	return (<>
 		<Menu mode="horizontal">
 			<Menu.Item key='project'>
 				<a href='project'>project</a>
@@ -24,5 +24,5 @@ export const TopMenu = () => {
 			</Menu.Item>
 			)}
 		</Menu>
-		</>);
+	</>);
 };

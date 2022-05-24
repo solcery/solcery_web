@@ -1,11 +1,11 @@
-import React, { useContext, useState, useEffect, useMemo } from "react";
+import React, { useContext, useMemo } from "react";
 import { BrickLibrary, paramFromMapEntry } from '../content/brickLib';
 import { SageAPI } from '../api'
 
 const BrickLibraryContext = React.createContext(undefined);
 
 export function BrickLibraryProvider(props) {
-	const [ revision, setRevision ] = useState(0);
+	// const [ revision ] = useState(0);
 	// const [ brickLibrary, setBrickLibrary ] = useState(undefined);
 
 	const brickLibrary = useMemo(() => {
@@ -24,7 +24,7 @@ export function BrickLibraryProvider(props) {
 	   		}
 	    })
 	  return bl.bricks;
-	}, [ revision ])
+	}, [])
 
 	// useEffect(() => {
 	// 	console.log('NEW BRICK LIBRARY CONTEXT');

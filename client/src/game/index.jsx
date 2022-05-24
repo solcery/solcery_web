@@ -1,4 +1,3 @@
-import gameContent from './game_content.json';
 import { BrickRuntime } from '../content/brickLib';
 
 const convertContent = (content) => {
@@ -41,10 +40,10 @@ export class Session {
 
   handlePlayerCommand = (command) => {
     this.log.push(command)
-    if (command.command_data_type == 0) {
+    if (command.command_data_type === 0) {
       return this.game.useCard(command.object_id)
     }
-    if (command.command_data_type == 2) {
+    if (command.command_data_type === 2) {
       return this.game.dropCard(command.object_id, command.drag_drop_id, command.target_place_id)
     }
   }

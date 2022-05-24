@@ -1,4 +1,3 @@
-import Reac from 'react'
 import { Button } from 'antd';
 import { Template } from '../content/template';
 import { SageAPI } from '../api';

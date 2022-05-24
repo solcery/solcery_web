@@ -6,7 +6,7 @@ import { SageAPI } from '../api'
 
 const { Column } = Table;
 
-export default function TemplateCollection() {
+export default function CollectionEditor() {
 
 	let navigate = useNavigate();
 	let { templateCode } = useParams();

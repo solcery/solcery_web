@@ -1,7 +1,7 @@
 import { ReactFlowProvider } from 'react-flow-renderer';
 import { BrickEditor } from './editor/BrickEditor';
 import React, { useState, useEffect } from "react";
-import { BrickLibrary, paramFromMapEntry } from "../../brickLib";
+import { paramFromMapEntry } from "../../brickLib";
 import { Select } from 'antd';
 import { SType } from '../base';
 import { insertTable } from '../../../utils';
@@ -64,7 +64,7 @@ export const ValueRender = (props) => {
       })
     }
     setBrickLib(bricks)
-  }, [ brickParams, brickLibrary ])
+  }, [ brickParams, brickLibrary, props.type.params ])
 
   if (!brickLibrary) return <p>Loading</p>;
   if (!brickLib) return <p>Loading</p>;

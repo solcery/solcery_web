@@ -5,8 +5,8 @@ import { BrickLibraryProvider } from './contexts/brickLibrary';
 import './App.less';
 import './App.css';
 
-import TemplateObject from "./apps/templateObject";
-import TemplateCollection from "./apps/templateCollection";
+import ObjectEditor from "./apps/objectEditor";
+import CollectionEditor from "./apps/collectionEditor";
 import Play from "./apps/play";
 import Project from "./apps/project";
 
@@ -18,8 +18,8 @@ export default function App() {
 			<BrickLibraryProvider>
 				<BrowserRouter>
 					<Routes>
-						<Route path="template.:templateCode.:objectId" element={<TemplateObject />} />
-						<Route path="template.:templateCode" element={<TemplateCollection />} />
+						<Route path="template.:templateCode.:objectId" element={<ObjectEditor />} />
+						<Route path="template.:templateCode" element={<CollectionEditor />} />
 						<Route path="play" element={<Play />} />
 						<Route path="project" element={<Project />} />
 					</Routes>
