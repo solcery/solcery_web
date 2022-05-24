@@ -3,6 +3,11 @@ const CracoLessPlugin = require("craco-less");
 module.exports = {
   plugins: [
     {
+      add: [
+        new webpack.DefinePlugin({
+          process: {env: {}}
+        })
+      ],
       plugin: CracoLessPlugin,
       options: {
         lessLoaderOptions: {
