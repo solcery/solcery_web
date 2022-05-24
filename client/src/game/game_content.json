@@ -3607,36 +3607,55 @@
                               {
                                 "name": "if",
                                 "value": {
-                                  "name": "Condition.Greater than",
+                                  "name": "Condition.And",
                                   "type": 1,
-                                  "subtype": 3,
+                                  "subtype": 7,
                                   "params": [
                                     {
-                                      "name": "value1",
+                                      "name": "cond1",
                                       "value": {
-                                        "name": "Value.Variable",
-                                        "type": 2,
-                                        "subtype": 1,
+                                        "name": "Condition.Greater than",
+                                        "type": 1,
+                                        "subtype": 3,
                                         "params": [
                                           {
-                                            "name": "var_name",
-                                            "value": "neighbor_last_token_slot"
+                                            "name": "value1",
+                                            "value": {
+                                              "name": "Value.Variable",
+                                              "type": 2,
+                                              "subtype": 1,
+                                              "params": [
+                                                {
+                                                  "name": "var_name",
+                                                  "value": "neighbor_last_token_slot"
+                                                }
+                                              ]
+                                            }
+                                          },
+                                          {
+                                            "name": "value2",
+                                            "value": {
+                                              "name": "Value.Constant",
+                                              "type": 2,
+                                              "subtype": 0,
+                                              "params": [
+                                                {
+                                                  "name": "value",
+                                                  "value": 0
+                                                }
+                                              ]
+                                            }
                                           }
                                         ]
                                       }
                                     },
                                     {
-                                      "name": "value2",
+                                      "name": "cond2",
                                       "value": {
-                                        "name": "Value.Constant",
-                                        "type": 2,
-                                        "subtype": 0,
-                                        "params": [
-                                          {
-                                            "name": "value",
-                                            "value": 0
-                                          }
-                                        ]
+                                        "name": "Condition.[192] Has right neighbour",
+                                        "type": 1,
+                                        "subtype": 10192,
+                                        "params": []
                                       }
                                     }
                                   ]
@@ -11498,7 +11517,7 @@
       {
         "name": "Watchtower*",
         "enabled": true,
-        "description": "<link=\"719\"><b>Produce</b></link>s <link=\"715\"><sprite index=8></link>s. 1 <link=\"718\"><sprite index=9></link> per Creature w/o <link=\"716\"><b>Neighbor</b></link>s",
+        "description": "<link=\"719\"><b>Produce</b></link>s <link=\"715\"><sprite index=8></link>. 1 <link=\"718\"><sprite index=9></link> per Creature w/o <link=\"716\"><b>Neighbor</b></link>s",
         "picture": "https://i.ibb.co/37G6Sqy/1-89-Tower.jpg",
         "type": 4,
         "action_on_create": {
@@ -11696,7 +11715,7 @@
       {
         "name": "Barracks*",
         "enabled": true,
-        "description": "<link=\"719\"><b>Produce</b></link>s <link=\"715\"><sprite index=8></link>s. 1 <link=\"718\"><sprite index=9></link> per Creature in <link=\"717\"><b>Innermost</b></link> slots",
+        "description": "<link=\"719\"><b>Produce</b></link>s <link=\"715\"><sprite index=8></link>. 1 <link=\"718\"><sprite index=9></link> per Creature in <link=\"717\"><b>Innermost</b></link> slots",
         "picture": "https://i.ibb.co/JvvmmV2/1-6-Barracks.jpg",
         "type": 4,
         "action_on_create": {
@@ -19603,47 +19622,85 @@
                         {
                           "name": "Action",
                           "value": {
-                            "name": "Action.[563] ~Create a Token [Tpl Id] on Card in [Place Id] & [DO]",
+                            "name": "Action.Two actions",
                             "type": 0,
-                            "subtype": 10563,
+                            "subtype": 1,
                             "params": [
                               {
-                                "name": "Target place",
+                                "name": "action1",
                                 "value": {
-                                  "name": "Value.Variable",
-                                  "type": 2,
-                                  "subtype": 1,
+                                  "name": "Action.Set variable",
+                                  "type": 0,
+                                  "subtype": 6,
                                   "params": [
                                     {
                                       "name": "var_name",
-                                      "value": "act_place_event"
-                                    }
-                                  ]
-                                }
-                              },
-                              {
-                                "name": "Token Tpl",
-                                "value": {
-                                  "name": "Value.[226] Token TplId - Hot",
-                                  "type": 2,
-                                  "subtype": 10226,
-                                  "params": []
-                                }
-                              },
-                              {
-                                "name": "Action",
-                                "value": {
-                                  "name": "Action.[502] ~Move & Link Token to [PlaceId]",
-                                  "type": 0,
-                                  "subtype": 10502,
-                                  "params": [
+                                      "value": "target_place"
+                                    },
                                     {
-                                      "name": "Target Place",
+                                      "name": "value",
                                       "value": {
                                         "name": "Value.[146] #Current place",
                                         "type": 2,
                                         "subtype": 10146,
                                         "params": []
+                                      }
+                                    }
+                                  ]
+                                }
+                              },
+                              {
+                                "name": "action2",
+                                "value": {
+                                  "name": "Action.[563] ~Create a Token [Tpl Id] on Card in [Place Id] & [DO]",
+                                  "type": 0,
+                                  "subtype": 10563,
+                                  "params": [
+                                    {
+                                      "name": "Target place",
+                                      "value": {
+                                        "name": "Value.Variable",
+                                        "type": 2,
+                                        "subtype": 1,
+                                        "params": [
+                                          {
+                                            "name": "var_name",
+                                            "value": "act_place_event"
+                                          }
+                                        ]
+                                      }
+                                    },
+                                    {
+                                      "name": "Token Tpl",
+                                      "value": {
+                                        "name": "Value.[226] Token TplId - Hot",
+                                        "type": 2,
+                                        "subtype": 10226,
+                                        "params": []
+                                      }
+                                    },
+                                    {
+                                      "name": "Action",
+                                      "value": {
+                                        "name": "Action.[502] ~Move & Link Token to [PlaceId]",
+                                        "type": 0,
+                                        "subtype": 10502,
+                                        "params": [
+                                          {
+                                            "name": "Target Place",
+                                            "value": {
+                                              "name": "Value.Variable",
+                                              "type": 2,
+                                              "subtype": 1,
+                                              "params": [
+                                                {
+                                                  "name": "var_name",
+                                                  "value": "target_place"
+                                                }
+                                              ]
+                                            }
+                                          }
+                                        ]
                                       }
                                     }
                                   ]
@@ -19683,47 +19740,85 @@
                         {
                           "name": "Action",
                           "value": {
-                            "name": "Action.[563] ~Create a Token [Tpl Id] on Card in [Place Id] & [DO]",
+                            "name": "Action.Two actions",
                             "type": 0,
-                            "subtype": 10563,
+                            "subtype": 1,
                             "params": [
                               {
-                                "name": "Target place",
+                                "name": "action1",
                                 "value": {
-                                  "name": "Value.Variable",
-                                  "type": 2,
-                                  "subtype": 1,
+                                  "name": "Action.Set variable",
+                                  "type": 0,
+                                  "subtype": 6,
                                   "params": [
                                     {
                                       "name": "var_name",
-                                      "value": "act_place_event"
-                                    }
-                                  ]
-                                }
-                              },
-                              {
-                                "name": "Token Tpl",
-                                "value": {
-                                  "name": "Value.[226] Token TplId - Hot",
-                                  "type": 2,
-                                  "subtype": 10226,
-                                  "params": []
-                                }
-                              },
-                              {
-                                "name": "Action",
-                                "value": {
-                                  "name": "Action.[502] ~Move & Link Token to [PlaceId]",
-                                  "type": 0,
-                                  "subtype": 10502,
-                                  "params": [
+                                      "value": "target_place"
+                                    },
                                     {
-                                      "name": "Target Place",
+                                      "name": "value",
                                       "value": {
                                         "name": "Value.[146] #Current place",
                                         "type": 2,
                                         "subtype": 10146,
                                         "params": []
+                                      }
+                                    }
+                                  ]
+                                }
+                              },
+                              {
+                                "name": "action2",
+                                "value": {
+                                  "name": "Action.[563] ~Create a Token [Tpl Id] on Card in [Place Id] & [DO]",
+                                  "type": 0,
+                                  "subtype": 10563,
+                                  "params": [
+                                    {
+                                      "name": "Target place",
+                                      "value": {
+                                        "name": "Value.Variable",
+                                        "type": 2,
+                                        "subtype": 1,
+                                        "params": [
+                                          {
+                                            "name": "var_name",
+                                            "value": "act_place_event"
+                                          }
+                                        ]
+                                      }
+                                    },
+                                    {
+                                      "name": "Token Tpl",
+                                      "value": {
+                                        "name": "Value.[226] Token TplId - Hot",
+                                        "type": 2,
+                                        "subtype": 10226,
+                                        "params": []
+                                      }
+                                    },
+                                    {
+                                      "name": "Action",
+                                      "value": {
+                                        "name": "Action.[502] ~Move & Link Token to [PlaceId]",
+                                        "type": 0,
+                                        "subtype": 10502,
+                                        "params": [
+                                          {
+                                            "name": "Target Place",
+                                            "value": {
+                                              "name": "Value.Variable",
+                                              "type": 2,
+                                              "subtype": 1,
+                                              "params": [
+                                                {
+                                                  "name": "var_name",
+                                                  "value": "target_place"
+                                                }
+                                              ]
+                                            }
+                                          }
+                                        ]
                                       }
                                     }
                                   ]
@@ -19825,47 +19920,85 @@
                         {
                           "name": "Action",
                           "value": {
-                            "name": "Action.[563] ~Create a Token [Tpl Id] on Card in [Place Id] & [DO]",
+                            "name": "Action.Two actions",
                             "type": 0,
-                            "subtype": 10563,
+                            "subtype": 1,
                             "params": [
                               {
-                                "name": "Target place",
+                                "name": "action1",
                                 "value": {
-                                  "name": "Value.Variable",
-                                  "type": 2,
-                                  "subtype": 1,
+                                  "name": "Action.Set variable",
+                                  "type": 0,
+                                  "subtype": 6,
                                   "params": [
                                     {
                                       "name": "var_name",
-                                      "value": "act_place_event"
-                                    }
-                                  ]
-                                }
-                              },
-                              {
-                                "name": "Token Tpl",
-                                "value": {
-                                  "name": "Value.[227] Token TplId - Cold",
-                                  "type": 2,
-                                  "subtype": 10227,
-                                  "params": []
-                                }
-                              },
-                              {
-                                "name": "Action",
-                                "value": {
-                                  "name": "Action.[502] ~Move & Link Token to [PlaceId]",
-                                  "type": 0,
-                                  "subtype": 10502,
-                                  "params": [
+                                      "value": "target_place"
+                                    },
                                     {
-                                      "name": "Target Place",
+                                      "name": "value",
                                       "value": {
                                         "name": "Value.[146] #Current place",
                                         "type": 2,
                                         "subtype": 10146,
                                         "params": []
+                                      }
+                                    }
+                                  ]
+                                }
+                              },
+                              {
+                                "name": "action2",
+                                "value": {
+                                  "name": "Action.[563] ~Create a Token [Tpl Id] on Card in [Place Id] & [DO]",
+                                  "type": 0,
+                                  "subtype": 10563,
+                                  "params": [
+                                    {
+                                      "name": "Target place",
+                                      "value": {
+                                        "name": "Value.Variable",
+                                        "type": 2,
+                                        "subtype": 1,
+                                        "params": [
+                                          {
+                                            "name": "var_name",
+                                            "value": "act_place_event"
+                                          }
+                                        ]
+                                      }
+                                    },
+                                    {
+                                      "name": "Token Tpl",
+                                      "value": {
+                                        "name": "Value.[227] Token TplId - Cold",
+                                        "type": 2,
+                                        "subtype": 10227,
+                                        "params": []
+                                      }
+                                    },
+                                    {
+                                      "name": "Action",
+                                      "value": {
+                                        "name": "Action.[502] ~Move & Link Token to [PlaceId]",
+                                        "type": 0,
+                                        "subtype": 10502,
+                                        "params": [
+                                          {
+                                            "name": "Target Place",
+                                            "value": {
+                                              "name": "Value.Variable",
+                                              "type": 2,
+                                              "subtype": 1,
+                                              "params": [
+                                                {
+                                                  "name": "var_name",
+                                                  "value": "target_place"
+                                                }
+                                              ]
+                                            }
+                                          }
+                                        ]
                                       }
                                     }
                                   ]
@@ -19905,47 +20038,85 @@
                         {
                           "name": "Action",
                           "value": {
-                            "name": "Action.[563] ~Create a Token [Tpl Id] on Card in [Place Id] & [DO]",
+                            "name": "Action.Two actions",
                             "type": 0,
-                            "subtype": 10563,
+                            "subtype": 1,
                             "params": [
                               {
-                                "name": "Target place",
+                                "name": "action1",
                                 "value": {
-                                  "name": "Value.Variable",
-                                  "type": 2,
-                                  "subtype": 1,
+                                  "name": "Action.Set variable",
+                                  "type": 0,
+                                  "subtype": 6,
                                   "params": [
                                     {
                                       "name": "var_name",
-                                      "value": "act_place_event"
-                                    }
-                                  ]
-                                }
-                              },
-                              {
-                                "name": "Token Tpl",
-                                "value": {
-                                  "name": "Value.[227] Token TplId - Cold",
-                                  "type": 2,
-                                  "subtype": 10227,
-                                  "params": []
-                                }
-                              },
-                              {
-                                "name": "Action",
-                                "value": {
-                                  "name": "Action.[502] ~Move & Link Token to [PlaceId]",
-                                  "type": 0,
-                                  "subtype": 10502,
-                                  "params": [
+                                      "value": "target_place"
+                                    },
                                     {
-                                      "name": "Target Place",
+                                      "name": "value",
                                       "value": {
                                         "name": "Value.[146] #Current place",
                                         "type": 2,
                                         "subtype": 10146,
                                         "params": []
+                                      }
+                                    }
+                                  ]
+                                }
+                              },
+                              {
+                                "name": "action2",
+                                "value": {
+                                  "name": "Action.[563] ~Create a Token [Tpl Id] on Card in [Place Id] & [DO]",
+                                  "type": 0,
+                                  "subtype": 10563,
+                                  "params": [
+                                    {
+                                      "name": "Target place",
+                                      "value": {
+                                        "name": "Value.Variable",
+                                        "type": 2,
+                                        "subtype": 1,
+                                        "params": [
+                                          {
+                                            "name": "var_name",
+                                            "value": "act_place_event"
+                                          }
+                                        ]
+                                      }
+                                    },
+                                    {
+                                      "name": "Token Tpl",
+                                      "value": {
+                                        "name": "Value.[227] Token TplId - Cold",
+                                        "type": 2,
+                                        "subtype": 10227,
+                                        "params": []
+                                      }
+                                    },
+                                    {
+                                      "name": "Action",
+                                      "value": {
+                                        "name": "Action.[502] ~Move & Link Token to [PlaceId]",
+                                        "type": 0,
+                                        "subtype": 10502,
+                                        "params": [
+                                          {
+                                            "name": "Target Place",
+                                            "value": {
+                                              "name": "Value.Variable",
+                                              "type": 2,
+                                              "subtype": 1,
+                                              "params": [
+                                                {
+                                                  "name": "var_name",
+                                                  "value": "target_place"
+                                                }
+                                              ]
+                                            }
+                                          }
+                                        ]
                                       }
                                     }
                                   ]
@@ -20600,12 +20771,12 @@
                         {
                           "name": "action1",
                           "value": {
-                            "name": "Action.CreateEntity",
+                            "name": "Action.[811] ~Create [Card] in [Place] and [Do]",
                             "type": 0,
-                            "subtype": 12,
+                            "subtype": 10811,
                             "params": [
                               {
-                                "name": "card_type",
+                                "name": "Card",
                                 "value": {
                                   "name": "Value.[806] Event Oak",
                                   "type": 2,
@@ -20614,7 +20785,7 @@
                                 }
                               },
                               {
-                                "name": "place",
+                                "name": "Place",
                                 "value": {
                                   "name": "Value.[164] Place 02. Event Deck",
                                   "type": 2,
@@ -20623,7 +20794,7 @@
                                 }
                               },
                               {
-                                "name": "action",
+                                "name": "Do",
                                 "value": {
                                   "name": "Action.[646] ~Move a Card to Event Tracker",
                                   "type": 0,
@@ -20637,12 +20808,12 @@
                         {
                           "name": "action2",
                           "value": {
-                            "name": "Action.CreateEntity",
+                            "name": "Action.[811] ~Create [Card] in [Place] and [Do]",
                             "type": 0,
-                            "subtype": 12,
+                            "subtype": 10811,
                             "params": [
                               {
-                                "name": "card_type",
+                                "name": "Card",
                                 "value": {
                                   "name": "Value.[807] Event Ash",
                                   "type": 2,
@@ -20651,7 +20822,7 @@
                                 }
                               },
                               {
-                                "name": "place",
+                                "name": "Place",
                                 "value": {
                                   "name": "Value.[164] Place 02. Event Deck",
                                   "type": 2,
@@ -20660,7 +20831,7 @@
                                 }
                               },
                               {
-                                "name": "action",
+                                "name": "Do",
                                 "value": {
                                   "name": "Action.[646] ~Move a Card to Event Tracker",
                                   "type": 0,
@@ -20684,12 +20855,12 @@
                         {
                           "name": "action1",
                           "value": {
-                            "name": "Action.CreateEntity",
+                            "name": "Action.[811] ~Create [Card] in [Place] and [Do]",
                             "type": 0,
-                            "subtype": 12,
+                            "subtype": 10811,
                             "params": [
                               {
-                                "name": "card_type",
+                                "name": "Card",
                                 "value": {
                                   "name": "Value.[808] Event Thorn",
                                   "type": 2,
@@ -20698,7 +20869,7 @@
                                 }
                               },
                               {
-                                "name": "place",
+                                "name": "Place",
                                 "value": {
                                   "name": "Value.[164] Place 02. Event Deck",
                                   "type": 2,
@@ -20707,7 +20878,7 @@
                                 }
                               },
                               {
-                                "name": "action",
+                                "name": "Do",
                                 "value": {
                                   "name": "Action.[646] ~Move a Card to Event Tracker",
                                   "type": 0,
@@ -20842,47 +21013,85 @@
                   {
                     "name": "Action",
                     "value": {
-                      "name": "Action.[563] ~Create a Token [Tpl Id] on Card in [Place Id] & [DO]",
+                      "name": "Action.Two actions",
                       "type": 0,
-                      "subtype": 10563,
+                      "subtype": 1,
                       "params": [
                         {
-                          "name": "Target place",
+                          "name": "action1",
                           "value": {
-                            "name": "Value.Variable",
-                            "type": 2,
-                            "subtype": 1,
+                            "name": "Action.Set variable",
+                            "type": 0,
+                            "subtype": 6,
                             "params": [
                               {
                                 "name": "var_name",
-                                "value": "act_place_event"
-                              }
-                            ]
-                          }
-                        },
-                        {
-                          "name": "Token Tpl",
-                          "value": {
-                            "name": "Value.[231] Token TplId- Order",
-                            "type": 2,
-                            "subtype": 10231,
-                            "params": []
-                          }
-                        },
-                        {
-                          "name": "Action",
-                          "value": {
-                            "name": "Action.[502] ~Move & Link Token to [PlaceId]",
-                            "type": 0,
-                            "subtype": 10502,
-                            "params": [
+                                "value": "target_creature"
+                              },
                               {
-                                "name": "Target Place",
+                                "name": "value",
                                 "value": {
                                   "name": "Value.[146] #Current place",
                                   "type": 2,
                                   "subtype": 10146,
                                   "params": []
+                                }
+                              }
+                            ]
+                          }
+                        },
+                        {
+                          "name": "action2",
+                          "value": {
+                            "name": "Action.[563] ~Create a Token [Tpl Id] on Card in [Place Id] & [DO]",
+                            "type": 0,
+                            "subtype": 10563,
+                            "params": [
+                              {
+                                "name": "Target place",
+                                "value": {
+                                  "name": "Value.Variable",
+                                  "type": 2,
+                                  "subtype": 1,
+                                  "params": [
+                                    {
+                                      "name": "var_name",
+                                      "value": "act_place_event"
+                                    }
+                                  ]
+                                }
+                              },
+                              {
+                                "name": "Token Tpl",
+                                "value": {
+                                  "name": "Value.[231] Token TplId- Order",
+                                  "type": 2,
+                                  "subtype": 10231,
+                                  "params": []
+                                }
+                              },
+                              {
+                                "name": "Action",
+                                "value": {
+                                  "name": "Action.[502] ~Move & Link Token to [PlaceId]",
+                                  "type": 0,
+                                  "subtype": 10502,
+                                  "params": [
+                                    {
+                                      "name": "Target Place",
+                                      "value": {
+                                        "name": "Value.Variable",
+                                        "type": 2,
+                                        "subtype": 1,
+                                        "params": [
+                                          {
+                                            "name": "var_name",
+                                            "value": "target_creature"
+                                          }
+                                        ]
+                                      }
+                                    }
+                                  ]
                                 }
                               }
                             ]
@@ -20965,47 +21174,85 @@
                   {
                     "name": "Action",
                     "value": {
-                      "name": "Action.[563] ~Create a Token [Tpl Id] on Card in [Place Id] & [DO]",
+                      "name": "Action.Two actions",
                       "type": 0,
-                      "subtype": 10563,
+                      "subtype": 1,
                       "params": [
                         {
-                          "name": "Target place",
+                          "name": "action1",
                           "value": {
-                            "name": "Value.Variable",
-                            "type": 2,
-                            "subtype": 1,
+                            "name": "Action.Set variable",
+                            "type": 0,
+                            "subtype": 6,
                             "params": [
                               {
                                 "name": "var_name",
-                                "value": "act_place_event"
-                              }
-                            ]
-                          }
-                        },
-                        {
-                          "name": "Token Tpl",
-                          "value": {
-                            "name": "Value.[226] Token TplId - Hot",
-                            "type": 2,
-                            "subtype": 10226,
-                            "params": []
-                          }
-                        },
-                        {
-                          "name": "Action",
-                          "value": {
-                            "name": "Action.[502] ~Move & Link Token to [PlaceId]",
-                            "type": 0,
-                            "subtype": 10502,
-                            "params": [
+                                "value": "target_creature"
+                              },
                               {
-                                "name": "Target Place",
+                                "name": "value",
                                 "value": {
                                   "name": "Value.[146] #Current place",
                                   "type": 2,
                                   "subtype": 10146,
                                   "params": []
+                                }
+                              }
+                            ]
+                          }
+                        },
+                        {
+                          "name": "action2",
+                          "value": {
+                            "name": "Action.[563] ~Create a Token [Tpl Id] on Card in [Place Id] & [DO]",
+                            "type": 0,
+                            "subtype": 10563,
+                            "params": [
+                              {
+                                "name": "Target place",
+                                "value": {
+                                  "name": "Value.Variable",
+                                  "type": 2,
+                                  "subtype": 1,
+                                  "params": [
+                                    {
+                                      "name": "var_name",
+                                      "value": "act_place_event"
+                                    }
+                                  ]
+                                }
+                              },
+                              {
+                                "name": "Token Tpl",
+                                "value": {
+                                  "name": "Value.[226] Token TplId - Hot",
+                                  "type": 2,
+                                  "subtype": 10226,
+                                  "params": []
+                                }
+                              },
+                              {
+                                "name": "Action",
+                                "value": {
+                                  "name": "Action.[502] ~Move & Link Token to [PlaceId]",
+                                  "type": 0,
+                                  "subtype": 10502,
+                                  "params": [
+                                    {
+                                      "name": "Target Place",
+                                      "value": {
+                                        "name": "Value.Variable",
+                                        "type": 2,
+                                        "subtype": 1,
+                                        "params": [
+                                          {
+                                            "name": "var_name",
+                                            "value": "target_creature"
+                                          }
+                                        ]
+                                      }
+                                    }
+                                  ]
                                 }
                               }
                             ]
@@ -21088,47 +21335,85 @@
                   {
                     "name": "Action",
                     "value": {
-                      "name": "Action.[563] ~Create a Token [Tpl Id] on Card in [Place Id] & [DO]",
+                      "name": "Action.Two actions",
                       "type": 0,
-                      "subtype": 10563,
+                      "subtype": 1,
                       "params": [
                         {
-                          "name": "Target place",
+                          "name": "action1",
                           "value": {
-                            "name": "Value.Variable",
-                            "type": 2,
-                            "subtype": 1,
+                            "name": "Action.Set variable",
+                            "type": 0,
+                            "subtype": 6,
                             "params": [
                               {
                                 "name": "var_name",
-                                "value": "act_place_event"
-                              }
-                            ]
-                          }
-                        },
-                        {
-                          "name": "Token Tpl",
-                          "value": {
-                            "name": "Value.[229] Token TplId - Stress",
-                            "type": 2,
-                            "subtype": 10229,
-                            "params": []
-                          }
-                        },
-                        {
-                          "name": "Action",
-                          "value": {
-                            "name": "Action.[502] ~Move & Link Token to [PlaceId]",
-                            "type": 0,
-                            "subtype": 10502,
-                            "params": [
+                                "value": "target_creature"
+                              },
                               {
-                                "name": "Target Place",
+                                "name": "value",
                                 "value": {
                                   "name": "Value.[146] #Current place",
                                   "type": 2,
                                   "subtype": 10146,
                                   "params": []
+                                }
+                              }
+                            ]
+                          }
+                        },
+                        {
+                          "name": "action2",
+                          "value": {
+                            "name": "Action.[563] ~Create a Token [Tpl Id] on Card in [Place Id] & [DO]",
+                            "type": 0,
+                            "subtype": 10563,
+                            "params": [
+                              {
+                                "name": "Target place",
+                                "value": {
+                                  "name": "Value.Variable",
+                                  "type": 2,
+                                  "subtype": 1,
+                                  "params": [
+                                    {
+                                      "name": "var_name",
+                                      "value": "act_place_event"
+                                    }
+                                  ]
+                                }
+                              },
+                              {
+                                "name": "Token Tpl",
+                                "value": {
+                                  "name": "Value.[229] Token TplId - Stress",
+                                  "type": 2,
+                                  "subtype": 10229,
+                                  "params": []
+                                }
+                              },
+                              {
+                                "name": "Action",
+                                "value": {
+                                  "name": "Action.[502] ~Move & Link Token to [PlaceId]",
+                                  "type": 0,
+                                  "subtype": 10502,
+                                  "params": [
+                                    {
+                                      "name": "Target Place",
+                                      "value": {
+                                        "name": "Value.Variable",
+                                        "type": 2,
+                                        "subtype": 1,
+                                        "params": [
+                                          {
+                                            "name": "var_name",
+                                            "value": "target_creature"
+                                          }
+                                        ]
+                                      }
+                                    }
+                                  ]
                                 }
                               }
                             ]
@@ -22016,7 +22301,7 @@
       {
         "name": "MD - Eclipse",
         "enabled": true,
-        "cardType": 785,
+        "cardType": 799,
         "place": 1,
         "amount": 1,
         "preset": "tech demo",
