@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { Session } from '../game';
 import gameContent from '../game/game_content.json';
 import Unity, { UnityContext } from "react-unity-webgl";
@@ -13,7 +13,7 @@ const unityPlayContext = new UnityContext({
 
 export default function Play() {
 
-	const [ gameSession, setGameSession ] = useState(new Session(gameContent, [ 1 ]))
+	const [ gameSession ] = useState(new Session(gameContent, [ 1 ]))
 
 	const sendDiffLog = (diffLog, send = true) => {
 		let states = diffLog.map((state, index) => {
