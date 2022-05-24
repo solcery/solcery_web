@@ -6,7 +6,7 @@ import { SageAPI } from '../api'
 
 const { Column } = Table;
 
-export default function TemplateObject() {
+export default function ObjectEditor() {
 
 	let navigate = useNavigate();
 	let { templateCode, objectId } = useParams();
