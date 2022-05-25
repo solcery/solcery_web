@@ -17,7 +17,6 @@ function camelCase(str) {
 
 
 const brickByTypeSubtype = (type, subtype) => {
-	console.log(`brickByTypeSubtype - ${type} ${subtype}`)
 	if (subtype > 10000) {
 		return [ brickLibByType(type), `custom.[-${subtype - 10000}-]`];
 	}
@@ -48,7 +47,6 @@ const handleBrick = (brick, args) => {
 	if (func === 'arg') {
 		let nameParam = brick.params[0]
 		if (nameParam.name !== 'name') {
-			console.log(brick)
 			throw Error('ERROR');
 		}
 		args[nameParam.value] = lib;

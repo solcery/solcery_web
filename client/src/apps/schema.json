@@ -2,6 +2,7 @@
   {
     "code": "cardTypes",
     "name": "Card types",
+    "constructTargets": [ "unity", "web" ],
     "fields": [
       {
         "name": "Name",
@@ -16,7 +17,12 @@
       {
         "name": "Description",
         "code": "description",
-        "type": "SString"
+        "type": {
+          "name": "SString",
+          "data": {
+            "useMacros": true
+          }
+        }
       },
       {
         "name": "Image",
@@ -98,6 +104,7 @@
   {
     "code": "places",
     "name": "Places",
+    "constructTargets": [ "unity" ],
     "fields": [
       {
         "name": "Name",
@@ -194,6 +201,7 @@
   {
     "code": "cards",
     "name": "Layout",
+    "constructTargets": [ "web" ],
     "fields": [
       {
         "name": "Name",
@@ -235,6 +243,7 @@
   {
     "code": "customBricks",
     "name": "Custom bricks",
+    "constructTargets": [ "web" ],
     "fields": [
       {
         "name": "Name",
@@ -266,6 +275,7 @@
   {
     "code": "attributes",
     "name": "Card Attributes",
+    "constructTargets": [ "unity", "web" ],
     "fields": [
       {
         "name": "Name",
@@ -292,6 +302,7 @@
   {
     "code": "collections",
     "name": "Collections",
+    "constructTargets": [],
     "fields": [
       {
         "name": "Name",
@@ -328,6 +339,7 @@
   {
     "code": "slots",
     "name": "Slots",
+    "constructTargets": [],
     "fields": [
       {
         "name": "Name",
@@ -364,6 +376,7 @@
   {
     "code": "projectSettings",
     "name": "Project settings",
+    "constructTargets": [],
     "fields": [
       {
         "name": "Name",
@@ -395,6 +408,7 @@
   {
     "code": "tooltips",
     "name": "Tooltips",
+    "constructTargets": [ "unity" ],
     "fields": [
       {
         "name": "Name",
@@ -409,7 +423,12 @@
       {
         "name": "Text",
         "code": "text",
-        "type": "SString"
+        "type": {
+          "name": "SString",
+          "data": {
+            "useMacros": true
+          }
+        }
       },
       {
         "name": "Delay (ms)",
@@ -421,6 +440,7 @@
   {
     "code": "eclipse_traits",
     "name": "Eclipse Traits",
+    "constructTargets": [],
     "fields": [
       {
         "name": "Name",
@@ -447,6 +467,7 @@
   {
     "code": "drag_n_drops",
     "name": "Drag & Drops",
+    "constructTargets": [ "unity", "web" ],
     "fields": [
       {
         "name": "Name",
@@ -483,6 +504,7 @@
   {
     "code": "gameAttributes",
     "name": "Game Attributes",
+    "constructTargets": [ "unity", "web" ],
     "fields": [
       {
         "name": "Name",
@@ -509,6 +531,7 @@
   {
     "code": "users",
     "name": "Users",
+    "constructTargets": [],
     "fields": [
       {
         "name": "Name",
@@ -545,6 +568,7 @@
   {
     "code": "gd_tags",
     "name": "GD Tags",
+    "constructTargets": [],
     "fields": [
       {
         "name": "Name",
@@ -566,6 +590,7 @@
   {
     "code": "stringReplaceRules",
     "name": "String replace rules",
+    "constructTargets": [],
     "fields": [
       {
         "name": "Source",

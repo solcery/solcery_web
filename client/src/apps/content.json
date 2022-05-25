@@ -23562,6 +23562,67 @@
       }
     ]
   },
+  "users": {
+    "name": "users",
+    "objects": [
+      {
+        "name": "Teuzet",
+        "enabled": true,
+        "pubkey": "9kXLhvDcWc4wzuapQpWkKVnJ8wKVhEDomwoFxkn58nfX",
+        "layoutPresets": [
+          "core",
+          "test buttons",
+          "tech demo"
+        ],
+        "id": 576
+      },
+      {
+        "name": "Ellador",
+        "enabled": true,
+        "pubkey": "ESrHRyZKaC9VjTdvd7QHppxevXpiasUAbzx2XGBRanrv",
+        "css": ".brick.action { background-color: #39372d; } .brick.action.readonly { background-color: #39372d; } .brick.action:hover { background-color: #565343; } .brick.condition { background-color: #2d392d; } .brick.condition.readonly { background-color: #2d392d; } .brick.condition:hover { background-color: #435643; } .brick.value { background-color: #2d3937; } .brick.value.readonly { background-color: #2d3937; } .brick.value { background-color: #435643; } .brickeditor-bg.active { background-color: #101510; } .brickeditor-bg.readonly { background-color: #151010; }",
+        "readonlyBricks": true,
+        "layoutPresets": [
+          "core",
+          "test buttons",
+          "tech demo",
+          "// test creatures",
+          "starting creatures",
+          "// loogris layout"
+        ],
+        "id": 577
+      },
+      {
+        "name": "Loogris",
+        "enabled": true,
+        "pubkey": "CmxScbqG1imzdkmehMD1VoHait6oYx7o6CLtaHbDkdG1",
+        "css": ".brick.action {     background-color: #586e75;     color: #eee8d5; }  .brick.action.readonly {     background-color: #586e75;     color: #eee8d5 }  .brick.action:hover {     background-color: #93a1a1;     color: #eee8d5 }  .brick.condition {     background-color: #268bd2;     color: #eee8d5 }  .brick.condition.readonly {     background-color: #268bd2;     color: #eee8d5 }  .brick.condition:hover {     background-color: #2aa198;     color: #eee8d5 }  .brick.value {     background-color: #6c71c4;     color: #eee8d5 }  .brick.value.readonly {     background-color: #6c71c4;     color: #eee8d5 }  .brick.value:hover {     background-color: #d33682;     color: #eee8d5 }  .brickeditor-bg.active {     background-color: #002b36;     color: #eee8d5 }  .brickeditor-bg.readonly {     background-color: #002b36;     color: #eee8d5; }",
+        "layoutPresets": [
+          "loogris layout",
+          "core",
+          "// test creatures",
+          "test buttons",
+          "// test buildings",
+          "// tech demo",
+          "// starting creatures"
+        ],
+        "id": 578
+      },
+      {
+        "name": "Irina",
+        "enabled": true,
+        "pubkey": "25MhYRx9CFLyQxf5HQKLPFd86QbkNFUWwUcVvQcTvPHJ",
+        "css": ".brick.action { background-color: #39372d; } .brick.action.readonly { background-color: #39372d; } .brick.action:hover { background-color: #565343; } .brick.condition { background-color: #2d392d; } .brick.condition.readonly { background-color: #2d392d; } .brick.condition:hover { background-color: #435643; } .brick.value { background-color: #2d3937; } .brick.value.readonly { background-color: #2d3937; } .brick.value { background-color: #435643; } .brickeditor-bg.active { background-color: #101510; } .brickeditor-bg.readonly { background-color: #151010; }",
+        "readonlyBricks": true,
+        "layoutPresets": [
+          "core",
+          "test buttons",
+          "tech demo"
+        ],
+        "id": 579
+      }
+    ]
+  },
   "gd_tags": {
     "name": "gd_tags",
     "objects": [
@@ -23576,6 +23637,143 @@
         "enabled": true,
         "description": "This Card reacts to Tokens that are added to it",
         "id": 693
+      }
+    ]
+  },
+  "stringReplaceRules": {
+    "name": "stringReplaceRules",
+    "objects": [
+      {
+        "source": "Chaos",
+        "result": "<link=\"711\"><sprite index=0></link>",
+        "enabled": true,
+        "id": 744
+      },
+      {
+        "source": "Food",
+        "result": "<link=\"714\"><sprite index=1></link>",
+        "enabled": true,
+        "id": 745
+      },
+      {
+        "source": "Hot",
+        "result": "<link=\"708\"><sprite index=2></link>",
+        "enabled": true,
+        "id": 746
+      },
+      {
+        "source": "Order",
+        "result": "<link=\"710\"><sprite index=3></link>",
+        "enabled": true,
+        "id": 747
+      },
+      {
+        "source": "Cold",
+        "result": "<link=\"709\"><sprite index=5></link>",
+        "enabled": true,
+        "id": 748
+      },
+      {
+        "source": "Gold",
+        "result": "<link=\"720\"><sprite index=6></link>",
+        "enabled": true,
+        "id": 749
+      },
+      {
+        "source": "Joy",
+        "result": "<link=\"712\"><sprite index=7></link>",
+        "enabled": true,
+        "id": 750
+      },
+      {
+        "source": "Shield",
+        "result": "<link=\"715\"><sprite index=8></link>",
+        "enabled": true,
+        "id": 751
+      },
+      {
+        "source": "Work",
+        "result": "<link=\"718\"><sprite index=9></link>",
+        "enabled": true,
+        "id": 752
+      },
+      {
+        "source": "Neighbor",
+        "result": "<link=\"716\"><b>Neighbor</b></link>",
+        "enabled": true,
+        "id": 753
+      },
+      {
+        "source": "Innermost",
+        "result": "<link=\"717\"><b>Innermost</b></link>",
+        "enabled": true,
+        "id": 754
+      },
+      {
+        "source": "Produce",
+        "result": "<link=\"719\"><b>Produce</b></link>",
+        "enabled": true,
+        "id": 755
+      },
+      {
+        "source": "Outermost",
+        "result": "<link=\"721\"><b>Outermost</b></link>",
+        "enabled": true,
+        "id": 756
+      },
+      {
+        "source": "Leftmost",
+        "result": "<b>Leftmost</b>",
+        "enabled": true,
+        "id": 757
+      },
+      {
+        "source": "Rightmost",
+        "result": "<b>Rightmost</b>",
+        "enabled": true,
+        "id": 758
+      },
+      {
+        "source": "Storage",
+        "result": "<b>Storage</b>",
+        "enabled": true,
+        "id": 759
+      },
+      {
+        "source": "Antitoken",
+        "result": "<b>Antitoken</b>",
+        "enabled": true,
+        "id": 760
+      },
+      {
+        "source": "Activation",
+        "result": "<b>Activation</b>",
+        "enabled": true,
+        "id": 761
+      },
+      {
+        "source": "Activate",
+        "result": "<b>Activate</b>",
+        "enabled": true,
+        "id": 762
+      },
+      {
+        "source": "Survival",
+        "result": "<link=\"778\"><b>Survival</b></link>",
+        "enabled": true,
+        "id": 777
+      },
+      {
+        "source": "Omen",
+        "result": "<link=\"780\"><b>Omen</b></link>",
+        "enabled": true,
+        "id": 779
+      },
+      {
+        "source": "Event Tracker",
+        "result": "<b>Event Tracker</b>",
+        "enabled": true,
+        "id": 781
       }
     ]
   },

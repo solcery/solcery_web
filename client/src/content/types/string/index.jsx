@@ -3,7 +3,19 @@ import { ValueRender } from './components'
 
 class SString {
 	static fromString = () => new SString({});
-	construct = (value, meta) => value;
+	
+	constructor(data) {
+		this.useMacros = data.useMacros;
+	}
+	
+	construct = (value, meta) => {
+		if (!this.useMacros) return value;
+		let result = value;
+		for (let { src, res } of meta.stringMacros) {
+			result = result.replaceAll(src, res);
+		}
+		return result;
+	};
 	valueRender = ValueRender;
 	default = '';
 };
