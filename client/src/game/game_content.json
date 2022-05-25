@@ -24153,7 +24153,7 @@
         "readonlyBricks": true,
         "layoutPresets": [
           "core",
-          "//test buttons",
+          "",
           "tech demo",
           "//test creatures",
           "starting creatures",
