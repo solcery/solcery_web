@@ -16,7 +16,7 @@ import Project from "./apps/project";
 export default function App() {
 	return (
 		<>
-			<h1>SAGE project: Eclipse</h1>
+			<h1>SAGE greets you!</h1>
 			<TopMenu style={{ backgroundColor: 'black' }}/>
 			<UserProvider>
 				<BrickLibraryProvider>
