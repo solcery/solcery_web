@@ -17,7 +17,7 @@ const solceryAPI = function(response, moduleName, params) {
   if (!moduleEntrypoint) {
     throw `API error: non-existent API module ${moduleName}`;
   }
-  moduleEntrypoint(params)(response, params)
+  moduleEntrypoint(params)(response, params.data)
 }
 
 const fetchApiCall = function(request, response, params) {
@@ -54,12 +54,12 @@ const db = require("./db/connection");
   // Priority serve any static files.
   app.use(express.static(path.resolve(__dirname, '../client/build')));
 
-  app.use(bodyParser.urlencoded({ extended: false }));
-  app.use(bodyParser.json());
+  app.use(bodyParser.urlencoded({ limit: '50mb', extended: false }));
+  app.use(bodyParser.json({limit: '50mb'}));
 
   // Answer API requests.
-  app.get('/api/*', function (request, response) {
-    fetchApiCall(request, response, request.query)
+  app.get('/api/*', function (request, response) { // TODO
+    // fetchApiCall(request, response, request.query)
   });
 
   app.post('/api/*', (request, response) => {

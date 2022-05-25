@@ -16,7 +16,7 @@ class SBrick {
     let brickSignature = meta.brickLibrary[v.lib][v.func];
     if (!brickSignature) throw new Error(`Error constructing brick [${v.lib}.${v.func}] - no signature found!`);
     if (meta.target === 'unity') {
-      let x = {
+      return {
         name: brickSignature.name,
         type: brickSignature.type,
         subtype: brickSignature.subtype, 
@@ -30,8 +30,6 @@ class SBrick {
             }
           })
       }
-      console.log(x)
-      return x;
     }
     if (meta.target === 'web') {
       return {

@@ -1,0 +1,582 @@
+[
+  {
+    "code": "cardTypes",
+    "name": "Card types",
+    "fields": [
+      {
+        "name": "Name",
+        "code": "name",
+        "type": "SString"
+      },
+      {
+        "name": "Enabled",
+        "code": "enabled",
+        "type": "SBool"
+      },
+      {
+        "name": "Description",
+        "code": "description",
+        "type": "SString"
+      },
+      {
+        "name": "Image",
+        "code": "picture",
+        "type": "SImage"
+      },
+      {
+        "name": "Use Action",
+        "code": "action",
+        "type": "SBrick<action>"
+      },
+      {
+        "name": "Type",
+        "code": "type",
+        "type": "SEnum<None|Creature|Token|Event|Building>"
+      },
+      {
+        "name": "Trait ID List",
+        "code": "traits",
+        "type": "SArray<SLink<cardTypes>>"
+      },
+      {
+        "name": "Tooltip {TODELETE}",
+        "code": "tooltip_old",
+        "type": "SLink<cardTypes>"
+      },
+      {
+        "name": "On Create",
+        "code": "action_on_create",
+        "type": "SBrick<action>"
+      },
+      {
+        "name": "On Activation",
+        "code": "action_on_activation",
+        "type": "SBrick<action>"
+      },
+      {
+        "name": "On Token Added",
+        "code": "action_on_token_added",
+        "type": "SBrick<action>"
+      },
+      {
+        "name": "On Death",
+        "code": "action_on_death",
+        "type": "SBrick<action>"
+      },
+      {
+        "name": "On Token Removed",
+        "code": "action_on_token_removed",
+        "type": "SBrick<action>"
+      },
+      {
+        "name": "GD Filter",
+        "code": "gd_filter",
+        "type": "SString"
+      },
+      {
+        "name": "GD Tags",
+        "code": "gd_tags",
+        "type": "SArray<SLink<gd_tags>>"
+      },
+      {
+        "name": "Tooltip",
+        "code": "tooltip",
+        "type": "SLink<tooltips>"
+      },
+      {
+        "name": "On Enter Board",
+        "code": "action_on_enter_board",
+        "type": "SBrick<action>"
+      },
+      {
+        "name": "Timer text",
+        "code": "timer_text",
+        "type": "SString"
+      }
+    ]
+  },
+  {
+    "code": "places",
+    "name": "Places",
+    "fields": [
+      {
+        "name": "Name",
+        "code": "name",
+        "type": "SString"
+      },
+      {
+        "name": "Enabled",
+        "code": "enabled",
+        "type": "SBool"
+      },
+      {
+        "name": "Place",
+        "code": "placeId",
+        "type": "SInt"
+      },
+      {
+        "name": "Interactable",
+        "code": "interactableForActiveLocalPlayer",
+        "type": "SBool"
+      },
+      {
+        "name": "Visible",
+        "code": "visible",
+        "type": "SBool"
+      },
+      {
+        "name": "x1",
+        "code": "x1",
+        "type": "SInt"
+      },
+      {
+        "name": "x2",
+        "code": "x2",
+        "type": "SInt"
+      },
+      {
+        "name": "y1",
+        "code": "y1",
+        "type": "SInt"
+      },
+      {
+        "name": "y2",
+        "code": "y2",
+        "type": "SInt"
+      },
+      {
+        "name": "Face",
+        "code": "face",
+        "type": "SEnum<Face up|Face down>"
+      },
+      {
+        "name": "Layout",
+        "code": "layout",
+        "type": "SEnum<Stacked|Layed out|Picture+number|Text|Button|Picture|Eclipse Card|Eclipse Token Storage>"
+      },
+      {
+        "name": "Z-Order",
+        "code": "zOrder",
+        "type": "SInt"
+      },
+      {
+        "name": "In-game caption",
+        "code": "caption",
+        "type": "SString"
+      },
+      {
+        "name": "Show place frame",
+        "code": "frame",
+        "type": "SBool"
+      },
+      {
+        "name": "Tooltip ID",
+        "code": "tooltip",
+        "type": "SLink<tooltips>"
+      },
+      {
+        "name": "Drag & Drop ID (OLD)",
+        "code": "drag_n_drop",
+        "type": "SLink<drag_n_drops>"
+      },
+      {
+        "name": "Drag & Drop IDs",
+        "code": "drag_n_drops",
+        "type": "SArray<SLink<drag_n_drops>>"
+      },
+      {
+        "name": "Fill",
+        "code": "fill",
+        "type": "SString"
+      }
+    ]
+  },
+  {
+    "code": "cards",
+    "name": "Layout",
+    "fields": [
+      {
+        "name": "Name",
+        "code": "name",
+        "type": "SString"
+      },
+      {
+        "name": "Enabled",
+        "code": "enabled",
+        "type": "SBool"
+      },
+      {
+        "name": "Card type",
+        "code": "cardType",
+        "type": "SLink<cardTypes>"
+      },
+      {
+        "name": "Place",
+        "code": "place",
+        "type": "SInt"
+      },
+      {
+        "name": "Amount",
+        "code": "amount",
+        "type": "SInt"
+      },
+      {
+        "name": "Initializer",
+        "code": "initializer",
+        "type": "SBrick<action>"
+      },
+      {
+        "name": "Preset",
+        "code": "preset",
+        "type": "SString"
+      }
+    ]
+  },
+  {
+    "code": "customBricks",
+    "name": "Custom bricks",
+    "fields": [
+      {
+        "name": "Name",
+        "code": "name",
+        "type": "SString"
+      },
+      {
+        "name": "Enabled",
+        "code": "enabled",
+        "type": "SBool"
+      },
+      {
+        "name": "Brick",
+        "code": "brick",
+        "type": {
+          "name": "SBrick",
+          "data": {
+            "params": true
+          } 
+        }
+      },
+      {
+        "name": "Hidden",
+        "code": "hidden",
+        "type": "SBool"
+      }
+    ]
+  },
+  {
+    "code": "attributes",
+    "name": "Card Attributes",
+    "fields": [
+      {
+        "name": "Name",
+        "code": "name",
+        "type": "SString"
+      },
+      {
+        "name": "Enabled",
+        "code": "enabled",
+        "type": "SBool"
+      },
+      {
+        "name": "Code",
+        "code": "code",
+        "type": "SString"
+      },
+      {
+        "name": "Admin descr",
+        "code": "admin_descr",
+        "type": "SString"
+      }
+    ]
+  },
+  {
+    "code": "collections",
+    "name": "Collections",
+    "fields": [
+      {
+        "name": "Name",
+        "code": "name",
+        "type": "SString"
+      },
+      {
+        "name": "Enabled",
+        "code": "enabled",
+        "type": "SBool"
+      },
+      {
+        "name": "Symbol",
+        "code": "symbol",
+        "type": "SString"
+      },
+      {
+        "name": "Creator",
+        "code": "creator",
+        "type": "SString"
+      },
+      {
+        "name": "Update authority",
+        "code": "updateAuthority",
+        "type": "SString"
+      },
+      {
+        "name": "Card type",
+        "code": "cardType",
+        "type": "SLink<cardTypes>"
+      }
+    ]
+  },
+  {
+    "code": "slots",
+    "name": "Slots",
+    "fields": [
+      {
+        "name": "Name",
+        "code": "name",
+        "type": "SString"
+      },
+      {
+        "name": "Enabled",
+        "code": "enabled",
+        "type": "SBool"
+      },
+      {
+        "name": "Collections",
+        "code": "collections",
+        "type": "SArray<SLink<collections>>"
+      },
+      {
+        "name": "Default card type",
+        "code": "default",
+        "type": "SLink<cardTypes>"
+      },
+      {
+        "name": "Place",
+        "code": "place",
+        "type": "SInt"
+      },
+      {
+        "name": "Initializer",
+        "code": "initializer",
+        "type": "SBrick<action>"
+      }
+    ]
+  },
+  {
+    "code": "projectSettings",
+    "name": "Project settings",
+    "fields": [
+      {
+        "name": "Name",
+        "code": "name",
+        "type": "SString"
+      },
+      {
+        "name": "Enabled",
+        "code": "enabled",
+        "type": "SBool"
+      },
+      {
+        "name": "Description",
+        "code": "description",
+        "type": "SString"
+      },
+      {
+        "name": "Picture",
+        "code": "picture",
+        "type": "SImage"
+      },
+      {
+        "name": "Game state account",
+        "code": "gameStateAccount",
+        "type": "SString"
+      }
+    ]
+  },
+  {
+    "code": "tooltips",
+    "name": "Tooltips",
+    "fields": [
+      {
+        "name": "Name",
+        "code": "name",
+        "type": "SString"
+      },
+      {
+        "name": "Enabled",
+        "code": "enabled",
+        "type": "SBool"
+      },
+      {
+        "name": "Text",
+        "code": "text",
+        "type": "SString"
+      },
+      {
+        "name": "Delay (ms)",
+        "code": "delay",
+        "type": "SInt"
+      }
+    ]
+  },
+  {
+    "code": "eclipse_traits",
+    "name": "Eclipse Traits",
+    "fields": [
+      {
+        "name": "Name",
+        "code": "name",
+        "type": "SString"
+      },
+      {
+        "name": "Enabled",
+        "code": "enabled",
+        "type": "SBool"
+      },
+      {
+        "name": "Image",
+        "code": "image",
+        "type": "SString"
+      },
+      {
+        "name": "Tooltip ID",
+        "code": "tooltip",
+        "type": "SLink<tooltips>"
+      }
+    ]
+  },
+  {
+    "code": "drag_n_drops",
+    "name": "Drag & Drops",
+    "fields": [
+      {
+        "name": "Name",
+        "code": "name",
+        "type": "SString"
+      },
+      {
+        "name": "Enabled",
+        "code": "enabled",
+        "type": "SBool"
+      },
+      {
+        "name": "Destination places",
+        "code": "destinations",
+        "type": "SArray<SLink<places>>"
+      },
+      {
+        "name": "Drop cond (on destination)",
+        "code": "destination_condition",
+        "type": "SEnum<Any|Empty|Not empty>"
+      },
+      {
+        "name": "Drag card types (on origin)",
+        "code": "required_card_types",
+        "type": "SArray<SEnum<Any|Creature|Token|Event|Building>>"
+      },
+      {
+        "name": "Action on drop",
+        "code": "action_on_drop",
+        "type": "SBrick<action>"
+      }
+    ]
+  },
+  {
+    "code": "gameAttributes",
+    "name": "Game Attributes",
+    "fields": [
+      {
+        "name": "Name",
+        "code": "name",
+        "type": "SString"
+      },
+      {
+        "name": "Enabled",
+        "code": "enabled",
+        "type": "SBool"
+      },
+      {
+        "name": "Code",
+        "code": "code",
+        "type": "SString"
+      },
+      {
+        "name": "Admin descr",
+        "code": "admin_descr",
+        "type": "SString"
+      }
+    ]
+  },
+  {
+    "code": "users",
+    "name": "Users",
+    "fields": [
+      {
+        "name": "Name",
+        "code": "name",
+        "type": "SString"
+      },
+      {
+        "name": "Enabled",
+        "code": "enabled",
+        "type": "SBool"
+      },
+      {
+        "name": "Pubkey",
+        "code": "pubkey",
+        "type": "SString"
+      },
+      {
+        "name": "CSS",
+        "code": "css",
+        "type": "SString"
+      },
+      {
+        "name": "Show readonly bricks",
+        "code": "readonlyBricks",
+        "type": "SBool"
+      },
+      {
+        "name": "Layout presets",
+        "code": "layoutPresets",
+        "type": "SArray<SString>"
+      }
+    ]
+  },
+  {
+    "code": "gd_tags",
+    "name": "GD Tags",
+    "fields": [
+      {
+        "name": "Name",
+        "code": "name",
+        "type": "SString"
+      },
+      {
+        "name": "Enabled",
+        "code": "enabled",
+        "type": "SBool"
+      },
+      {
+        "name": "Description",
+        "code": "description",
+        "type": "SString"
+      }
+    ]
+  },
+  {
+    "code": "stringReplaceRules",
+    "name": "String replace rules",
+    "fields": [
+      {
+        "name": "Source",
+        "code": "source",
+        "type": "SString"
+      },
+      {
+        "name": "Result",
+        "code": "result",
+        "type": "SString"
+      }
+    ]
+  }
+]

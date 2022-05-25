@@ -74,7 +74,7 @@ export default function CollectionEditor() {
 							key={ 'delete.' + object.id } 
 							onClick={() => { 
 								if (window.confirm('Deleting object [' + object.id + '] ' + object.fields.title + '. Are you sure?')) {
-									SageAPI.template.remove(templateCode, object.id).then((res) => {
+									SageAPI.template.removeById(templateCode, object.id).then((res) => {
 										if (res.deletedCount) {
 											navigate(`/template.${template.code}`) 
 										}

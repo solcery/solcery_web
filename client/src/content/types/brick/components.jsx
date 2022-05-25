@@ -68,7 +68,7 @@ export const ValueRender = (props) => {
 
   if (!brickLibrary) return <p>Loading</p>;
   if (!brickLib) return <p>Loading</p>;
-  if (!props.onChange && !props.defaultValue.brickTree) return <p>Empty</p>  
+  if (!props.onChange && (!props.defaultValue || !props.defaultValue.brickTree)) return <p>Empty</p>  
   if (!brickType) return <BrickTypeSelector onChange = { setBrickType }/>;
 
   

@@ -19,10 +19,7 @@ export default function ObjectEditor() {
 	}, [ objectId, templateCode ]);
 
 	const save = () => {
-		console.log('save')
-		console.log(object.fields)
 		SageAPI.template.updateObjectById(templateCode, objectId, object.fields).then((res) => { 
-			console.log(res)
 			if (res.modifiedCount) {
 				navigate(`/template.${template.code}`) 
 			}
