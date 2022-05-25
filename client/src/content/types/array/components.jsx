@@ -41,7 +41,6 @@ export const ValueRender = (props) => {
 			)}
 		</>
 	);
-	console.log(value)
 	return (
 		<>
 			{value.map((val, index) => 

@@ -1,9 +1,10 @@
 import { useEffect } from 'react';
 import { Handle, Position } from 'react-flow-renderer';
-import { notify } from "../../../../components/notification";
+import { notify } from '../../../../components/notification';
+import { useUser } from '../../../../contexts/user'
 
 export default function Brick(props) {
-
+	const { css } = useUser();
 	const brick = props.data.brick;
 	let brickSignature = props.data.brickLibrary[brick.lib][brick.func]
 	// if (!brickSignature) {
@@ -68,8 +69,12 @@ export default function Brick(props) {
 		};
 	});
 	return (
-		<div className={ props.data.readonly ? "brick" : "brick brick-active" } onPointerEnter={() => isHovered = true} onPointerLeave={() => isHovered = false}>
-			<div className={ props.data.readonly ? "remove-button" : "remove-button remove-button-active" } onClick={onRemoveButtonClicked}>x</div>
+		<div className={ `brick ${brick.lib} ${props.data.small ? 'small' : ''} ${props.data.readonly ? 'readonly' : ''}` } 
+		onPointerEnter={() => isHovered = true}
+		onPointerLeave={() => isHovered = false}
+		style={{ width: `${Math.max(15, 4 + nestedParams.length * 5)}rem`}}
+		>
+			{!props.data.readonly && !props.data.small && <div className={"remove-button"} onClick={onRemoveButtonClicked}>x</div>}
 			<div className="brick-name">{brickSignature.name}</div>
 			{inlineParams.map((param) =>
 				<div className="field-container" key={ param.code }>

@@ -76,7 +76,7 @@ export default function AddBrickButton(props) {
 	});
 	return (
 		<>
-			<div className = { props.data.readonly ? "add-brick-button" : "add-brick-button add-brick-button-active" }
+			<div className={ `add-brick-button ${(!props.data.readonly && !props.data.small) ? 'active' : ''}` }
 			     onPointerUp = { onAddButtonPointerUp}
 			     onPointerEnter={() => isHovered = true }
 			     onPointerLeave={() => isHovered = false }>+</div>

@@ -26,14 +26,6 @@ export default function ObjectEditor() {
 		});
 	}
 
-	const construct = () => {
-		if (template && object) {
-			template.construct(object, { 
-				linkToIds: {}
-			})
-		}
-	}
-
 	if (!template || !object) return (<>NO DATA</>); // TODO
 	let tableData = Object.values(template.fields).map(field => {
 		return {
@@ -63,7 +55,6 @@ export default function ObjectEditor() {
 				/>
 			</Table>
 			<Button onClick={save}>SAVE</Button>
-			<Button onClick={construct}>CONSTRUCT</Button>
 		</>
 	);
 }

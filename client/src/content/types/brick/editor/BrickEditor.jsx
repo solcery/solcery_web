@@ -106,6 +106,7 @@ export const BrickEditor = (props) => {
 				paramCode,
 				onBrickSubtypeSelected: addBrick,
 				onPaste: onPaste,
+				readonly: !active || !props.onChange,
 			}
 		};
 	}, [ props.brickLibrary, props.brickClass, addBrick, onPaste ]);
@@ -138,7 +139,8 @@ export const BrickEditor = (props) => {
 				onRemoveButtonClicked: removeBrick,
 				onPaste: onPaste,
 				onChange: props.onChange ? () => { onChange(bt) } : null,
-				readonly: !active || !props.onChange,
+				readonly: !props.onChange,
+				small: !active,
 			}
 		}
 	}, [ active, onChange, props.onChange, brickTree, props.brickLibrary, props.brickClass, removeBrick, onPaste]);
