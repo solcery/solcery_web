@@ -69,8 +69,11 @@ export class Game {
   }
 
   initLayout = () => {
+    const presets = [ 'core', 'tech demo', 'starting creatures' ];
     this.startDiff(true)
     for (let cardPack of Object.values(this.content.cards)) {
+      let preset = cardPack.preset;
+      if (!presets.includes(preset)) continue;
       for (let i = 0; i < cardPack.amount; i++) {
         let obj = this.createEntity(cardPack.cardType);
         obj.setAttr('place', cardPack.place);

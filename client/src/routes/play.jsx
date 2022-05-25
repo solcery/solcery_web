@@ -20,7 +20,7 @@ CSS.registerProperty({
 });
 
 export default function Play() {
-	const [ gameSession, setGameSession ] = useState(new Session(gameContent, [ 1 ]))
+	const [ gameSession, setGameSession ] = useState()
 	const [ loading, setLoading ] = useState(false);
 	
 	const sendDiffLog = (diffLog, send = true) => {
@@ -78,6 +78,7 @@ export default function Play() {
 
 	useEffect(function () {
     unityPlayContext.on("progress", setLoading);
+    if (!gameSession) setGameSession(new Session(gameContent, [ 1 ]))
   }, []);
 
 	return (
