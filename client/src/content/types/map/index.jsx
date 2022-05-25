@@ -1,11 +1,11 @@
 import { SType } from '../base'
 import { ValueRender } from './components'
 
-const MAP_TYPES_DELIMETER = '=>';
+const MAP_TYPES_DELIMETER = '|';
 
 class SMap {
   static fromString = data => {
-    let typeDatas = data.spilit(MAP_TYPES_DELIMETER);
+    let typeDatas = data.split(MAP_TYPES_DELIMETER);
     return new SMap({
       keyType: typeDatas[0],
       valueType: typeDatas[1],

@@ -81,7 +81,5 @@ export function BrickLibraryProvider(props) {
 
 export function useBrickLibrary() {
  	const brickLibrary = useContext(BrickLibraryContext);
- 	console.log('useBrickLibrary');
- 	console.log(brickLibrary)
 	return { brickLibrary }
 }

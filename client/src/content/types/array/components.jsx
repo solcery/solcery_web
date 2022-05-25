@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from 'antd';
 
 const ADD_ELEMENT_BUTTON_LABEL = ' + ';
@@ -7,23 +7,25 @@ const REMOVE_ELEMENT_BUTTON_LABEL = ' - ';
 export const ValueRender = (props) => {
 
 	var [value, setValue] = useState(props.defaultValue || [])
-	var [valueSize, setValueSize] = useState(props.defaultValue?.length || 0);
+
+	useEffect(() => {
+		var res = value.filter(entry => value);
+		props.onChange && props.onChange(res);
+	}, [ value ])
 
 	const onChange = (newValue, index, type) => {
 		value[index] = newValue;
-		setValue(value)
-		var res = value.filter((value) => value)
-		props.onChange && props.onChange(res)
+		setValue([...value]);
 	}
 
 	const removeElement = (index) => {
-		//TODO
+		value.splice(index, 1);
+		setValue([...value]);
 	}
 
 	const addNewElement = () => {
 		value.push(undefined)
-		setValueSize(valueSize + 1)
-		setValue(value)
+		setValue([...value]);
 	}
 
 	if (!props.onChange) return (
@@ -31,7 +33,7 @@ export const ValueRender = (props) => {
 			<p>Array:</p>
 			{value.map((val, index) => 
 				<div key = { index }>
-					[0] => <props.type.valueType.valueRender
+					[{ index }] => <props.type.valueType.valueRender
 						defaultValue = { val }
 						type = { props.type.valueType }
 					/>
@@ -39,14 +41,15 @@ export const ValueRender = (props) => {
 			)}
 		</>
 	);
+	console.log(value)
 	return (
 		<>
 			{value.map((val, index) => 
-				<div key={index}>
+				<div key={`${index}:${val}`}> 
 					<Button onClick = { () => { removeElement(index) } }>
 						{ REMOVE_ELEMENT_BUTTON_LABEL }
 					</Button>
-					<props.type.valueType.valueRender 
+					<props.type.valueType.valueRender
 						defaultValue = { val }
 						type = { props.type.valueType }
 						onChange={(newValue) => { 

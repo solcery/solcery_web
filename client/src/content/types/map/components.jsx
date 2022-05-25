@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from 'antd';
 
 const ADD_ELEMENT_BUTTON_LABEL = ' + ';
@@ -6,22 +6,21 @@ const REMOVE_ELEMENT_BUTTON_LABEL = ' - ';
 
 export const ValueRender = (props) => {
 
-	var [value, setValue] = useState(props.defaultValue || [])
-	var [valueSize, setValueSize] = useState(props.defaultValue?.length || 0);
+	var [value, setValue] = useState(props.defaultValue || []);
 
-	const sendValue = (value) => {
+	useEffect(() => {
 		var res = value.filter((entry) => entry.key !== undefined && entry.value !== undefined);
 		props.onChange && props.onChange(res);
-	}
-
+	}, [ value ])
+	
 	const onChange = (newValue, index, type) => {
 		value[index][type] = newValue;
-		setValue(value);
-		sendValue(value);
+		setValue([...value]);
 	}
 	
 	const removeElement = (index) => {
-		// TODO;
+		value.splice(index, 1);
+		setValue([...value]);
 	}
 
 	const addNewElement = () => {
@@ -29,23 +28,21 @@ export const ValueRender = (props) => {
 			key: props.type.keyType.default,
 			value: props.type.valueType.default,
 		});
-		setValueSize(valueSize + 1);
-		setValue(value);
-		sendValue(value);
+		setValue([...value]);
 	}
 
 	if (!props.onChange) return (
 		<>
 			<p>Map:</p>
-			{value.map((val, index) => 
-				<div key = { index }>
+			{value.map((entry, index) => 
+				<div key={`${index}:${entry.key}:${entry.value}`}>
 					<props.type.keyType.valueRender
-						defaultValue = { val.key }
+						defaultValue = { entry.key }
 						type = { props.type.keyType }
 					/>
 					 => 
 					<props.type.valueType.valueRender
-						defaultValue = { val.value }
+						defaultValue = { entry.value }
 						type = { props.type.valueType }
 					/>
 				</div>
@@ -55,7 +52,7 @@ export const ValueRender = (props) => {
 	return (
 		<>
 			{value.map((entry, index) => 
-				<div key = { index }>
+				<div key={`${index}:${entry.key}:${entry.value}`}>
 					<Button onClick = { () => { removeElement(index) } }>
 						{ REMOVE_ELEMENT_BUTTON_LABEL }
 					</Button>
