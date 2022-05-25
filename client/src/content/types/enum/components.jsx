@@ -1,8 +1,9 @@
 import React from "react";
 import { Select } from 'antd';
 
+const { Option } = Select;
+
 export const ValueRender = (props) => {
-	const { Option } = Select;
 	if (!props.onChange) {
 		var defaultValue = props.defaultValue ? props.defaultValue : 0;
 		return <p>{ props.type.values[defaultValue] }</p>;
