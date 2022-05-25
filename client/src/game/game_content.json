@@ -24153,11 +24153,8 @@
         "readonlyBricks": true,
         "layoutPresets": [
           "core",
-          "",
           "tech demo",
-          "//test creatures",
-          "starting creatures",
-          "// loogris layout"
+          "starting creatures"
         ],
         "id": 577
       },
