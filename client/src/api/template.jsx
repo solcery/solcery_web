@@ -1,4 +1,4 @@
-import { apiCall, postApiCall } from './index' 
+import { apiCall } from './index' 
 
 const MODULE_NAME = 'template';
 export const template = {}

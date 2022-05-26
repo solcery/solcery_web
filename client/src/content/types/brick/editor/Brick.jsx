@@ -1,10 +1,8 @@
 import { useEffect } from 'react';
 import { Handle, Position } from 'react-flow-renderer';
 import { notify } from '../../../../components/notification';
-import { useUser } from '../../../../contexts/user'
 
 export default function Brick(props) {
-	const { css } = useUser();
 	const brick = props.data.brick;
 	let brickSignature = props.data.brickLibrary[brick.lib][brick.func]
 	// if (!brickSignature) {

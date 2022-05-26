@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useMemo, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { BrickLibrary, paramFromMapEntry } from '../content/brickLib';
 import { SageAPI } from '../api'
 
@@ -28,7 +28,6 @@ export function BrickLibraryProvider(props) {
 	   		}
 	   		setBrickLibrary(bl.bricks);
 	    })
-	  // return bl.bricks;
 	}, [])
     return (
       <BrickLibraryContext.Provider value={ brickLibrary }>

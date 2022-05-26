@@ -109,7 +109,7 @@ export const BrickEditor = (props) => {
 				readonly: !active || !props.onChange,
 			}
 		};
-	}, [ props.brickLibrary, props.brickClass, addBrick, onPaste ]);
+	}, [ props.brickLibrary, props.brickClass, addBrick, onPaste, active, props.onChange ]);
 
 	const makeAddButtonWithEdgeElements = useCallback((brickID, brickType, brickTree, parentBrick,
 														 parentBrickID, paramCode) => {

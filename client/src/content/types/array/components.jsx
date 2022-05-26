@@ -11,7 +11,7 @@ export const ValueRender = (props) => {
 	useEffect(() => {
 		var res = value.filter(entry => value);
 		props.onChange && props.onChange(res);
-	}, [ value ])
+	}, [ value, props ])
 
 	const onChange = (newValue, index, type) => {
 		value[index] = newValue;
