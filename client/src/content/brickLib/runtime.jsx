@@ -31,17 +31,19 @@ export class BrickRuntime {
     basicValues.forEach(brick => insertTable(this.bricks, brick, brick.lib, brick.func))
     if (!content) return;
     for (let obj of Object.values(content.customBricks)) { // TODO: wrong
+      let lib = obj.brick.lib;
+      let func = `custom.${obj.id}`;
       let brick = {
-        type: obj.brick.type,
-        subtype: 10000 + obj.id,
+        lib, 
+        func,
         exec: (runtime, params, ctx) => {
-          ctx.args.push(params)
-          let result = this.execBrick(obj.brick, ctx)
-          ctx.args.pop()
-          return result
+          ctx.args.push(params);
+          let result = this.execBrick(obj.brick, ctx);
+          ctx.args.pop();
+          return result;
         }
       } 
-      insertTable(this.bricks, brick, obj.brick.type, 10000 + obj.id)
+      insertTable(this.bricks, brick, lib, func)
     }
   }
 
@@ -50,16 +52,12 @@ export class BrickRuntime {
       args: [],
       vars: {},
     }, extra);
-    ctx.object = object
-    return ctx
+    ctx.object = object;
+    return ctx;
   }
 
   execBrick = (brick, ctx) => {
-    let params: any = {}
-    for (let param of brick.params) {
-      params[param.name] = param.value
-    }
-    let func = this.bricks[brick.lib][brick.func].exec
-    return func(this, params, ctx)
+    let func = this.bricks[brick.lib][brick.func].exec;
+    return func(this, brick.params, ctx);
   }
 }

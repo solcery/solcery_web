@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Button, Input } from 'antd';
 import { SageAPI } from '../api';
-import { SType, SLink, SBrick } from '../content/types';
+import { SType, SLink, SBrick, SArray } from '../content/types';
 import { constructedBrickToBrick } from './migrators/constructedBrickToBrick';
 
 const { TextArea } = Input;
@@ -12,11 +12,16 @@ export const packId = (id) => {
 
 const getMigratorForField = (fieldData) => {
 	let fieldType = SType.from(fieldData.type);
-	if (fieldType instanceof SLink) return (value) => {
+	if (fieldType instanceof SLink) return (value, content) => {
 		return packId(value);
 	};
-	if (fieldType instanceof SBrick) return (value) => {
-		return constructedBrickToBrick(value);
+	if (fieldType instanceof SBrick) return (value, content) => {
+		return constructedBrickToBrick(value, content);
+	};
+	if (fieldType instanceof SArray) return (value, content) => {
+		if (fieldType.valueType instanceof SLink) {
+			return value.map(v => packId(v))
+		}
 	};
 	// if (fieldData.type.match(/SLink<.*>/)) return (value) => {
 	// 	return packId(value);
@@ -54,7 +59,7 @@ export default function DeconstructSync() {
 					if (!migrator) {
 						resultObject.fields[field] = value;
 					} else {
-						resultObject.fields[field] = migrator(value);
+						resultObject.fields[field] = migrator(value, contentSchema);
 					}
 				}
 				content.push(resultObject);

@@ -93,6 +93,13 @@ export const BrickEditor = (props) => {
 	}, [ props, active, onChange, sleepAndFit ]);
 
 	const makeAddButtonElement = useCallback((brickID, brickType, brickTree, parentBrick, paramCode) => {
+		if (!brickType) {
+			console.log('GET');
+			console.log(brickTree)
+			throw new Error('NO BRICK')
+		}
+		console.log(brickTree)
+		console.log(brickType)
 		return {
 			id: brickID,
 			type: 'add',
@@ -178,6 +185,10 @@ export const BrickEditor = (props) => {
 					processBrick(value, brickID, brick, param.code);
 				} else {
 					const addButtonBrickID = Number(++brickUniqueID).toString();
+					if (param.type.brickType === 'undefined') {
+						console.log(brickSignature);
+						throw new Error('CONSOLE')
+					}
 					const addButtonElems = makeAddButtonWithEdgeElements(addButtonBrickID, param.type.brickType, brickTree, brick, brickID, param.code);
 					elements.push(...addButtonElems);
 				}

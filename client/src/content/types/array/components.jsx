@@ -15,7 +15,7 @@ export const ValueRender = (props) => {
 
 	const onChange = (newValue, index, type) => {
 		value[index] = newValue;
-		setValue([...value]);
+		setValue(value);
 	}
 
 	const removeElement = (index) => {

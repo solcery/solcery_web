@@ -1,17 +1,16 @@
 import React, { useState, useEffect } from "react";
 import { Button } from 'antd';
-
 const ADD_ELEMENT_BUTTON_LABEL = ' + ';
 const REMOVE_ELEMENT_BUTTON_LABEL = ' - ';
 
 export const ValueRender = (props) => {
 
-	var [value, setValue] = useState(props.defaultValue || []);
+	var [value, setValue] = useState(props.defaultValue ?? []);
 
 	useEffect(() => {
 		var res = value.filter((entry) => entry.key !== undefined && entry.value !== undefined);
 		props.onChange && props.onChange(res);
-	}, [ value, props ])
+	}, [ value, props.onChange ])
 	
 	const onChange = (newValue, index, type) => {
 		value[index][type] = newValue;

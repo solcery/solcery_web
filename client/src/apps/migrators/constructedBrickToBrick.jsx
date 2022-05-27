@@ -8,14 +8,6 @@ let bricksByTypeSubtype = {
 	2: Object.fromEntries(basicValues.map(brick => [ brick.subtype, brick ])),
 }
 
-function camelCase(str) {
-  return str.replace(/(?:^\w|[A-Z]|\b\w)/g, function(word, index)
-  {
-    return index === 0 ? word.toLowerCase() : word.toUpperCase();
-  }).replace(/\s+/g, '');
-}
-
-
 const brickByTypeSubtype = (type, subtype) => {
 	if (subtype > 10000) {
 		return [ brickLibByType(type), `custom.[-${subtype - 10000}-]`];
@@ -30,16 +22,12 @@ const brickLibByType = (type) => {
 	if (type === 2) return 'value';
 }
 
-const handleBrick = (brick, args) => {
+const handleBrick = (brick, args, content) => {
 	let [ lib, func ] = brickByTypeSubtype(brick.type, brick.subtype);
 	let params = {}
 	for (let param of brick.params) {
 		if (typeof param.value === 'object') {
-			let paramName = param.name;
-			if (brick.subtype > 10000) {
-				paramName = camelCase(paramName);
-			}
-			params[paramName] = handleBrick(param.value, args);
+			params[param.name] = handleBrick(param.value, args, content);
 		} else {
 			params[param.name] = param.value;
 		}
@@ -51,12 +39,24 @@ const handleBrick = (brick, args) => {
 		}
 		args[nameParam.value] = lib;
 	}
+	console.log(lib, func)
+	if (lib === 'value' && func === 'const') {
+		console.log('CONST')
+		let val = params.value;
+		let cardTypes = content.cardTypes.objects
+		let cardType = cardTypes.find(cardType => cardType.id === val)
+		console.log(cardType)
+		if (cardType) {
+			func = 'cardType';
+			params.value = `[-${cardType.id}-]`;
+		}
+	}
 	return { lib, func, params };
 }
 
-export const constructedBrickToBrick = function(brick) {
+export const constructedBrickToBrick = function(brick, content) {
 	let args = {};
-	let brickTree = handleBrick(brick, args);
+	let brickTree = handleBrick(brick, args, content);
 	let brickParams = Object.entries(args).map(([ name, lib ]) => {
 		return {
 			key: name,

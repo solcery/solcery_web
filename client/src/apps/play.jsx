@@ -1,7 +1,9 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Session } from '../game';
 import gameContent from '../game/game_content.json';
 import Unity, { UnityContext } from "react-unity-webgl";
+import { useBrickLibrary } from '../contexts/brickLibrary';
+import { build } from '../builder';
 
 const unityPlayContext = new UnityContext({
   loaderUrl: "game/WebGl.loader.js",
@@ -13,7 +15,19 @@ const unityPlayContext = new UnityContext({
 
 export default function Play() {
 
-	const [ gameSession ] = useState(new Session(gameContent, [ 1 ]))
+	const [ gameSession, setGameSession ] = useState();
+	const { brickLibrary } = useBrickLibrary();
+
+	const buildProject = async () => {
+		let content = await build({ targets: [ 'web', 'unity' ], brickLibrary });
+		console.log(content);
+		setGameSession(new Session(content, [ 1 ]));
+	}
+
+	useEffect(() => {
+		if (!brickLibrary) return;
+		buildProject();
+	}, [ brickLibrary ])
 
 	const sendDiffLog = (diffLog, send = true) => {
 		let states = diffLog.map((state, index) => {
@@ -41,6 +55,19 @@ export default function Play() {
 	const clientCommand = (funcName, param) => {
 		const USHORT_SIZE = 65536;
 		let data = typeof param === 'string' ? param : JSON.stringify(param)
+		if (funcName = 'UpdateGameState') {
+			data = JSON.stringify({
+				id: 0,
+				state_type: 0,
+				value: {
+					attrs: [],
+					objects: [],
+					deleted_objects: []
+				},
+			})
+		}
+		console.log(funcName)
+		console.log(data)
 		const chunks = [...stringChunk(data, USHORT_SIZE)];
 
 		for (let i = 0; i < chunks.length; i++) {
@@ -55,16 +82,15 @@ export default function Play() {
 	}
 
 	unityPlayContext.on("OnUnityLoaded", async () => {
-		let content = gameSession.content.client
-		clientCommand("UpdateGameContent", content)
-		console.log(gameSession)
-		sendDiffLog(gameSession.game.diffLog)
+		let content = gameSession.content.unity;
+		clientCommand("UpdateGameContent", content);
+		sendDiffLog(gameSession.game.diffLog);
 	});
 
 	unityPlayContext.on("SendCommand", async (jsonData) => {
-		let command = JSON.parse(jsonData)
-		gameSession.handlePlayerCommand(command)
-		sendDiffLog(gameSession.game.diffLog)
+		let command = JSON.parse(jsonData);
+		gameSession.handlePlayerCommand(command);
+		sendDiffLog(gameSession.game.diffLog);
 	});
 
 	return (

@@ -8,18 +8,8 @@ class SLink {
     this.templateCode = data.templateCode;
   }
 
-  construct = (value, meta) => {
-    if (meta.target === 'unity') {
-      let intId = meta.linkToIds[value];
-      if (!intId) {
-        intId = Object.keys(meta.linkToIds).length + 1;
-        meta.linkToIds[value] = intId;
-      }
-      return intId;
-    }
-    return value;
-  }
-
+  construct = (value, meta) => meta.getIntId(value);
+  
   valueRender = ValueRender;
   default = undefined;
 };

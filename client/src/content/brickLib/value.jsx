@@ -16,6 +16,19 @@ export const basicValues = [
   },
   {
     type: 2,
+    subtype: 0,
+    lib: 'value',
+    func: 'cardType',
+    name: 'Card type',
+    params: [
+      { code: 'value', name: 'Value', type: 'SLink<cardTypes>' }
+    ],
+    exec: (runtime, params, ctx) => {
+      return params.value
+    }
+  },
+  {
+    type: 2,
     subtype: 1,
     lib: 'value',
     func: 'var',
@@ -32,7 +45,7 @@ export const basicValues = [
     type: 2,
     subtype: 2,
     lib: 'value',
-    func: 'value',
+    func: 'attr',
     name: 'Attribute',
     params: [
       { code: 'attr_name', name: 'Attribute name', type: 'SString' }

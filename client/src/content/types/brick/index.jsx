@@ -15,34 +15,43 @@ class SBrick {
     if (!v) return undefined;
     let brickSignature = meta.brickLibrary[v.lib][v.func];
     if (!brickSignature) throw new Error(`Error constructing brick [${v.lib}.${v.func}] - no signature found!`);
+    let result = {
+      name: brickSignature.name,
+      params: brickSignature.params 
+        .filter(paramSig => v.params[paramSig.code] !== undefined)
+        .map(paramSig => {
+          let param = v.params[paramSig.code]
+          return {
+            name: paramSig.code,
+            value: paramSig.type.construct(param, meta)
+          }
+        })
+    }
     if (meta.target === 'unity') {
-      return {
-        name: brickSignature.name,
-        type: brickSignature.type,
-        subtype: brickSignature.subtype, 
-        params: brickSignature.params 
-          .filter(paramSig => v.params[paramSig.code] !== undefined)
-          .map(paramSig => {
-            let param = v.params[paramSig.code]
-            return {
-              name: paramSig.code,
-              value: paramSig.type.construct(param, meta)
-            }
-          })
+      let func = brickSignature.func;
+      if (func.includes('custom')) {
+        let typeByName = { action: 0, condition: 1, value: 2 };
+        result.subtype = 10000 + meta.getIntId(func.split('.')[1]); 
+        result.type = typeByName[brickSignature.lib];
+      } else {
+        result.type = brickSignature.type;
+        result.subtype = brickSignature.subtype;
       }
     }
     if (meta.target === 'web') {
-      return {
-        lib: brickSignature.lib,
-        func: brickSignature.func,
-        params: Object.fromEntries(brickSignature.params 
-          .filter(paramSig => v.params[paramSig.code] !== undefined)
-          .map(paramSig => [
-            paramSig.code,
-            paramSig.type.construct(v.params[paramSig.code], meta)
-          ]))
+      result.lib = brickSignature.lib;
+      result.func = brickSignature.func;
+      let func = brickSignature.func;
+      if (func.includes('custom')) {
+        result.func = 'custom.' + meta.getIntId(func.split('.')[1])  
       }
+      let newParams = {}
+      for (let param of result.params) {
+        newParams[param.name] = param.value;
+      }
+      result.params = newParams;
     }
+    return result;
   }
   valueRender = ValueRender;
   default = '';

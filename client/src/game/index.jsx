@@ -21,19 +21,15 @@ const objectToArray = (obj) => {
 export class Session {
   content = undefined;
   game = undefined;
+  runtime = undefined;
   seed = 1; // TODO
   players = [];
 
-  constructor(clientContent, players, log = []) {
-    let content = convertContent(clientContent)
-    this.content = {
-      client: clientContent,
-      web: content
-    };
-    this.clientContent = clientContent;
+  constructor(content, players, log = []) {
+    this.content = content;
     this.log = log;
     this.players = players;
-    this.runtime = new BrickRuntime(content);
+    this.runtime = new BrickRuntime(content.web);
     this.seed = Math.floor(Math.random() * 1000);
     this.game = new Game(this); //TODO
   }
@@ -47,7 +43,6 @@ export class Session {
       return this.game.dropCard(command.object_id, command.drag_drop_id, command.target_place_id)
     }
   }
-
 }
 
 export class Game {
@@ -67,7 +62,6 @@ export class Game {
   }
 
   initLayout = () => {
-    this.startDiff(true)
     for (let cardPack of Object.values(this.content.cards)) {
       for (let i = 0; i < cardPack.amount; i++) {
         let obj = this.createEntity(cardPack.cardType);
@@ -83,6 +77,7 @@ export class Game {
         }
       }
     }
+    this.startDiff(true)
     this.closeDiff()
   }
 
@@ -149,13 +144,14 @@ export class Game {
   }
 
   startDiff(full = false) {
+    console.log(full)
     let diff = {
       attrs: {},
       objects: {}
     };
     if (full) {
       Object.assign(diff.attrs, this.attrs);
-      for (let obj of Object.values(this.objects)) {
+      for (let [ id, obj ] of Object.entries(this.objects)) {
         diff.objects[obj.id] = {
           id: obj.id,
           tplId: obj.tplId,
@@ -204,6 +200,7 @@ class Entity {
     for (let attr of Object.values(game.content.attributes)) {
       this.attrs[attr.code] = 0;
     }
+    // console.log(this)
   }
 
   setAttr(attr, value) {

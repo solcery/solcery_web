@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { Select } from 'antd';
-
 import { SageAPI } from '../../../api';
+import { Select } from 'antd';
 const { Option } = Select;
 
 export const ValueRender = (props) => {
@@ -14,7 +13,8 @@ export const ValueRender = (props) => {
 		props.onChange && props.onChange(newValue);
 	}
 
-	useEffect(() => { 
+
+	useEffect(() => {
 		SageAPI.template.getAllObjects(props.type.templateCode).then(res => {
 			setObjects(res.map(object => {
 				return {
@@ -23,17 +23,35 @@ export const ValueRender = (props) => {
 				}
 			}))
 		})
-
 	}, [ props.type ]);
+
+	if (!objects) return <>Loading</>;
 	if (!props.onChange) {
-		if (value) {
-			return <a href = { `/template.${props.type.templateCode}.${value._id}` }>
-					{ value.fields.name }
-				</a>;
+		if (props.defaultValue) {
+			let obj = objects.find(obj => obj.id === props.defaultValue);
+			if (obj) {
+				return <a href = { `/template.${props.type.templateCode}.${props.defaultValue}` }>
+						{ obj.title }
+					</a>;
+			}
+			else {
+				return <p>{ `Missing object ${props.defaultValue}`}</p>;
+			}
 		} else return <p>None</p>;
 	}
-	if (!objects) return <></>;
-	return <Select onChange = { onChange } defaultValue = { props.defaultValue }>
+
+	return <Select 
+				showSearch
+				style={{
+			      width: 200,
+			    }}
+				onChange = { onChange }
+				defaultValue = { props.defaultValue }
+				filterOption={(input, option) => option.children.includes(input)}
+    			filterSort={(optionA, optionB) => optionA.children
+    				.toLowerCase()
+    				.localeCompare(optionB.children.toLowerCase())}
+			>
 			<Option key='none' value='None'>
 				None
 			</Option>
