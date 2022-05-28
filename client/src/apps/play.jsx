@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react'
 import { Session } from '../game';
-import gameContent from '../game/game_content.json';
 import Unity, { UnityContext } from "react-unity-webgl";
 import { useBrickLibrary } from '../contexts/brickLibrary';
 import { build } from '../builder';
+
+import testContent from './content.json';
 
 const unityPlayContext = new UnityContext({
   loaderUrl: "game/WebGl.loader.js",
@@ -55,19 +56,6 @@ export default function Play() {
 	const clientCommand = (funcName, param) => {
 		const USHORT_SIZE = 65536;
 		let data = typeof param === 'string' ? param : JSON.stringify(param)
-		if (funcName = 'UpdateGameState') {
-			data = JSON.stringify({
-				id: 0,
-				state_type: 0,
-				value: {
-					attrs: [],
-					objects: [],
-					deleted_objects: []
-				},
-			})
-		}
-		console.log(funcName)
-		console.log(data)
 		const chunks = [...stringChunk(data, USHORT_SIZE)];
 
 		for (let i = 0; i < chunks.length; i++) {

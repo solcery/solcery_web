@@ -144,7 +144,6 @@ export class Game {
   }
 
   startDiff(full = false) {
-    console.log(full)
     let diff = {
       attrs: {},
       objects: {}
@@ -200,7 +199,6 @@ class Entity {
     for (let attr of Object.values(game.content.attributes)) {
       this.attrs[attr.code] = 0;
     }
-    // console.log(this)
   }
 
   setAttr(attr, value) {

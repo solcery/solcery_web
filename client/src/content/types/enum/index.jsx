@@ -7,7 +7,10 @@ class SEnum {
 		this.values = data.values;
 		this.constructValues = data.constructValues;
 	}
-	construct = (value, meta) => this.constructValues ? this.constructValues[value] : value;
+	construct = (value, meta) => {
+		let i = value ?? 0;
+		return this.constructValues ? this.constructValues[i] : i; 
+	}
 	valueRender = ValueRender;
 	default = 0;
 };

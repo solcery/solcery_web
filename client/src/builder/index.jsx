@@ -45,7 +45,6 @@ export const build = async ({ targets, brickLibrary }) => { //TODO: remove brick
 				constructed[template.code] = rawContent[template.code].map(obj => template.construct(obj, meta))
 			}
 		}
-		console.log(constructed)
 		if (target === 'unity') {
 			Object.entries(constructed).forEach(([ name, objects ]) => {
 				result.unity[name] = { name, objects }
