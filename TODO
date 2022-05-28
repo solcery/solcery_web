@@ -1,10 +1,9 @@
 TODO:
 
-Фильтры и сортировка
 error брики, изменение параметров и удаление - проверить что все ехает
 
 
-
+Нормально делать таблицы
 sealed and readonly templates and fields
 ридонли рендер для массива
 singleton, projectSettings

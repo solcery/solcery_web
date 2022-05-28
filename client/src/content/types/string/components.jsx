@@ -1,5 +1,5 @@
-import React from "react";
-import { Input } from 'antd';
+import { useState } from "react";
+import { Input, Button } from 'antd';
 
 export const ValueRender = ({ defaultValue, type, onChange }) => {
 	if (!onChange) return <>{ defaultValue }</>;
@@ -13,9 +13,13 @@ export const ValueRender = ({ defaultValue, type, onChange }) => {
 }
 
 export const FilterRender = ({ defaultValue, onChange }) => {
-	return <Input 
-		style = { { width: '200px' }}
-		defaultValue={ defaultValue }
-		onChange={ (event) => { onChange && onChange(event.target.value) } }
-	/>;
+	const [ value, setValue ] = useState(defaultValue);
+	return (<div>
+		<Input 
+			style = { { width: '200px' }}
+			defaultValue={ defaultValue }
+			onChange={ (event) => { onChange && setValue(event.target.value) } }
+		/>
+		<Button onClick={() => onChange(value)}>APPLY</Button>
+	</div>);
 }

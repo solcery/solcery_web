@@ -57,7 +57,7 @@ export default function CollectionEditor() {
 			>
 				{Object.values(template.fields).map(field => 
 					<Column 
-						title={field.name} 
+						title={field.name + (cookies[filterCookie(field.code)] ? `   [ ${cookies[filterCookie(field.code)]} ]` : '') } 
 						key={field.code} 
 						dataIndex={field.code}
 						filterDropdown={field.type.filter && 
