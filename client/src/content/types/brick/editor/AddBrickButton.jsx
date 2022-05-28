@@ -75,9 +75,11 @@ export default function AddBrickButton(props) {
 
 	console.log(brickSignaturesOfType)
 
-	const selectorOptions = Object.entries(brickSignaturesOfType).map(([name, sig]) => {
-		return { value: name, label: sig.name };
-	});
+	const selectorOptions = Object.entries(brickSignaturesOfType)
+		.filter(([name, sig]) => !sig.hidden)
+		.map(([name, sig]) => {
+			return { value: name, label: sig.name };
+		});
 	return (
 		<>
 			<div className={ `add-brick-button ${(!props.data.readonly && !props.data.small) ? 'active' : ''}` }

@@ -20,6 +20,7 @@ export function BrickLibraryProvider(props) {
 			        lib: obj.fields.brick.brickType,
 			        func: `custom.${obj._id}`,
 			        name: obj.fields.name,
+			        hidden: obj.fields.hidden,
 			        params
 		        }
     		})
