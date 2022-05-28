@@ -54,8 +54,8 @@ const db = require("./db/connection");
   // Priority serve any static files.
   app.use(express.static(path.resolve(__dirname, '../client/build')));
 
-  app.use(bodyParser.urlencoded({ limit: '50mb', extended: false }));
-  app.use(bodyParser.json({limit: '50mb'}));
+  app.use(bodyParser.urlencoded({ limit: '10mb', extended: false }));
+  app.use(bodyParser.json({limit: '10mb'}));
 
   // Answer API requests.
   app.get('/api/*', function (request, response) { // TODO

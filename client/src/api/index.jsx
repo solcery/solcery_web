@@ -5,9 +5,15 @@ const API_PATH = '/api';
 export const SageAPI = {
 	project: project,
 	template: template,
+	projectName: 'none'
 };
 
-export const apiCall = (moduleName, command, data) => {
+SageAPI.connect = function(projectName) {
+	this.projectName = projectName; // TODO: proper check and connect	
+}
+
+export const apiCall = (moduleName, command, data = {}) => {
+	data.project = SageAPI.projectName; //TODO: rework API
 	let url = new URLSearchParams();
 	url = `${API_PATH}/${moduleName}`;
 	let request = {
@@ -17,5 +23,6 @@ export const apiCall = (moduleName, command, data) => {
 	    },
 	    body: JSON.stringify({ command, data })
 	};
+	console.log(request)
 	return fetch(url, request).then((response) => response.json());
 }

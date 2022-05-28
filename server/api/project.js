@@ -1,76 +1,65 @@
 const db = require("../db/connection");
 var ObjectId = require('mongodb').ObjectId
 
+const TEMPLATE_COLLECTION = 'templates';
+const OBJECT_COLLECTION = 'objects';
+
 const getAllTemplates = async function(response, params) {
     let result = db
-    	.getDb("project_eclipse")
-        .collection("templates")
+    	.getDb(params.project)
+        .collection(TEMPLATE_COLLECTION)
         .find({})
         .toArray();
     response.json(await result)
 }
 
-const removeAllTemplates = async function(response, params) {
-    let result = db
-        .getDb("project_eclipse")
-        .collection("templates")
+const dump = async function(respone, params) {
+    let objects = await db
+        .getDb(params.project)
+        .collection(OBJECT_COLLECTION)
         .remove({});
-    response.json(await result)
+   let templates = await db
+        .getDb(params.project)
+        .collection(OBJECT_COLLECTION)
+        .remove({});
+    response.json({ objects, templates })
 }
 
-const removeAllObjects = async function(response, params) {
-    let result = db
-        .getDb("project_eclipse")
-        .collection("objects")
-        .remove({});
-    response.json(await result)
-}
+const restore = async function(respone, params) {
+    let { objects, templates } = params.src;
 
-const createManyTemplates = async function(response, params) { // TODO: validate
-    let objects = params.templates.map(template => {
-        return Object.assign({ _id: new ObjectId() }, template)
-    })
-    db
-        .getDb("project_eclipse")
-        .collection('templates')
+    await db // Removing all templates
+        .getDb(params.project)
+        .collection(TEMPLATE_COLLECTION)
+        .remove({});
+
+    await db // Removing all objects
+        .getDb(params.project)
+        .collection(OBJECT_COLLECTION)
+        .remove({});
+
+    let result = {};
+    await db // Creating templates
+        .getDb(params.project)
+        .collection(TEMPLATE_COLLECTION)
         .insertMany(objects, function(err, res) {
           if (err) throw err;
-          response.json(res);
+          result.templates = res;
         });
-}
-
-const importContent = async function(response, params) { // TODO: validate
-    let ids = params.objects.map(object => {
-        return {
-            old: object.id,
-            new: new ObjectId(),
-        }
-    })
-    let stringContent = JSON.stringify(params.objects);
-    ids.forEach(idPair => {
-        let regex = RegExp(`\\[\\-${idPair.old}\\-\\]`, "g");
-        stringContent = stringContent.replace(regex, idPair.new); 
-    })
-    let objects = JSON.parse(stringContent);
-    for (let object of objects) {
-        object._id = ids.find(idPair => object.id === idPair.old).new;
-        object.id = undefined;
-    }
-    db
-        .getDb("project_eclipse")
-        .collection('objects')
+    await db // Creating all objects
+        .getDb(params.project)
+        .collection(OBJECT_COLLECTION)
         .insertMany(objects, function(err, res) {
           if (err) throw err;
-          response.json(res);
+          result.objects = res;
         });
+    response.json(result);
 }
 
 module.exports = function(api) {
 	api.project = (params) => {
         if (params.command == 'getAllTemplates') return getAllTemplates;
-        if (params.command == 'removeAllTemplates') return removeAllTemplates;
-        if (params.command == 'removeAllObjects') return removeAllObjects;
-        if (params.command == 'createManyTemplates') return createManyTemplates;
-        if (params.command == 'importContent') return importContent;
+        if (params.command == 'restore') return restore;
+        if (params.command == 'dump') return dump;
     }
 }
