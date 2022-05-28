@@ -22,6 +22,8 @@ export function UserProvider(props) {
 		SageAPI.template.getObjectById('users', id).then(loadUser)
 	}
 
+
+
 	const loadUser = (userData) => {
 		setUser({
 			id: userData._id,
@@ -31,7 +33,7 @@ export function UserProvider(props) {
 		})
 	}
 
-	const auth = (login, password) => {
+	const auth = useCallback(() => {
 		if (!login || !password) return;
 		SageAPI.template.getAllObjects('users').then(res => {
 			let userObject = res.find(usr => usr.fields.name === login);
@@ -43,7 +45,7 @@ export function UserProvider(props) {
 			})
 			loadUser(userObject);
 		})
-	}
+	}, [ login, password ]);
 
 	// useEffect(() => {
 	// 	SageAPI.template.getAllObjects('users').then(res => {
@@ -68,8 +70,8 @@ export function UserProvider(props) {
 	}, [ user ])
 
 	if (!user) return (<>
-			<Input placeholder = 'login' onChange={e => setLogin(e.target.value)}/>
-			<Input.Password placeholder = 'password' onChange={e => setPassword(e.target.value)}/>
+			<Input placeholder = 'login' onChange={e => { setLogin(e.target.value) } }/>
+			<Input.Password placeholder = 'password' onChange={e => { setPassword(e.target.value) } }/>
 			<Button onClick={auth}>LOGIN</Button>
 		</>);
   return (
