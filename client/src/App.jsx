@@ -9,7 +9,7 @@ import './App.css';
 
 import ObjectPage from "./apps/objectPage";
 import CollectionEditor from "./apps/collectionEditor";
-import DeconstructSync from "./apps/deconstructSync";
+import ContentExporter from "./apps/contentExporter";
 import Play from "./apps/play";
 import Project from "./apps/project";
 import Profile from "./apps/profile";
@@ -27,7 +27,7 @@ export default function App() {
 								<Route path="template.:templateCode" element={<CollectionEditor />} />
 								<Route path="play" element={<Play />} />
 								<Route path="project" element={<Project />} />
-								<Route path="deconstructSync" element={<DeconstructSync />} />
+								<Route path="export" element={<ContentExporter />} />
 								<Route path="profile" element={<Profile />} />
 							</Routes>
 						</BrowserRouter>

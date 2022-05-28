@@ -13,19 +13,21 @@ const getAllTemplates = async function(response, params) {
     response.json(await result)
 }
 
-const dump = async function(respone, params) {
+const dump = async function(response, params) {
     let objects = await db
         .getDb(params.project)
         .collection(OBJECT_COLLECTION)
-        .remove({});
+        .find({})
+        .toArray();
    let templates = await db
         .getDb(params.project)
-        .collection(OBJECT_COLLECTION)
-        .remove({});
+        .collection(TEMPLATE_COLLECTION)
+        ..find({})
+        .toArray();
     response.json({ objects, templates })
 }
 
-const restore = async function(respone, params) {
+const restore = async function(response, params) {
     let { objects, templates } = params.src;
 
     await db // Removing all templates

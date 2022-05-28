@@ -7,18 +7,10 @@ project.getAllTemplates = () => {
 	return apiCall(MODULE_NAME, 'getAllTemplates')
 }
 
-project.removeAllTemplates = () => {
-	return apiCall(MODULE_NAME, 'removeAllTemplates')
+project.restore = ({ objects, templates }) => {
+	return apiCall(MODULE_NAME, 'restore', { objects, templates })
 }
 
-project.removeAllObjects = () => {
-	return apiCall(MODULE_NAME, 'removeAllObjects')
-}
-
-project.createManyTemplates = ({ templates }) => {
-	return apiCall(MODULE_NAME, 'createManyTemplates', { templates })
-}
-
-project.importContent = ({ objects }) => {
-	return apiCall(MODULE_NAME, 'importContent', { objects })
+project.dump = () => {
+	return apiCall(MODULE_NAME, 'dump')
 }
