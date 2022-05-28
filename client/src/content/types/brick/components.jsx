@@ -33,7 +33,13 @@ const paramMapType = SType.from({
   name: 'SMap',
   data: {
     keyType: 'SString',
-    valueType: 'SEnum<action|condition|value>',
+    valueType: {
+      name: 'SEnum',
+      data: {
+        values: [ 'action', 'condition', 'value' ],
+        titles: [ 'Action', 'Condition', 'Value' ]
+      }
+    }
   }
 })
 
@@ -73,8 +79,7 @@ export const ValueRender = (props) => {
 
   return (
     <>
-      {props.type.params && <>
-        <p>Params:</p>
+      {props.type.params && <>Params:
         <paramMapType.valueRender 
           defaultValue = { brickParams }
           type = { paramMapType }

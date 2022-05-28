@@ -2,15 +2,12 @@ import { SType } from '../base'
 import { ValueRender } from './components'
 
 class SEnum {
-	static fromString = data => new SEnum({ values: data.split('|') });
+	static fromString = data => new SEnum({ titles: data.split('|') });
 	constructor(data) {
-		this.values = data.values;
-		this.constructValues = data.constructValues;
+		this.titles = data.titles;
+		this.values = data.values ?? Array.from(data.titles.keys());
 	}
-	construct = (value, meta) => {
-		let i = value ?? 0;
-		return this.constructValues ? this.constructValues[i] : i; 
-	}
+	construct = (value, meta) => value;
 	valueRender = ValueRender;
 	default = 0;
 };

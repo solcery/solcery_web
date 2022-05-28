@@ -20,7 +20,7 @@ export class Template {
 		let result = {}
 		result.id = meta.getIntId(object._id)
 		for (let field of Object.values(this.fields)) {
-			if (object.fields[field.code]) {
+			if (object.fields[field.code] !== undefined) {
 				result[field.code] = field.type.construct(object.fields[field.code], meta);
 			}
 		}

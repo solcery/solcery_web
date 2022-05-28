@@ -4,19 +4,17 @@ import { Select } from 'antd';
 const { Option } = Select;
 
 export const ValueRender = (props) => {
+	let defaultIndex = props.type.values.indexOf(props.defaultValue ?? 0);
 	if (!props.onChange) {
-		var defaultValue = props.defaultValue ? props.defaultValue : 0;
-		return <p>{ props.type.values[defaultValue] }</p>;
+		return <>{ props.type.titles[defaultIndex] }</>;
 	}
 	return (
-		<div>
-			<Select defaultValue = { props.defaultValue ? props.defaultValue : 0 } onChange = { props.onChange }>
-				{props.type.values.map((value, index) => 
-					<Option key = { index } value = { index }>
-						{ value }
-					</Option>
-				)} 
-			</Select>
-		</div>
+		<Select defaultValue = { props.type.titles[defaultIndex] } onChange = { props.onChange }>
+			{props.type.titles.map((value, index) => 
+				<Option key = { index } value = { props.type.values[index] }>
+					{ value }
+				</Option>
+			)} 
+		</Select>
 	);
 }

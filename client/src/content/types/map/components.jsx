@@ -13,6 +13,7 @@ export const ValueRender = (props) => {
 	}, [ value, props.onChange ])
 	
 	const onChange = (newValue, index, type) => {
+		console.log(newValue, index, type)
 		value[index][type] = newValue;
 		setValue([...value]);
 	}
@@ -29,17 +30,14 @@ export const ValueRender = (props) => {
 		});
 		setValue([...value]);
 	}
-
 	if (!props.onChange) return (
 		<>
-			<p>Map:</p>
 			{value.map((entry, index) => 
 				<div key={`${index}:${entry.key}:${entry.value}`}>
 					<props.type.keyType.valueRender
 						defaultValue = { entry.key }
 						type = { props.type.keyType }
-					/>
-					 => 
+					/>{ ' => ' } 
 					<props.type.valueType.valueRender
 						defaultValue = { entry.value }
 						type = { props.type.valueType }
