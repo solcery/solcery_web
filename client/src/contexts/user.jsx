@@ -26,6 +26,7 @@ export function UserProvider(props) {
 		setUser({
 			id: userData._id,
 			css: userData.fields.css,
+			layoutPresets: userData.fields.layoutPresets,
 			reload
 		})
 	}
@@ -80,6 +81,6 @@ export function UserProvider(props) {
 }
 
 export function useUser() {
- 	const { id, css, reload } = useContext(UserContext);
-	return { id, css, reload }
+ 	const { id, css, layoutPresets, reload } = useContext(UserContext);
+	return { id, css, layoutPresets, reload }
 }

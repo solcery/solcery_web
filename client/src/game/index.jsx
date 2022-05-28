@@ -25,6 +25,10 @@ export class Session {
   seed = 1; // TODO
   players = [];
 
+  start(layoutPresets) {
+    this.game.start(layoutPresets)
+  }
+  
   constructor(content, players, log = []) {
     this.content = content;
     this.log = log;
@@ -58,11 +62,12 @@ export class Game {
     for (let attr of Object.values(this.content.gameAttributes)) {
       this.attrs[attr.code] = 0;
     }
-    this.initLayout();
   }
 
-  initLayout = () => {
+  start = (layoutPresets) => {
+    if (!layoutPresets) throw new Error('Error: Trying to initLayout without preset scheme')
     for (let cardPack of Object.values(this.content.cards)) {
+      if (!layoutPresets.includes(cardPack.preset)) continue;
       for (let i = 0; i < cardPack.amount; i++) {
         let obj = this.createEntity(cardPack.cardType);
         obj.setAttr('place', cardPack.place);

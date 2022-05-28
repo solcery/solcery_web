@@ -3,8 +3,7 @@ import { Session } from '../game';
 import Unity, { UnityContext } from "react-unity-webgl";
 import { useBrickLibrary } from '../contexts/brickLibrary';
 import { build } from '../builder';
-
-import testContent from './content.json';
+import { useUser } from '../contexts/user';
 
 const unityPlayContext = new UnityContext({
   loaderUrl: "game/WebGl.loader.js",
@@ -18,11 +17,13 @@ export default function Play() {
 
 	const [ gameSession, setGameSession ] = useState();
 	const { brickLibrary } = useBrickLibrary();
+	const { layoutPresets } = useUser();
 
 	const buildProject = async () => {
 		let content = await build({ targets: [ 'web', 'unity' ], brickLibrary });
-		console.log(content);
-		setGameSession(new Session(content, [ 1 ]));
+		let session = new Session(content, [ 1 ]);
+		session.start(layoutPresets)
+		setGameSession(session);
 	}
 
 	useEffect(() => {
