@@ -1,5 +1,5 @@
 import { SType } from '../base'
-import { ValueRender } from './components'
+import { ValueRender, FilterRender } from './components'
 
 class SString {
 	static fromString = () => new SString({});
@@ -17,6 +17,12 @@ class SString {
 		return result;
 	};
 	valueRender = ValueRender;
+	filter = {
+		eq: (value, filterValue) => {
+			return value.toLowerCase().includes(filterValue.toLowerCase())
+		},
+		render: FilterRender,
+	};
 	default = '';
 };
 

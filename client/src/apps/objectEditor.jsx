@@ -2,7 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from "react-router-dom";
 import { Template } from '../content/template';
 import { Table, Button } from "antd";
-import { SageAPI } from '../api'
+import { SageAPI } from '../api';
+import { useCookies } from 'react-cookie';
 
 const { Column } = Table;
 

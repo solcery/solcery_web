@@ -6,7 +6,7 @@ import { useCookies } from 'react-cookie';
 const UserContext = React.createContext(undefined);
 
 export function UserProvider(props) {
-	const [ cookies, setCookie, removeCookie ] = useCookies(['loggedAs']);
+	const [ cookies, setCookie ] = useCookies(['loggedAs']);
 	const [ user, setUser ] = useState(undefined);
 	const [ login, setLogin ] = useState(undefined);
 	const [ password, setPassword ] = useState(undefined);

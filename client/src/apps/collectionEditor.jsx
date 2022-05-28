@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom';
-import { Table, Button } from 'antd';
+import { Table, Button, Input } from 'antd';
 import { Template } from '../content/template'
 import { SageAPI } from '../api'
+import { useCookies } from 'react-cookie';
 
 const { Column } = Table;
 
@@ -10,28 +11,38 @@ export default function CollectionEditor() {
 
 	let navigate = useNavigate();
 	let { templateCode } = useParams();
+	const filterCookieName = `filter.${templateCode}`;
 	const [ objects, setObjects ] = useState(undefined);
 	const [ template, setTemplate ] = useState(undefined)
-	
+	const [ cookies, setCookie ] = useCookies();
+
 	useEffect(() => {
 		SageAPI.template.getAllObjects(templateCode).then(setObjects);
 		SageAPI.template.getSchema(templateCode).then((data) => setTemplate(new Template(data)));
 	}, [ templateCode ]);
 
+	const filterCookie = (fieldCode) => {
+		return `filter.${templateCode}.${fieldCode}`;
+	}
+
 	if (!template || !objects) return (<>NO DATA</>);
 
-	let tableData = []
-	for (let object of objects) {
-		let objectData = {
+	let tableData = objects.filter(object => {
+		for (let field of Object.values(template.fields)) {
+			let filterValue = cookies[filterCookie(field.code)]
+			if (!filterValue) continue;
+			let filter = field.type.filter;
+			if (!filter) continue;
+			if (!field.type.filter.eq(object.fields[field.code], filterValue)) return false;
+		}
+		return true;
+	}).map(object => {
+		return {
 			id: object._id,
 			key: object._id,
-			fields: {},
+			fields: Object.assign({}, object.fields),
 		}
-		for (let field of Object.values(template.fields)) {
-			objectData.fields[field.code] = object.fields[field.code]
-		}
-		tableData.push(objectData)
-	}
+	})
 	return (
 		<>
 			<Table 
@@ -49,6 +60,11 @@ export default function CollectionEditor() {
 						title={field.name} 
 						key={field.code} 
 						dataIndex={field.code}
+						filterDropdown={field.type.filter && 
+			              <field.type.filter.render 
+			              	defaultValue={ cookies[filterCookie(field.code)] } 
+			              	onChange={(value) => { setCookie(filterCookie(field.code), value) }}/>
+			            }
 						render = {(_, object) => <field.type.valueRender
 							defaultValue = { object.fields[field.code] }
 							type = { field.type }
