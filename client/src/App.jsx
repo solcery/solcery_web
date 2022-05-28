@@ -3,35 +3,37 @@ import { TopMenu } from './components/TopMenu';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { BrickLibraryProvider } from './contexts/brickLibrary';
 import { UserProvider } from './contexts/user';
+import { CookiesProvider } from 'react-cookie';
 import './App.less';
 import './App.css';
 
-import ObjectEditor from "./apps/objectEditor";
+import ObjectPage from "./apps/objectPage";
 import CollectionEditor from "./apps/collectionEditor";
-import TemplateUtils from "./apps/templateUtils";
 import DeconstructSync from "./apps/deconstructSync";
 import Play from "./apps/play";
 import Project from "./apps/project";
+import Profile from "./apps/profile";
 
 export default function App() {
 	return (
 		<>
-			<h1>SAGE greets you!</h1>
-			<TopMenu style={{ backgroundColor: 'black' }}/>
-			<UserProvider>
-				<BrickLibraryProvider>
-					<BrowserRouter>
-						<Routes>
-							<Route path="template.:templateCode.utils" element={<TemplateUtils />} />
-							<Route path="template.:templateCode.:objectId" element={<ObjectEditor />} />
-							<Route path="template.:templateCode" element={<CollectionEditor />} />
-							<Route path="play" element={<Play />} />
-							<Route path="project" element={<Project />} />
-							<Route path="deconstructSync" element={<DeconstructSync />} />
-						</Routes>
-					</BrowserRouter>
-				</BrickLibraryProvider>
-			</UserProvider>
+			<CookiesProvider>
+				<UserProvider>
+					<TopMenu style={{ backgroundColor: 'black' }}/>
+					<BrickLibraryProvider>
+						<BrowserRouter>
+							<Routes>
+								<Route path="template.:templateCode.:objectId" element={<ObjectPage />} />
+								<Route path="template.:templateCode" element={<CollectionEditor />} />
+								<Route path="play" element={<Play />} />
+								<Route path="project" element={<Project />} />
+								<Route path="deconstructSync" element={<DeconstructSync />} />
+								<Route path="profile" element={<Profile />} />
+							</Routes>
+						</BrowserRouter>
+					</BrickLibraryProvider>
+				</UserProvider>
+			</CookiesProvider>
 		</>
 	);
 }

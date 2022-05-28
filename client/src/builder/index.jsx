@@ -13,8 +13,7 @@ export const build = async ({ targets, brickLibrary }) => { //TODO: remove brick
 		},
 		getIntId: function(objectId) {
 			return this.intIds[objectId];
-		}
-		
+		}	
 	}
 
 	let templates = (await SageAPI.project.getAllTemplates()).map(template => new Template(template))
@@ -23,11 +22,11 @@ export const build = async ({ targets, brickLibrary }) => { //TODO: remove brick
 		for (let obj of objects) {
 			meta.addIntId(obj._id);
 		}
-		return [ template.code, objects ];
+		return [ template.code, { template, objects } ];
 	});
-	let rawContent = Object.fromEntries(await Promise.all(tpl));
+	meta.rawContent = Object.fromEntries(await Promise.all(tpl));
 
-	meta.stringMacros = (rawContent.stringReplaceRules)
+	meta.stringMacros = (meta.rawContent.stringReplaceRules.objects)
 		.filter(object => object.fields.source && object.fields.result)
 		.map(object => {
 			return {
@@ -42,7 +41,7 @@ export const build = async ({ targets, brickLibrary }) => { //TODO: remove brick
 		meta.target = target;
 		for (let template of templates) {
 			if (template.constructTargets.includes(target)) {
-				constructed[template.code] = rawContent[template.code].map(obj => template.construct(obj, meta))
+				constructed[template.code] = meta.rawContent[template.code].objects.map(obj => template.construct(obj, meta))
 			}
 		}
 		if (target === 'unity') {

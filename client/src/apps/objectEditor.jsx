@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Template } from '../content/template';
 import { Table, Button } from "antd";
 import { SageAPI } from '../api'
 
 const { Column } = Table;
 
-export default function ObjectEditor() {
-
+export default function ObjectEditor({ templateCode, objectId, onSave }) {
+	console.log(templateCode)
 	let navigate = useNavigate();
-	let { templateCode, objectId } = useParams();
+	
 	const [ object, setObject ] = useState(undefined);
 	const [ template, setTemplate ] = useState(undefined);
 	
@@ -21,7 +21,7 @@ export default function ObjectEditor() {
 	const save = () => {
 		SageAPI.template.updateObjectById(templateCode, objectId, object.fields).then((res) => { 
 			if (res.modifiedCount) {
-				navigate(`/template.${template.code}`) 
+				if (onSave) onSave(); 
 			}
 		});
 	}

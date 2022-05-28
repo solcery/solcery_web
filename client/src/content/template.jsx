@@ -5,7 +5,8 @@ export class Template {
 		this.name = data.name;
 		this.code = data.code;
 		this.constructTargets = data.constructTargets;
-		this.fields = {}
+		this.fields = {};
+		this.hidden = data.hidden;
 		for (let field of data.fields) {
 			this.fields[field.code] = {
 				code: field.code,
