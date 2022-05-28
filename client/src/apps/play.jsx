@@ -39,6 +39,7 @@ export default function Play() {
 				value: state,
 			}
 		})
+		console.log(states)
 		if (send) clientCommand('UpdateGameState', { states });
 	}
 

@@ -22,7 +22,7 @@ const dump = async function(response, params) {
    let templates = await db
         .getDb(params.project)
         .collection(TEMPLATE_COLLECTION)
-        ..find({})
+        .find({})
         .toArray();
     response.json({ objects, templates })
 }
