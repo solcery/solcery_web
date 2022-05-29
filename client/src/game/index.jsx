@@ -1,10 +1,10 @@
-import { BrickRuntime } from '../content/brickLib';
+import { BrickRuntime } from "../content/brickLib";
 
 const objectToArray = (obj) => {
-  return Object.entries(obj).map(( [key, value]) => {
-    return { key, value }
-  })
-}
+  return Object.entries(obj).map(([key, value]) => {
+    return { key, value };
+  });
+};
 
 export class Session {
   content = undefined;
@@ -14,9 +14,9 @@ export class Session {
   players = [];
 
   start(layoutPresets) {
-    this.game.start(layoutPresets)
+    this.game.start(layoutPresets);
   }
-  
+
   constructor(content, players, log = []) {
     this.content = content;
     this.log = log;
@@ -27,18 +27,22 @@ export class Session {
   }
 
   handlePlayerCommand = (command) => {
-    this.log.push(command)
+    this.log.push(command);
     if (command.command_data_type === 0) {
-      return this.game.useCard(command.object_id)
+      return this.game.useCard(command.object_id);
     }
     if (command.command_data_type === 2) {
-      return this.game.dropCard(command.object_id, command.drag_drop_id, command.target_place_id)
+      return this.game.dropCard(
+        command.object_id,
+        command.drag_drop_id,
+        command.target_place_id
+      );
     }
-  }
+  };
 }
 
 export class Game {
-	objects = {};
+  objects = {};
   attrs = {};
   diff = undefined;
   diffLog = undefined;
@@ -53,26 +57,33 @@ export class Game {
   }
 
   start = (layoutPresets) => {
-    if (!layoutPresets) throw new Error('Error: Trying to initLayout without preset scheme')
+    if (!layoutPresets)
+      throw new Error("Error: Trying to initLayout without preset scheme");
     for (let cardPack of Object.values(this.content.cards)) {
       if (!layoutPresets.includes(cardPack.preset)) continue;
       for (let i = 0; i < cardPack.amount; i++) {
         let obj = this.createEntity(cardPack.cardType);
-        obj.setAttr('place', cardPack.place);
+        obj.setAttr("place", cardPack.place);
         if (cardPack.initializer) {
-          this.runtime.execBrick(cardPack.initializer, this.createContext(obj, { 
-            vars : { cardNumber: i } 
-          }));
+          this.runtime.execBrick(
+            cardPack.initializer,
+            this.createContext(obj, {
+              vars: { cardNumber: i },
+            })
+          );
         }
         let cardType = this.content.cardTypes[cardPack.cardType];
         if (cardType.action_on_create) {
-          this.runtime.execBrick(cardType.action_on_create, this.createContext(obj));
+          this.runtime.execBrick(
+            cardType.action_on_create,
+            this.createContext(obj)
+          );
         }
       }
     }
-    this.startDiff(true)
-    this.closeDiff()
-  }
+    this.startDiff(true);
+    this.closeDiff();
+  };
 
   useCard = (objectId) => {
     this.diffLog = [];
@@ -84,21 +95,23 @@ export class Game {
     if (cardType.action) {
       this.runtime.execBrick(cardType.action, ctx);
     }
-    this.closeDiff()
-  }
+    this.closeDiff();
+  };
 
   dropCard = (objectId, dragAndDropId, targetPlace) => {
     this.diffLog = [];
     this.startDiff(true);
     let object = this.objects[objectId];
     if (!object) throw new Error("Attempt to use unexistent object!");
-    let ctx = this.createContext(object, { vars: { 'target_place': targetPlace } });
+    let ctx = this.createContext(object, {
+      vars: { target_place: targetPlace },
+    });
     let dragndrop = this.content.drag_n_drops[dragAndDropId];
     if (dragndrop.action_on_drop) {
       this.runtime.execBrick(dragndrop.action_on_drop, ctx);
     }
-    this.closeDiff()
-  }
+    this.closeDiff();
+  };
 
   setAttr(attr, value) {
     if (this.attrs[attr] === undefined)
@@ -115,8 +128,8 @@ export class Game {
   }
 
   createContext(object, extra = {}) {
-    extra.game = this; 
-    return this.runtime.context(object, extra)
+    extra.game = this;
+    return this.runtime.context(object, extra);
   }
 
   onEntityAttrChanged(entity, attr, value) {
@@ -125,8 +138,8 @@ export class Game {
       this.diff.objects[entity.id] = {
         id: entity.id,
         tplId: entity.tplId,
-        attrs: {}
-      }
+        attrs: {},
+      };
     }
     this.diff.objects[entity.id].attrs[attr] = value;
   }
@@ -139,7 +152,7 @@ export class Game {
   startDiff(full = false) {
     let diff = {
       attrs: {},
-      objects: {}
+      objects: {},
     };
     if (full) {
       Object.assign(diff.attrs, this.attrs);
@@ -148,8 +161,8 @@ export class Game {
           id: obj.id,
           tplId: obj.tplId,
           attrs: Object.assign({}, obj.attrs),
-        }
-      };
+        };
+      }
     }
     this.diff = diff;
   }
@@ -158,23 +171,23 @@ export class Game {
     if (!this.diff) return;
     let packedDiff = {
       attrs: objectToArray(this.diff.attrs),
-      objects: Object.values(this.diff.objects).map(object => {
+      objects: Object.values(this.diff.objects).map((object) => {
         return {
           id: object.id,
           tplId: object.tplId,
-          attrs: objectToArray(object.attrs)
-        }
-      })
-    }
+          attrs: objectToArray(object.attrs),
+        };
+      }),
+    };
     if (!this.diffLog) this.diffLog = [];
     this.diffLog.push(packedDiff);
     this.diff = undefined;
   }
 
   animate(duration) {
-    this.closeDiff()
+    this.closeDiff();
     this.diffLog.push({
-      delay: duration
+      delay: duration,
     });
   }
 }
@@ -183,7 +196,7 @@ class Entity {
   id = undefined;
   tplId = undefined;
   game = undefined;
-  
+
   constructor(id, tplId, game) {
     this.id = id;
     this.tplId = tplId;

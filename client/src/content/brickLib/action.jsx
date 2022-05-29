@@ -1,268 +1,258 @@
-import { generic } from './runtime';
+import { generic } from "./runtime";
 export const basicActions = [
-	{
-		type: 0,
-		subtype: 0,
-		lib: 'action',
-		func: 'void',
-		name: 'Void',
-	 	params: [],
-		exec: () => {}
-	},
-	{
-		type: 0,
-		subtype: 1,
-		lib: 'action',
-		func: 'two',
-		name: 'Two actions',
-		params: [
-			{ code: 'action1', name: 'Action #1', type: 'SBrick<action>' },
-			{ code: 'action2', name: 'Action #2', type: 'SBrick<action>' }
-		],
-		exec: (runtime, params, ctx) => {
-			runtime.execBrick(params.action1, ctx)
-			runtime.execBrick(params.action2, ctx)
-		}
-	},
-	{
-		type: 0,
-		subtype: 2,
-		lib: 'action',
-		func: 'if_then',
-		name: 'If-Then-Else',
-		params: [
-			{ code: 'if', name: 'If', type: 'SBrick<condition>' },
-			{ code: 'then', name: 'Then', type: 'SBrick<action>' },
-			{ code: 'else', name: 'Else', type: 'SBrick<action>' }
-		],
-		exec: (runtime, params, ctx) => {
-			if (runtime.execBrick(params.if, ctx)) {
-				runtime.execBrick(params.then, ctx)
-			}
-			else {
-				runtime.execBrick(params.else, ctx)
-			}
-		}
-	},
-	{
-		type: 0,
-		subtype: 3,
-		lib: 'action',
-		func: 'loop',
-		name: 'Loop',
-		params: [
-			{ code: 'counter_var', name: 'Counter var', type: 'SString' },
-			{ code: 'iterations', name: 'Iterations', type: 'SBrick<value>' },
-			{ code: 'action', name: 'Action', type: 'SBrick<action>' },
-		],
-		exec: (runtime, params, ctx) => {
-			let iter = runtime.execBrick(params.iterations, ctx)
-			for (let i = 0; i < iter; i++) {
-				ctx.vars[params.counter_var] = i; //TODO: cleanup
-				runtime.execBrick(params.action, ctx);
-			}
-		}
-	},
-	{
-		type: 0,
-		subtype: 4,
-		lib: 'action',
-		func: 'arg',
-		name: 'Argument',
-		params: [
-			{ code: 'name', name: 'Name', type: 'SString', readonly: true },
-		],
-		exec: generic.arg,
-	},
-	{
-		type: 0,
-		subtype: 5,
-		lib: 'action',
-		func: 'iter',
-		name: 'Iterator',
-		params: [
-			{ code: 'condition',name: 'Condition', type: 'SBrick<condition>' },
-			{ code: 'action',name: 'Action', type: 'SBrick<action>' },
-			{ code: 'limit', name: 'Limit', type: 'SBrick<value>' }
-		],
-		exec: (runtime, params, ctx) => {
-			let limit = runtime.execBrick(params.limit, ctx)
-			let objs = []
-			let oldObj = ctx.object 
-			let objects = [...Object.values(ctx.game.objects)]
-			generic.shuffle(objects)
-			while (limit > 0 && objects.length > 0) {
-				ctx.object = objects.pop()
-				if (runtime.execBrick(params.condition, ctx)) {
-					objs.push(ctx.object)
-					limit--;
-				}
-			}
-			for (let obj of objs) {
-				ctx.object = obj
-				runtime.execBrick(params.action, ctx)
-			}
-			ctx.object = oldObj
-		}
-	},
-	{
-		type: 0,
-		subtype: 6,
-		lib: 'action',
-		func: 'set_var',
-		name: 'Set variable',
-		params: [
-			{ code: 'var_name', name: 'Var', type: 'SString' },
-			{ code: 'value', name: 'Value', type: 'SBrick<value>' }
-		],
-		exec: (runtime, params, ctx) => {
-			let varName = params.var_name
-			let value = params.value
-			ctx.vars[varName] = runtime.execBrick(value, ctx)
-		}
-	},
-	{
-		type: 0,
-		subtype: 7,
-		lib: 'action',
-		func: 'set_attr',
-		name: 'Set attribute',
-		params: [
-			{ code: 'attr_name', name: 'Attr', type: 'SString' },
-			{ code: 'value', name: 'Value', type: 'SBrick<value>' }
-		],
-		exec: (runtime, params, ctx) => {
-			let attrName = params.attr_name
-			let value = runtime.execBrick(params.value, ctx)
-			ctx.object.setAttr(attrName, value);	
-		}
-	},
-	{
-		type: 0,
-		subtype: 8,
-		lib: 'action',
-		func: 'use_card',
-		name: 'Use card',
-		params: [],
-		exec: (runtime, params, ctx) => {
-			let tplId = ctx.object.tplId
-			let cardType = ctx.game.content.get('cardTypes', tplId)
-			if (cardType.action) {
-				runtime.execBrick(cardType.action, ctx)
-			}
-		}
-	},
-	{
-		type: 0,
-		subtype: 9,
-		lib: 'action',
-		func: 'set_game_attr',
-		name: 'Set game attribute',
-		params: [
-			{ code: 'attr_name', name: 'Attr', type: 'SString' },
-			{ code: 'value', name: 'Value', type: 'SBrick<value>' }
-		],
-		exec: (runtime, params, ctx) => {
-			let attrName = params.attr_name
-			let value = runtime.execBrick(params.value, ctx)
-			if (ctx.game.attrs[attrName] === undefined)
-				throw new Error("Trying to set unknown game attr " + attrName)
-			ctx.game.setAttr(attrName, value);
-			
-		}
-	},
-	{
-		type: 0,
-		subtype: 10,
-		lib: 'action',
-		func: 'pause',
-		name: 'Pause',
-		params: [
-			{ code: 'duration', name: 'Duration', type: 'SBrick<value>' }, 
-		],
-		exec: (runtime, params, ctx) => {
-			let duration = runtime.execBrick(params.duration, ctx);
-			ctx.game.animate(duration)
-		}
-	},
-	{
-		type: 0,
-		subtype: 11,
-		lib: 'action',
-		func: 'event',
-		name: 'Event',
-		params: [
-			{ code: 'event_name', name: 'Event name', type: 'SString' }, 
-		],
-		exec: (runtime, params, ctx) => {
-			let tplId = ctx.object.tplId
-			let cardType = ctx.game.content.cardTypes[tplId];
-			let fieldName = `action_on_${params.event_name}`;
-			if (cardType[fieldName]) {
-				runtime.execBrick(cardType[fieldName], ctx)
-			}
-		}
-	},
-	{
-		type: 0,
-		subtype: 12,
-		lib: 'action',
-		func: 'create_entity',
-		name: 'CreateEntity',
-		params: [
-			{ code: 'card_type', name: 'Card type', type: 'SBrick<value>' }, 
-			{ code: 'place', name: 'Place', type: 'SBrick<value>' }, 
-			{ code: 'action', name: 'Action', type: 'SBrick<action>' }, 
-		],
-		exec: (runtime, params, ctx) => {
-			let card_type	= runtime.execBrick(params.card_type, ctx)
-			let place = runtime.execBrick(params.place, ctx)
-			let newObj = ctx.game.createEntity(card_type)
-			newObj.attrs.place = place;
-			let oldObj = ctx.object
-			ctx.object = newObj
-			runtime.execBrick(params.action, ctx)
-			ctx.object = oldObj
-		}
-	},
-	{
-		type: 0,
-		subtype: 13,
-		lib: 'action',
-		func: 'delete_entity',
-		name: 'Delete entity',
-		params: [],
-		exec: (runtime, params, ctx) => {
-			ctx.obj.deleted = true;
-		}
-	},
-	{
-		type: 0,
-		subtype: 14,
-		lib: 'action',
-		func: 'clear_attrs',
-		name: 'Clear attrs',
-		params: [],
-		exec: (runtime, params, ctx) => {
-			for (let attrName of Object.keys(ctx.object.attrs)) {
-				ctx.object.setAttr(attrName, 0);
-			}	
-		}
-	},
-	{
-		type: 0,
-		subtype: 0,
-		lib: 'action',
-		func: 'console_log',
-		name: 'Console log',
-		params: [
-			{ code: 'message', name: 'Message', type: 'SString' },
-		],
-		exec: (runtime, params, ctx) => {
-			console.log('Brick Message: ' + params[1])
-			console.log('VARS: ' + JSON.stringify(ctx.vars))
-			console.log('ATTRS: ' + JSON.stringify(ctx.object.attrs))
-			console.log('GAME ATTRS ' + JSON.stringify(ctx.game.attrs))
-		}
-	}
-]
+  {
+    type: 0,
+    subtype: 0,
+    lib: "action",
+    func: "void",
+    name: "Void",
+    params: [],
+    exec: () => {},
+  },
+  {
+    type: 0,
+    subtype: 1,
+    lib: "action",
+    func: "two",
+    name: "Two actions",
+    params: [
+      { code: "action1", name: "Action #1", type: "SBrick<action>" },
+      { code: "action2", name: "Action #2", type: "SBrick<action>" },
+    ],
+    exec: (runtime, params, ctx) => {
+      runtime.execBrick(params.action1, ctx);
+      runtime.execBrick(params.action2, ctx);
+    },
+  },
+  {
+    type: 0,
+    subtype: 2,
+    lib: "action",
+    func: "if_then",
+    name: "If-Then-Else",
+    params: [
+      { code: "if", name: "If", type: "SBrick<condition>" },
+      { code: "then", name: "Then", type: "SBrick<action>" },
+      { code: "else", name: "Else", type: "SBrick<action>" },
+    ],
+    exec: (runtime, params, ctx) => {
+      if (runtime.execBrick(params.if, ctx)) {
+        runtime.execBrick(params.then, ctx);
+      } else {
+        runtime.execBrick(params.else, ctx);
+      }
+    },
+  },
+  {
+    type: 0,
+    subtype: 3,
+    lib: "action",
+    func: "loop",
+    name: "Loop",
+    params: [
+      { code: "counter_var", name: "Counter var", type: "SString" },
+      { code: "iterations", name: "Iterations", type: "SBrick<value>" },
+      { code: "action", name: "Action", type: "SBrick<action>" },
+    ],
+    exec: (runtime, params, ctx) => {
+      let iter = runtime.execBrick(params.iterations, ctx);
+      for (let i = 0; i < iter; i++) {
+        ctx.vars[params.counter_var] = i; //TODO: cleanup
+        runtime.execBrick(params.action, ctx);
+      }
+    },
+  },
+  {
+    type: 0,
+    subtype: 4,
+    lib: "action",
+    func: "arg",
+    name: "Argument",
+    params: [{ code: "name", name: "Name", type: "SString", readonly: true }],
+    exec: generic.arg,
+  },
+  {
+    type: 0,
+    subtype: 5,
+    lib: "action",
+    func: "iter",
+    name: "Iterator",
+    params: [
+      { code: "condition", name: "Condition", type: "SBrick<condition>" },
+      { code: "action", name: "Action", type: "SBrick<action>" },
+      { code: "limit", name: "Limit", type: "SBrick<value>" },
+    ],
+    exec: (runtime, params, ctx) => {
+      let limit = runtime.execBrick(params.limit, ctx);
+      let objs = [];
+      let oldObj = ctx.object;
+      let objects = [...Object.values(ctx.game.objects)];
+      generic.shuffle(objects);
+      while (limit > 0 && objects.length > 0) {
+        ctx.object = objects.pop();
+        if (runtime.execBrick(params.condition, ctx)) {
+          objs.push(ctx.object);
+          limit--;
+        }
+      }
+      for (let obj of objs) {
+        ctx.object = obj;
+        runtime.execBrick(params.action, ctx);
+      }
+      ctx.object = oldObj;
+    },
+  },
+  {
+    type: 0,
+    subtype: 6,
+    lib: "action",
+    func: "set_var",
+    name: "Set variable",
+    params: [
+      { code: "var_name", name: "Var", type: "SString" },
+      { code: "value", name: "Value", type: "SBrick<value>" },
+    ],
+    exec: (runtime, params, ctx) => {
+      let varName = params.var_name;
+      let value = params.value;
+      ctx.vars[varName] = runtime.execBrick(value, ctx);
+    },
+  },
+  {
+    type: 0,
+    subtype: 7,
+    lib: "action",
+    func: "set_attr",
+    name: "Set attribute",
+    params: [
+      { code: "attr_name", name: "Attr", type: "SString" },
+      { code: "value", name: "Value", type: "SBrick<value>" },
+    ],
+    exec: (runtime, params, ctx) => {
+      let attrName = params.attr_name;
+      let value = runtime.execBrick(params.value, ctx);
+      ctx.object.setAttr(attrName, value);
+    },
+  },
+  {
+    type: 0,
+    subtype: 8,
+    lib: "action",
+    func: "use_card",
+    name: "Use card",
+    params: [],
+    exec: (runtime, params, ctx) => {
+      let tplId = ctx.object.tplId;
+      let cardType = ctx.game.content.get("cardTypes", tplId);
+      if (cardType.action) {
+        runtime.execBrick(cardType.action, ctx);
+      }
+    },
+  },
+  {
+    type: 0,
+    subtype: 9,
+    lib: "action",
+    func: "set_game_attr",
+    name: "Set game attribute",
+    params: [
+      { code: "attr_name", name: "Attr", type: "SString" },
+      { code: "value", name: "Value", type: "SBrick<value>" },
+    ],
+    exec: (runtime, params, ctx) => {
+      let attrName = params.attr_name;
+      let value = runtime.execBrick(params.value, ctx);
+      if (ctx.game.attrs[attrName] === undefined)
+        throw new Error("Trying to set unknown game attr " + attrName);
+      ctx.game.setAttr(attrName, value);
+    },
+  },
+  {
+    type: 0,
+    subtype: 10,
+    lib: "action",
+    func: "pause",
+    name: "Pause",
+    params: [{ code: "duration", name: "Duration", type: "SBrick<value>" }],
+    exec: (runtime, params, ctx) => {
+      let duration = runtime.execBrick(params.duration, ctx);
+      ctx.game.animate(duration);
+    },
+  },
+  {
+    type: 0,
+    subtype: 11,
+    lib: "action",
+    func: "event",
+    name: "Event",
+    params: [{ code: "event_name", name: "Event name", type: "SString" }],
+    exec: (runtime, params, ctx) => {
+      let tplId = ctx.object.tplId;
+      let cardType = ctx.game.content.cardTypes[tplId];
+      let fieldName = `action_on_${params.event_name}`;
+      if (cardType[fieldName]) {
+        runtime.execBrick(cardType[fieldName], ctx);
+      }
+    },
+  },
+  {
+    type: 0,
+    subtype: 12,
+    lib: "action",
+    func: "create_entity",
+    name: "CreateEntity",
+    params: [
+      { code: "card_type", name: "Card type", type: "SBrick<value>" },
+      { code: "place", name: "Place", type: "SBrick<value>" },
+      { code: "action", name: "Action", type: "SBrick<action>" },
+    ],
+    exec: (runtime, params, ctx) => {
+      let card_type = runtime.execBrick(params.card_type, ctx);
+      let place = runtime.execBrick(params.place, ctx);
+      let newObj = ctx.game.createEntity(card_type);
+      newObj.attrs.place = place;
+      let oldObj = ctx.object;
+      ctx.object = newObj;
+      runtime.execBrick(params.action, ctx);
+      ctx.object = oldObj;
+    },
+  },
+  {
+    type: 0,
+    subtype: 13,
+    lib: "action",
+    func: "delete_entity",
+    name: "Delete entity",
+    params: [],
+    exec: (runtime, params, ctx) => {
+      ctx.obj.deleted = true;
+    },
+  },
+  {
+    type: 0,
+    subtype: 14,
+    lib: "action",
+    func: "clear_attrs",
+    name: "Clear attrs",
+    params: [],
+    exec: (runtime, params, ctx) => {
+      for (let attrName of Object.keys(ctx.object.attrs)) {
+        ctx.object.setAttr(attrName, 0);
+      }
+    },
+  },
+  {
+    type: 0,
+    subtype: 0,
+    lib: "action",
+    func: "console_log",
+    name: "Console log",
+    params: [{ code: "message", name: "Message", type: "SString" }],
+    exec: (runtime, params, ctx) => {
+      console.log("Brick Message: " + params[1]);
+      console.log("VARS: " + JSON.stringify(ctx.vars));
+      console.log("ATTRS: " + JSON.stringify(ctx.object.attrs));
+      console.log("GAME ATTRS " + JSON.stringify(ctx.game.attrs));
+    },
+  },
+];

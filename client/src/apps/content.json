@@ -25106,10 +25106,7 @@
         "caption": "Event Tracker",
         "frame": true,
         "drag_n_drop": 136,
-        "drag_n_drops": [
-          569,
-          570
-        ],
+        "drag_n_drops": [569, 570],
         "fill": "#231e1ed9",
         "id": 97
       },
@@ -25128,9 +25125,7 @@
         "caption": "Token Storage",
         "frame": true,
         "drag_n_drop": 136,
-        "drag_n_drops": [
-          136
-        ],
+        "drag_n_drops": [136],
         "fill": "#231e1ed9",
         "id": 98
       },
@@ -25163,9 +25158,7 @@
         "caption": "Creature 1",
         "frame": true,
         "drag_n_drop": 285,
-        "drag_n_drops": [
-          285
-        ],
+        "drag_n_drops": [285],
         "fill": "#231e1ed9",
         "id": 100
       },
@@ -25184,9 +25177,7 @@
         "caption": "Creature 2",
         "frame": true,
         "drag_n_drop": 285,
-        "drag_n_drops": [
-          285
-        ],
+        "drag_n_drops": [285],
         "fill": "#231e1ed9",
         "id": 101
       },
@@ -25205,9 +25196,7 @@
         "caption": "Creature 3",
         "frame": true,
         "drag_n_drop": 285,
-        "drag_n_drops": [
-          285
-        ],
+        "drag_n_drops": [285],
         "fill": "#231e1ed9",
         "id": 102
       },
@@ -25226,9 +25215,7 @@
         "caption": "Creature 4",
         "frame": true,
         "drag_n_drop": 285,
-        "drag_n_drops": [
-          285
-        ],
+        "drag_n_drops": [285],
         "fill": "#231e1ed9",
         "id": 103
       },
@@ -25247,9 +25234,7 @@
         "caption": "Creature 5",
         "frame": true,
         "drag_n_drop": 285,
-        "drag_n_drops": [
-          285
-        ],
+        "drag_n_drops": [285],
         "fill": "#231e1ed9",
         "id": 104
       },
@@ -25268,9 +25253,7 @@
         "caption": "Creature 1",
         "frame": true,
         "drag_n_drop": 285,
-        "drag_n_drops": [
-          285
-        ],
+        "drag_n_drops": [285],
         "fill": "#231e1ed9",
         "id": 105
       },
@@ -25289,9 +25272,7 @@
         "caption": "Creature 2",
         "frame": true,
         "drag_n_drop": 285,
-        "drag_n_drops": [
-          285
-        ],
+        "drag_n_drops": [285],
         "fill": "#231e1ed9",
         "id": 106
       },
@@ -25310,9 +25291,7 @@
         "caption": "Creature 3",
         "frame": true,
         "drag_n_drop": 285,
-        "drag_n_drops": [
-          285
-        ],
+        "drag_n_drops": [285],
         "fill": "#231e1ed9",
         "id": 107
       },
@@ -25331,9 +25310,7 @@
         "caption": "Creature 4",
         "frame": true,
         "drag_n_drop": 285,
-        "drag_n_drops": [
-          285
-        ],
+        "drag_n_drops": [285],
         "fill": "#231e1ed9",
         "id": 108
       },
@@ -25352,9 +25329,7 @@
         "caption": "Creature 5",
         "frame": true,
         "drag_n_drop": 285,
-        "drag_n_drops": [
-          285
-        ],
+        "drag_n_drops": [285],
         "fill": "#231e1ed9",
         "id": 109
       },
@@ -25373,9 +25348,7 @@
         "caption": "Creature 1",
         "frame": true,
         "drag_n_drop": 285,
-        "drag_n_drops": [
-          285
-        ],
+        "drag_n_drops": [285],
         "fill": "#231e1ed9",
         "id": 110
       },
@@ -25394,9 +25367,7 @@
         "caption": "Creature 2",
         "frame": true,
         "drag_n_drop": 285,
-        "drag_n_drops": [
-          285
-        ],
+        "drag_n_drops": [285],
         "fill": "#231e1ed9",
         "id": 111
       },
@@ -25415,9 +25386,7 @@
         "caption": "Creature 3",
         "frame": true,
         "drag_n_drop": 285,
-        "drag_n_drops": [
-          285
-        ],
+        "drag_n_drops": [285],
         "fill": "#231e1ed9",
         "id": 112
       },
@@ -25436,9 +25405,7 @@
         "caption": "Creature 4",
         "frame": true,
         "drag_n_drop": 285,
-        "drag_n_drops": [
-          285
-        ],
+        "drag_n_drops": [285],
         "fill": "#231e1ed9",
         "id": 113
       },
@@ -25457,9 +25424,7 @@
         "caption": "Creature 5",
         "frame": true,
         "drag_n_drop": 285,
-        "drag_n_drops": [
-          285
-        ],
+        "drag_n_drops": [285],
         "fill": "#231e1ed9",
         "id": 114
       },
@@ -27033,26 +26998,10 @@
         "name": "Token Storage - Tokens",
         "enabled": true,
         "destinations": [
-          41,
-          42,
-          43,
-          44,
-          45,
-          31,
-          32,
-          33,
-          34,
-          35,
-          21,
-          22,
-          23,
-          24,
-          25
+          41, 42, 43, 44, 45, 31, 32, 33, 34, 35, 21, 22, 23, 24, 25
         ],
         "destination_condition": 2,
-        "required_card_types": [
-          2
-        ],
+        "required_card_types": [2],
         "action_on_drop": {
           "name": "Action.[626] {v2} Drag & Drop (Token)",
           "type": 0,
@@ -27064,15 +27013,9 @@
       {
         "name": "Realm Board - Buildings",
         "enabled": true,
-        "destinations": [
-          40,
-          30,
-          20
-        ],
+        "destinations": [40, 30, 20],
         "destination_condition": 1,
-        "required_card_types": [
-          4
-        ],
+        "required_card_types": [4],
         "action_on_drop": {
           "name": "Action.[529] {v2} Drag & Drop",
           "type": 0,
@@ -27085,25 +27028,9 @@
         "name": "Realm Board - Creatures",
         "enabled": true,
         "destinations": [
-          41,
-          42,
-          43,
-          44,
-          45,
-          31,
-          32,
-          33,
-          34,
-          35,
-          21,
-          22,
-          23,
-          24,
-          25
+          41, 42, 43, 44, 45, 31, 32, 33, 34, 35, 21, 22, 23, 24, 25
         ],
-        "required_card_types": [
-          1
-        ],
+        "required_card_types": [1],
         "action_on_drop": {
           "name": "Action.[529] {v2} Drag & Drop",
           "type": 0,
@@ -27116,26 +27043,10 @@
         "name": "Event Tracker - Creatures v2",
         "enabled": true,
         "destinations": [
-          41,
-          42,
-          43,
-          44,
-          45,
-          31,
-          32,
-          33,
-          34,
-          35,
-          21,
-          22,
-          23,
-          24,
-          25
+          41, 42, 43, 44, 45, 31, 32, 33, 34, 35, 21, 22, 23, 24, 25
         ],
         "destination_condition": 1,
-        "required_card_types": [
-          1
-        ],
+        "required_card_types": [1],
         "action_on_drop": {
           "name": "Action.[544] {v2} Drag & Drop (Event Tracker)",
           "type": 0,
@@ -27147,15 +27058,9 @@
       {
         "name": "Event Tracker - Buildings v2",
         "enabled": true,
-        "destinations": [
-          40,
-          30,
-          20
-        ],
+        "destinations": [40, 30, 20],
         "destination_condition": 1,
-        "required_card_types": [
-          4
-        ],
+        "required_card_types": [4],
         "action_on_drop": {
           "name": "Action.[544] {v2} Drag & Drop (Event Tracker)",
           "type": 0,
@@ -27212,11 +27117,7 @@
         "name": "Teuzet",
         "enabled": true,
         "pubkey": "9kXLhvDcWc4wzuapQpWkKVnJ8wKVhEDomwoFxkn58nfX",
-        "layoutPresets": [
-          "core",
-          "test buttons",
-          "tech demo"
-        ],
+        "layoutPresets": ["core", "test buttons", "tech demo"],
         "id": 576
       },
       {
@@ -27225,11 +27126,7 @@
         "pubkey": "ESrHRyZKaC9VjTdvd7QHppxevXpiasUAbzx2XGBRanrv",
         "css": ".brick.action { background-color: #39372d; } .brick.action.readonly { background-color: #39372d; } .brick.action:hover { background-color: #565343; } .brick.condition { background-color: #2d392d; } .brick.condition.readonly { background-color: #2d392d; } .brick.condition:hover { background-color: #435643; } .brick.value { background-color: #2d3937; } .brick.value.readonly { background-color: #2d3937; } .brick.value { background-color: #435643; } .brickeditor-bg.active { background-color: #101510; } .brickeditor-bg.readonly { background-color: #151010; }",
         "readonlyBricks": true,
-        "layoutPresets": [
-          "core",
-          "tech demo",
-          "starting creatures"
-        ],
+        "layoutPresets": ["core", "tech demo", "starting creatures"],
         "id": 577
       },
       {
@@ -27256,11 +27153,7 @@
         "pubkey": "25MhYRx9CFLyQxf5HQKLPFd86QbkNFUWwUcVvQcTvPHJ",
         "css": ".brick.action { background-color: #39372d; } .brick.action.readonly { background-color: #39372d; } .brick.action:hover { background-color: #565343; } .brick.condition { background-color: #2d392d; } .brick.condition.readonly { background-color: #2d392d; } .brick.condition:hover { background-color: #435643; } .brick.value { background-color: #2d3937; } .brick.value.readonly { background-color: #2d3937; } .brick.value { background-color: #435643; } .brickeditor-bg.active { background-color: #101510; } .brickeditor-bg.readonly { background-color: #151010; }",
         "readonlyBricks": true,
-        "layoutPresets": [
-          "core",
-          "test buttons",
-          "tech demo"
-        ],
+        "layoutPresets": ["core", "test buttons", "tech demo"],
         "id": 579
       }
     ]

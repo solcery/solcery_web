@@ -8,7 +8,7 @@ export function notify({
   url = "",
   type = "info",
   placement = "bottomLeft",
-  color = "white"
+  color = "white",
 }) {
   if (url) {
     description = <a href={url}>{description}</a>;
