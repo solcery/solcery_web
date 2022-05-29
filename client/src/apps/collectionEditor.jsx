@@ -7,13 +7,12 @@ import { useCookies } from 'react-cookie';
 
 const { Column } = Table;
 
-export default function CollectionEditor() {
+export default function CollectionEditor({ templateCode, moduleName }) {
 
 	let navigate = useNavigate();
-	let { templateCode } = useParams();
 	const [ objects, setObjects ] = useState();
 	const [ template, setTemplate ] = useState()
-	const [ cookies, setCookie, removeCookie ] = useCookies([]);
+	const [ cookies, setCookie, removeCookie ] = useCookies();
 	const [ filterField, setFilterField ] = useState();
 
 
@@ -28,7 +27,7 @@ export default function CollectionEditor() {
 	}
 
 	const filterCookie = (fieldCode) => {
-		return `filter.${templateCode}.${fieldCode}`;
+		return `${moduleName}.filter.${fieldCode}`;
 	}
 
 	if (!template || !objects) return (<>NO DATA</>);
@@ -56,14 +55,14 @@ export default function CollectionEditor() {
 				onRow={(record, rowIndex) => {
 					return {
 						onDoubleClick: event => { 
-							navigate(`/template.${template.code}.${record.id}`) 
+							navigate(`/${moduleName}.${record.id}`) 
 						}
 					};
 				}}
 				onChange = { onPaginationChange }
 				pagination={{
-					defaultCurrent: cookies[`${templateCode}.pagination.pageSize`] ?? 1,
-					defaultPageSize: cookies[`${templateCode}.pagination.current`] ?? 10,
+					defaultCurrent: cookies[`${moduleName}.pagination.pageSize`] ?? 1,
+					defaultPageSize: cookies[`${moduleName}.pagination.current`] ?? 10,
 					onChange: onPaginationChange
 				}}
 			>
@@ -102,7 +101,7 @@ export default function CollectionEditor() {
 							onClick={() => { 
 								SageAPI.template.clone(templateCode, object.id).then((res) => {
 									if (res.insertedId) {
-										navigate(`/template.${template.code}.${res.insertedId}`);
+										navigate(`/${moduleName}.${res.insertedId}`);
 									}
 								});
 							}}>
@@ -114,7 +113,7 @@ export default function CollectionEditor() {
 								if (window.confirm('Deleting object [' + object.id + '] ' + object.fields.title + '. Are you sure?')) {
 									SageAPI.template.removeById(templateCode, object.id).then((res) => {
 										if (res.deletedCount) {
-											navigate(`/template.${template.code}`) 
+											navigate(`/${moduleName}`) 
 										}
 									});
 								} 
@@ -128,7 +127,7 @@ export default function CollectionEditor() {
 				onClick={() => { 
 					SageAPI.template.create(templateCode).then((res) => {
 						if (res.insertedId) {
-							navigate(`/template.${template.code}.${res.insertedId}`);
+							navigate(`/${moduleName}.${res.insertedId}`);
 						}
 					});
 				}}>

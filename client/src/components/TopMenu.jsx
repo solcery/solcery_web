@@ -23,6 +23,11 @@ export const TopMenu = () => {
 					<Avatar size={'small'} icon=<CaretRightOutlined/>/>
 				</Link>
 			</Menu.Item>
+			<Menu.Item key='brickLibrary'>
+				<Link to='brickLibrary'>
+					Brick library
+				</Link>
+			</Menu.Item>
 			{templates.filter(template => !template.hidden).map(template =>
 				<Menu.Item key={template.code}>
 						<Link to={`template.${template.code}`}>{template.name}</Link>

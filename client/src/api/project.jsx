@@ -7,8 +7,8 @@ project.getAllTemplates = () => {
 	return apiCall(MODULE_NAME, 'getAllTemplates')
 }
 
-project.restore = ({ objects, templates }) => {
-	return apiCall(MODULE_NAME, 'restore', { objects, templates })
+project.restore = (src) => {
+	return apiCall(MODULE_NAME, 'restore', { src })
 }
 
 project.dump = () => {

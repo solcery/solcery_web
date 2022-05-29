@@ -36,7 +36,8 @@ export default function Brick(props) {
 				let brickJson = JSON.stringify(props.data.brick)
 				notify({
 					message: "Brick copied", 
-					description: brickJson.substring(0, 30) + '...', color: '#DDFFDD'
+					description: brickJson.substring(0, 30) + '...', 
+					color: '#DDFFDD'
 				})
 				navigator.clipboard.writeText(brickJson);
 			}
