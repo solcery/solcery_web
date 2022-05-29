@@ -1,4 +1,5 @@
 import { Menu, Avatar } from "antd";
+import { Link } from "react-router-dom";
 import React, { useEffect, useState } from "react";
 import { SageAPI } from '../api';
 import { UserOutlined, CaretRightOutlined, DeploymentUnitOutlined } from '@ant-design/icons';
@@ -13,20 +14,24 @@ export const TopMenu = () => {
 	return (<>
 		<Menu mode="horizontal">
 			<Menu.Item key='project'>
-				<a href='project'><Avatar size={'small'} icon=<DeploymentUnitOutlined/>/></a>
+				<Link to='project'>
+					<Avatar size={'small'} icon=<DeploymentUnitOutlined/>/>
+				</Link>
 			</Menu.Item>
 			<Menu.Item key='play'>
-				<a href='play'><Avatar size={'small'} icon=<CaretRightOutlined/>/></a>
+				<Link to='play'>
+					<Avatar size={'small'} icon=<CaretRightOutlined/>/>
+				</Link>
 			</Menu.Item>
 			{templates.filter(template => !template.hidden).map(template =>
 				<Menu.Item key={template.code}>
-						<a href={`template.${template.code}`}>{template.name}</a>
+						<Link to={`template.${template.code}`}>{template.name}</Link>
 				</Menu.Item>
 			)}
 			<Menu.Item key='profile'>
-				<a href='profile'>
+				<Link to='profile'>
 					<Avatar size={'small'} icon=<UserOutlined/>/>
-				</a>
+				</Link>
 			</Menu.Item>
 		</Menu>
 	</>);

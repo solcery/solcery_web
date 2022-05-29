@@ -23,6 +23,5 @@ export const apiCall = (moduleName, command, data = {}) => {
 	    },
 	    body: JSON.stringify({ command, data })
 	};
-	console.log(request)
 	return fetch(url, request).then((response) => response.json());
 }

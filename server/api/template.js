@@ -45,6 +45,28 @@ const getSchema = async function(response, params) {
   response.json(schema)
 }
 
+const setSchema = async function(response, params) {
+  let schema = Object.assign({}, params.schema);
+  var query = {
+    _id: ObjectId(schema._id),
+  };
+  schema._id = null;
+  var values = { 
+    $set: {
+      name: schema.name,
+      fields: schema.fields,
+      constructTargets: schema.constructTargets
+    } 
+  };
+  db
+    .getDb(params.project)
+    .collection(TEMPLATE_COLLECTION)
+    .updateOne(query, values, function(err, res) {
+    if (err) throw err;
+    response.json(res);
+  });
+}
+
 const create = async function(response, params) { // TODO: validate
   object = {
     _id: new ObjectId(),
@@ -144,6 +166,7 @@ module.exports = function(api) {
     if (params.command == 'getOne') return getOne;
     if (params.command == 'getById') return getById;
     if (params.command == 'getSchema') return getSchema;
+    if (params.command == 'setSchema') return setSchema;
     if (params.command == 'update') return update;
     if (params.command == 'clone') return clone;
     if (params.command == 'create') return create;

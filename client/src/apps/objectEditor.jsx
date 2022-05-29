@@ -37,7 +37,7 @@ export default function ObjectEditor({ templateCode, objectId, onSave }) {
 	})
 	return (
 		<>
-			<Table dataSource={tableData}>
+			<Table pagination={false} dataSource={tableData}>
 				<Column 
 					title='Field' 
 					key='Field' 

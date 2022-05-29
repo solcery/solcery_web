@@ -13,16 +13,18 @@ import ContentExporter from "./apps/contentExporter";
 import Play from "./apps/play";
 import Project from "./apps/project";
 import Profile from "./apps/profile";
+import TemplateSchema from './apps/templateSchema';
 
 export default function App() {
 	return (
 		<>
-			<CookiesProvider>
-				<UserProvider>
-					<TopMenu style={{ backgroundColor: 'black' }}/>
-					<BrickLibraryProvider>
-						<BrowserRouter>
+			<BrowserRouter>
+				<CookiesProvider>
+					<UserProvider>
+						<BrickLibraryProvider>
+							<TopMenu style={{ backgroundColor: 'black' }}/>
 							<Routes>
+								<Route path="template.:templateCode.schema" element={<TemplateSchema />} />
 								<Route path="template.:templateCode.:objectId" element={<ObjectPage />} />
 								<Route path="template.:templateCode" element={<CollectionEditor />} />
 								<Route path="play" element={<Play />} />
@@ -30,10 +32,10 @@ export default function App() {
 								<Route path="export" element={<ContentExporter />} />
 								<Route path="profile" element={<Profile />} />
 							</Routes>
-						</BrowserRouter>
-					</BrickLibraryProvider>
-				</UserProvider>
-			</CookiesProvider>
+						</BrickLibraryProvider>
+					</UserProvider>
+				</CookiesProvider>
+			</BrowserRouter>
 		</>
 	);
 }

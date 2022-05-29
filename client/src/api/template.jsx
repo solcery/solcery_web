@@ -11,6 +11,10 @@ template.getSchema = (templateCode) => {
 	return apiCall(MODULE_NAME, 'getSchema', { templateCode })
 }
 
+template.setSchema = (templateCode, schema) => {
+	return apiCall(MODULE_NAME, 'setSchema', { templateCode, schema })
+}
+
 template.getObjectById = (templateCode, objectId) => {
 	return apiCall(MODULE_NAME, 'getById', { templateCode, objectId })
 }
