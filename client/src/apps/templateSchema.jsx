@@ -19,8 +19,7 @@ export default function TemplateSchema() {
 	}, [])
 
 	const save = () => {
-		let res = JSON.parse(schema);
-		SageAPI.template.setSchema(templateCode, res);
+		SageAPI.template.setSchema(templateCode, JSON.parse(schema));
 	}
 
 	if (!schema) return <>Loading</>;
