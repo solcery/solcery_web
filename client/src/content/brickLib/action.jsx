@@ -230,7 +230,7 @@ export const basicActions = [
 		subtype: 13,
 		lib: 'action',
 		func: 'delete_entity',
-		name: 'DeleteEntity',
+		name: 'Delete entity',
 		params: [],
 		exec: (runtime, params, ctx) => {
 			ctx.obj.deleted = true;
@@ -239,6 +239,19 @@ export const basicActions = [
 	{
 		type: 0,
 		subtype: 14,
+		lib: 'action',
+		func: 'clear_attrs',
+		name: 'Clear attrs',
+		params: [],
+		exec: (runtime, params, ctx) => {
+			for (let attrName of Object.keys(ctx.object.attrs)) {
+				ctx.object.setAttr(attrName, 0);
+			}	
+		}
+	},
+	{
+		type: 0,
+		subtype: 0,
 		lib: 'action',
 		func: 'console_log',
 		name: 'Console log',
