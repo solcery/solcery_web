@@ -11,15 +11,21 @@ export default function CollectionEditor() {
 
 	let navigate = useNavigate();
 	let { templateCode } = useParams();
-	const filterCookieName = `filter.${templateCode}`;
-	const [ objects, setObjects ] = useState(undefined);
-	const [ template, setTemplate ] = useState(undefined)
-	const [ cookies, setCookie ] = useCookies();
+	const [ objects, setObjects ] = useState();
+	const [ template, setTemplate ] = useState()
+	const [ cookies, setCookie, removeCookie ] = useCookies([]);
+	const [ filterField, setFilterField ] = useState();
+
 
 	useEffect(() => {
 		SageAPI.template.getAllObjects(templateCode).then(setObjects);
 		SageAPI.template.getSchema(templateCode).then((data) => setTemplate(new Template(data)));
 	}, [ templateCode ]);
+
+	const onPaginationChange = (pagination) => {
+		setCookie(`${templateCode}.pagination.pageSize`, pagination.pageSize)
+		setCookie(`${templateCode}.pagination.current`, pagination.current)
+	}
 
 	const filterCookie = (fieldCode) => {
 		return `filter.${templateCode}.${fieldCode}`;
@@ -54,6 +60,12 @@ export default function CollectionEditor() {
 						}
 					};
 				}}
+				onChange = { onPaginationChange }
+				pagination={{
+					defaultCurrent: cookies[`${templateCode}.pagination.pageSize`] ?? 1,
+					defaultPageSize: cookies[`${templateCode}.pagination.current`] ?? 10,
+					onChange: onPaginationChange
+				}}
 			>
 				{Object.values(template.fields).map(field => 
 					<Column 
@@ -63,8 +75,18 @@ export default function CollectionEditor() {
 						filterDropdown={field.type.filter && 
 			              <field.type.filter.render 
 			              	defaultValue={ cookies[filterCookie(field.code)] } 
-			              	onChange={(value) => { setCookie(filterCookie(field.code), value) }}/>
+			              	onChange={(value) => { 
+			              		setFilterField();
+			              		let cookieName = filterCookie(field.code);
+			              		if (!value) {
+			              			removeCookie(cookieName) 
+			              		} else {
+			              			setCookie(filterCookie(field.code), value) 
+			              		}
+			              	}}/>
 			            }
+			            onFilterDropdownVisibleChange = { (visible) => setFilterField(visible ? field.code : undefined) }
+			            filterDropdownVisible = { filterField === field.code}
 						render = {(_, object) => <field.type.valueRender
 							defaultValue = { object.fields[field.code] }
 							type = { field.type }

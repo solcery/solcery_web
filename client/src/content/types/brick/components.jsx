@@ -2,10 +2,11 @@ import { ReactFlowProvider } from 'react-flow-renderer';
 import { BrickEditor } from './editor/BrickEditor';
 import React, { useState, useEffect } from "react";
 import { paramFromMapEntry } from "../../brickLib";
-import { Select } from 'antd';
+import { Select, Button } from 'antd';
 import { SType } from '../base';
 import { insertTable } from '../../../utils';
 import { useBrickLibrary } from '../../../contexts/brickLibrary';
+import { useUser } from '../../../contexts/user';
 
 const { Option } = Select;
 
@@ -43,16 +44,38 @@ const paramMapType = SType.from({
   }
 })
 
+export const FilterRender = ({ defaultValue, onChange }) => {
+  const [ value, setValue ] = useState(defaultValue);
+
+  return (
+    <div>
+      <Select defaultValue = 'value' onChange = { setValue }>
+        <Option key='action' value='action'>Action</Option>
+        <Option key='condition' value='condition'>Condition</Option>
+        <Option key='value' value='value'>Value</Option>
+      </Select>
+      <Button onClick={() => onChange(value)}>APPLY</Button>
+      <Button onClick={() => onChange()}>CLEAR</Button>
+    </div>);
+}
+
+
+
 export const ValueRender = (props) => {
   const [ brickType, setBrickType ] = useState(props.type.brickType ? props.type.brickType : props.defaultValue && props.defaultValue.brickType);
   const [ brickParams, setBrickParams ] = useState((props.type.params && props.defaultValue) ? props.defaultValue.brickParams : []);
   const [ brickTree, setBrickTree ] = useState(props.defaultValue && props.defaultValue.brickTree);
   const { brickLibrary } = useBrickLibrary();
+  const { readonlyBricks } = useUser();
   const [ brickLib, setBrickLib ] = useState(undefined);
 
   const onChange = (brickTree) => {
     setBrickTree(brickTree)
     if (props.onChange) props.onChange({ brickType, brickParams, brickTree });
+  }
+
+  const setParams = (newParams) => {
+    setBrickParams(newParams);
   }
 
   useEffect(() => {
@@ -76,14 +99,15 @@ export const ValueRender = (props) => {
   if (!brickLib) return <p>Loading</p>;
   if (!props.onChange && (!props.defaultValue || !props.defaultValue.brickTree)) return <p>Empty</p>  
   if (!brickType) return <BrickTypeSelector onChange = { setBrickType }/>;
+  if (!readonlyBricks) return <p>Brick</p>;
 
   return (
     <>
-      {props.type.params && <>Params:
+      {props.type.params && <> Params:
         <paramMapType.valueRender 
           defaultValue = { brickParams }
           type = { paramMapType }
-          onChange = { props.onChange && setBrickParams }
+          onChange = { props.onChange && setParams }
         />
       </>}
       <ReactFlowProvider>

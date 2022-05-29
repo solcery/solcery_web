@@ -8,12 +8,7 @@ export const ValueRender = (props) => {
 
 	var [value, setValue] = useState(props.defaultValue || [])
 
-	useEffect(() => {
-		var res = value.filter(entry => value);
-		props.onChange && props.onChange(res);
-	}, [ value, props ])
-
-	const onChange = (newValue, index, type) => {
+	const onChange = (newValue, index) => {
 		value[index] = newValue;
 		if (!props.onChange) return;
 		var res = value.filter(entry => value);

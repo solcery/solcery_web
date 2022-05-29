@@ -23,7 +23,7 @@ class SString {
 		},
 		render: FilterRender,
 	};
-	default = '';
+	default = () => '';
 };
 
 SType.register('SString', SString);

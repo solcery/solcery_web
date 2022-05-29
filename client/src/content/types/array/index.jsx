@@ -8,6 +8,7 @@ class SArray {
 	}
 	construct = (value, meta) => value.map(val => this.valueType.construct(val, meta));
 	valueRender = ValueRender;
+	default = () => [];
 };
 
 SType.register('SArray', SArray);

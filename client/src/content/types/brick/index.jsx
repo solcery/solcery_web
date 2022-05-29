@@ -1,5 +1,5 @@
 import { SType } from '../../index';
-import { ValueRender } from './components';
+import { ValueRender, FilterRender } from './components';
 
 class SBrick {
   static fromString = data =>  new SBrick({ brickType: data });
@@ -7,6 +7,15 @@ class SBrick {
   constructor(data) {
     this.brickType = data.brickType;
     this.params = data.params;
+
+    if (!this.brickType) {
+      this.filter = {
+        eq: (value, filterValue) => {
+          return value.brickType === filterValue;
+        },
+        render: FilterRender,
+      };
+    }
   }
 
   construct = (value, meta) => {

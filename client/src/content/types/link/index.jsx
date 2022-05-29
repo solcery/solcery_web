@@ -20,7 +20,7 @@ class SLink {
   };
   
   valueRender = ValueRender;
-  default = undefined;
+  default = () => undefined;
 };
 
 SType.register('SLink', SLink);

@@ -35,6 +35,7 @@ export function UserProvider(props) {
 			id: userData._id,
 			css: userData.fields.css,
 			layoutPresets: userData.fields.layoutPresets,
+			readonlyBricks: userData.fields.readonlyBricks,
 			reload
 		})
 	}
@@ -97,6 +98,6 @@ export function UserProvider(props) {
 }
 
 export function useUser() {
- 	const { id, css, layoutPresets, reload } = useContext(UserContext);
-	return { id, css, layoutPresets, reload }
+ 	const { id, css, layoutPresets, reload, readonlyBricks } = useContext(UserContext);
+	return { id, css, layoutPresets, reload, readonlyBricks }
 }

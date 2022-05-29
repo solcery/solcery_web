@@ -7,28 +7,25 @@ export const ValueRender = (props) => {
 
 	var [value, setValue] = useState(props.defaultValue ?? []);
 
-	useEffect(() => {
-		var res = value.filter((entry) => entry.key !== undefined && entry.value !== undefined);
-		props.onChange && props.onChange(res);
-	}, [ value, props.onChange ])
-	
 	const onChange = (newValue, index, type) => {
-		console.log(newValue, index, type)
 		value[index][type] = newValue;
-		setValue([...value]);
+		if (!props.onChange) return;
+		props.onChange(value);
 	}
 	
 	const removeElement = (index) => {
 		value.splice(index, 1);
 		setValue([...value]);
+		props.onChange && props.onChange(value);
 	}
 
 	const addNewElement = () => {
 		value.push({
-			key: props.type.keyType.default,
-			value: props.type.valueType.default,
+			key: props.type.keyType.default(),
+			value: props.type.valueType.default(),
 		});
 		setValue([...value]);
+		props.onChange && props.onChange(value);
 	}
 	if (!props.onChange) return (
 		<>

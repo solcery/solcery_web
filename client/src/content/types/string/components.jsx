@@ -18,8 +18,10 @@ export const FilterRender = ({ defaultValue, onChange }) => {
 		<Input 
 			style = { { width: '200px' }}
 			defaultValue={ defaultValue }
-			onChange={ (event) => { onChange && setValue(event.target.value) } }
+			onChange={ (event) => { setValue(event.target.value) } }
+			onPressEnter = { () => onChange(value) }
 		/>
 		<Button onClick={() => onChange(value)}>APPLY</Button>
+		<Button onClick={() => onChange(undefined)}>CLEAR</Button>
 	</div>);
 }

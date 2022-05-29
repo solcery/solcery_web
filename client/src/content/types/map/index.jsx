@@ -35,7 +35,7 @@ class SMap {
   }
 
   valueRender = ValueRender;
-  default = [];
+  default = () => [];
 };
 
 SType.register('SMap', SMap);

@@ -5,7 +5,7 @@ class SInt {
 	static fromString = () => new SInt()
 	valueRender = ValueRender;
 	construct = (value, meta) => value;
-	default = 0;
+	default = () => 0;
 };
 
 

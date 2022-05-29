@@ -9,7 +9,7 @@ class SEnum {
 	}
 	construct = (value, meta) => value;
 	valueRender = ValueRender;
-	default = 0;
+	default = () => this.values[0];
 };
 
 SType.register('SEnum', SEnum);
