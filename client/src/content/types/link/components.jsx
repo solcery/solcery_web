@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { SageAPI } from '../../../api';
 import { Select } from 'antd';
 const { Option } = Select;
@@ -7,6 +7,13 @@ export const ValueRender = (props) => {
 
 	const [ value, setValue ] = useState(undefined);
 	const [ objects, setObjects ] = useState(undefined);
+	const mountedRef = useRef(true)
+
+	useEffect(() => {
+	    return () => { 
+	    	mountedRef.current = false
+	    }
+	 }, [])
 
 	const onChange = (newValue) => {
 		setValue(newValue);
@@ -16,6 +23,7 @@ export const ValueRender = (props) => {
 
 	useEffect(() => {
 		SageAPI.template.getAllObjects(props.type.templateCode).then(res => {
+			if (!mountedRef.current) return null;
 			setObjects(res.map(object => {
 				return {
 					id: object._id,
