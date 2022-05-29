@@ -18,3 +18,19 @@ export const ValueRender = (props) => {
 		</Select>
 	);
 }
+
+export const FilterRender = (props) => {
+	let defaultIndex = props.type.values.indexOf(props.defaultValue ?? 0);
+	if (!props.onChange) {
+		return <>{ props.type.titles[defaultIndex] }</>;
+	}
+	return (
+		<Select defaultValue = { props.type.titles[defaultIndex] } onChange = { props.onChange }>
+			{props.type.titles.map((value, index) => 
+				<Option key = { index } value = { props.type.values[index] }>
+					{ value }
+				</Option>
+			)} 
+		</Select>
+	);
+}

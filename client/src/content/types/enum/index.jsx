@@ -1,4 +1,4 @@
-import { SType } from '../base'
+import { SType, defaultFilter } from '../base'
 import { ValueRender } from './components'
 
 class SEnum {
@@ -9,6 +9,7 @@ class SEnum {
 	}
 	construct = (value, meta) => value;
 	valueRender = ValueRender;
+	filter = defaultFilter;
 	default = () => this.values[0];
 };
 

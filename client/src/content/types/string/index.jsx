@@ -1,5 +1,6 @@
-import { SType } from '../base'
-import { ValueRender, FilterRender } from './components'
+import { SType } from '../base';
+import { ValueRender } from './components';
+import { DefaultFilterRender } from '../base/components';
 
 class SString {
 	static fromString = () => new SString({});
@@ -18,10 +19,8 @@ class SString {
 	};
 	valueRender = ValueRender;
 	filter = {
-		eq: (value, filterValue) => {
-			return value.toLowerCase().includes(filterValue.toLowerCase())
-		},
-		render: FilterRender,
+		eq: (value, filterValue) => value.toLowerCase().includes(filterValue.toLowerCase()),
+		render: DefaultFilterRender,
 	};
 	default = () => '';
 };

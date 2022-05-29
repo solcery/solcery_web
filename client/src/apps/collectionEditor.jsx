@@ -12,9 +12,16 @@ export default function CollectionEditor({ templateCode, moduleName }) {
 	let navigate = useNavigate();
 	const [ objects, setObjects ] = useState();
 	const [ template, setTemplate ] = useState()
-	const [ cookies, setCookie, removeCookie ] = useCookies();
-	const [ filterField, setFilterField ] = useState();
+	const [ cookies, setCookie, removeCookie ] = useCookies([ `${moduleName}.filter` ]);
+	const [ filteredField, setFilteredField ] = useState();
 
+	let fieldFilter = cookies[`${moduleName}.filter`] ?? {};
+	console.log(fieldFilter)
+
+	const setFieldFilter = (fieldCode, filterValue) => {
+		fieldFilter[fieldCode] = filterValue;
+		setCookie(`${moduleName}.filter`, fieldFilter);
+	}
 
 	useEffect(() => {
 		SageAPI.template.getAllObjects(templateCode).then(setObjects);
@@ -26,16 +33,13 @@ export default function CollectionEditor({ templateCode, moduleName }) {
 		setCookie(`${templateCode}.pagination.current`, pagination.current)
 	}
 
-	const filterCookie = (fieldCode) => {
-		return `${moduleName}.filter.${fieldCode}`;
-	}
-
 	if (!template || !objects) return (<>NO DATA</>);
+
 
 	let tableData = objects.filter(object => {
 		for (let field of Object.values(template.fields)) {
-			let filterValue = cookies[filterCookie(field.code)]
-			if (!filterValue) continue;
+			let filterValue = fieldFilter[field.code]
+			if (filterValue === undefined) continue;
 			let filter = field.type.filter;
 			if (!filter) continue;
 			if (!field.type.filter.eq(object.fields[field.code], filterValue)) return false;
@@ -68,24 +72,20 @@ export default function CollectionEditor({ templateCode, moduleName }) {
 			>
 				{Object.values(template.fields).map(field => 
 					<Column 
-						title={field.name + (cookies[filterCookie(field.code)] ? `   [ ${cookies[filterCookie(field.code)]} ]` : '') } 
+						title={field.name + (fieldFilter[field.code] !== undefined ? `   [ ${fieldFilter[field.code]} ]` : '') } 
 						key={field.code} 
 						dataIndex={field.code}
 						filterDropdown={field.type.filter && 
 			              <field.type.filter.render 
-			              	defaultValue={ cookies[filterCookie(field.code)] } 
+			              	type = { field.type }
+			              	defaultValue={ fieldFilter[field.code] } 
 			              	onChange={(value) => { 
-			              		setFilterField();
-			              		let cookieName = filterCookie(field.code);
-			              		if (!value) {
-			              			removeCookie(cookieName) 
-			              		} else {
-			              			setCookie(filterCookie(field.code), value) 
-			              		}
+			              		setFieldFilter(field.code, value);
+			              		setFilteredField();
 			              	}}/>
 			            }
-			            onFilterDropdownVisibleChange = { (visible) => setFilterField(visible ? field.code : undefined) }
-			            filterDropdownVisible = { filterField === field.code}
+			            onFilterDropdownVisibleChange = { (visible) => setFilteredField(visible ? field.code : undefined) }
+			            filterDropdownVisible = { filteredField === field.code}
 						render = {(_, object) => <field.type.valueRender
 							defaultValue = { object.fields[field.code] }
 							type = { field.type }

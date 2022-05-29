@@ -12,11 +12,11 @@ export const ValueRender = ({ defaultValue, type, onChange }) => {
 	/>;
 }
 
-export const FilterRender = ({ defaultValue, onChange }) => {
+export const FilterRender = ({ defaultValue, onChange, type }) => {
 	const [ value, setValue ] = useState(defaultValue);
-	return (<div>
-		<Input 
-			style = { { width: '200px' }}
+	return (
+	<div>
+		<type.valueRender
 			defaultValue={ defaultValue }
 			onChange={ (event) => { setValue(event.target.value) } }
 			onPressEnter = { () => onChange(value) }

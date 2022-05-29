@@ -1,4 +1,4 @@
-import { SType } from '../base';
+import { SType, defaultFilter } from '../base';
 import { ValueRender } from './components';
 
 class SLink {
@@ -18,7 +18,7 @@ class SLink {
     }
     return meta.getIntId(value)
   };
-  
+  filter = defaultFilter;
   valueRender = ValueRender;
   default = () => undefined;
 };

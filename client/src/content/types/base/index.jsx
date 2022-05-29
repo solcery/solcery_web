@@ -1,4 +1,6 @@
-const _stypebyclassname = {}
+import { DefaultFilterRender } from './components';
+
+const _stypebyclassname = {};
 
 const fromObject = (src) => {
 	let classConstructor = _stypebyclassname[src.name];
@@ -32,3 +34,9 @@ export const SType = {
 		}
 	}
 }
+
+export const defaultFilter = {
+	eq: (value, filterValue) => value === filterValue,
+	render: DefaultFilterRender,
+}
+
