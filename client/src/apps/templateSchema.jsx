@@ -16,7 +16,7 @@ export default function TemplateSchema() {
 
 	useEffect(() => {
 		SageAPI.template.getSchema(templateCode).then(loadSchema);
-	}, [])
+	}, [ templateCode ])
 
 	const save = () => {
 		SageAPI.template.setSchema(templateCode, JSON.parse(schema));

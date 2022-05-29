@@ -1,17 +1,5 @@
 import { BrickRuntime } from '../content/brickLib';
 
-const convertContent = (content) => {
-  let res = {};
-  Object.values(content).forEach(template => {
-    let tpl = {};
-    Object.values(template.objects).forEach(obj => {
-      tpl[obj.id] = obj;
-    });
-    res[template.name] = tpl;
-  })
-  return res;
-}
-
 const objectToArray = (obj) => {
   return Object.entries(obj).map(( [key, value]) => {
     return { key, value }
@@ -155,7 +143,7 @@ export class Game {
     };
     if (full) {
       Object.assign(diff.attrs, this.attrs);
-      for (let [ id, obj ] of Object.entries(this.objects)) {
+      for (let obj of Object.values(this.objects)) {
         diff.objects[obj.id] = {
           id: obj.id,
           tplId: obj.tplId,

@@ -15,20 +15,6 @@ export function UserProvider(props) {
 	const [ projectName, setProjectName ] = useState(undefined);
 	const [ error, setError ] = useState(undefined);
 
-	useEffect(() => {
-		if (user) return;
-		let loggedAs = cookies.loggedAs;
-		let lastProject = cookies.projectName;
-		console.log(lastProject)
-		console.log(loggedAs)
-		if (!loggedAs || !lastProject) return;
-		SageAPI.connect(lastProject);
-		SageAPI.template.getObjectById('users', loggedAs).then(loadUser)
-	}, [ user ])
-
-	const reload = (id) => {
-		SageAPI.template.getObjectById('users', id).then(loadUser)
-	}
 
 	const loadUser = (userData) => {
 		setUser({
@@ -36,9 +22,23 @@ export function UserProvider(props) {
 			css: userData.fields.css,
 			layoutPresets: userData.fields.layoutPresets,
 			readonlyBricks: userData.fields.readonlyBricks,
-			reload
 		})
 	}
+
+	const reload = (id) => {
+		SageAPI.template.getObjectById('users', id).then((res) => loadUser(res))
+	}
+
+	useEffect(() => {
+		if (user) return;
+		let loggedAs = cookies.loggedAs;
+		let lastProject = cookies.projectName;
+		if (!loggedAs || !lastProject) return;
+		SageAPI.connect(lastProject);
+		SageAPI.template.getObjectById('users', loggedAs).then((res) => loadUser(res))
+	}, [ user, cookies.loggedAs, cookies.projectName ])
+
+
 
 	const auth = useCallback(() => {
 		if (!projectName) {
@@ -69,7 +69,7 @@ export function UserProvider(props) {
 			})
 			loadUser(userObject);
 		})
-	}, [ login, password, projectName ]);
+	}, [ login, password, projectName, setCookie ]);
 
 	useEffect(() => {
 		if (user && user.css) {
@@ -82,6 +82,7 @@ export function UserProvider(props) {
 		}
 	}, [ user ])
 
+
 	if (!user) return (<>
 			<Input placeholder = 'Project name' onChange={e => { setProjectName(e.target.value) } }/>
 			<Input placeholder = 'Login' onChange={e => { setLogin(e.target.value) } }/>
@@ -90,7 +91,7 @@ export function UserProvider(props) {
 			{ error && <Alert message={error} banner={true}/> }
 		</>);
   return (
-    <UserContext.Provider value = { user }>
+    <UserContext.Provider value = { Object.assign({ reload }, user) }>
       {props.children}
     </UserContext.Provider>
   );

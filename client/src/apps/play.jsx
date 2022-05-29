@@ -19,17 +19,16 @@ export default function Play() {
 	const { brickLibrary } = useBrickLibrary();
 	const { layoutPresets } = useUser();
 
-	const buildProject = async () => {
-		let content = await build({ targets: [ 'web', 'unity' ], brickLibrary });
-		let session = new Session(content, [ 1 ]);
-		session.start(layoutPresets)
-		setGameSession(session);
-	}
-
 	useEffect(() => {
 		if (!brickLibrary) return;
-		buildProject();
-	}, [ brickLibrary ])
+		async function buildContent() {
+			let content = await build({ targets: [ 'web', 'unity' ], brickLibrary });
+			let session = new Session(content, [ 1 ]);
+			session.start(layoutPresets)
+			setGameSession(session);
+		}
+		buildContent();
+	}, [ brickLibrary, layoutPresets ])
 
 	const sendDiffLog = (diffLog, send = true) => {
 		let states = diffLog.map((state, index) => {

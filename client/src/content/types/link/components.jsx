@@ -1,11 +1,10 @@
-import React, { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { SageAPI } from '../../../api';
 import { Select } from 'antd';
 const { Option } = Select;
 
 export const ValueRender = (props) => {
 
-	const [ value, setValue ] = useState(undefined);
 	const [ objects, setObjects ] = useState(undefined);
 	const mountedRef = useRef(true)
 
@@ -16,7 +15,6 @@ export const ValueRender = (props) => {
 	 }, [])
 
 	const onChange = (newValue) => {
-		setValue(newValue);
 		props.onChange && props.onChange(newValue);
 	}
 

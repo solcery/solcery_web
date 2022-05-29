@@ -1,15 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from "react-router-dom";
 import { Template } from '../content/template';
 import { Table, Button } from "antd";
 import { SageAPI } from '../api';
-import { useCookies } from 'react-cookie';
 
 const { Column } = Table;
 
 export default function ObjectEditor({ templateCode, objectId, onSave }) {
-	console.log(templateCode)
-	let navigate = useNavigate();
 	
 	const [ object, setObject ] = useState(undefined);
 	const [ template, setTemplate ] = useState(undefined);

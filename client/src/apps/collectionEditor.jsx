@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
-import { useParams, useNavigate } from 'react-router-dom';
-import { Table, Button, Input } from 'antd';
+import { useNavigate } from 'react-router-dom';
+import { Table, Button } from 'antd';
 import { Template } from '../content/template'
 import { SageAPI } from '../api'
 import { useCookies } from 'react-cookie';

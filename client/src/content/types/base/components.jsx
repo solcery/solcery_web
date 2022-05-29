@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Input, Button } from 'antd';
+import { Button } from 'antd';
 
 export const DefaultFilterRender = ({ defaultValue, onChange, type }) => {
 	const [ value, setValue ] = useState(defaultValue);

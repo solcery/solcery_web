@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Button } from 'antd';
 const ADD_ELEMENT_BUTTON_LABEL = ' + ';
 const REMOVE_ELEMENT_BUTTON_LABEL = ' - ';
