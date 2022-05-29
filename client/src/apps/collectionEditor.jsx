@@ -8,19 +8,26 @@ import { useCookies } from 'react-cookie';
 const { Column } = Table;
 
 export default function CollectionEditor({ templateCode, moduleName }) {
-
+	const filterCookieName = `${moduleName}.filter`;
 	let navigate = useNavigate();
 	const [ objects, setObjects ] = useState();
 	const [ template, setTemplate ] = useState()
-	const [ cookies, setCookie, removeCookie ] = useCookies([ `${moduleName}.filter` ]);
+	const [ cookies, setCookie, removeCookie ] = useCookies([ filterCookieName ]);
 	const [ filteredField, setFilteredField ] = useState();
-
-	let fieldFilter = cookies[`${moduleName}.filter`] ?? {};
-	console.log(fieldFilter)
+	const [ filter, setFilter ] = useState(cookies[filterCookieName] ?? {})
 
 	const setFieldFilter = (fieldCode, filterValue) => {
-		fieldFilter[fieldCode] = filterValue;
-		setCookie(`${moduleName}.filter`, fieldFilter);
+		if (filterValue === undefined) {
+			delete filter[fieldCode];
+		} else {
+			filter[fieldCode] = filterValue;
+		}
+		if (Object.keys(filter).length > 0) {
+			setCookie(filterCookieName, filter);
+		} else {
+			removeCookie(filterCookieName);
+		}
+		setFilter(Object.assign({}, filter));
 	}
 
 	useEffect(() => {
@@ -32,16 +39,14 @@ export default function CollectionEditor({ templateCode, moduleName }) {
 		setCookie(`${templateCode}.pagination.pageSize`, pagination.pageSize)
 		setCookie(`${templateCode}.pagination.current`, pagination.current)
 	}
-
-	if (!template || !objects) return (<>NO DATA</>);
-
+	if (!template || !objects || !filter) return (<>NO DATA</>);
 
 	let tableData = objects.filter(object => {
 		for (let field of Object.values(template.fields)) {
-			let filterValue = fieldFilter[field.code]
+			let filterValue = filter[field.code]
 			if (filterValue === undefined) continue;
-			let filter = field.type.filter;
-			if (!filter) continue;
+			let fieldFilter = field.type.filter;
+			if (!fieldFilter) continue;
 			if (!field.type.filter.eq(object.fields[field.code], filterValue)) return false;
 		}
 		return true;
@@ -72,13 +77,14 @@ export default function CollectionEditor({ templateCode, moduleName }) {
 			>
 				{Object.values(template.fields).map(field => 
 					<Column 
-						title={field.name + (fieldFilter[field.code] !== undefined ? `   [ ${fieldFilter[field.code]} ]` : '') } 
-						key={field.code} 
+						filtered = { filter[field.code] !== undefined }
+						title={field.name + (filter[field.code] !== undefined ? `   [ ${filter[field.code]} ]` : '') } 
+						key={`${moduleName}.${field.code}`} 
 						dataIndex={field.code}
 						filterDropdown={field.type.filter && 
-			              <field.type.filter.render 
+			              <field.type.filter.render
 			              	type = { field.type }
-			              	defaultValue={ fieldFilter[field.code] } 
+			              	defaultValue={ filter[field.code] } 
 			              	onChange={(value) => { 
 			              		setFieldFilter(field.code, value);
 			              		setFilteredField();

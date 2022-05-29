@@ -32,22 +32,21 @@ export const ValueRender = (props) => {
 			}))
 		})
 	}, [ props.type ]);
-
-	if (!objects) return <>Loading</>;
 	if (!props.onChange) {
-		if (props.defaultValue) {
-			let obj = objects.find(obj => obj.id === props.defaultValue);
-			if (obj) {
-				return <a href = { `/template.${props.type.templateCode}.${props.defaultValue}` }>
-						{ obj.title }
-					</a>;
-			}
-			else {
-				return <p>{ `Missing object ${props.defaultValue}`}</p>;
-			}
-		} else return <p>None</p>;
+		if (!props.defaultValue) return <p>None</p>;
+		if (!objects) return <>Loading ...</>;
+		let obj = objects.find(obj => obj.id === props.defaultValue);
+		if (obj) {
+			return <a href = { `/template.${props.type.templateCode}.${props.defaultValue}` }>
+					{ obj.title }
+				</a>;
+		}
+		else {
+			return <p>{ `Missing object ${props.defaultValue}`}</p>;
+		}
 	}
 
+	if (!objects) return <>Loading ...</>;
 	return <Select 
 				showSearch
 				style={{
