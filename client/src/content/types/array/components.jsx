@@ -6,6 +6,7 @@ const REMOVE_ELEMENT_BUTTON_LABEL = " - ";
 
 export const ValueRender = (props) => {
   var [value, setValue] = useState(props.defaultValue || []);
+  const [ revision, setRevision ] = useState(0);
 
   const onChange = (newValue, index) => {
     value[index] = newValue;
@@ -16,12 +17,12 @@ export const ValueRender = (props) => {
 
   const removeElement = (index) => {
     value.splice(index, 1);
-    setValue([...value]);
+    setRevision(revision + 1);
   };
 
   const addNewElement = () => {
     value.push(undefined);
-    setValue([...value]);
+    setRevision(revision + 1);
   };
 
   if (!props.onChange)
@@ -42,7 +43,7 @@ export const ValueRender = (props) => {
   return (
     <>
       {value.map((val, index) => (
-        <div key={`${index}:${val}`}>
+        <div key={`${revision}.${index}`}>
           <Button
             onClick={() => {
               removeElement(index);

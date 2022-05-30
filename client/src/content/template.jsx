@@ -29,4 +29,10 @@ export class Template {
     }
     return result;
   };
+
+  validate = (object, meta) => {
+    Object.values(this.fields)
+      .filter(field => field.type.validate)
+      .forEach(field => field.type.validate(object.fields[field.code], meta));
+  };
 }

@@ -4,7 +4,8 @@ const ADD_ELEMENT_BUTTON_LABEL = " + ";
 const REMOVE_ELEMENT_BUTTON_LABEL = " - ";
 
 export const ValueRender = (props) => {
-  var [value, setValue] = useState(props.defaultValue ?? []);
+  const [ value, setValue ] = useState(props.defaultValue ?? []);
+  const [ revision, setRevision ] = useState(0);
 
   const onChange = (newValue, index, type) => {
     value[index][type] = newValue;
@@ -14,7 +15,7 @@ export const ValueRender = (props) => {
 
   const removeElement = (index) => {
     value.splice(index, 1);
-    setValue([...value]);
+    setRevision(revision + 1);
     props.onChange && props.onChange(value);
   };
 
@@ -23,14 +24,14 @@ export const ValueRender = (props) => {
       key: props.type.keyType.default(),
       value: props.type.valueType.default(),
     });
-    setValue([...value]);
+    setRevision(revision + 1);
     props.onChange && props.onChange(value);
   };
   if (!props.onChange)
     return (
       <>
         {value.map((entry, index) => (
-          <div key={`${index}:${entry.key}:${entry.value}`}>
+          <div key={`${index}`}>
             <props.type.keyType.valueRender
               defaultValue={entry.key}
               type={props.type.keyType}
@@ -47,7 +48,7 @@ export const ValueRender = (props) => {
   return (
     <>
       {value.map((entry, index) => (
-        <div key={`${index}:${entry.key}:${entry.value}`}>
+        <div key={`${revision}.${index}`}>
           <Button
             onClick={() => {
               removeElement(index);

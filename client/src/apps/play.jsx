@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Session } from "../game";
 import Unity, { UnityContext } from "react-unity-webgl";
 import { useBrickLibrary } from "../contexts/brickLibrary";
-import { build } from "../builder";
+import { build } from "../content";
 import { useUser } from "../contexts/user";
 
 const unityPlayContext = new UnityContext({
@@ -21,10 +21,15 @@ export default function Play() {
   useEffect(() => {
     if (!brickLibrary) return;
     async function buildContent() {
-      let content = await build({ targets: ["web", "unity"], brickLibrary });
-      let session = new Session(content, [1]);
-      session.start(layoutPresets);
-      setGameSession(session);
+      let construction = await build({ targets: ["web", "unity"], brickLibrary });
+      if (construction.status) {
+        let content = construction.constructed;
+        let session = new Session(content, [1]);
+        session.start(layoutPresets);
+        setGameSession(session);
+      } else {
+        window.alert('Cannot construct content, validation unsucessful. Please content in project menu')
+      }
     }
     buildContent();
   }, [brickLibrary, layoutPresets]);

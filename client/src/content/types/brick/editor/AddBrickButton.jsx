@@ -4,14 +4,8 @@ import Select from "react-select";
 
 export default function AddBrickButton(props) {
   const brickType = props.data.brickType; // TODO: type
-  console.log(brickType);
-  console.log(props.data);
-  console.log(props.data.brickLibrary);
   const brickSignaturesOfType = props.data.brickLibrary[brickType];
-  const [isNodeTypeSelectorVisible, setNodeTypeSelectorVisible] =
-    useState(false);
-
-  // stopPropagation() is used extensively below to correctly handle config selector hiding on any click outside of it
+  const [isNodeTypeSelectorVisible, setNodeTypeSelectorVisible] = useState(false);
 
   const onAddButtonPointerUp = (event) => {
     setNodeTypeSelectorVisible(true);
@@ -83,8 +77,6 @@ export default function AddBrickButton(props) {
       window.removeEventListener("keyup", onKeyUp);
     };
   });
-
-  console.log(brickSignaturesOfType);
 
   const selectorOptions = Object.entries(brickSignaturesOfType)
     .filter(([name, sig]) => !sig.hidden)
