@@ -9,38 +9,41 @@ export const validate = async ({ brickLibrary }) => {
   let meta = {
     errors: [],
     brickLibrary,
-  }
+  };
   let templates = (await SageAPI.project.getAllTemplates()).map(
     (template) => new Template(template)
   );
   for (let template of templates) {
-    let fields = Object.values(template.fields).filter(field => field.type.validate);
+    let fields = Object.values(template.fields).filter(
+      (field) => field.type.validate
+    );
     let objects = await SageAPI.template.getAllObjects(template.code);
     for (let object of objects) {
       for (let field of fields) {
         let res = field.type.validate(object.fields[field.code], meta);
         if (res) {
-          meta.errors.push({ 
+          meta.errors.push({
             template: template.code,
             object: object._id,
             field: field.code,
             message: res.message,
-          })
-        };
+          });
+        }
       }
     }
   }
   return {
-  	status: meta.errors.length === 0,
-  	errors: meta.errors,
+    status: meta.errors.length === 0,
+    errors: meta.errors,
   };
-}
+};
 
-export const build = async ({ targets, brickLibrary }) => { //TODO: remove brickLibrary?
+export const build = async ({ targets, brickLibrary }) => {
+  //TODO: remove brickLibrary?
 
   let validationResult = await validate({ brickLibrary });
   if (!validationResult.status) {
-  	return validationResult;
+    return validationResult;
   }
 
   let result = Object.fromEntries(targets.map((target) => [target, {}]));
@@ -89,22 +92,21 @@ export const build = async ({ targets, brickLibrary }) => { //TODO: remove brick
         );
       }
     }
-    if (target === "unity") {
+    if (target.includes("unity")) {
       Object.entries(constructed).forEach(([name, objects]) => {
-        result.unity[name] = { name, objects };
+        result[target][name] = { name, objects };
       });
     }
     if (target === "web") {
       for (let [code, objects] of Object.entries(constructed)) {
-        result.web[code] = Object.fromEntries(
+        result[target][code] = Object.fromEntries(
           objects.map((obj) => [obj.id, obj])
         );
       }
     }
   }
   return {
-  	status: true,
-  	constructed: result
+    status: true,
+    constructed: result,
   };
 };
-

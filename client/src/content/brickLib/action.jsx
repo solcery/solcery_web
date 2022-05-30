@@ -14,9 +14,7 @@ export const basicActions = [
     func: "error",
     name: "ERROR",
     hidden: true,
-    params: [
-    	{ code: 'data', name: 'Data', type: 'SString', readonly: true },
-    ],
+    params: [{ code: "data", name: "Data", type: "SString", readonly: true }],
     exec: () => {},
   },
   {

@@ -18,7 +18,7 @@ class SMap {
   }
 
   construct = (value, meta) => {
-    if (meta.target === "unity") {
+    if (meta.target.includes("unity")) {
       return value.map((val) => {
         return {
           key: this.keyType.construct(val.key, meta),

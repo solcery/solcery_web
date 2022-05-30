@@ -19,10 +19,10 @@ export const basicConditions = [
     func: "error",
     name: "ERROR",
     hidden: true,
-    params: [
-      { code: 'data', name: 'Data', type: 'SString', readonly: true },
-    ],
-    exec: () => { return false },
+    params: [{ code: "data", name: "Data", type: "SString", readonly: true }],
+    exec: () => {
+      return false;
+    },
   },
   {
     type: 1,

@@ -32,7 +32,7 @@ export class Template {
 
   validate = (object, meta) => {
     Object.values(this.fields)
-      .filter(field => field.type.validate)
-      .forEach(field => field.type.validate(object.fields[field.code], meta));
+      .filter((field) => field.type.validate)
+      .forEach((field) => field.type.validate(object.fields[field.code], meta));
   };
 }

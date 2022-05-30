@@ -8,10 +8,10 @@ export default function Brick(props) {
   let errorBrick = false;
   let brickSignature = brickLibrary[brick.lib][brick.func];
   if (!brickSignature) {
-  	brickSignature = brickLibrary[brick.lib].error;
+    brickSignature = brickLibrary[brick.lib].error;
     errorBrick = true;
   }
-  if (brick.func === 'arg') {
+  if (brick.func === "arg") {
     let argSignature = brickLibrary[brick.lib][`arg.${brick.params.name}`];
     if (!argSignature) {
       brickSignature = brickLibrary[brick.lib].error;
@@ -25,7 +25,6 @@ export default function Brick(props) {
       nestedParams.push(param); // TODO appropriate check
     else inlineParams.push(param);
   });
-  
 
   const onRemoveButtonClicked = () => {
     props.data.onRemoveButtonClicked(
@@ -91,9 +90,9 @@ export default function Brick(props) {
   });
   return (
     <div
-      className={`brick ${brickSignature.lib} ${brickSignature.func} ${props.data.small ? "small" : ""} ${
-        props.data.readonly ? "readonly" : ""
-      }`}
+      className={`brick ${brickSignature.lib} ${brickSignature.func} ${
+        props.data.small ? "small" : ""
+      } ${props.data.readonly ? "readonly" : ""}`}
       onPointerEnter={() => (isHovered = true)}
       onPointerLeave={() => (isHovered = false)}
       style={{ width: `${Math.max(15, 4 + nestedParams.length * 5)}rem` }}

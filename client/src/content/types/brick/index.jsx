@@ -25,19 +25,19 @@ class SBrick {
     if (!v) return undefined;
     let brickSignature = meta.brickLibrary[v.lib][v.func];
     if (!brickSignature) {
-      return { 
+      return {
         message: `No brick '${v.lib}.${v.func}'' found in brick library!`,
-      }
+      };
     }
     for (let paramSig of brickSignature.params) {
       let param = v.params[paramSig.code];
-      if (param === undefined) { 
-        return { 
+      if (param === undefined) {
+        return {
           message: `No param '${paramSig.code}' found for brick '${v.lib}.${v.func}'!`,
-        }
+        };
       }
     }
-  }
+  };
 
   construct = (value, meta) => {
     if (value === undefined) return;
@@ -55,15 +55,17 @@ class SBrick {
     let params = [];
     for (let paramSig of brickSignature.params) {
       let param = v.params[paramSig.code];
-      if (param === undefined) { 
-        throw new Error(`Error constructing brick [${v.lib}.${v.func}] - no param 'paramSig.code' found!`);
+      if (param === undefined) {
+        throw new Error(
+          `Error constructing brick [${v.lib}.${v.func}] - no param 'paramSig.code' found!`
+        );
       }
       params.push({
         name: paramSig.code,
         value: paramSig.type.construct(param, meta),
-      })
+      });
     }
-    if (meta.target === "unity") {
+    if (meta.target.includes("unity")) {
       let func = brickSignature.func;
       if (func.includes("custom")) {
         let typeByName = { action: 0, condition: 1, value: 2 };

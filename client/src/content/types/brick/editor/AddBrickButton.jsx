@@ -5,7 +5,8 @@ import Select from "react-select";
 export default function AddBrickButton(props) {
   const brickType = props.data.brickType; // TODO: type
   const brickSignaturesOfType = props.data.brickLibrary[brickType];
-  const [isNodeTypeSelectorVisible, setNodeTypeSelectorVisible] = useState(false);
+  const [isNodeTypeSelectorVisible, setNodeTypeSelectorVisible] =
+    useState(false);
 
   const onAddButtonPointerUp = (event) => {
     setNodeTypeSelectorVisible(true);

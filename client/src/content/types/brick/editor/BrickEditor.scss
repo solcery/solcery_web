@@ -155,7 +155,6 @@
     background-color: #261f1c;
   }
 
-
   .brick:hover {
     background-color: #302621;
   }
@@ -179,7 +178,7 @@
   .brick.small > * {
     pointer-events: none;
   }
-  
+
   .brick.error {
     background-color: #802020;
   }

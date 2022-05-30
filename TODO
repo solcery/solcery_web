@@ -1,13 +1,9 @@
 TODO:
 
-error брики, изменение параметров и удаление - проверить что все ехает
-prettier попробовать
-unity emulator construct
 escape for object window
-errors on construct
-meta.errors for construct
 field validators
 refresh on delete
+Даблклик открывает сразу брик у нужного объекта
 
 merge keys for map and arrays
 caching template links on update in Link memo

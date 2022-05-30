@@ -21,20 +21,25 @@ export default function Play() {
   useEffect(() => {
     if (!brickLibrary) return;
     async function buildContent() {
-      let construction = await build({ targets: ["web", "unity"], brickLibrary });
+      let construction = await build({
+        targets: ["web", "unity"],
+        brickLibrary,
+      });
       if (construction.status) {
         let content = construction.constructed;
         let session = new Session(content, [1]);
         session.start(layoutPresets);
         setGameSession(session);
       } else {
-        window.alert('Cannot construct content, validation unsucessful. Please content in project menu')
+        window.alert(
+          "Cannot construct content, validation unsucessful. Please content in project menu"
+        );
       }
     }
     buildContent();
   }, [brickLibrary, layoutPresets]);
 
-  const sendDiffLog = (diffLog, send = true) => {
+  const sendDiffLog = (diffLog, send) => {
     let states = diffLog.map((state, index) => {
       return {
         id: index,
@@ -42,8 +47,7 @@ export default function Play() {
         value: state,
       };
     });
-    console.log(states);
-    if (send) clientCommand("UpdateGameState", { states });
+    clientCommand("UpdateGameState", { states });
   };
 
   function* stringChunk(s, maxBytes) {

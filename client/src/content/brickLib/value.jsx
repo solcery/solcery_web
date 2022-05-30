@@ -17,10 +17,10 @@ export const basicValues = [
     func: "error",
     name: "ERROR",
     hidden: true,
-    params: [
-      { code: 'data', name: 'Data', type: 'SString', readonly: true },
-    ],
-    exec: () => { return 0 },
+    params: [{ code: "data", name: "Data", type: "SString", readonly: true }],
+    exec: () => {
+      return 0;
+    },
   },
   {
     type: 2,

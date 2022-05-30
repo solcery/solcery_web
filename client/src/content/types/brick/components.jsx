@@ -10,11 +10,10 @@ import { useUser } from "../../../contexts/user";
 
 const { Option } = Select;
 
-
 const BrickTypeEditor = ({ defaultValue, onChange }) => {
   if (defaultValue) return <></>;
   return (
-    <Select onChange={onChange} defaultValue = { defaultValue }>
+    <Select onChange={onChange} defaultValue={defaultValue}>
       <Option key="action" value="action">
         Action
       </Option>
@@ -59,71 +58,81 @@ const argFromParam = (param) => {
   };
 };
 
-
 const BrickParamsEditor = (props) => {
-  const [ value, setValue ] = useState(props.defaultValue)
-  const [ editMode, setEditMode ] = useState(false);
+  const [value, setValue] = useState(props.defaultValue);
+  const [editMode, setEditMode] = useState(false);
 
   const apply = () => {
     setEditMode(false);
     props.onChange([...value]);
-  }
+  };
 
-  return (<>
-    <paramMapType.valueRender
-      defaultValue={ value }
-      type={ paramMapType }
-      onChange={ editMode && setValue }
-    />
-    {!props.readonly && !editMode && <Button onClick={() => setEditMode(!editMode)}>Edit</Button>}
-    {editMode && <Button onClick={apply}>Apply</Button>}
-  </>);
-}
+  return (
+    <>
+      <paramMapType.valueRender
+        defaultValue={value}
+        type={paramMapType}
+        onChange={editMode && setValue}
+      />
+      {!props.readonly && !editMode && (
+        <Button onClick={() => setEditMode(!editMode)}>Edit</Button>
+      )}
+      {editMode && <Button onClick={apply}>Apply</Button>}
+    </>
+  );
+};
 
 export const ValueRender = (props) => {
   const { readonlyBricks } = useUser();
 
-  const [ brickType, setBrickType ] = useState(props.type.brickType ? props.type.brickType : props.defaultValue && props.defaultValue.brickType)
-  const [ brickParams, setBrickParams ] = useState(props.defaultValue ? props.defaultValue.brickParams : []);
-  const [ brickTree, setBrickTree ] = useState(props.defaultValue && props.defaultValue.brickTree);
-
+  const [brickType, setBrickType] = useState(
+    props.type.brickType
+      ? props.type.brickType
+      : props.defaultValue && props.defaultValue.brickType
+  );
+  const [brickParams, setBrickParams] = useState(
+    props.defaultValue ? props.defaultValue.brickParams : []
+  );
+  const [brickTree, setBrickTree] = useState(
+    props.defaultValue && props.defaultValue.brickTree
+  );
 
   useEffect(() => {
     props.onChange && props.onChange({ brickType, brickParams, brickTree });
-  }, [ brickType, brickParams, brickTree, props.onChange])
+  }, [brickType, brickParams, brickTree, props.onChange]);
 
   if (!props.onChange && (!props.defaultValue || !props.defaultValue.brickTree))
     return <p>Empty</p>;
   if (!readonlyBricks && !props.onChange) return <p>Brick</p>;
   return (
     <>
-      {!brickType && <BrickTypeEditor 
-        defaultValue = { brickType }
-        onChange={setBrickType } 
-      />}
-      <BrickParamsEditor 
-        readonly = { !props.onChange }
-        defaultValue = { brickParams }
-        onChange={ setBrickParams } 
+      {!brickType && (
+        <BrickTypeEditor defaultValue={brickType} onChange={setBrickType} />
+      )}
+      <BrickParamsEditor
+        readonly={!props.onChange}
+        defaultValue={brickParams}
+        onChange={setBrickParams}
       />
-      {brickType && <BrickTreeEditor 
-        brickParams = { brickParams }
-        brickTree = { brickTree }
-        brickType = { brickType }
-        type = { props.type }
-        onChange={ props.onChange && setBrickTree } 
-      />}
+      {brickType && (
+        <BrickTreeEditor
+          brickParams={brickParams}
+          brickTree={brickTree}
+          brickType={brickType}
+          type={props.type}
+          onChange={props.onChange && setBrickTree}
+        />
+      )}
     </>
   );
 };
 
-
 export const BrickTreeEditor = (props) => {
-  const [ ownBrickLibrary, setOwnBrickLibrary ] = useState()
+  const [ownBrickLibrary, setOwnBrickLibrary] = useState();
   const { brickLibrary } = useBrickLibrary();
 
   const mapParams = (paramsArray) => {
-    let bricks = {}
+    let bricks = {};
     let params = paramsArray
       .filter((entry) => entry.key !== "")
       .map((entry) => paramFromMapEntry(entry))
@@ -133,22 +142,26 @@ export const BrickTreeEditor = (props) => {
         insertTable(bricks, arg, arg.lib, `arg.${argCode}`);
       });
     return bricks;
-  }
+  };
 
   useEffect(() => {
     if (!brickLibrary || !props.brickParams) return;
     let bricks = {};
 
-    Object.entries(brickLibrary)
-      .forEach(([ lib, libBricks ]) => Object.entries(libBricks)
-        .forEach(([ brickFunc, brick ]) =>  insertTable(bricks, brick, lib, brickFunc)));
+    Object.entries(brickLibrary).forEach(([lib, libBricks]) =>
+      Object.entries(libBricks).forEach(([brickFunc, brick]) =>
+        insertTable(bricks, brick, lib, brickFunc)
+      )
+    );
 
     let paramsLibrary = mapParams(props.brickParams);
-    Object.entries(paramsLibrary)
-      .forEach(([ lib, libBricks ]) => Object.entries(libBricks)
-        .forEach(([ brickFunc, brick ]) =>  insertTable(bricks, brick, lib, brickFunc)));
+    Object.entries(paramsLibrary).forEach(([lib, libBricks]) =>
+      Object.entries(libBricks).forEach(([brickFunc, brick]) =>
+        insertTable(bricks, brick, lib, brickFunc)
+      )
+    );
     setOwnBrickLibrary(bricks);
-  }, [ brickLibrary, props.brickParams ]);
+  }, [brickLibrary, props.brickParams]);
 
   if (!ownBrickLibrary) return <>Loading...</>;
   return (
@@ -157,17 +170,16 @@ export const BrickTreeEditor = (props) => {
         <BrickEditor
           width={300}
           height={200}
-          brickLibrary={ ownBrickLibrary }
-          brickTree={ props.brickTree }
-          brickType={ props.brickType }
-          type={ props.type } //TODO: remove
-          onChange={ props.onChange }
+          brickLibrary={ownBrickLibrary}
+          brickTree={props.brickTree}
+          brickType={props.brickType}
+          type={props.type} //TODO: remove
+          onChange={props.onChange}
         />
       </ReactFlowProvider>
     </>
   );
 };
-
 
 export const FilterRender = ({ defaultValue, onChange }) => {
   const [value, setValue] = useState(defaultValue);
@@ -190,6 +202,3 @@ export const FilterRender = ({ defaultValue, onChange }) => {
     </div>
   );
 };
-
-
-

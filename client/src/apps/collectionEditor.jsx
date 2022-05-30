@@ -35,7 +35,7 @@ export default function CollectionEditor({ templateCode, moduleName }) {
     SageAPI.template
       .getSchema(templateCode)
       .then((data) => setTemplate(new Template(data)));
-  }, [ templateCode ]);
+  }, [templateCode]);
 
   const onPaginationChange = (pagination) => {
     setCookie(`${templateCode}.pagination.pageSize`, pagination.pageSize);
@@ -62,7 +62,7 @@ export default function CollectionEditor({ templateCode, moduleName }) {
         fields: Object.assign({}, object.fields),
       };
     });
-    
+
   return (
     <>
       <Table

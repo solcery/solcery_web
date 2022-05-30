@@ -21,8 +21,6 @@ export default function ContentExporter() {
   };
 
   const importContent = () => {
-    let x = JSON.parse(contentDump);
-    console.log(x);
     SageAPI.project.restore(JSON.parse(contentDump));
   };
 

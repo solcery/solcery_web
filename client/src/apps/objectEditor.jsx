@@ -18,7 +18,7 @@ export default function ObjectEditor({ templateCode, objectId, onSave }) {
 
   const setField = (fieldCode, value) => {
     object.fields[fieldCode] = value;
-  }
+  };
 
   const save = () => {
     SageAPI.template
