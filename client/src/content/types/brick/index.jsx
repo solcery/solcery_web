@@ -20,7 +20,8 @@ class SBrick {
 
   validate = (value, meta) => {
     if (value === undefined) return;
-    let v = value.brickTree;
+    let v = value;
+    if (v.brickTree) v = v.brickTree;
     if (!v) return undefined;
     let brickSignature = meta.brickLibrary[v.lib][v.func];
     if (!brickSignature) {
@@ -39,7 +40,9 @@ class SBrick {
   }
 
   construct = (value, meta) => {
-    let v = value.brickTree;
+    if (value === undefined) return;
+    let v = value;
+    if (v.brickTree) v = v.brickTree;
     if (!v) return undefined;
     let brickSignature = meta.brickLibrary[v.lib][v.func];
     if (!brickSignature)

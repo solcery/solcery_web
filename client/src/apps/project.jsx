@@ -30,6 +30,7 @@ export default function Project() {
   return (
     <>
       <div>
+        <p> Test targets: </p>
         <Select defaultValue="web" onChange={setTarget}>
           <Option value="web">Web</Option>
           <Option value="unity">Unity</Option>
