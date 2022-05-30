@@ -88,7 +88,10 @@ export const build = async ({ targets, brickLibrary }) => {
     for (let template of templates) {
       if (template.constructTargets.includes(target)) {
         constructed[template.code] = meta.rawContent[template.code].objects.map(
-          (obj) => template.construct(obj, meta)
+          (obj) => {
+            meta.object = obj;
+            return template.construct(obj, meta)
+          }
         );
       }
     }

@@ -47,17 +47,18 @@ class SBrick {
     let brickSignature = meta.brickLibrary[v.lib][v.func];
     if (!brickSignature)
       throw new Error(
-        `Error constructing brick [${v.lib}.${v.func}] - no signature found!`
+        `Error constructing object [${meta.object._id}]! Brick [${v.lib}.${v.func}] - no signature found!`
       );
     let result = {
       name: brickSignature.name,
     };
     let params = [];
     for (let paramSig of brickSignature.params) {
+
       let param = v.params[paramSig.code];
       if (param === undefined) {
         throw new Error(
-          `Error constructing brick [${v.lib}.${v.func}] - no param 'paramSig.code' found!`
+          `Error constructing object [${meta.object._id}]! Brick [${v.lib}.${v.func}] - no param 'paramSig.code' found!`
         );
       }
       params.push({

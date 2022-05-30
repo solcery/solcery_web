@@ -30,6 +30,7 @@ export default function Project() {
     let res = await validate({ brickLibrary });
     if (!res.status) {
       setErrors(res.errors);
+      return;
     }
     window.alert("Everything seems fine!");
   };

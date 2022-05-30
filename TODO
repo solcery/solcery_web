@@ -3,7 +3,6 @@ TODO:
 escape for object window
 field validators
 refresh on delete
-Даблклик открывает сразу брик у нужного объекта
 
 merge keys for map and arrays
 caching template links on update in Link memo
