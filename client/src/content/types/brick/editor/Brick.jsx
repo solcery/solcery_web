@@ -4,12 +4,20 @@ import { notify } from "../../../../components/notification";
 
 export default function Brick(props) {
   const brick = props.data.brick;
-  let brickSignature = props.data.brickLibrary[brick.lib][brick.func];
-  // if (!brickSignature) {
-  // 	brickSignature = defaultBricksByType[brick.func] // TODO
-  // }
-  // console.log(props.data.brickLibrary)
-  // console.log(brickSignature)
+  const brickLibrary = props.data.brickLibrary;
+  let errorBrick = false;
+  let brickSignature = brickLibrary[brick.lib][brick.func];
+  if (!brickSignature) {
+  	brickSignature = brickLibrary[brick.lib].error;
+    errorBrick = true;
+  }
+  if (brick.func === 'arg') {
+    let argSignature = brickLibrary[brick.lib][`arg.${brick.params.name}`];
+    if (!argSignature) {
+      brickSignature = brickLibrary[brick.lib].error;
+      errorBrick = true;
+    }
+  }
   let nestedParams = [];
   let inlineParams = [];
   brickSignature.params.forEach((param) => {
@@ -17,6 +25,7 @@ export default function Brick(props) {
       nestedParams.push(param); // TODO appropriate check
     else inlineParams.push(param);
   });
+  
 
   const onRemoveButtonClicked = () => {
     props.data.onRemoveButtonClicked(
@@ -82,7 +91,7 @@ export default function Brick(props) {
   });
   return (
     <div
-      className={`brick ${brick.lib} ${props.data.small ? "small" : ""} ${
+      className={`brick ${brickSignature.lib} ${brickSignature.func} ${props.data.small ? "small" : ""} ${
         props.data.readonly ? "readonly" : ""
       }`}
       onPointerEnter={() => (isHovered = true)}

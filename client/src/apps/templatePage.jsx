@@ -5,7 +5,7 @@ export default function TemplatePage() {
   let { templateCode } = useParams();
   return (
     <CollectionEditor
-      templateCode={templateCode}
+      templateCode={ templateCode }
       moduleName={`template.${templateCode}`}
     />
   );

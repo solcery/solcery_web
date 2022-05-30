@@ -1,6 +1,6 @@
 import { ReactFlowProvider } from "react-flow-renderer";
 import { BrickEditor } from "./editor/BrickEditor";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { paramFromMapEntry } from "../../brickLib";
 import { Select, Button } from "antd";
 import { SType } from "../base";
@@ -10,26 +10,11 @@ import { useUser } from "../../../contexts/user";
 
 const { Option } = Select;
 
-const argFromParam = (param) => {
-  return {
-    lib: param.type.brickType,
-    func: `arg`,
-    name: `Arg [${param.name}]`,
-    params: [
-      {
-        code: "name",
-        name: "Name",
-        type: SType.from("SString"),
-        value: param.code,
-        readonly: true,
-      },
-    ],
-  };
-};
 
-const BrickTypeSelector = (props) => {
+const BrickTypeEditor = ({ defaultValue, onChange }) => {
+  if (defaultValue) return <></>;
   return (
-    <Select onChange={props.onChange}>
+    <Select onChange={onChange} defaultValue = { defaultValue }>
       <Option key="action" value="action">
         Action
       </Option>
@@ -57,6 +42,133 @@ const paramMapType = SType.from({
   },
 });
 
+const argFromParam = (param) => {
+  return {
+    lib: param.type.brickType,
+    func: `arg`,
+    name: `Arg [${param.name}]`,
+    params: [
+      {
+        code: "name",
+        name: "Name",
+        type: SType.from("SString"),
+        value: param.code,
+        readonly: true,
+      },
+    ],
+  };
+};
+
+
+const BrickParamsEditor = (props) => {
+  const [ value, setValue ] = useState(props.defaultValue)
+  const [ editMode, setEditMode ] = useState(false);
+
+  const apply = () => {
+    setEditMode(false);
+    props.onChange([...value]);
+  }
+
+  return (<>
+    <paramMapType.valueRender
+      defaultValue={ value }
+      type={ paramMapType }
+      onChange={ editMode && setValue }
+    />
+    {!props.readonly && !editMode && <Button onClick={() => setEditMode(!editMode)}>Edit</Button>}
+    {editMode && <Button onClick={apply}>Apply</Button>}
+  </>);
+}
+
+export const ValueRender = (props) => {
+  const { readonlyBricks } = useUser();
+
+  const [ brickType, setBrickType ] = useState(props.type.brickType ? props.type.brickType : props.defaultValue && props.defaultValue.brickType)
+  const [ brickParams, setBrickParams ] = useState(props.defaultValue ? props.defaultValue.brickParams : []);
+  const [ brickTree, setBrickTree ] = useState(props.defaultValue && props.defaultValue.brickTree);
+
+
+  useEffect(() => {
+    props.onChange && props.onChange({ brickType, brickParams, brickTree });
+  }, [ brickType, brickParams, brickTree, props.onChange])
+
+  if (!props.onChange && (!props.defaultValue || !props.defaultValue.brickTree))
+    return <p>Empty</p>;
+  if (!readonlyBricks && !props.onChange) return <p>Brick</p>;
+  return (
+    <>
+      {!brickType && <BrickTypeEditor 
+        defaultValue = { brickType }
+        onChange={setBrickType } 
+      />}
+      <BrickParamsEditor 
+        readonly = { !props.onChange }
+        defaultValue = { brickParams }
+        onChange={ setBrickParams } 
+      />
+      {brickType && <BrickTreeEditor 
+        brickParams = { brickParams }
+        brickTree = { brickTree }
+        brickType = { brickType }
+        type = { props.type }
+        onChange={ props.onChange && setBrickTree } 
+      />}
+    </>
+  );
+};
+
+
+export const BrickTreeEditor = (props) => {
+  const [ ownBrickLibrary, setOwnBrickLibrary ] = useState()
+  const { brickLibrary } = useBrickLibrary();
+
+  const mapParams = (paramsArray) => {
+    let bricks = {}
+    let params = paramsArray
+      .filter((entry) => entry.key !== "")
+      .map((entry) => paramFromMapEntry(entry))
+      .forEach((param) => {
+        let arg = argFromParam(param);
+        let argCode = arg.params[0].value;
+        insertTable(bricks, arg, arg.lib, `arg.${argCode}`);
+      });
+    return bricks;
+  }
+
+  useEffect(() => {
+    if (!brickLibrary || !props.brickParams) return;
+    let bricks = {};
+
+    Object.entries(brickLibrary)
+      .forEach(([ lib, libBricks ]) => Object.entries(libBricks)
+        .forEach(([ brickFunc, brick ]) =>  insertTable(bricks, brick, lib, brickFunc)));
+
+    let paramsLibrary = mapParams(props.brickParams);
+    Object.entries(paramsLibrary)
+      .forEach(([ lib, libBricks ]) => Object.entries(libBricks)
+        .forEach(([ brickFunc, brick ]) =>  insertTable(bricks, brick, lib, brickFunc)));
+    setOwnBrickLibrary(bricks);
+  }, [ brickLibrary, props.brickParams ]);
+
+  if (!ownBrickLibrary) return <>Loading...</>;
+  return (
+    <>
+      <ReactFlowProvider>
+        <BrickEditor
+          width={300}
+          height={200}
+          brickLibrary={ ownBrickLibrary }
+          brickTree={ props.brickTree }
+          brickType={ props.brickType }
+          type={ props.type } //TODO: remove
+          onChange={ props.onChange }
+        />
+      </ReactFlowProvider>
+    </>
+  );
+};
+
+
 export const FilterRender = ({ defaultValue, onChange }) => {
   const [value, setValue] = useState(defaultValue);
 
@@ -79,83 +191,5 @@ export const FilterRender = ({ defaultValue, onChange }) => {
   );
 };
 
-export const ValueRender = (props) => {
-  const [brickType, setBrickType] = useState(
-    props.type.brickType
-      ? props.type.brickType
-      : props.defaultValue && props.defaultValue.brickType
-  );
-  const [brickParams, setBrickParams] = useState(
-    props.type.params && props.defaultValue
-      ? props.defaultValue.brickParams
-      : []
-  );
-  const [brickTree, setBrickTree] = useState(
-    props.defaultValue && props.defaultValue.brickTree
-  );
-  const { brickLibrary } = useBrickLibrary();
-  const { readonlyBricks } = useUser();
-  const [brickLib, setBrickLib] = useState(undefined);
 
-  const onChange = (brickTree) => {
-    setBrickTree(brickTree);
-    if (props.onChange) props.onChange({ brickType, brickParams, brickTree });
-  };
 
-  const setParams = (newParams) => {
-    setBrickParams(newParams);
-  };
-
-  useEffect(() => {
-    if (!brickLibrary) return;
-    let bricks = {};
-    for (let [libname, funcs] of Object.entries(brickLibrary)) {
-      bricks[libname] = Object.assign({}, funcs);
-    }
-    if (props.type.params) {
-      let params = brickParams
-        .filter((entry) => entry.key !== "")
-        .map((entry) => paramFromMapEntry(entry));
-      params.forEach((param) => {
-        let arg = argFromParam(param);
-        let argCode = arg.params[0].value;
-        insertTable(bricks, arg, arg.lib, `arg.${argCode}`);
-      });
-    }
-    setBrickLib(bricks);
-  }, [brickParams, brickLibrary, props.type.params]);
-
-  if (!brickLibrary) return <p>Loading</p>;
-  if (!brickLib) return <p>Loading</p>;
-  if (!props.onChange && (!props.defaultValue || !props.defaultValue.brickTree))
-    return <p>Empty</p>;
-  if (!brickType) return <BrickTypeSelector onChange={setBrickType} />;
-  if (!readonlyBricks && !props.onChange) return <p>Brick</p>;
-
-  return (
-    <>
-      {props.type.params && (
-        <>
-          {" "}
-          Params:
-          <paramMapType.valueRender
-            defaultValue={brickParams}
-            type={paramMapType}
-            onChange={props.onChange && setParams}
-          />
-        </>
-      )}
-      <ReactFlowProvider>
-        <BrickEditor
-          width={300}
-          height={200}
-          brickLibrary={brickLib}
-          brickTree={brickTree}
-          brickType={brickType}
-          type={props.type}
-          onChange={props.onChange && onChange}
-        />
-      </ReactFlowProvider>
-    </>
-  );
-};

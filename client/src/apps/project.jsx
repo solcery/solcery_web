@@ -11,8 +11,7 @@ export default function Project() {
   const { brickLibrary } = useBrickLibrary();
 
   const buildProject = async () => {
-    let result = await build({ target, brickLibrary });
-    console.log(JSON.stringify(result, undefined, 2));
+    let result = await build({ targets: [ target ], brickLibrary });
   };
 
   return (

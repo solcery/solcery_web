@@ -19,8 +19,11 @@ class SString {
   };
   valueRender = ValueRender;
   filter = {
-    eq: (value, filterValue) =>
-      value.toLowerCase().includes(filterValue.toLowerCase()),
+    eq: (value, filterValue) => {
+      if (value === undefined) return false;
+      if (filterValue === undefined) return true;
+      return value.toLowerCase().includes(filterValue.toLowerCase());
+    },
     render: DefaultFilterRender,
   };
   default = () => "";

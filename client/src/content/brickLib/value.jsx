@@ -13,6 +13,16 @@ export const basicValues = [
     },
   },
   {
+    lib: "value",
+    func: "error",
+    name: "ERROR",
+    hidden: true,
+    params: [
+      { code: 'data', name: 'Data', type: 'SString', readonly: true },
+    ],
+    exec: () => { return 0 },
+  },
+  {
     type: 2,
     subtype: 0,
     lib: "value",

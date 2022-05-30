@@ -15,6 +15,16 @@ export const basicConditions = [
     },
   },
   {
+    lib: "condition",
+    func: "error",
+    name: "ERROR",
+    hidden: true,
+    params: [
+      { code: 'data', name: 'Data', type: 'SString', readonly: true },
+    ],
+    exec: () => { return false },
+  },
+  {
     type: 1,
     subtype: 1,
     lib: "condition",

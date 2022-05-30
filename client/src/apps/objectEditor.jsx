@@ -16,6 +16,10 @@ export default function ObjectEditor({ templateCode, objectId, onSave }) {
       .then((data) => setTemplate(new Template(data)));
   }, [objectId, templateCode]);
 
+  const setField = (fieldCode, value) => {
+    object.fields[fieldCode] = value;
+  }
+
   const save = () => {
     SageAPI.template
       .updateObjectById(templateCode, objectId, object.fields)
@@ -51,7 +55,7 @@ export default function ObjectEditor({ templateCode, objectId, onSave }) {
             <record.field.type.valueRender
               defaultValue={record.value}
               onChange={(value) => {
-                object.fields[record.field.code] = value;
+                setField(record.field.code, value);
               }}
               type={record.field.type}
             />

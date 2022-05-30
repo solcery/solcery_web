@@ -10,6 +10,16 @@ export const basicActions = [
     exec: () => {},
   },
   {
+    lib: "action",
+    func: "error",
+    name: "ERROR",
+    hidden: true,
+    params: [
+    	{ code: 'data', name: 'Data', type: 'SString', readonly: true },
+    ],
+    exec: () => {},
+  },
+  {
     type: 0,
     subtype: 1,
     lib: "action",

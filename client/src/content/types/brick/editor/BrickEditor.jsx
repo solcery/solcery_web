@@ -118,12 +118,8 @@ export const BrickEditor = (props) => {
   const makeAddButtonElement = useCallback(
     (brickID, brickType, brickTree, parentBrick, paramCode) => {
       if (!brickType) {
-        console.log("GET");
-        console.log(brickTree);
         throw new Error("NO BRICK");
       }
-      console.log(brickTree);
-      console.log(brickType);
       return {
         id: brickID,
         type: "add",
