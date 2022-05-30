@@ -2,6 +2,7 @@ import { ReactFlowProvider } from "react-flow-renderer";
 import { BrickEditor } from "./editor/BrickEditor";
 import React, { useState, useEffect, useMemo } from "react";
 import { paramFromMapEntry } from "../../brickLib";
+import { useLocation } from "react-router-dom";
 import { Select, Button } from "antd";
 import { SType } from "../base";
 import { insertTable } from "../../../utils";
@@ -116,6 +117,7 @@ export const ValueRender = (props) => {
       />
       {brickType && (
         <BrickTreeEditor
+          instant = { props.instant }
           brickParams={brickParams}
           brickTree={brickTree}
           brickType={brickType}
@@ -168,12 +170,13 @@ export const BrickTreeEditor = (props) => {
     <>
       <ReactFlowProvider>
         <BrickEditor
+          instant = { props.instant }
           width={300}
           height={200}
           brickLibrary={ownBrickLibrary}
           brickTree={props.brickTree}
           brickType={props.brickType}
-          type={props.type} //TODO: remove
+          type={props.type}
           onChange={props.onChange}
         />
       </ReactFlowProvider>

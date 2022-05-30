@@ -2,9 +2,10 @@ import { useParams, useNavigate } from "react-router-dom";
 import ObjectEditor from "./objectEditor";
 import { notify } from "../components/notification";
 
+
 export default function ObjectPage() {
-  let { templateCode, objectId } = useParams();
   const navigate = useNavigate();
+  let { templateCode, objectId } = useParams();
   const onSave = () => {
     notify({
       message: "Object updated",

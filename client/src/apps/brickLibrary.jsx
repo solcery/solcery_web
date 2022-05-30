@@ -1,4 +1,4 @@
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import ObjectEditor from "./objectEditor";
 import CollectionEditor from "./collectionEditor";
 import { notify } from "../components/notification";
@@ -16,7 +16,8 @@ export function BrickLibraryCollectionEditor() {
 export function BrickLibraryObjectEditor() {
   let { objectId } = useParams();
   const { load } = useBrickLibrary();
-
+  const { search } = useLocation();
+  const searchParams = new URLSearchParams(search);
   const navigate = useNavigate();
   const onSave = () => {
     load();
@@ -29,9 +30,11 @@ export function BrickLibraryObjectEditor() {
   };
   return (
     <ObjectEditor
+      key={objectId}
       templateCode={"customBricks"}
       objectId={objectId}
       onSave={onSave}
+      instant={searchParams.get('instant')}
     />
   );
 }

@@ -5,10 +5,9 @@ import { SageAPI } from "../api";
 
 const { Column } = Table;
 
-export default function ObjectEditor({ templateCode, objectId, onSave }) {
+export default function ObjectEditor({ templateCode, objectId, onSave, instant }) {
   const [object, setObject] = useState(undefined);
   const [template, setTemplate] = useState(undefined);
-
   useEffect(() => {
     SageAPI.template.getObjectById(templateCode, objectId).then(setObject);
     SageAPI.template
@@ -53,6 +52,7 @@ export default function ObjectEditor({ templateCode, objectId, onSave }) {
           dataIndex="value"
           render={(text, record) => (
             <record.field.type.valueRender
+              instant = {record.field.code === instant}
               defaultValue={record.value}
               onChange={(value) => {
                 setField(record.field.code, value);

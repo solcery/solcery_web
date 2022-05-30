@@ -1,10 +1,15 @@
 import { useEffect } from "react";
 import { Handle, Position } from "react-flow-renderer";
+import { useNavigate } from "react-router-dom";
 import { notify } from "../../../../components/notification";
 
+
 export default function Brick(props) {
+  const navigate = useNavigate(); 
   const brick = props.data.brick;
   const brickLibrary = props.data.brickLibrary;
+
+  // validation
   let errorBrick = false;
   let brickSignature = brickLibrary[brick.lib][brick.func];
   if (!brickSignature) {
@@ -18,6 +23,8 @@ export default function Brick(props) {
       errorBrick = true;
     }
   }
+
+
   let nestedParams = [];
   let inlineParams = [];
   brickSignature.params.forEach((param) => {
@@ -33,6 +40,13 @@ export default function Brick(props) {
       props.data.paramCode
     );
   };
+
+  const onDoubleClick = () => {
+    let isCustomBrick = brick.func.includes('custom') // TODO: add 'custom' key to brick itself
+    if (!isCustomBrick) return;
+    let objId = brick.func.split('.')[1];
+    navigate(`/brickLibrary.${objId}?instant=brick`);
+  }
 
   let isHovered = false;
 
@@ -96,6 +110,7 @@ export default function Brick(props) {
       onPointerEnter={() => (isHovered = true)}
       onPointerLeave={() => (isHovered = false)}
       style={{ width: `${Math.max(15, 4 + nestedParams.length * 5)}rem` }}
+      onDoubleClick = { onDoubleClick }
     >
       {!props.data.readonly && !props.data.small && (
         <div className={"remove-button"} onClick={onRemoveButtonClicked}>
