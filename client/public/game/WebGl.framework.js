@@ -1174,26 +1174,26 @@ var tempDouble;
 var tempI64;
 
 var ASM_CONSTS = {
- 5166996: function() {
+ 5167700: function() {
   Module["emscripten_get_now_backup"] = performance.now;
  },
- 5167051: function($0) {
+ 5167755: function($0) {
   performance.now = function() {
    return $0;
   };
  },
- 5167099: function($0) {
+ 5167803: function($0) {
   performance.now = function() {
    return $0;
   };
  },
- 5167147: function() {
+ 5167851: function() {
   performance.now = Module["emscripten_get_now_backup"];
  },
- 5167202: function() {
+ 5167906: function() {
   return Module.webglContextAttributes.premultipliedAlpha;
  },
- 5167263: function() {
+ 5167967: function() {
   return Module.webglContextAttributes.preserveDrawingBuffer;
  }
 };
@@ -2639,9 +2639,9 @@ function _SendCommand(command) {
 
 var instances = [];
 
-function _WebGLInputCreate(canvasId, x, y, width, height, fontsize, text, placeholder, isMultiLine, isPassword, isHidden) {
+function _WebGLInputCreate(canvasId, x, y, width, height, fontsize, text, placeholder, isMultiLine, isPassword, isHidden, isMobile) {
  var container = document.getElementById(UTF8ToString(canvasId));
- var canvas = document.getElementsByTagName("canvas")[0];
+ var canvas = container.getElementsByTagName("canvas")[0];
  if (!container && canvas) {
   container = canvas.parentNode;
  }
@@ -2657,23 +2657,38 @@ function _WebGLInputCreate(canvasId, x, y, width, height, fontsize, text, placeh
  }
  var input = document.createElement(isMultiLine ? "textarea" : "input");
  input.style.position = "absolute";
- input.style.top = y + "px";
- input.style.left = x + "px";
- input.style.width = width + "px";
- input.style.height = height + "px";
+ if (isMobile) {
+  input.style.bottom = 1 + "vh";
+  input.style.left = 5 + "vw";
+  input.style.width = 90 + "vw";
+  input.style.height = (isMultiLine ? 18 : 10) + "vh";
+  input.style.fontSize = 5 + "vh";
+  input.style.borderWidth = 5 + "px";
+  input.style.borderColor = "#000000";
+ } else {
+  input.style.top = y + "px";
+  input.style.left = x + "px";
+  input.style.width = width + "px";
+  input.style.height = height + "px";
+  input.style.fontSize = fontsize + "px";
+ }
  input.style.outlineWidth = 1 + "px";
  input.style.opacity = isHidden ? 0 : 1;
  input.style.resize = "none";
  input.style.padding = "0px 1px";
  input.style.cursor = "default";
+ input.style.touchAction = "manipulation";
  input.spellcheck = false;
  input.value = UTF8ToString(text);
  input.placeholder = UTF8ToString(placeholder);
- input.style.fontSize = fontsize + "px";
  if (isPassword) {
   input.type = "password";
  }
- container.appendChild(input);
+ if (isMobile) {
+  document.body.appendChild(input);
+ } else {
+  container.appendChild(input);
+ }
  return instances.push(input) - 1;
 }
 
@@ -2698,6 +2713,11 @@ function _WebGLInputEnterSubmit(id, falg) {
 function _WebGLInputFocus(id) {
  var input = instances[id];
  input.focus();
+}
+
+function _WebGLInputForceBlur(id) {
+ var input = instances[id];
+ input.blur();
 }
 
 function _WebGLInputInit() {
@@ -2741,7 +2761,8 @@ function _WebGLInputOnBlur(id, cb) {
 function _WebGLInputOnEditEnd(id, cb) {
  var input = instances[id];
  input.onchange = function() {
-  var value = allocate(intArrayFromString(input.value), "i8", ALLOC_NORMAL);
+  var intArray = intArrayFromString(input.value);
+  var value = allocate.length <= 2 ? allocate(intArray, ALLOC_NORMAL) : allocate(intArray, "i8", ALLOC_NORMAL);
   Runtime.dynCall("vii", cb, [ id, value ]);
  };
 }
@@ -2756,7 +2777,8 @@ function _WebGLInputOnFocus(id, cb) {
 function _WebGLInputOnValueChange(id, cb) {
  var input = instances[id];
  input.oninput = function() {
-  var value = allocate(intArrayFromString(input.value), "i8", ALLOC_NORMAL);
+  var intArray = intArrayFromString(input.value);
+  var value = allocate.length <= 2 ? allocate(intArray, ALLOC_NORMAL) : allocate(intArray, "i8", ALLOC_NORMAL);
   Runtime.dynCall("vii", cb, [ id, value ]);
  };
 }
@@ -2803,6 +2825,12 @@ function _WebGLInputTab(id, cb) {
 function _WebGLInputText(id, text) {
  var input = instances[id];
  input.value = UTF8ToString(text);
+}
+
+function _WebGLWindowInit() {
+ if (typeof Runtime === "undefined") Runtime = {
+  dynCall: dynCall
+ };
 }
 
 function _WebGLWindowInjectFullscreen() {
@@ -2868,6 +2896,12 @@ function _WebGLWindowOnBlur(cb) {
 
 function _WebGLWindowOnFocus(cb) {
  window.addEventListener("focus", function() {
+  Runtime.dynCall("v", cb, []);
+ });
+}
+
+function _WebGLWindowOnResize(cb) {
+ window.addEventListener("resize", function() {
   Runtime.dynCall("v", cb, []);
  });
 }
@@ -13730,6 +13764,7 @@ var asmLibraryArg = {
  "WebGLInputDelete": _WebGLInputDelete,
  "WebGLInputEnterSubmit": _WebGLInputEnterSubmit,
  "WebGLInputFocus": _WebGLInputFocus,
+ "WebGLInputForceBlur": _WebGLInputForceBlur,
  "WebGLInputInit": _WebGLInputInit,
  "WebGLInputIsFocus": _WebGLInputIsFocus,
  "WebGLInputMaxLength": _WebGLInputMaxLength,
@@ -13745,9 +13780,11 @@ var asmLibraryArg = {
  "WebGLInputSetSelectionRange": _WebGLInputSetSelectionRange,
  "WebGLInputTab": _WebGLInputTab,
  "WebGLInputText": _WebGLInputText,
+ "WebGLWindowInit": _WebGLWindowInit,
  "WebGLWindowInjectFullscreen": _WebGLWindowInjectFullscreen,
  "WebGLWindowOnBlur": _WebGLWindowOnBlur,
  "WebGLWindowOnFocus": _WebGLWindowOnFocus,
+ "WebGLWindowOnResize": _WebGLWindowOnResize,
  "__cxa_allocate_exception": ___cxa_allocate_exception,
  "__cxa_atexit": ___cxa_atexit,
  "__cxa_begin_catch": ___cxa_begin_catch,
