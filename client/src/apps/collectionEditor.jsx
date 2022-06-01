@@ -30,11 +30,15 @@ export default function CollectionEditor({ templateCode, moduleName }) {
     setFilter(Object.assign({}, filter));
   };
 
-  useEffect(() => {
+  const load = () => {
     SageAPI.template.getAllObjects(templateCode).then(setObjects);
     SageAPI.template
       .getSchema(templateCode)
       .then((data) => setTemplate(new Template(data)));
+  }
+
+  useEffect(() => {
+    load();
   }, [templateCode]);
 
   const onPaginationChange = (pagination) => {
@@ -151,7 +155,7 @@ export default function CollectionEditor({ templateCode, moduleName }) {
                       .removeById(templateCode, object._id)
                       .then((res) => {
                         if (res.deletedCount) {
-                          navigate(`/${moduleName}`);
+                          load();
                         }
                       });
                   }
