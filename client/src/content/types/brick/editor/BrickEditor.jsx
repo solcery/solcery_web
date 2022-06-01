@@ -100,7 +100,7 @@ export const BrickEditor = (props) => {
           });
         }
       } else {
-        if (pastedBrickTree.type === props.type.brickType) {
+        if (pastedBrickTree.lib === props.type.brickType) {
           sleepAndFit();
           onChange(pastedBrickTree);
           notify({ message: "Pasted successfully", color: "#DDFFDD" });

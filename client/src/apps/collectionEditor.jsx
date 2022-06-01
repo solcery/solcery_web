@@ -57,7 +57,7 @@ export default function CollectionEditor({ templateCode, moduleName }) {
     })
     .map((object) => {
       return {
-        id: object._id,
+        _id: object._id,
         key: object._id,
         fields: Object.assign({}, object.fields),
       };
@@ -70,7 +70,7 @@ export default function CollectionEditor({ templateCode, moduleName }) {
         onRow={(record, rowIndex) => {
           return {
             onDoubleClick: (event) => {
-              navigate(`/${moduleName}.${record.id}`);
+              navigate(`/${moduleName}.${record._id}`);
             },
           };
         }}
@@ -108,24 +108,24 @@ export default function CollectionEditor({ templateCode, moduleName }) {
               setFilteredField(visible ? field.code : undefined)
             }
             filterDropdownVisible={filteredField === field.code}
-            render={(_, object) => (
-              <field.type.valueRender
+            render={(_, object) => <field.type.valueRender
                 defaultValue={object.fields[field.code]}
                 type={field.type}
+                object={object}
               />
-            )}
+            }
           />
         ))}
         <Column
           title="Actions"
           key="actions"
           render={(_, object) => (
-            <div key={"actions." + object.id}>
+            <div key={"actions." + object._id}>
               <Button
                 key={"copy." + object.id}
                 onClick={() => {
                   SageAPI.template
-                    .clone(templateCode, object.id)
+                    .clone(templateCode, object._id)
                     .then((res) => {
                       if (res.insertedId) {
                         navigate(`/${moduleName}.${res.insertedId}`);
@@ -136,7 +136,7 @@ export default function CollectionEditor({ templateCode, moduleName }) {
                 Copy
               </Button>
               <Button
-                key={"delete." + object.id}
+                key={"delete." + object._id}
                 onClick={() => {
                   if (
                     window.confirm(
@@ -148,7 +148,7 @@ export default function CollectionEditor({ templateCode, moduleName }) {
                     )
                   ) {
                     SageAPI.template
-                      .removeById(templateCode, object.id)
+                      .removeById(templateCode, object._id)
                       .then((res) => {
                         if (res.deletedCount) {
                           navigate(`/${moduleName}`);

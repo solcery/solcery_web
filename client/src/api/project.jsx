@@ -14,3 +14,12 @@ project.restore = (src) => {
 project.dump = () => {
   return apiCall(MODULE_NAME, "dump");
 };
+
+project.getContent = () => {
+  return apiCall(MODULE_NAME, "getContent");
+};
+
+project.migrate = ({ objects }) => {
+  return apiCall(MODULE_NAME, "migrate", { objects });
+};
+

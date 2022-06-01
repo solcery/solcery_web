@@ -7,17 +7,31 @@ class SString {
 
   constructor(data) {
     this.useMacros = data.useMacros;
+    this.isPrimaryTitle = data.isPrimaryTitle;
+    this.width = data.width;
+    this.textArea = data.textArea;
   }
 
   construct = (value, meta) => {
     if (!this.useMacros) return value;
-    let result = value;
-    for (let { src, res } of meta.stringMacros) {
-      result = result.replaceAll(src, res);
+
+    // Applying macros
+    function applyLinkMacro(match, template, code) {
+      let obj = meta.rawContent[template].objects.find(obj => obj.fields.code === code);
+      let intId = meta.getIntId(obj._id);
+      return `<link="${intId}">`;
     }
-    return result;
+    let res = value;
+    for (let { source, result } of meta.stringMacros) {
+      res = res.replaceAll(source, result);
+    }
+    res = res.replace(/<link=([a-zA-Z]+).([a-zA-Z0-9]+)>/, applyLinkMacro);
+    return res;
   };
+
   valueRender = ValueRender;
+  default = () => "";
+
   filter = {
     eq: (value, filterValue) => {
       if (value === undefined) return false;
@@ -26,7 +40,6 @@ class SString {
     },
     render: DefaultFilterRender,
   };
-  default = () => "";
 }
 
 SType.register("SString", SString);

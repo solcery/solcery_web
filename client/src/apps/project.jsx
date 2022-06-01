@@ -41,7 +41,7 @@ export default function Project() {
     const element = document.createElement("a");
     const file = new Blob([json], { type: "text/plain" });
     element.href = URL.createObjectURL(file);
-    element.download = `${filename}_${date}.json`; // TODO: add_date and project
+    element.download = `${filename}.json`; // TODO: data
     document.body.appendChild(element); // Required for this to work in FireFox
     element.click();
   };

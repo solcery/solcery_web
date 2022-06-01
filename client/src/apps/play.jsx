@@ -82,24 +82,31 @@ export default function Play() {
     }
   };
 
-  unityPlayContext.on("OnUnityLoaded", async () => {
-    let content = gameSession.content.unity;
-    clientCommand("UpdateGameContent", content);
-    sendDiffLog(gameSession.game.diffLog);
-  });
+  useEffect(() => {
+    if (!gameSession) return;
+    unityPlayContext.on("OnUnityLoaded", async () => {
+      let content = gameSession.content.unity;
+      clientCommand("UpdateGameContent", content);
+      sendDiffLog(gameSession.game.diffLog);
+    });
 
-  unityPlayContext.on("SendCommand", async (jsonData) => {
-    let command = JSON.parse(jsonData);
-    gameSession.handlePlayerCommand(command);
-    sendDiffLog(gameSession.game.diffLog);
-  });
+    unityPlayContext.on("SendCommand", async (jsonData) => {
+      let command = JSON.parse(jsonData);
+      gameSession.handlePlayerCommand(command);
+      sendDiffLog(gameSession.game.diffLog);
+    });
+
+    return function () {
+      console.log('qutting1!!!')
+      unityPlayContext.removeAllEventListeners();
+    };
+  }, [ gameSession ])
 
   return !gameSession ? (
     <></>
   ) : (
     <div style={{ width: "100%" }}>
       <Unity
-        tabIndex={3}
         style={{ width: "100%" }}
         unityContext={unityPlayContext}
       />

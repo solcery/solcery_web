@@ -133,32 +133,6 @@ const removeById = async function (response, params) {
     });
 };
 
-const removeAll = async function (response, params) {
-  // TODO: deprecate
-  db.getDb(params.project)
-    .collection(OBJECT_COLLECTION)
-    .delete({}, function (err, res) {
-      if (err) throw err;
-      response.json(res);
-    });
-};
-
-const createMany = async function (response, params) {
-  let objects = params.objects.map((fields) => {
-    return {
-      _id: new ObjectId(),
-      template: params.templateCode,
-      fields: fields,
-    };
-  });
-  db.getDb(params.project)
-    .collection(OBJECT_COLLECTION)
-    .insertMany(objects, function (err, res) {
-      if (err) throw err;
-      response.json(res);
-    });
-};
-
 module.exports = function (api) {
   api.template = (params) => {
     if (params.command == "getAll") return getAll;
@@ -170,7 +144,5 @@ module.exports = function (api) {
     if (params.command == "clone") return clone;
     if (params.command == "create") return create;
     if (params.command == "removeById") return removeById;
-    if (params.command == "removeAll") return removeAll;
-    if (params.command == "createMany") return createMany;
   };
 };

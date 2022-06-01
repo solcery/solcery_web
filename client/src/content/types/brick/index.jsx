@@ -40,7 +40,7 @@ class SBrick {
   };
 
   construct = (value, meta) => {
-    if (value === undefined) return;
+    if (value === undefined) return; //TODO: Общий обходчик бриков на констракт и validate
     let v = value;
     if (v.brickParams) v = v.brickTree;
     if (!v) return undefined;

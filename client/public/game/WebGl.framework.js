@@ -10178,6 +10178,7 @@ function registerWheelEventCallback(target, userData, useCapture, callbackfunc, 
 
 function _emscripten_set_wheel_callback_on_thread(target, userData, useCapture, callbackfunc, targetThread) {
  target = findEventTarget(target);
+ if (!target) return -1;
  if (typeof target.onwheel !== "undefined") {
   registerWheelEventCallback(target, userData, useCapture, callbackfunc, 9, "wheel", targetThread);
   return 0;

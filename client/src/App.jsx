@@ -10,6 +10,7 @@ import "./App.css";
 import ObjectPage from "./apps/objectPage";
 import TemplatePage from "./apps/templatePage";
 import ContentExporter from "./apps/contentExporter";
+import Migrator from "./apps/migrator";
 import {
   BrickLibraryObjectEditor,
   BrickLibraryCollectionEditor,
@@ -50,6 +51,7 @@ export default function App() {
                 />
                 <Route path="play" element={<Play />} />
                 <Route path="project" element={<Project />} />
+                <Route path="migrator" element={<Migrator />} />
                 <Route path="export" element={<ContentExporter />} />
                 <Route path="profile" element={<Profile />} />
               </Routes>

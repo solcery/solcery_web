@@ -16,6 +16,7 @@ export function UserProvider(props) {
   const [error, setError] = useState(undefined);
 
   const loadUser = (userData) => {
+    if (!userData) return;
     setUser({
       id: userData._id,
       css: userData.fields.css,
@@ -34,6 +35,7 @@ export function UserProvider(props) {
     let lastProject = cookies.projectName;
     if (!loggedAs || !lastProject) return;
     SageAPI.connect(lastProject);
+    (async () => { console.log(await SageAPI.template.getAllObjects('users')) })()
     SageAPI.template
       .getObjectById("users", loggedAs)
       .then((res) => loadUser(res));
