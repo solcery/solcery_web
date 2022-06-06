@@ -36,16 +36,17 @@ export const validate = async ({ brickLibrary }) => {
     );
     let objects = await SageAPI.template.getAllObjects(template.code);
     for (let object of objects) {
+      meta.object = object
       for (let field of fields) {
-        let res = field.type.validate(object.fields[field.code], meta);
-        if (res) {
-          meta.errors.push({
+        meta.error = function(message) {
+          this.errors.push({
             template: template.code,
             object: object._id,
             field: field.code,
-            message: res.message,
-          });
+            message: message,
+          })
         }
+        field.type.validate(object.fields[field.code], meta);
       }
     }
   }

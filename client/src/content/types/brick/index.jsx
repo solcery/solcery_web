@@ -25,16 +25,19 @@ class SBrick {
     if (!v) return undefined;
     let brickSignature = meta.brickLibrary[v.lib][v.func];
     if (!brickSignature) {
-      return {
-        message: `No brick '${v.lib}.${v.func}'' found in brick library!`,
-      };
+      message: meta.error(`No brick '${v.lib}.${v.func}'' found in brick library!`)
     }
     for (let paramSig of brickSignature.params) {
       let param = v.params[paramSig.code];
+      if (paramSig.type instanceof SBrick) {
+        this.validate(param, meta)
+      }
+      if (meta.object && meta.object._id === '6292959419189affcfc004d0') {
+        console.log(paramSig)
+        console.log(param)
+      }
       if (param === undefined) {
-        return {
-          message: `No param '${paramSig.code}' found for brick '${v.lib}.${v.func}'!`,
-        };
+        meta.error(`No param '${paramSig.code}' found for brick '${v.lib}.${v.func}'!`);
       }
     }
   };
