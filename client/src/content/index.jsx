@@ -26,6 +26,7 @@ export const validate = async ({ brickLibrary }) => {
   let meta = {
     errors: [],
     brickLibrary,
+    status: true,
   };
   let templates = (await SageAPI.project.getAllTemplates()).map(
     (template) => new Template(template)
@@ -44,14 +45,15 @@ export const validate = async ({ brickLibrary }) => {
             object: object._id,
             field: field.code,
             message: message,
-          })
+          });
+          this.status = false;
         }
         field.type.validate(object.fields[field.code], meta);
       }
     }
   }
   return {
-    status: meta.errors.length === 0,
+    status: meta.status,
     errors: meta.errors,
   };
 };

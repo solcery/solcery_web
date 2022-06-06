@@ -7,7 +7,7 @@ export const basicValues = [
     lib: "value",
     func: "const",
     name: "Constant",
-    params: [{ code: "value", name: "Value", type: "SInt" }],
+    params: [{ code: "value", name: "Value", type: "SInt", value: 0}],
     exec: (runtime, params, ctx) => {
       return params.value;
     },

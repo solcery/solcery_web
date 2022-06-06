@@ -58,7 +58,7 @@ export const basicActions = [
     func: "loop",
     name: "Loop",
     params: [
-      { code: "counter_var", name: "Counter var", type: "SString" },
+      { code: "counter_var", name: "Counter var", type: "SString", value: "i" },
       { code: "iterations", name: "Iterations", type: "SBrick<value>" },
       { code: "action", name: "Action", type: "SBrick<action>" },
     ],

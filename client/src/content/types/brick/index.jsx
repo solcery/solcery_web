@@ -32,10 +32,6 @@ class SBrick {
       if (paramSig.type instanceof SBrick) {
         this.validate(param, meta)
       }
-      if (meta.object && meta.object._id === '6292959419189affcfc004d0') {
-        console.log(paramSig)
-        console.log(param)
-      }
       if (param === undefined) {
         meta.error(`No param '${paramSig.code}' found for brick '${v.lib}.${v.func}'!`);
       }
