@@ -15,7 +15,7 @@ export const ValueRender = ({ defaultValue, type, onChange, object }) => {
   return (
     type.textArea ?
     <Input.TextArea
-      style={{ width: `${type.width ? type.width : 800}px` }}
+      style={type.width && { width: `${type.width}px` }}
       type="text"
       rows={type.textArea.rows ?? 5}
       defaultValue={defaultValue}
@@ -25,7 +25,7 @@ export const ValueRender = ({ defaultValue, type, onChange, object }) => {
     />
     :
     <Input
-      style={{ width: `${type.width ? type.width : 800}px` }}
+      style={type.width && { width: `${type.width}px` }}
       type="text"
       defaultValue={defaultValue}
       onChange={(event) => {
