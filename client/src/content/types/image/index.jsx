@@ -5,7 +5,11 @@ const DEFAULT_PREVIEW_WIDTH = 200;
 class SImage {
   static fromString = () => new SImage({});
   constructor(data) {
-    this.previewWidth = data.previewWidth || DEFAULT_PREVIEW_WIDTH;
+    this.previewHeight = data.previewHeight;
+    this.previewWidth = data.previewWidth ?? DEFAULT_PREVIEW_WIDTH;
+    if (!this.previewHeight && !this.previewWidth) {
+      this.previewWidth = DEFAULT_PREVIEW_WIDTH;
+    }
   }
   construct = (value, meta) => value;
   valueRender = ValueRender;
