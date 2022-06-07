@@ -39,6 +39,7 @@ export default function ObjectEditor({ templateCode, objectId, onSave, instant }
   });
   return (
     <>
+      <Button style={{ width: '100%' }}onClick={save}>SAVE</Button>
       <Table pagination={false} dataSource={tableData}>
         <Column
           title="Field"
@@ -62,7 +63,7 @@ export default function ObjectEditor({ templateCode, objectId, onSave, instant }
           )}
         />
       </Table>
-      <Button onClick={save}>SAVE</Button>
+      <Button style={{ width: '100%' }}onClick={save}>SAVE</Button>
     </>
   );
 }
