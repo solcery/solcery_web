@@ -9,10 +9,11 @@ const { Column } = Table;
 
 export default function CollectionEditor({ templateCode, moduleName }) {
   const filterCookieName = `${moduleName}.filter`;
-  let navigate = useNavigate();
+  const [cookies, setCookie, removeCookie] = useCookies([filterCookieName]);
+  const navigate = useNavigate();
+
   const [objects, setObjects] = useState();
   const [template, setTemplate] = useState();
-  const [cookies, setCookie, removeCookie] = useCookies([filterCookieName]);
   const [filteredField, setFilteredField] = useState();
   const [filter, setFilter] = useState(cookies[filterCookieName] ?? {});
 
@@ -42,8 +43,8 @@ export default function CollectionEditor({ templateCode, moduleName }) {
   }, [templateCode]);
 
   const onPaginationChange = (pagination) => {
-    setCookie(`${templateCode}.pagination.pageSize`, pagination.pageSize);
-    setCookie(`${templateCode}.pagination.current`, pagination.current);
+    setCookie(`${moduleName}.pagination.pageSize`, pagination.pageSize);
+    setCookie(`${moduleName}.pagination.current`, pagination.current);
   };
   if (!template || !objects || !filter) return <>NO DATA</>;
 
@@ -80,8 +81,8 @@ export default function CollectionEditor({ templateCode, moduleName }) {
         }}
         onChange={onPaginationChange}
         pagination={{
-          defaultCurrent: cookies[`${moduleName}.pagination.pageSize`] ?? 1,
-          defaultPageSize: cookies[`${moduleName}.pagination.current`] ?? 10,
+          defaultCurrent: cookies[`${moduleName}.pagination.current`] ?? 1,
+          defaultPageSize: cookies[`${moduleName}.pagination.pageSize`] ?? 10,
           onChange: onPaginationChange,
         }}
       >
