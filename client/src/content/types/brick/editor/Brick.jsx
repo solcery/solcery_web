@@ -50,58 +50,43 @@ export default function Brick(props) {
 
   let isHovered = false;
 
+  const copy = () => {
+    let brickJson = JSON.stringify(props.data.brick)
+    notify({ message: "Brick copied", description: brickJson.substring(0, 30) + '...', color: '#DDFFDD'})
+    navigator.clipboard.writeText(brickJson);
+  }
+
+  const paste = () => {
+    navigator.clipboard.readText().then((clipboardContents) => {
+      if (!clipboardContents) return;
+      
+      let pastedBrickTree = null;
+      try {
+        pastedBrickTree = JSON.parse(clipboardContents);
+      } catch {
+        notify({ message: "Invalid brickTree format in clipboard", description: clipboardContents, color: '#FFDDDD'})
+      }
+      if (!pastedBrickTree) return; // TODO: add validation
+      props.data.onPaste(pastedBrickTree, props.data.brickTree, props.data.parentBrick, props.data.paramCode);
+    });
+  }
+  
   useEffect(() => {
-    let isCtrlDown = false;
-
     const onKeyDown = (e) => {
-      isCtrlDown = e.keyCode === 17 || e.keyCode === 91;
-    };
-    const onKeyUp = (e) => {
-      isCtrlDown = !(e.keyCode === 17 || e.keyCode === 91); // Ctrl or Cmd keys
-
-      if (isCtrlDown && e.keyCode === 67 /*'C' key*/ && isHovered) {
-        let brickJson = JSON.stringify(props.data.brick);
-        notify({
-          message: "Brick copied",
-          description: brickJson.substring(0, 30) + "...",
-          color: "#DDFFDD",
-        });
-        navigator.clipboard.writeText(brickJson);
-      }
-
-      if (isCtrlDown && e.keyCode === 86 /*'V' key*/ && isHovered) {
-        navigator.clipboard.readText().then((clipboardContents) => {
-          if (!clipboardContents) return;
-
-          let pastedBrickTree = null;
-          try {
-            pastedBrickTree = JSON.parse(clipboardContents);
-          } catch {
-            notify({
-              message: "Invalid brickTree format in clipboard",
-              description: clipboardContents,
-              color: "#FFDDDD",
-            });
-          }
-          if (!pastedBrickTree) return; // TODO: add validation
-          props.data.onPaste(
-            pastedBrickTree,
-            props.data.brickTree,
-            props.data.parentBrick,
-            props.data.paramCode
-          );
-        });
-      }
+      if (!isHovered) return;
+      if (!e.ctrlKey) return;
+      let charCode = String.fromCharCode(e.which).toLowerCase();
+      if(charCode === 'c') copy();
+      if(charCode === 'v') paste();
     };
 
-    window.addEventListener("keydown", onKeyDown);
-    window.addEventListener("keyup", onKeyUp);
-
+    window.addEventListener('keydown', onKeyDown);
     return () => {
-      window.removeEventListener("keydown", onKeyDown);
-      window.removeEventListener("keyup", onKeyUp);
+      window.removeEventListener('keydown', onKeyDown);
     };
   });
+
+  let width = brickSignature.width ?? Math.max(15, 4 + nestedParams.length * 5);
   return (
     <div
       className={`brick ${brickSignature.lib} ${brickSignature.func} ${
@@ -109,7 +94,7 @@ export default function Brick(props) {
       } ${props.data.readonly ? "readonly" : ""}`}
       onPointerEnter={() => (isHovered = true)}
       onPointerLeave={() => (isHovered = false)}
-      style={{ width: `${Math.max(15, 4 + nestedParams.length * 5)}rem` }}
+      style={{ width: `${width}rem` }}
       onDoubleClick = { onDoubleClick }
     >
       {!props.data.readonly && !props.data.small && (

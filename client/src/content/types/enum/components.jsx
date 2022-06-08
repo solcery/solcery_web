@@ -10,7 +10,7 @@ export const ValueRender = (props) => {
   }
   return (
     <Select
-      defaultValue={props.type.titles[defaultIndex]}
+      defaultValue={props.type.values[defaultIndex]}
       onChange={props.onChange}
     >
       {props.type.titles.map((value, index) => (

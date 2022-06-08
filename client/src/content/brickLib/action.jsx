@@ -255,12 +255,52 @@ export const basicActions = [
     lib: "action",
     func: "console_log",
     name: "Console log",
-    params: [{ code: "message", name: "Message", type: "SString" }],
+    width: 20,
+    params: [
+      { 
+        code: "message", name: "Message", type: 
+        {
+          name: "SString",
+          data: {
+            textArea: {
+              rows: 4,
+            },
+            width: 800,
+          }
+        } 
+      },
+      { 
+        code: "level", name: "Level", type: {
+          name: "SEnum",
+          data: {
+            values: ['log', 'warn'],
+            titles: ['Log', 'Warn'],
+          }
+        }  
+      },
+    ],
     exec: (runtime, params, ctx) => {
-      console.log("Brick Message: " + params[1]);
-      console.log("VARS: " + JSON.stringify(ctx.vars));
-      console.log("ATTRS: " + JSON.stringify(ctx.object.attrs));
-      console.log("GAME ATTRS " + JSON.stringify(ctx.game.attrs));
+      function applyMacro(match, obj, param) {
+        let res = match;
+        var src = undefined;
+        if (obj === 'obj' ) {
+          src = ctx.object.attrs;
+        }
+        if (obj === 'game' ) {
+          src = ctx.game.attrs;
+        }
+        if (obj === 'vars') {
+          src = ctx.vars;
+        }
+        if (src) {
+          if (!param) return JSON.stringify(src);
+          if (src[param] !== undefined) return src[param];
+        }
+        return match;
+      }
+      let res = params.message.replace(/\{([a-zA-Z]+).?([_a-zA-Z0-9]+)?\}/g, applyMacro);
+      console[params.level](res)
     },
   },
 ];
+

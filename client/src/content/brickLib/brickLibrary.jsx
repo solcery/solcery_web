@@ -19,8 +19,13 @@ export class BrickLibrary {
     let brick = Object.assign({}, brickSignature);
     brick.params = brickSignature.params.map((param) => {
       let newParam = Object.assign({}, param);
-      if (typeof newParam.type === "string")
+      if (typeof newParam.type === "string") {
         newParam.type = SType.from(newParam.type);
+      } else if (typeof newParam.type === "object") {
+        if (newParam.type.data && newParam.type.name) {
+          newParam.type = SType.from(newParam.type);
+        }
+      }
       return newParam;
     });
     insertTable(this.bricks, brick, brick.lib, brick.func);
