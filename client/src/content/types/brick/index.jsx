@@ -26,6 +26,7 @@ class SBrick {
     let brickSignature = meta.brickLibrary[v.lib][v.func];
     if (!brickSignature) {
       message: meta.error(`No brick '${v.lib}.${v.func}'' found in brick library!`)
+      return;
     }
     for (let paramSig of brickSignature.params) {
       let param = v.params[paramSig.code];
