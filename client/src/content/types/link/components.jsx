@@ -61,7 +61,7 @@ export const ValueRender = (props) => {
           .localeCompare(optionB.children.toLowerCase())
       }
     >
-      <Option key="none" value="None">
+      <Option value={undefined}>
         None
       </Option>
       {objects.map((obj) => (
