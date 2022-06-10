@@ -22,7 +22,7 @@ export default function Play() {
     if (!brickLibrary) return;
     async function buildContent() {
       let construction = await build({
-        targets: ["web", "unity_local"],
+        targets: ["web", "unity"],
         brickLibrary,
       });
       if (construction.status) {
@@ -66,7 +66,7 @@ export default function Play() {
     const USHORT_SIZE = 65536;
     let data = typeof param === "string" ? param : JSON.stringify(param);
     const chunks = [...stringChunk(data, USHORT_SIZE)];
-    console.log(`Web - sending package to Unity client [${funcName}]: ${data}`);
+    // console.log(`Web - sending package to Unity client [${funcName}]: ${data}`);
     for (let i = 0; i < chunks.length; i++) {
       let chunk_package = {
         count: chunks.length,
@@ -85,7 +85,7 @@ export default function Play() {
   useEffect(() => {
     if (!gameSession) return;
     unityPlayContext.on("OnUnityLoaded", async () => {
-      let content = gameSession.content.unity_local;
+      let content = gameSession.content.unity;
       clientCommand("UpdateGameContent", content);
       sendDiffLog(gameSession.game.diffLog);
     });
