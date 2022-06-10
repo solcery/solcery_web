@@ -106,9 +106,9 @@ export class Game {
     let ctx = this.createContext(object, {
       vars: { target_place: targetPlace },
     });
-    let dragndrop = this.content.drag_n_drops[dragAndDropId];
-    if (dragndrop.action_on_drop) {
-      this.runtime.execBrick(dragndrop.action_on_drop, ctx);
+    let dragndrop = this.content.dragNDrops[dragAndDropId];
+    if (dragndrop.actionOnDrop) {
+      this.runtime.execBrick(dragndrop.actionOnDrop, ctx);
     }
     this.closeDiff();
   };

@@ -119,13 +119,16 @@ export const build = async ({ targets, brickLibrary }) => {
     let constructed = {};
     meta.target = target;
     for (let template of templates) {
-      if (template.constructTargets.includes(target)) {
-        constructed[template.code] = meta.rawContent[template.code].objects.map(
-          (obj) => {
-            meta.object = obj;
-            return template.construct(obj, meta)
-          }
-        );
+      if (template.buildTargets) {
+        let buildCode = template.buildTargets[target];
+        if (buildCode) {
+          constructed[buildCode] = meta.rawContent[template.code].objects.map(
+            (obj) => {
+              meta.object = obj;
+              return template.construct(obj, meta)
+            }
+          );
+        }
       }
     }
     if (target.includes("unity")) {

@@ -107,34 +107,6 @@ function createUnityInstance(canvas, config, onProgress) {
   window.addEventListener("error", errorListener);
   window.addEventListener("unhandledrejection", errorListener);
 
-  // Clear the event handlers we added above when the app quits, so that the event handler
-  // functions will not hold references to this JS function scope after
-  // exit, to allow JS garbage collection to take place.
-  Module.deinitializers.push(function() {
-    Module['disableAccessToMediaDevices']();
-    disabledCanvasEvents.forEach(function (disabledCanvasEvent) {
-      canvas.removeEventListener(disabledCanvasEvent, preventDefault);
-    });
-    window.removeEventListener("error", errorListener);
-    window.removeEventListener("unhandledrejection", errorListener);
-
-    for (var id in Module.intervals)
-    {
-      window.clearInterval(id);
-    }
-    Module.intervals = {};
-  });
-
-  Module.QuitCleanup = function () {
-    for (var i = 0; i < Module.deinitializers.length; i++) {
-      Module.deinitializers[i]();
-    }
-    Module.deinitializers = [];
-    // After all deinitializer callbacks are called, notify user code that the Unity game instance has now shut down.
-    if (typeof Module.onQuit == "function")
-      Module.onQuit();
-    };
-
   // Safari does not automatically stretch the fullscreen element to fill the screen.
   // The CSS width/height of the canvas causes it to remain the same size in the full screen
   // window on Safari, resulting in it being a small canvas with black borders filling the
@@ -161,6 +133,35 @@ function createUnityInstance(canvas, config, onProgress) {
       }
     }
   });
+
+  // Clear the event handlers we added above when the app quits, so that the event handler
+  // functions will not hold references to this JS function scope after
+  // exit, to allow JS garbage collection to take place.
+  Module.deinitializers.push(function() {
+    Module['disableAccessToMediaDevices']();
+    disabledCanvasEvents.forEach(function (disabledCanvasEvent) {
+      canvas.removeEventListener(disabledCanvasEvent, preventDefault);
+    });
+    window.removeEventListener("error", errorListener);
+    window.removeEventListener("unhandledrejection", errorListener);
+
+    for (var id in Module.intervals)
+    {
+      window.clearInterval(id);
+    }
+    Module.intervals = {};
+  });
+
+  Module.QuitCleanup = function () {
+    for (var i = 0; i < Module.deinitializers.length; i++) {
+      Module.deinitializers[i]();
+    }
+    Module.deinitializers = [];
+    // After all deinitializer callbacks are called, notify user code that the Unity game instance has now shut down.
+    if (typeof Module.onQuit == "function")
+      Module.onQuit();
+
+  };
 
   var unityInstance = {
     Module: Module,
@@ -215,6 +216,7 @@ function createUnityInstance(canvas, config, onProgress) {
     if (browser == 'Safari') browserVersion = extractRe('Version\/(.*?) ', ua, 1);
     if (browser == 'Internet Explorer') browserVersion = extractRe('rv:(.*?)\\)? ', ua, 1) || browserVersion;
 
+    // These OS strings need to match the ones in Runtime/Misc/SystemInfo.cpp::GetOperatingSystemFamily()
     var oses = [
       ['Windows (.*?)[;\)]', 'Windows'],
       ['Android ([0-9_\.]+)', 'Android'],
@@ -223,7 +225,7 @@ function createUnityInstance(canvas, config, onProgress) {
       ['FreeBSD( )', 'FreeBSD'],
       ['OpenBSD( )', 'OpenBSD'],
       ['Linux|X11()', 'Linux'],
-      ['Mac OS X ([0-9_\.]+)', 'macOS'],
+      ['Mac OS X ([0-9_\.]+)', 'MacOS'],
       ['bot|google|baidu|bing|msn|teoma|slurp|yandex', 'Search Bot']
     ];
     for(var o = 0; o < oses.length; ++o) {
@@ -365,7 +367,7 @@ function createUnityInstance(canvas, config, onProgress) {
     onProgress(0.9 * totalProgress);
   }
 
-Module.fetchWithProgress = function () {
+Module.readBodyWithProgress = function() {
   /**
    * Estimate length of uncompressed content by taking average compression ratios
    * of compression type into account.
@@ -392,7 +394,101 @@ Module.fetchWithProgress = function () {
     }
   }
 
+  function readBodyWithProgress(response, onProgress) {
+    var reader = response.body ? response.body.getReader() : undefined;
+    var lengthComputable = typeof response.headers.get('Content-Length') !== "undefined";
+    var estimatedContentLength = estimateContentLength(response, lengthComputable);
+    var body = new Uint8Array(estimatedContentLength);
+    var trailingChunks = [];
+    var receivedLength = 0;
+    var trailingChunksStart = 0;
 
+    if (!lengthComputable) {
+      console.warn("[UnityCache] Response is served without Content-Length header. Please reconfigure server to include valid Content-Length for better download performance.");
+    }
+
+    function readBody() {
+      if (typeof reader === "undefined") {
+        // Browser does not support streaming reader API
+        // Fallback to Respone.arrayBuffer()
+        return response.arrayBuffer().then(function (buffer) {
+          onProgress({
+            type: "progress",
+            total: buffer.length,
+            loaded: 0,
+            lengthComputable: lengthComputable
+          });
+          
+          return new Uint8Array(buffer);
+        });
+      }
+      
+      // Start reading memory chunks
+      return reader.read().then(function (result) {
+        if (result.done) {
+          return concatenateTrailingChunks();
+        }
+
+        if ((receivedLength + result.value.length) <= body.length) {
+          // Directly append chunk to body if enough memory was allocated
+          body.set(result.value, receivedLength);
+          trailingChunksStart = receivedLength + result.value.length;
+        } else {
+          // Store additional chunks in array to append later
+          trailingChunks.push(result.value);
+        }
+
+        receivedLength += result.value.length;
+        onProgress({
+          type: "progress",
+          total: Math.max(estimatedContentLength, receivedLength),
+          loaded: receivedLength,
+          lengthComputable: lengthComputable
+        });
+
+        return readBody();
+      });
+    }
+
+    function concatenateTrailingChunks() {
+      if (receivedLength === estimatedContentLength) {
+        return body;
+      }
+
+      if (receivedLength < estimatedContentLength) {
+        // Less data received than estimated, shrink body
+        return body.slice(0, receivedLength);
+      }
+
+      // More data received than estimated, create new larger body to prepend all additional chunks to the body
+      var newBody = new Uint8Array(receivedLength);
+      newBody.set(body, 0);
+      var position = trailingChunksStart;
+      for (var i = 0; i < trailingChunks.length; ++i) {
+        newBody.set(trailingChunks[i], position);
+        position += trailingChunks[i].length;
+      }
+
+      return newBody;
+    }
+
+    return readBody().then(function (parsedBody) {
+      onProgress({
+        type: "load",
+        total: parsedBody.length,
+        loaded: parsedBody.length,
+        lengthComputable: lengthComputable
+      });
+
+      response.parsedBody = parsedBody;
+      return response;
+    });
+  }
+
+  return readBodyWithProgress;
+}();
+
+Module.fetchWithProgress = function () {
   function fetchWithProgress(resource, init) {
     var onProgress = function () { };
     if (init && init.onProgress) {
@@ -400,94 +496,7 @@ Module.fetchWithProgress = function () {
     }
 
     return fetch(resource, init).then(function (response) {
-      var reader = (typeof response.body !== "undefined") ? response.body.getReader() : undefined;
-      var lengthComputable = typeof response.headers.get('Content-Length') !== "undefined";
-      var estimatedContentLength = estimateContentLength(response, lengthComputable);
-      var body = new Uint8Array(estimatedContentLength);
-      var trailingChunks = [];
-      var receivedLength = 0;
-      var trailingChunksStart = 0;
-
-      if (!lengthComputable) {
-        console.warn("[UnityCache] Response is served without Content-Length header. Please reconfigure server to include valid Content-Length for better download performance.");
-      }
-
-      function readBodyWithProgress() {
-        if (typeof reader === "undefined") {
-          // Browser does not support streaming reader API
-          // Fallback to Respone.arrayBuffer()
-          return response.arrayBuffer().then(function (buffer) {
-            onProgress({
-              type: "progress",
-              total: buffer.length,
-              loaded: 0,
-              lengthComputable: lengthComputable
-            });
-            
-            return new Uint8Array(buffer);
-          });
-        }
-        
-        // Start reading memory chunks
-        return reader.read().then(function (result) {
-          if (result.done) {
-            return concatenateTrailingChunks();
-          }
-
-          if ((receivedLength + result.value.length) <= body.length) {
-            // Directly append chunk to body if enough memory was allocated
-            body.set(result.value, receivedLength);
-            trailingChunksStart = receivedLength + result.value.length;
-          } else {
-            // Store additional chunks in array to append later
-            trailingChunks.push(result.value);
-          }
-
-          receivedLength += result.value.length;
-          onProgress({
-            type: "progress",
-            total: Math.max(estimatedContentLength, receivedLength),
-            loaded: receivedLength,
-            lengthComputable: lengthComputable
-          });
-
-          return readBodyWithProgress();
-        });
-      }
-
-      function concatenateTrailingChunks() {
-        if (receivedLength === estimatedContentLength) {
-          return body;
-        }
-
-        if (receivedLength < estimatedContentLength) {
-          // Less data received than estimated, shrink body
-          return body.slice(0, receivedLength);
-        }
-
-        // More data received than estimated, create new larger body to prepend all additional chunks to the body
-        var newBody = new Uint8Array(receivedLength);
-        newBody.set(body, 0);
-        var position = trailingChunksStart;
-        for (var i = 0; i < trailingChunks.length; ++i) {
-          newBody.set(trailingChunks[i], position);
-          position += trailingChunks[i].length;
-        }
-
-        return newBody;
-      }
-
-      return readBodyWithProgress().then(function (parsedBody) {
-        onProgress({
-          type: "load",
-          total: parsedBody.length,
-          loaded: parsedBody.length,
-          lengthComputable: lengthComputable
-        });
-
-        response.parsedBody = parsedBody;
-        return response;
-      });
+      return Module.readBodyWithProgress(response, onProgress);
     });
   }
 
@@ -499,11 +508,16 @@ Module.fetchWithProgress = function () {
       progressUpdate(urlId);
       var cacheControl = "no-store";
       var fetchImpl = Module.fetchWithProgress;
+      var url = Module[urlId];
+      var mode = /file:\/\//.exec(url) ? "same-origin" : undefined;
+
       var request = fetchImpl(Module[urlId], {
         method: "GET",
         companyName: Module.companyName,
         productName: Module.productName,
+        productVersion: Module.productVersion,
         control: cacheControl,
+        mode: mode,
         onProgress: function (event) {
           progressUpdate(urlId, event);
         }
@@ -608,12 +622,17 @@ Module.fetchWithProgress = function () {
     if (!Module.SystemInfo.hasWebGL) {
       reject("Your browser does not support WebGL.");
     } else if (Module.SystemInfo.hasWebGL == 1) {
-      reject("Your browser does not support graphics API \"WebGL 2\" which is required for this content.");
+      var msg = "Your browser does not support graphics API \"WebGL 2\" which is required for this content.";
+      if (Module.SystemInfo.browser == 'Safari' && parseInt(Module.SystemInfo.browserVersion) < 15) {
+        if (Module.SystemInfo.mobile || navigator.maxTouchPoints > 1)
+          msg += "\nUpgrade to iOS 15 or later.";
+        else
+          msg += "\nUpgrade to Safari 15 or later.";
+      }
+      reject(msg);
     } else if (!Module.SystemInfo.hasWasm) {
       reject("Your browser does not support WebAssembly.");
     } else {
-      if (Module.SystemInfo.hasWebGL == 1)
-        Module.print("Warning: Your browser does not support \"WebGL 2\" Graphics API, switching to \"WebGL 1\"");
       Module.startupErrorHandler = reject;
       onProgress(0);
       Module.postRun.push(function () {
