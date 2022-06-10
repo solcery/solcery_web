@@ -75,8 +75,8 @@ class SBrick {
       } else {
         result.type = brickSignature.type;
         result.subtype = brickSignature.subtype;
-        result.params = params;
       }
+      result.params = params;
     }
     if (meta.target === "web") {
       result.lib = brickSignature.lib;

@@ -55,9 +55,9 @@ const setSchema = async function (response, params) {
   var values = {
     $set: {
       name: schema.name,
+      buildTargets: schema.buildTargets,
       fields: schema.fields,
       hidden: schema.hidden,
-      constructTargets: schema.constructTargets,
     },
   };
   db.getDb(params.project)

@@ -63,14 +63,17 @@ export default function Project() {
       [1]
     );
     session.start(layoutPresets);
-    let state = {
-      id: 0,
-      state_type: 0,
-      value: session.game.diffLog,
-    };
+
+    let states = session.game.diffLog.map((state, index) => {
+      return {
+        id: index,
+        state_type: state.delay ? 1 : 0,
+        value: state,
+      };
+    });
     setUnityData({
       content: res.constructed.unity_local,
-      state,
+      state: { states },
     });
   };
 

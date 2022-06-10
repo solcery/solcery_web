@@ -66,7 +66,7 @@ export default function Play() {
     const USHORT_SIZE = 65536;
     let data = typeof param === "string" ? param : JSON.stringify(param);
     const chunks = [...stringChunk(data, USHORT_SIZE)];
-
+    // console.log(`Web - sending package to Unity client [${funcName}]: ${data}`);
     for (let i = 0; i < chunks.length; i++) {
       let chunk_package = {
         count: chunks.length,

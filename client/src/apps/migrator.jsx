@@ -2,7 +2,7 @@ import { Button, Input } from "antd";
 import { useState } from "react";
 import { SageAPI } from "../api";
 import { execute } from "../content";
-import { migrator } from "./migrators/reverseStringMacros";
+import { migrator } from "./migrators/tokenAddedToTokenLinked";
 
 const { TextArea } = Input;
 
@@ -12,7 +12,7 @@ export default function Migrator() {
   const applyMigrator = async () => {
     let content = await SageAPI.project.getContent();
 
-    // setResult(JSON.stringify(content, undefined, 2));
+    setResult(JSON.stringify(content, undefined, 2));
     let objects = migrator(content);
     SageAPI.project.migrate({ objects });
   };

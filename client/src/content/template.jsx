@@ -4,7 +4,7 @@ export class Template {
   constructor(data) {
     this.name = data.name;
     this.code = data.code;
-    this.constructTargets = data.constructTargets;
+    this.buildTargets = data.buildTargets;
     this.fields = {};
     this.hidden = data.hidden;
     for (let field of data.fields) {
@@ -12,6 +12,7 @@ export class Template {
         code: field.code,
         name: field.name,
         type: SType.from(field.type),
+        buildTargets: field.buildTargets,
       };
     }
   }
@@ -20,11 +21,14 @@ export class Template {
     let result = {};
     result.id = meta.getIntId(object._id);
     for (let field of Object.values(this.fields)) {
-      if (object.fields[field.code] !== undefined) {
-        result[field.code] = field.type.construct(
-          object.fields[field.code],
-          meta
-        );
+      if (field.buildTargets && field.buildTargets[meta.target]) {
+        let buildCode = field.buildTargets[meta.target];
+        if (object.fields[field.code] !== undefined) {
+          result[buildCode] = field.type.construct(
+            object.fields[field.code],
+            meta
+          );
+        }
       }
     }
     return result;
