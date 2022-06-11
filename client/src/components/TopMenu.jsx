@@ -1,7 +1,7 @@
 import { Menu, Avatar } from "antd";
 import { Link } from "react-router-dom";
 import React, { useEffect, useState } from "react";
-import { SageAPI } from "../api";
+import { useProject } from "../contexts/project";
 import {
   UserOutlined,
   CaretRightOutlined,
@@ -10,22 +10,25 @@ import {
 
 export const TopMenu = () => {
   const [templates, setTemplates] = useState([]);
+  const { sageApi, projectName } = useProject();
 
   useEffect(() => {
-    SageAPI.project.getAllTemplates().then(setTemplates);
+    sageApi.project.getAllTemplates().then(setTemplates);
   }, []);
 
   return (
     <>
       <Menu mode="horizontal">
         <Menu.Item key="project">
-          <Link to="project">
-            <Avatar size={"small"} icon=<DeploymentUnitOutlined /> />
+          <Link to="project" style={{ fontWeight: 'bold' }}>
+            <Avatar size={"small"} icon=<DeploymentUnitOutlined /> style={{ marginRight: 7 }}/>
+              { projectName }
           </Link>
         </Menu.Item>
         <Menu.Item key="play">
-          <Link to="play">
-            <Avatar size={"small"} icon=<CaretRightOutlined /> />
+          <Link to="play" style={{ fontWeight: 'bold' }}>
+            <Avatar size={"small"} icon=<CaretRightOutlined /> style={{ marginRight: 7 }}/>
+              Play
           </Link>
         </Menu.Item>
         <Menu.Item key="brickLibrary">

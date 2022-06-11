@@ -4,39 +4,41 @@ var ObjectId = require("mongodb").ObjectId;
 const TEMPLATE_COLLECTION = "templates";
 const OBJECT_COLLECTION = "objects";
 
-const getAllTemplates = async function (response, params) {
+const project = {};
+
+project.getAllTemplates = async function (response, data) {
   let result = db
-    .getDb(params.project)
+    .getDb(data.project)
     .collection(TEMPLATE_COLLECTION)
     .find({})
     .toArray();
   response.json(await result);
 };
 
-const dump = async function (response, params) {
+project.dump = async function (response, data) {
   let objects = await db
-    .getDb(params.project)
+    .getDb(data.project)
     .collection(OBJECT_COLLECTION)
     .find({})
     .toArray();
   let templates = await db
-    .getDb(params.project)
+    .getDb(data.project)
     .collection(TEMPLATE_COLLECTION)
     .find({})
     .toArray();
   response.json({ objects, templates });
 };
 
-const restore = async function (response, params) {
-  let { objects, templates } = params.src;
+project.restore = async function (response, data) {
+  let { objects, templates } = data.params.src;
 
   await db // Removing all templates
-    .getDb(params.project)
+    .getDb(data.project)
     .collection(TEMPLATE_COLLECTION)
     .remove({});
 
   await db // Removing all objects
-    .getDb(params.project)
+    .getDb(data.project)
     .collection(OBJECT_COLLECTION)
     .remove({});
 
@@ -44,14 +46,14 @@ const restore = async function (response, params) {
   templates.forEach(tpl => tpl._id = ObjectId(tpl._id));
   objects.forEach(obj => obj._id = ObjectId(obj._id));
   await db // Creating templates
-    .getDb(params.project)
+    .getDb(data.project)
     .collection(TEMPLATE_COLLECTION)
     .insertMany(templates, function (err, res) {
       if (err) throw err;
       result.templates = res;
     });
   await db // Creating all objects
-    .getDb(params.project)
+    .getDb(data.project)
     .collection(OBJECT_COLLECTION)
     .insertMany(objects, function (err, res) {
       if (err) throw err;
@@ -60,14 +62,14 @@ const restore = async function (response, params) {
   response.json(result);
 };
 
-const getContent = async function (response, params) {
+project.getContent = async function (response, data) {
   let templates = await db
-    .getDb(params.project)
+    .getDb(data.project)
     .collection(TEMPLATE_COLLECTION)
     .find({})
     .toArray();
   let objects = await db
-    .getDb(params.project)
+    .getDb(data.project)
     .collection(OBJECT_COLLECTION)
     .find({})
     .toArray();
@@ -75,8 +77,8 @@ const getContent = async function (response, params) {
 };
 
 
-const migrate = async function (response, params) {
-  let replaces = params.objects.map(object => {
+project.migrate = async function (response, data) {
+  let replaces = data.params.objects.map(object => {
     let obj = Object.assign({}, object);
     delete obj._id;
     return {
@@ -87,7 +89,7 @@ const migrate = async function (response, params) {
     }
   });
   await db // Creating all objects
-    .getDb(params.project)
+    .getDb(data.project)
     .collection(OBJECT_COLLECTION)
     .bulkWrite(replaces, function (err, res) {
       if (err) throw err;
@@ -95,12 +97,4 @@ const migrate = async function (response, params) {
     });
 };
 
-module.exports = function (api) {
-  api.project = (params) => {
-    if (params.command == "getAllTemplates") return getAllTemplates;
-    if (params.command == "restore") return restore;
-    if (params.command == "dump") return dump;
-    if (params.command == "getContent") return getContent;
-    if (params.command == "migrate") return migrate;
-  };
-};
+module.exports = project;

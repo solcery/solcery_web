@@ -4,50 +4,52 @@ var ObjectId = require("mongodb").ObjectId;
 const OBJECT_COLLECTION = "objects";
 const TEMPLATE_COLLECTION = "templates";
 
-const getAll = async function (response, params) {
-  let query = Object.assign({ template: params.templateCode }, params.query);
+const template = {};
+
+template.getAllObjects = async function (response, data) {
+  let query = Object.assign({ template: data.params.template }, data.params.query);
   let objects = await db
-    .getDb(params.project)
+    .getDb(data.project)
     .collection(OBJECT_COLLECTION)
     .find(query)
     .toArray();
   response.json(objects);
 };
 
-const getOne = async function (response, params) {
-  let query = Object.assign({ template: params.templateCode }, params.query);
+template.getOne = async function (response, data) {
+  let query = Object.assign({ template: data.params.template }, data.params.query);
   let object = await db
-    .getDb(params.project)
+    .getDb(data.project)
     .collection(OBJECT_COLLECTION)
     .findOne(query);
   response.json(object);
 };
 
-const getById = async function (response, params) {
+template.getObjectById = async function (response, data) {
   let query = {
-    _id: ObjectId(params.objectId),
-    template: params.templateCode,
+    _id: ObjectId(data.params.objectId),
+    template: data.params.template,
   };
   let object = await db
-    .getDb(params.project)
+    .getDb(data.project)
     .collection(OBJECT_COLLECTION)
     .findOne(query);
   response.json(object);
 };
 
-const getSchema = async function (response, params) {
+template.getSchema = async function (response, data) {
   let query = {
-    code: params.templateCode,
+    code: data.params.template,
   };
   let schema = await db
-    .getDb(params.project)
+    .getDb(data.project)
     .collection(TEMPLATE_COLLECTION)
     .findOne(query);
   response.json(schema);
 };
 
-const setSchema = async function (response, params) {
-  let schema = Object.assign({}, params.schema);
+template.setSchema = async function (response, data) {
+  let schema = Object.assign({}, data.params.schema);
   var query = {
     _id: ObjectId(schema._id),
   };
@@ -60,7 +62,7 @@ const setSchema = async function (response, params) {
       hidden: schema.hidden,
     },
   };
-  db.getDb(params.project)
+  db.getDb(data.project)
     .collection(TEMPLATE_COLLECTION)
     .updateOne(query, values, function (err, res) {
       if (err) throw err;
@@ -68,14 +70,14 @@ const setSchema = async function (response, params) {
     });
 };
 
-const create = async function (response, params) {
+template.create = async function (response, data) {
   // TODO: validate
   object = {
     _id: new ObjectId(),
-    template: params.templateCode,
+    template: data.params.template,
     fields: {},
   };
-  db.getDb(params.project)
+  db.getDb(data.project)
     .collection(OBJECT_COLLECTION)
     .insertOne(object, function (err, res) {
       if (err) throw err;
@@ -83,14 +85,14 @@ const create = async function (response, params) {
     });
 };
 
-const update = async function (response, params) {
+template.updateObjectById = async function (response, data) {
   // TODO: validate
   var query = {
-    _id: ObjectId(params.objectId),
-    template: params.templateCode,
+    _id: ObjectId(data.params.objectId),
+    template: data.params.template,
   };
-  var values = { $set: { fields: params.fields } };
-  db.getDb(params.project)
+  var values = { $set: { fields: data.params.fields } };
+  db.getDb(data.project)
     .collection(OBJECT_COLLECTION)
     .updateOne(query, values, function (err, res) {
       if (err) throw err;
@@ -98,21 +100,21 @@ const update = async function (response, params) {
     });
 };
 
-const clone = async function (response, params) {
+template.cloneObject = async function (response, data) {
   // TODO: validate
   let query = {
-    _id: ObjectId(params.objectId),
-    template: params.templateCode,
+    _id: ObjectId(data.params.objectId),
+    template: data.params.template,
   };
   let object = await db
-    .getDb(params.project)
+    .getDb(data.project)
     .collection(OBJECT_COLLECTION)
     .findOne(query);
   if (!object) {
     throw new Error("Error cloning the object");
   }
   object._id = new ObjectId();
-  db.getDb(params.project)
+  db.getDb(data.project)
     .collection(OBJECT_COLLECTION)
     .insertOne(object, function (err, res) {
       if (err) throw err;
@@ -120,12 +122,12 @@ const clone = async function (response, params) {
     });
 };
 
-const removeById = async function (response, params) {
+template.removeObjectById = async function (response, data) {
   let query = {
-    _id: ObjectId(params.objectId),
-    template: params.templateCode,
+    _id: ObjectId(data.params.objectId),
+    template: data.params.template,
   };
-  db.getDb(params.project)
+  db.getDb(data.project)
     .collection(OBJECT_COLLECTION)
     .deleteOne(query, function (err, res) {
       if (err) throw err;
@@ -133,16 +135,4 @@ const removeById = async function (response, params) {
     });
 };
 
-module.exports = function (api) {
-  api.template = (params) => {
-    if (params.command == "getAll") return getAll;
-    if (params.command == "getOne") return getOne;
-    if (params.command == "getById") return getById;
-    if (params.command == "getSchema") return getSchema;
-    if (params.command == "setSchema") return setSchema;
-    if (params.command == "update") return update;
-    if (params.command == "clone") return clone;
-    if (params.command == "create") return create;
-    if (params.command == "removeById") return removeById;
-  };
-};
+module.exports = template;

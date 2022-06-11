@@ -1,4 +1,4 @@
-import { SageAPI } from "../api";
+import { sageApi } from "../api";
 import { Template } from "../content/template";
 
 export * from "./types";
@@ -22,20 +22,20 @@ export const execute = async(func, extra) => {
   return meta;
 }
 
-export const validate = async ({ brickLibrary }) => {
+export const validate = async ({ sageApi, brickLibrary }) => {
   let meta = {
     errors: [],
     brickLibrary,
     status: true,
   };
-  let templates = (await SageAPI.project.getAllTemplates()).map(
+  let templates = (await sageApi.project.getAllTemplates()).map(
     (template) => new Template(template)
   );
   for (let template of templates) {
     let fields = Object.values(template.fields).filter(
       (field) => field.type.validate
     );
-    let objects = await SageAPI.template.getAllObjects(template.code);
+    let objects = await sageApi.template.getAllObjects(template.code);
     for (let object of objects) {
       meta.object = object
       for (let field of fields) {
@@ -58,7 +58,7 @@ export const validate = async ({ brickLibrary }) => {
   };
 };
 
-export const build = async ({ targets, brickLibrary }) => {
+export const build = async ({ sageApi, targets, brickLibrary }) => {
   //TODO: remove brickLibrary?
 
   let validationResult = await validate({ brickLibrary });
@@ -90,11 +90,11 @@ export const build = async ({ targets, brickLibrary }) => {
   };
 
 
-  let templates = (await SageAPI.project.getAllTemplates()).map(
+  let templates = (await sageApi.project.getAllTemplates()).map( // TODO: remove
     (template) => new Template(template)
   );
   let tpl = templates.map(async (template) => {
-    let objects = await SageAPI.template.getAllObjects(template.code);
+    let objects = await sageApi.template.getAllObjects(template.code);
     for (let obj of objects) {
       meta.addIntId(obj._id);
       if (obj.fields.code) {

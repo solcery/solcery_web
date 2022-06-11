@@ -1,17 +1,19 @@
 import React, { useEffect, useState } from "react";
 import { Template } from "../content/template";
 import { Table, Button } from "antd";
-import { SageAPI } from "../api";
+import { useProject } from "../contexts/project";
 
 const { Column } = Table;
 
 export default function ObjectEditor({ templateCode, objectId, onSave, instant }) {
   const [object, setObject] = useState(undefined);
   const [template, setTemplate] = useState(undefined);
+  const { sageApi } = useProject();
+
   useEffect(() => {
-    SageAPI.template.getObjectById(templateCode, objectId).then(setObject);
-    SageAPI.template
-      .getSchema(templateCode)
+    sageApi.template.getObjectById({ template: templateCode, objectId }).then(setObject);
+    sageApi.template
+      .getSchema({ template: templateCode })
       .then((data) => setTemplate(new Template(data)));
   }, [objectId, templateCode]);
 
@@ -20,8 +22,8 @@ export default function ObjectEditor({ templateCode, objectId, onSave, instant }
   };
 
   const save = () => {
-    SageAPI.template
-      .updateObjectById(templateCode, objectId, object.fields)
+    sageApi.template
+      .updateObjectById({ template: templateCode, objectId, fields: object.fields })
       .then((res) => {
         if (res.modifiedCount) {
           if (onSave) onSave();

@@ -9,25 +9,10 @@ require("dotenv").config({ path: "./config.env" });
 const isDev = process.env.NODE_ENV !== "production";
 const PORT = process.env.PORT || 5000;
 
-const apiLibrary = {};
-
-const solceryAPI = function (response, moduleName, params) {
-  moduleEntrypoint = apiLibrary[moduleName];
-  if (!moduleEntrypoint) {
-    throw `API error: non-existent API module ${moduleName}`;
-  }
-  moduleEntrypoint(params)(response, params.data);
+const apiLibrary = {
+  project: require('./api/project'),
+  template: require('./api/template')
 };
-
-const fetchApiCall = function (request, response, params) {
-  let rawParams = request.params;
-  if (!rawParams) return; // TODO
-  let moduleName = rawParams["0"].split(".").shift();
-  solceryAPI(response, moduleName, params);
-};
-
-require("./api/project")(apiLibrary);
-require("./api/template")(apiLibrary);
 
 // Multi-process to utilize all CPU cores.
 if (!isDev && cluster.isMaster) {
@@ -54,14 +39,17 @@ if (!isDev && cluster.isMaster) {
   app.use(bodyParser.urlencoded({ limit: "10mb", extended: false }));
   app.use(bodyParser.json({ limit: "10mb" }));
 
-  // Answer API requests.
-  app.get("/api/*", function (request, response) {
-    // TODO
-    // fetchApiCall(request, response, request.query)
-  });
-
   app.post("/api/*", (request, response) => {
-    fetchApiCall(request, response, request.body);
+    let data = request.body;
+    let moduleApi = apiLibrary[data.module];
+    if (!moduleApi) {
+      throw `API error: unknown API module '${data.module}'!`;
+    }
+    let command = moduleApi[data.command] // TODO
+    if (!command) {
+      throw `API error: unknown API command '${data.command}'!`;
+    }
+    command(response, data);
   });
 
   // All remaining requests return the React app, so it can handle routing.

@@ -1,6 +1,6 @@
 import { Button, Input } from "antd";
 import { useState } from "react";
-import { SageAPI } from "../api";
+import { useProject } from "../contexts/project";
 import { execute } from "../content";
 import { migrator } from "./migrators/tokenAddedToTokenLinked";
 
@@ -8,13 +8,14 @@ const { TextArea } = Input;
 
 export default function Migrator() {
   const [result, setResult] = useState('');
+  const { sageApi } = useProject()
 
   const applyMigrator = async () => {
-    let content = await SageAPI.project.getContent();
+    let content = await sageApi.project.getContent();
 
     setResult(JSON.stringify(content, undefined, 2));
     let objects = migrator(content);
-    SageAPI.project.migrate({ objects });
+    sageApi.project.migrate({ objects });
   };
 
   return (

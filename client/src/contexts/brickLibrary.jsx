@@ -1,16 +1,17 @@
 import React, { useContext, useEffect, useState } from "react";
 import { BrickLibrary, paramFromMapEntry } from "../content/brickLib";
-import { SageAPI } from "../api";
+import { useProject } from "./project";
 
 const BrickLibraryContext = React.createContext(undefined);
 
 export function BrickLibraryProvider(props) {
   // const [ revision ] = useState(0);
+  const { sageApi } = useProject()
   const [brickLibrary, setBrickLibrary] = useState(undefined);
 
   const load = () => {
     let bl = new BrickLibrary();
-    SageAPI.template.getAllObjects("customBricks").then((res) => {
+    sageApi.template.getAllObjects({ template: "customBricks" }).then((res) => {
       let toAdd = res
         .filter((obj) => obj.fields.brick && obj.fields.brick.brickTree)
         .map((obj) => {

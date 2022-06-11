@@ -1,11 +1,12 @@
 import { useState, useEffect, useRef } from "react";
-import { SageAPI } from "../../../api";
+import { useProject } from "../../../contexts/project";
 import { Select } from "antd";
 const { Option } = Select;
 
 export const ValueRender = (props) => {
   const [objects, setObjects] = useState(undefined);
   const mountedRef = useRef(true);
+  const { sageApi } = useProject();
 
   useEffect(() => {
     return () => {
@@ -18,7 +19,7 @@ export const ValueRender = (props) => {
   };
 
   useEffect(() => {
-    SageAPI.template.getAllObjects(props.type.templateCode).then((res) => {
+    sageApi.template.getAllObjects({ template: props.type.templateCode }).then((res) => {
       if (!mountedRef.current) return null;
       setObjects(
         res.map((object) => {
@@ -29,7 +30,7 @@ export const ValueRender = (props) => {
         })
       );
     });
-  }, [props.type]);
+  }, [ props.type, sageApi ]);
   if (!props.onChange) {
     if (!props.defaultValue) return <p>None</p>;
     if (!objects) return <>Loading ...</>;

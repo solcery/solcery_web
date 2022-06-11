@@ -1,8 +1,7 @@
 import React from "react-dom";
 import { TopMenu } from "./components/TopMenu";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { BrickLibraryProvider } from "./contexts/brickLibrary";
-import { UserProvider } from "./contexts/user";
+import { ProjectProvider } from "./contexts/project";
 import { CookiesProvider } from "react-cookie";
 import "./App.less";
 import "./App.css";
@@ -23,42 +22,39 @@ import TemplateSchema from "./apps/templateSchema";
 export default function App() {
   return (
     <>
-      <BrowserRouter>
-        <CookiesProvider>
-          <UserProvider>
-            <BrickLibraryProvider>
-              <TopMenu style={{ backgroundColor: "black" }} />
-              <Routes>
-                <Route
-                  path="template.:templateCode.schema"
-                  element={<TemplateSchema />}
-                />
-                <Route
-                  path="template.:templateCode.:objectId"
-                  element={<ObjectPage />}
-                />
-                <Route
-                  path="template.:templateCode"
-                  element={<TemplatePage />}
-                />
-                <Route
-                  path="brickLibrary"
-                  element={<BrickLibraryCollectionEditor />}
-                />
-                <Route
-                  path="brickLibrary.:objectId"
-                  element={<BrickLibraryObjectEditor />}
-                />
-                <Route path="play" element={<Play />} />
-                <Route path="project" element={<Project />} />
-                <Route path="migrator" element={<Migrator />} />
-                <Route path="export" element={<ContentExporter />} />
-                <Route path="profile" element={<Profile />} />
-              </Routes>
-            </BrickLibraryProvider>
-          </UserProvider>
-        </CookiesProvider>
-      </BrowserRouter>
+      <CookiesProvider>
+        <BrowserRouter>
+          <Routes>
+            <Route path=":projectName" element={<ProjectProvider/>}>
+              <Route
+                path="template.:templateCode.schema"
+                element={<TemplateSchema />}
+              />
+              <Route
+                path="template.:templateCode.:objectId"
+                element={<ObjectPage />}
+              />
+              <Route
+                path="template.:templateCode"
+                element={<TemplatePage />}
+              />
+              <Route
+                path="brickLibrary"
+                element={<BrickLibraryCollectionEditor />}
+              />
+              <Route
+                path="brickLibrary.:objectId"
+                element={<BrickLibraryObjectEditor />}
+              />
+              <Route path="play" element={<Play />} />
+              <Route path="project" element={<Project />} />
+              <Route path="migrator" element={<Migrator />} />
+              <Route path="export" element={<ContentExporter />} />
+              <Route path="profile" element={<Profile />} />
+            </Route>
+          </Routes>
+        </BrowserRouter>
+      </CookiesProvider>
     </>
   );
 }

@@ -1,25 +1,30 @@
-import { apiCall } from "./index";
-
-const MODULE_NAME = "project";
-export const project = {};
-
-project.getAllTemplates = () => {
-  return apiCall(MODULE_NAME, "getAllTemplates");
+export const projectAPI = {
+  name: 'project',
+  commands: {}
 };
 
-project.restore = (src) => {
-  return apiCall(MODULE_NAME, "restore", { src });
+projectAPI.commands.getAllTemplates = {
+  name: 'getAllTemplates',
 };
 
-project.dump = () => {
-  return apiCall(MODULE_NAME, "dump");
+projectAPI.commands.restore = {
+  name: 'restore',
+  params: { 
+    src: true
+  },
 };
 
-project.getContent = () => {
-  return apiCall(MODULE_NAME, "getContent");
+projectAPI.commands.dump = {
+  name: 'dump',
 };
 
-project.migrate = ({ objects }) => {
-  return apiCall(MODULE_NAME, "migrate", { objects });
+projectAPI.commands.getContent = {
+  name: 'getContent',
 };
 
+projectAPI.commands.migrate = {
+  name: 'migrate',
+  params: {
+    objects: true
+  },
+};

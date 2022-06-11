@@ -1,44 +1,82 @@
-import { apiCall } from "./index";
-
-const MODULE_NAME = "template";
-export const template = {};
-
-template.getAllObjects = (templateCode) => {
-  return apiCall(MODULE_NAME, "getAll", { templateCode });
+export const templateAPI = {
+  name: 'template',
+  commands: {}
 };
 
-template.getSchema = (templateCode) => {
-  return apiCall(MODULE_NAME, "getSchema", { templateCode });
-};
+templateAPI.commands.getAllObjects = {
+  name: 'getAllObjects',
+  params: {
+    template: true,
+  }
+}
 
-template.setSchema = (templateCode, schema) => {
-  return apiCall(MODULE_NAME, "setSchema", { templateCode, schema });
-};
+templateAPI.commands.getSchema = {
+  name: 'getSchema',
+  params: {
+    template: true,
+  }
+}
 
-template.getObjectById = (templateCode, objectId) => {
-  return apiCall(MODULE_NAME, "getById", { templateCode, objectId });
-};
+templateAPI.commands.setSchema = {
+  name: 'setSchema',
+  params: {
+    template: true,
+    schema: true,
+  }
+}
 
-template.updateObjectById = (templateCode, objectId, fields) => {
-  return apiCall(MODULE_NAME, "update", { templateCode, objectId, fields });
-};
+templateAPI.commands.getObjectById = {
+  name: 'getObjectById',
+  params: {
+    template: true,
+    objectId: true,
+  }
+}
 
-template.create = (templateCode) => {
-  return apiCall(MODULE_NAME, "create", { templateCode });
-};
+templateAPI.commands.updateObjectById = {
+  name: 'updateObjectById',
+  params: {
+    template: true,
+    objectId: true,
+    fields: true,
+  }
+}
 
-template.clone = (templateCode, objectId) => {
-  return apiCall(MODULE_NAME, "clone", { templateCode, objectId });
-};
+templateAPI.commands.createObject = {
+  name: 'createObject',
+  params: {
+    template: true,
 
-template.removeById = (templateCode, objectId) => {
-  return apiCall(MODULE_NAME, "removeById", { templateCode, objectId });
-};
+  }
+}
 
-template.removeAll = (templateCode) => {
-  return apiCall(MODULE_NAME, "removeAll", { templateCode });
-};
+templateAPI.commands.cloneObject = {
+  name: 'cloneObject',
+  params: {
+    template: true,
+    objectId: true,
+  }
+}
 
-template.createMany = (templateCode, objects) => {
-  return apiCall(MODULE_NAME, "createMany", { templateCode, objects });
-};
+templateAPI.commands.removeObjectById = {
+  name: 'removeObjectById',
+  params: {
+    template: true,
+    objectId: true,
+  }
+}
+
+// templateAPI.commands.removeAll = {
+//   name: 'removeAll',
+//   params: {
+//     template: true,
+//   }
+// }
+
+// templateAPI.commands.createMany = {
+//   name: 'createMany',
+//   params: {
+//     template: true,
+//     objects: true,
+//   }
+// }

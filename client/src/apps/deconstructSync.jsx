@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { Button, Input } from "antd";
-import { SageAPI } from "../api";
 import { SType, SLink, SBrick, SArray } from "../content/types";
 import { constructedBrickToBrick } from "./migrators/constructedBrickToBrick";
 
@@ -68,10 +67,6 @@ export default function DeconstructSync() {
       }
     }
     console.log(content);
-    await SageAPI.project.removeAllObjects();
-    await SageAPI.project.removeAllTemplates();
-    await SageAPI.project.createManyTemplates({ templates: templateDatas });
-    await SageAPI.project.importContent({ objects: content });
   };
 
   return (

@@ -1,5 +1,5 @@
 import { Button, Input } from "antd";
-import { SageAPI } from "../api";
+import { useProject } from "../contexts/project";
 import { useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
 
@@ -8,17 +8,18 @@ const { TextArea } = Input;
 export default function TemplateSchema() {
   const { templateCode } = useParams();
   const [schema, setSchema] = useState();
+  const { sageApi } = useProject();
 
   const loadSchema = (templateSchema) => {
     setSchema(JSON.stringify(templateSchema, undefined, 2));
   };
 
   useEffect(() => {
-    SageAPI.template.getSchema(templateCode).then(loadSchema);
+    sageApi.template.getSchema(templateCode).then(loadSchema);
   }, [templateCode]);
 
   const save = () => {
-    SageAPI.template.setSchema(templateCode, JSON.parse(schema));
+    sageApi.template.setSchema(templateCode, JSON.parse(schema));
   };
 
   if (!schema) return <>Loading</>;

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Table, Button } from "antd";
 import { Template } from "../content/template";
-import { SageAPI } from "../api";
+import { useProject } from "../contexts/project";
 import { useCookies } from "react-cookie";
 
 const { Column } = Table;
@@ -10,6 +10,7 @@ const { Column } = Table;
 export default function CollectionEditor({ templateCode, moduleName }) {
   const filterCookieName = `${moduleName}.filter`;
   const [cookies, setCookie, removeCookie] = useCookies([filterCookieName]);
+  const { sageApi } = useProject();
   const navigate = useNavigate();
 
   const [objects, setObjects] = useState();
@@ -32,9 +33,9 @@ export default function CollectionEditor({ templateCode, moduleName }) {
   };
 
   const load = () => {
-    SageAPI.template.getAllObjects(templateCode).then(setObjects);
-    SageAPI.template
-      .getSchema(templateCode)
+    sageApi.template.getAllObjects({ template: templateCode }).then(setObjects);
+    sageApi.template
+      .getSchema({ template: templateCode })
       .then((data) => setTemplate(new Template(data)));
   }
 
@@ -75,7 +76,7 @@ export default function CollectionEditor({ templateCode, moduleName }) {
         onRow={(record, rowIndex) => {
           return {
             onDoubleClick: (event) => {
-              navigate(`/${moduleName}.${record._id}`);
+              navigate(`../${moduleName}.${record._id}`);
             },
           };
         }}
@@ -129,11 +130,11 @@ export default function CollectionEditor({ templateCode, moduleName }) {
               <Button
                 key={"copy." + object.id}
                 onClick={() => {
-                  SageAPI.template
-                    .clone(templateCode, object._id)
+                  sageApi.template
+                    .cloneObject({ template: templateCode, objectId: object._id })
                     .then((res) => {
                       if (res.insertedId) {
-                        navigate(`/${moduleName}.${res.insertedId}`);
+                        navigate(`../${moduleName}.${res.insertedId}`);
                       }
                     });
                 }}
@@ -152,8 +153,8 @@ export default function CollectionEditor({ templateCode, moduleName }) {
                         ". Are you sure?"
                     )
                   ) {
-                    SageAPI.template
-                      .removeById(templateCode, object._id)
+                    sageApi.template
+                      .removeObjectById({ template: templateCode, objectId: object._id })
                       .then((res) => {
                         if (res.deletedCount) {
                           load();
@@ -170,9 +171,9 @@ export default function CollectionEditor({ templateCode, moduleName }) {
       </Table>
       <Button
         onClick={() => {
-          SageAPI.template.create(templateCode).then((res) => {
+          sageApi.template.createObject({ template: templateCode }).then((res) => {
             if (res.insertedId) {
-              navigate(`/${moduleName}.${res.insertedId}`);
+              navigate(`../${moduleName}.${res.insertedId}`);
             }
           });
         }}

@@ -11,7 +11,7 @@ module.exports = {
   connectToServer: function (callback) {
     client.connect(function (err, db) {
       if (db) {
-        _db = db.db("project_eclipse");
+        _db = db.db("base");
         console.log("Successfully connected to MongoDB.");
       }
       return callback(err);
@@ -20,16 +20,5 @@ module.exports = {
 
   getDb: function (dbName) {
     return client.db(dbName);
-  },
-
-  get: async function ({
-    // DEPRECATED
-    project,
-    collection,
-    query = {},
-  }) {
-    let db = client.db(`project_${project}`);
-    let result = db.collection(collection).find(query).toArray().then();
-    return await result;
   },
 };

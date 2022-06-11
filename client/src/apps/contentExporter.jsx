@@ -1,14 +1,15 @@
 import { Button, Input } from "antd";
 import { useState } from "react";
-import { SageAPI } from "../api";
+import { useProject } from "../contexts/project";
 const { TextArea } = Input;
 
 export default function ContentExporter() {
   const [contentDump, setContentDump] = useState();
+  const { sageApi } = useProject();
 
   const exportContent = async () => {
-    let content = await SageAPI.project.dump();
-    let projectName = SageAPI.projectName;
+    let content = await sageApi.project.dump();
+    let projectName = sageApi.projectName;
 
     let date = Date.now();
     let data = JSON.stringify(content, undefined, 2);
@@ -21,7 +22,7 @@ export default function ContentExporter() {
   };
 
   const importContent = () => {
-    SageAPI.project.restore(JSON.parse(contentDump));
+    sageApi.project.restore({ src: JSON.parse(contentDump) });
   };
 
   return (

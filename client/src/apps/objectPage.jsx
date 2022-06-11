@@ -12,7 +12,7 @@ export default function ObjectPage() {
       description: `${objectId}`,
       color: "#DDFFDD",
     });
-    navigate(`/template.${templateCode}`);
+    navigate(`../template.${templateCode}`);
   };
   return (
     <ObjectEditor
