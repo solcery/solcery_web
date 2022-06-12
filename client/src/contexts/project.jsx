@@ -1,35 +1,35 @@
-import React, { useContext, useEffect, useState } from "react";
-import { useParams, Outlet } from "react-router-dom";
-import { SageAPIConnection } from "../api";
-import { BrickLibraryProvider } from "./brickLibrary";
-import { TopMenu } from "../components/TopMenu";
-import { UserProvider } from "./user";
+import React, { useContext, useEffect, useState } from 'react';
+import { useParams, Outlet } from 'react-router-dom';
+import { SageAPIConnection } from '../api';
+import { BrickLibraryProvider } from './brickLibrary';
+import { TopMenu } from '../components/TopMenu';
+import { UserProvider } from './user';
 
 const ProjectContext = React.createContext(undefined);
 
 export function ProjectProvider(props) {
-  let { projectName } = useParams();
-  let [sageApi, setSageApi] = useState();
+	let { projectName } = useParams();
+	let [sageApi, setSageApi] = useState();
 
-  useEffect(() => {
-    if (!projectName) return;
-    document.title = `${projectName} - Sage`;
-    setSageApi(new SageAPIConnection(projectName));
-  }, [projectName]);
+	useEffect(() => {
+		if (!projectName) return;
+		document.title = `${projectName} - Sage`;
+		setSageApi(new SageAPIConnection(projectName));
+	}, [projectName]);
 
-  return (
-    <ProjectContext.Provider value={{ projectName, sageApi }}>
-      <UserProvider>
-        <BrickLibraryProvider>
-          <TopMenu style={{ backgroundColor: "black" }} />
-          <Outlet />
-        </BrickLibraryProvider>
-      </UserProvider>
-    </ProjectContext.Provider>
-  );
+	return (
+		<ProjectContext.Provider value={{ projectName, sageApi }}>
+			<UserProvider>
+				<BrickLibraryProvider>
+					<TopMenu style={{ backgroundColor: 'black' }} />
+					<Outlet />
+				</BrickLibraryProvider>
+			</UserProvider>
+		</ProjectContext.Provider>
+	);
 }
 
 export function useProject() {
-  const { projectName, sageApi } = useContext(ProjectContext);
-  return { projectName, sageApi };
+	const { projectName, sageApi } = useContext(ProjectContext);
+	return { projectName, sageApi };
 }

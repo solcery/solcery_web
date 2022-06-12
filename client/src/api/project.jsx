@@ -1,32 +1,32 @@
 const commands = {};
 
 commands.getAllTemplates = {
-  name: "getAllTemplates",
+	name: 'getAllTemplates',
 };
 
 commands.restore = {
-  name: "restore",
-  params: {
-    src: true,
-  },
+	name: 'restore',
+	params: {
+		src: true,
+	},
 };
 
 commands.dump = {
-  name: "dump",
+	name: 'dump',
 };
 
 commands.getContent = {
-  name: "getContent",
+	name: 'getContent',
 };
 
 commands.migrate = {
-  name: "migrate",
-  params: {
-    objects: true,
-  },
+	name: 'migrate',
+	params: {
+		objects: true,
+	},
 };
 
 export const projectAPI = {
-  name: "project",
-  commands,
+	name: 'project',
+	commands,
 };

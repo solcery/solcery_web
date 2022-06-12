@@ -1,20 +1,20 @@
-import { execute } from "../../content";
+import { execute } from '../../content';
 
 const migrateFields = (object, meta) => {
-  if (object.template === "cardTypes") {
-    if (object.fields.action_on_token_added) {
-      object.fields.action_on_token_linked = object.fields.action_on_token_added;
-      object.fields.action_on_token_added = undefined;
-      meta.objects.push(object);
-    }
-  }
+	if (object.template === 'cardTypes') {
+		if (object.fields.action_on_token_added) {
+			object.fields.action_on_token_linked = object.fields.action_on_token_added;
+			object.fields.action_on_token_added = undefined;
+			meta.objects.push(object);
+		}
+	}
 };
 
 export const migrator = (content) => {
-  let meta = {
-    content,
-    objects: [],
-  };
-  execute(migrateFields, meta);
-  return meta.objects;
+	let meta = {
+		content,
+		objects: [],
+	};
+	execute(migrateFields, meta);
+	return meta.objects;
 };
