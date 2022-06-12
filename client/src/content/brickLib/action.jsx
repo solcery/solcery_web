@@ -257,38 +257,41 @@ export const basicActions = [
     name: "Console log",
     width: 20,
     params: [
-      { 
-        code: "message", name: "Message", type: 
-        {
+      {
+        code: "message",
+        name: "Message",
+        type: {
           name: "SString",
           data: {
             textArea: {
               rows: 4,
             },
             width: 800,
-          }
-        } 
+          },
+        },
       },
-      { 
-        code: "level", name: "Level", type: {
+      {
+        code: "level",
+        name: "Level",
+        type: {
           name: "SEnum",
           data: {
-            values: ['log', 'warn'],
-            titles: ['Log', 'Warn'],
-          }
-        }  
+            values: ["log", "warn"],
+            titles: ["Log", "Warn"],
+          },
+        },
       },
     ],
     exec: (runtime, params, ctx) => {
       function applyMacro(match, obj, param) {
         var src = undefined;
-        if (obj === 'obj' ) {
+        if (obj === "obj") {
           src = ctx.object.attrs;
         }
-        if (obj === 'game' ) {
+        if (obj === "game") {
           src = ctx.game.attrs;
         }
-        if (obj === 'vars') {
+        if (obj === "vars") {
           src = ctx.vars;
         }
         if (src) {
@@ -297,9 +300,11 @@ export const basicActions = [
         }
         return match;
       }
-      let res = params.message.replace(/\{([a-zA-Z]+).?([_a-zA-Z0-9]+)?\}/g, applyMacro);
-      console[params.level](res)
+      let res = params.message.replace(
+        /\{([a-zA-Z]+).?([_a-zA-Z0-9]+)?\}/g,
+        applyMacro
+      );
+      console[params.level](res);
     },
   },
 ];
-

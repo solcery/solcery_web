@@ -31,10 +31,12 @@ class SBrick {
     for (let paramSig of brickSignature.params) {
       let param = v.params[paramSig.code];
       if (paramSig.type instanceof SBrick) {
-        this.validate(param, meta)
+        this.validate(param, meta);
       }
       if (param === undefined) {
-        meta.error(`No param '${paramSig.code}' found for brick '${v.lib}.${v.func}'!`);
+        meta.error(
+          `No param '${paramSig.code}' found for brick '${v.lib}.${v.func}'!`
+        );
       }
     }
   };
@@ -54,7 +56,6 @@ class SBrick {
     };
     let params = [];
     for (let paramSig of brickSignature.params) {
-
       let param = v.params[paramSig.code];
       if (param === undefined) {
         throw new Error(

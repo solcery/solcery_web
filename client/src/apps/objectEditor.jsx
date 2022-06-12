@@ -19,7 +19,9 @@ export default function ObjectEditor({ schema, object, onSave, instant }) {
   });
   return (
     <>
-      <Button style={{ width: '100%' }}onClick={save}>SAVE</Button>
+      <Button style={{ width: "100%" }} onClick={save}>
+        SAVE
+      </Button>
       <Table pagination={false} dataSource={tableData}>
         <Column
           title="Field"
@@ -33,7 +35,7 @@ export default function ObjectEditor({ schema, object, onSave, instant }) {
           dataIndex="value"
           render={(text, record) => (
             <record.field.type.valueRender
-              instant = {record.field.code === instant}
+              instant={record.field.code === instant}
               defaultValue={record.value}
               onChange={(value) => {
                 setField(record.field.code, value);
@@ -43,7 +45,9 @@ export default function ObjectEditor({ schema, object, onSave, instant }) {
           )}
         />
       </Table>
-      <Button style={{ width: '100%' }}onClick={save}>SAVE</Button>
+      <Button style={{ width: "100%" }} onClick={save}>
+        SAVE
+      </Button>
     </>
   );
 }

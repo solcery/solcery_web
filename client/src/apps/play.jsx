@@ -52,7 +52,7 @@ export default function Play() {
       }
     }
     buildContent();
-  }, [ brickLibrary, layoutPresets, sageApi.project ]);
+  }, [brickLibrary, layoutPresets, sageApi.project]);
 
   const clientCommand = useCallback((funcName, param) => {
     const USHORT_SIZE = 65536;
@@ -74,22 +74,24 @@ export default function Play() {
     }
   }, []);
 
-  const sendDiffLog = useCallback((diffLog, send) => {
-    let states = diffLog.map((state, index) => {
-      return {
-        id: index,
-        state_type: state.delay ? 1 : 0,
-        value: state,
-      };
-    });
-    clientCommand("UpdateGameState", { states });
-  }, [clientCommand]);
-
+  const sendDiffLog = useCallback(
+    (diffLog, send) => {
+      let states = diffLog.map((state, index) => {
+        return {
+          id: index,
+          state_type: state.delay ? 1 : 0,
+          value: state,
+        };
+      });
+      clientCommand("UpdateGameState", { states });
+    },
+    [clientCommand]
+  );
 
   useEffect(() => {
     if (!gameSession) return;
     unityPlayContext.on("OnUnityLoaded", async () => {
-      console.log('test')
+      console.log("test");
       let content = gameSession.content.unity;
       clientCommand("UpdateGameContent", content);
       sendDiffLog(gameSession.game.diffLog);
@@ -104,16 +106,13 @@ export default function Play() {
     return function () {
       unityPlayContext.removeAllEventListeners();
     };
-  }, [ gameSession, clientCommand, sendDiffLog ])
+  }, [gameSession, clientCommand, sendDiffLog]);
 
   return !gameSession ? (
     <></>
   ) : (
     <div style={{ width: "100%" }}>
-      <Unity
-        style={{ width: "100%" }}
-        unityContext={unityPlayContext}
-      />
+      <Unity style={{ width: "100%" }} unityContext={unityPlayContext} />
     </div>
   );
 }

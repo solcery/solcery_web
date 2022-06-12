@@ -1,19 +1,23 @@
 import { useState } from "react";
 import { Input, Button } from "antd";
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation } from "react-router-dom";
 
-export const ValueRender = ({ defaultValue, type, onChange, object, onPressEnter }) => {
+export const ValueRender = ({
+  defaultValue,
+  type,
+  onChange,
+  object,
+  onPressEnter,
+}) => {
   const { pathname } = useLocation(); //TODO
   if (!onChange) {
     if (type.isPrimaryTitle && object) {
-      return <Link to={`${pathname}.${object._id}`}>{ defaultValue }</Link>
-    }
-    else {
-      return <>{ defaultValue }</>
+      return <Link to={`${pathname}.${object._id}`}>{defaultValue}</Link>;
+    } else {
+      return <>{defaultValue}</>;
     }
   }
-  return (
-    type.textArea ?
+  return type.textArea ? (
     <Input.TextArea
       style={type.width && { width: `${type.width}px` }}
       type="text"
@@ -24,7 +28,7 @@ export const ValueRender = ({ defaultValue, type, onChange, object, onPressEnter
         onChange && onChange(event.target.value);
       }}
     />
-    :
+  ) : (
     <Input
       style={type.width && { width: `${type.width}px` }}
       type="text"

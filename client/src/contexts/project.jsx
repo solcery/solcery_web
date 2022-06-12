@@ -9,17 +9,17 @@ const ProjectContext = React.createContext(undefined);
 
 export function ProjectProvider(props) {
   let { projectName } = useParams();
-  let [ sageApi, setSageApi ] = useState();
+  let [sageApi, setSageApi] = useState();
 
   useEffect(() => {
     if (!projectName) return;
     document.title = `${projectName} - Sage`;
     setSageApi(new SageAPIConnection(projectName));
-  }, [ projectName ]);
+  }, [projectName]);
 
   return (
     <ProjectContext.Provider value={{ projectName, sageApi }}>
-      <UserProvider> 
+      <UserProvider>
         <BrickLibraryProvider>
           <TopMenu style={{ backgroundColor: "black" }} />
           <Outlet />

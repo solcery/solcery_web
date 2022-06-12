@@ -5,41 +5,46 @@ export * from "./types";
 export * from "./template";
 export * from "./brickLib";
 
-export const execute = async(func, extra) => {
-  let meta = Object.assign({
-    errors: [],
-  }, extra);
+export const execute = async (func, extra) => {
+  let meta = Object.assign(
+    {
+      errors: [],
+    },
+    extra
+  );
   let content = meta.content;
-  content.templates = content.templates.map(tpl => new Template(tpl));
+  content.templates = content.templates.map((tpl) => new Template(tpl));
   for (let template of content.templates) {
     meta.template = template;
-    let objects = content.objects.filter(obj => obj.template === template.code);
+    let objects = content.objects.filter(
+      (obj) => obj.template === template.code
+    );
     for (let object of objects) {
       meta.object = object;
       func(object, meta);
     }
   }
   return meta;
-}
+};
 
 export const validate = ({ content }) => {
   let meta = {
     errors: [],
     status: true,
-    brickLibrary: new BrickLibrary(content).bricks
+    brickLibrary: new BrickLibrary(content).bricks,
   };
-  let templates = content.templates.map(
-    (template) => new Template(template)
-  );
+  let templates = content.templates.map((template) => new Template(template));
   for (let template of templates) {
     let fields = Object.values(template.fields).filter(
       (field) => field.type.validate
     );
-    let objects = content.objects.filter(obj => obj.template === template.code);
+    let objects = content.objects.filter(
+      (obj) => obj.template === template.code
+    );
     for (let object of objects) {
-      meta.object = object
+      meta.object = object;
       for (let field of fields) {
-        meta.error = function(message) {
+        meta.error = function (message) {
           this.errors.push({
             template: template.code,
             object: object._id,
@@ -47,7 +52,7 @@ export const validate = ({ content }) => {
             message: message,
           });
           this.status = false;
-        }
+        };
         field.type.validate(object.fields[field.code], meta);
       }
     }
@@ -78,25 +83,27 @@ export const build = ({ targets, content }) => {
       return this.intIds[objectId];
     },
 
-    addObjectCode: function(objectId, code) {
+    addObjectCode: function (objectId, code) {
       this.objectCodes[code] = objectId;
     },
 
-    getObjectCode: function(code) {
+    getObjectCode: function (code) {
       return this.objectCodes[code];
-    }
+    },
   };
 
-
-  let templates = content.templates.map( // TODO: remove
+  let templates = content.templates.map(
+    // TODO: remove
     (template) => new Template(template)
   );
-  let tpl = templates.map(template => {
-    let objects = content.objects.filter(obj => obj.template === template.code);
+  let tpl = templates.map((template) => {
+    let objects = content.objects.filter(
+      (obj) => obj.template === template.code
+    );
     for (let obj of objects) {
       meta.addIntId(obj._id);
       if (obj.fields.code) {
-        meta.addObjectCode(obj._id, obj.fields.code)
+        meta.addObjectCode(obj._id, obj.fields.code);
       }
     }
     return [template.code, { template, objects }];
@@ -123,7 +130,7 @@ export const build = ({ targets, content }) => {
           constructed[buildCode] = meta.rawContent[template.code].objects.map(
             (obj) => {
               meta.object = obj;
-              return template.construct(obj, meta)
+              return template.construct(obj, meta);
             }
           );
         }

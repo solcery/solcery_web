@@ -99,7 +99,7 @@ export const ValueRender = (props) => {
 
   useEffect(() => {
     props.onChange && props.onChange({ brickType, brickParams, brickTree });
-  }, [ brickType, brickParams, brickTree, props ]);
+  }, [brickType, brickParams, brickTree, props]);
 
   if (!props.onChange && (!props.defaultValue || !props.defaultValue.brickTree))
     return <p>Empty</p>;
@@ -116,7 +116,7 @@ export const ValueRender = (props) => {
       />
       {brickType && (
         <BrickTreeEditor
-          instant = { props.instant }
+          instant={props.instant}
           brickParams={brickParams}
           brickTree={brickTree}
           brickType={brickType}
@@ -169,7 +169,7 @@ export const BrickTreeEditor = (props) => {
     <>
       <ReactFlowProvider>
         <BrickEditor
-          instant = { props.instant }
+          instant={props.instant}
           width={300}
           height={200}
           brickLibrary={ownBrickLibrary}

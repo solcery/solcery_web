@@ -19,18 +19,20 @@ export const ValueRender = (props) => {
   };
 
   useEffect(() => {
-    sageApi.template.getAllObjects({ template: props.type.templateCode }).then((res) => {
-      if (!mountedRef.current) return null;
-      setObjects(
-        res.map((object) => {
-          return {
-            id: object._id,
-            title: object.fields.name,
-          };
-        })
-      );
-    });
-  }, [ props.type, sageApi ]);
+    sageApi.template
+      .getAllObjects({ template: props.type.templateCode })
+      .then((res) => {
+        if (!mountedRef.current) return null;
+        setObjects(
+          res.map((object) => {
+            return {
+              id: object._id,
+              title: object.fields.name,
+            };
+          })
+        );
+      });
+  }, [props.type, sageApi]);
   if (!props.onChange) {
     if (!props.defaultValue) return <p>None</p>;
     if (!objects) return <>Loading ...</>;
@@ -62,9 +64,7 @@ export const ValueRender = (props) => {
           .localeCompare(optionB.children.toLowerCase())
       }
     >
-      <Option value={undefined}>
-        None
-      </Option>
+      <Option value={undefined}>None</Option>
       {objects.map((obj) => (
         <Option key={obj.id} value={obj.id}>
           {obj.title}

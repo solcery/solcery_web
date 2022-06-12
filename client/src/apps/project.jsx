@@ -9,21 +9,21 @@ import { DownloadOutlined } from "@ant-design/icons";
 const { Option } = Select;
 
 export default function Project() {
-  const [ target, setTarget ] = useState("web");
-  const [ errors, setErrors ] = useState([]);
-  const [ unityData, setUnityData ] = useState(undefined);
+  const [target, setTarget] = useState("web");
+  const [errors, setErrors] = useState([]);
+  const [unityData, setUnityData] = useState(undefined);
   const { sageApi } = useProject();
   const { layoutPresets } = useUser();
 
   const buildProject = async () => {
     let content = await sageApi.project.dump();
     setErrors([]);
-    let res = await build({ targets: [ target ], content });
+    let res = await build({ targets: [target], content });
     if (!res.status) {
       setErrors(res.errors);
       return;
     }
-    console.log(res.constructed)
+    console.log(res.constructed);
   };
 
   const validateProject = async () => {

@@ -27,15 +27,21 @@ export function BrickLibraryObjectEditor() {
   let { objectId } = useParams();
 
   useEffect(() => {
-    sageApi.template.getObjectById({ template: 'customBricks', objectId }).then(setObject);
     sageApi.template
-      .getSchema({ template: 'customBricks' })
+      .getObjectById({ template: "customBricks", objectId })
+      .then(setObject);
+    sageApi.template
+      .getSchema({ template: "customBricks" })
       .then((data) => setTemplate(new Template(data)));
-  }, [ objectId, sageApi.template ]);
+  }, [objectId, sageApi.template]);
 
   const onSave = (fields) => {
     sageApi.template
-      .updateObjectById({ template: 'customBricks', objectId, fields: object.fields })
+      .updateObjectById({
+        template: "customBricks",
+        objectId,
+        fields: object.fields,
+      })
       .then((res) => {
         if (res.modifiedCount) {
           load();
@@ -53,7 +59,7 @@ export function BrickLibraryObjectEditor() {
       schema={template}
       object={object}
       onSave={onSave}
-      instant={searchParams.get('instant')}
+      instant={searchParams.get("instant")}
     />
   );
 }

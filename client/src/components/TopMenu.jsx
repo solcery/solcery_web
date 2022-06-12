@@ -16,21 +16,29 @@ export const TopMenu = () => {
 
   useEffect(() => {
     sageApi.project.getAllTemplates().then(setTemplates);
-  }, [ sageApi.project ]);
+  }, [sageApi.project]);
 
   return (
     <>
       <Menu mode="horizontal">
         <Menu.Item key="project">
-          <Link to="project" style={{ fontWeight: 'bold' }}>
-            <Avatar size={"small"} icon=<DeploymentUnitOutlined /> style={{ marginRight: 7 }}/>
-              { projectName }
+          <Link to="project" style={{ fontWeight: "bold" }}>
+            <Avatar
+              size={"small"}
+              icon=<DeploymentUnitOutlined />
+              style={{ marginRight: 7 }}
+            />
+            {projectName}
           </Link>
         </Menu.Item>
         <Menu.Item key="play">
-          <Link to="play" style={{ fontWeight: 'bold' }}>
-            <Avatar size={"small"} icon=<CaretRightOutlined /> style={{ marginRight: 7 }}/>
-              Play
+          <Link to="play" style={{ fontWeight: "bold" }}>
+            <Avatar
+              size={"small"}
+              icon=<CaretRightOutlined />
+              style={{ marginRight: 7 }}
+            />
+            Play
           </Link>
         </Menu.Item>
         <Menu.Item key="brickLibrary">
@@ -44,9 +52,13 @@ export const TopMenu = () => {
             </Menu.Item>
           ))}
         <Menu.Item key="profile">
-          <Link to="profile" style={{ fontWeight: 'bold' }}>
-            <Avatar size={"small"} icon=<UserOutlined />  style={{ marginRight: 7 }}/>
-            { nick }
+          <Link to="profile" style={{ fontWeight: "bold" }}>
+            <Avatar
+              size={"small"}
+              icon=<UserOutlined />
+              style={{ marginRight: 7 }}
+            />
+            {nick}
           </Link>
         </Menu.Item>
       </Menu>

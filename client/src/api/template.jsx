@@ -1,69 +1,68 @@
-const commands = {}
+const commands = {};
 
 commands.getAllObjects = {
-  name: 'getAllObjects',
+  name: "getAllObjects",
   params: {
     template: true,
-  }
-}
+  },
+};
 
 commands.getSchema = {
-  name: 'getSchema',
+  name: "getSchema",
   params: {
     template: true,
-  }
-}
+  },
+};
 
 commands.setSchema = {
-  name: 'setSchema',
+  name: "setSchema",
   params: {
     template: true,
     schema: true,
-  }
-}
+  },
+};
 
 commands.getObjectById = {
-  name: 'getObjectById',
+  name: "getObjectById",
   params: {
     template: true,
     objectId: true,
-  }
-}
+  },
+};
 
 commands.updateObjectById = {
-  name: 'updateObjectById',
+  name: "updateObjectById",
   params: {
     template: true,
     objectId: true,
     fields: true,
-  }
-}
+  },
+};
 
 commands.createObject = {
-  name: 'createObject',
+  name: "createObject",
   params: {
     template: true,
-
-  }
-}
+  },
+};
 
 commands.cloneObject = {
-  name: 'cloneObject',
+  name: "cloneObject",
   params: {
     template: true,
     objectId: true,
-  }
-}
+  },
+};
 
 commands.removeObjectById = {
-  name: 'removeObjectById',
+  name: "removeObjectById",
   params: {
     template: true,
     objectId: true,
-  }
-}
+  },
+};
 
 export const templateAPI = {
-  name: 'template',
+  name: "template",
   commands,
 };

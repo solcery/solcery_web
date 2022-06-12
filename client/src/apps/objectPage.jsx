@@ -5,7 +5,6 @@ import { useProject } from "../contexts/project";
 import ObjectEditor from "./objectEditor";
 import { notify } from "../components/notification";
 
-
 export default function ObjectPage() {
   const [object, setObject] = useState(undefined);
   const [template, setTemplate] = useState(undefined);
@@ -14,15 +13,21 @@ export default function ObjectPage() {
   let { templateCode, objectId } = useParams();
 
   useEffect(() => {
-    sageApi.template.getObjectById({ template: templateCode, objectId }).then(setObject);
+    sageApi.template
+      .getObjectById({ template: templateCode, objectId })
+      .then(setObject);
     sageApi.template
       .getSchema({ template: templateCode })
       .then((data) => setTemplate(new Template(data)));
-  }, [ sageApi.template, objectId, templateCode ]);
+  }, [sageApi.template, objectId, templateCode]);
 
   const onSave = (fields) => {
     sageApi.template
-      .updateObjectById({ template: templateCode, objectId, fields: object.fields })
+      .updateObjectById({
+        template: templateCode,
+        objectId,
+        fields: object.fields,
+      })
       .then((res) => {
         if (res.modifiedCount) {
           notify({
@@ -34,11 +39,5 @@ export default function ObjectPage() {
         }
       });
   };
-  return (
-    <ObjectEditor
-      schema={template}
-      object={object}
-      onSave={onSave}
-    />
-  );
+  return <ObjectEditor schema={template} object={object} onSave={onSave} />;
 }

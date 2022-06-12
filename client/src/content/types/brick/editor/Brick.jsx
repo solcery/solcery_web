@@ -3,9 +3,8 @@ import { Handle, Position } from "react-flow-renderer";
 import { useNavigate } from "react-router-dom";
 import { notify } from "../../../../components/notification";
 
-
 export default function Brick(props) {
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
   const brick = props.data.brick;
   const brickLibrary = props.data.brickLibrary;
 
@@ -41,47 +40,60 @@ export default function Brick(props) {
   };
 
   const onDoubleClick = () => {
-    let isCustomBrick = brick.func.includes('custom') // TODO: add 'custom' key to brick itself
+    let isCustomBrick = brick.func.includes("custom"); // TODO: add 'custom' key to brick itself
     if (!isCustomBrick) return;
-    let objId = brick.func.split('.')[1];
+    let objId = brick.func.split(".")[1];
     navigate(`../brickLibrary.${objId}?instant=brick`);
-  }
+  };
 
   let isHovered = false;
 
   const copy = () => {
-    let brickJson = JSON.stringify(props.data.brick)
-    notify({ message: "Brick copied", description: brickJson.substring(0, 30) + '...', color: '#DDFFDD'})
+    let brickJson = JSON.stringify(props.data.brick);
+    notify({
+      message: "Brick copied",
+      description: brickJson.substring(0, 30) + "...",
+      color: "#DDFFDD",
+    });
     navigator.clipboard.writeText(brickJson);
-  }
+  };
 
   const paste = () => {
     navigator.clipboard.readText().then((clipboardContents) => {
       if (!clipboardContents) return;
-      
+
       let pastedBrickTree = null;
       try {
         pastedBrickTree = JSON.parse(clipboardContents);
       } catch {
-        notify({ message: "Invalid brickTree format in clipboard", description: clipboardContents, color: '#FFDDDD'})
+        notify({
+          message: "Invalid brickTree format in clipboard",
+          description: clipboardContents,
+          color: "#FFDDDD",
+        });
       }
       if (!pastedBrickTree) return; // TODO: add validation
-      props.data.onPaste(pastedBrickTree, props.data.brickTree, props.data.parentBrick, props.data.paramCode);
+      props.data.onPaste(
+        pastedBrickTree,
+        props.data.brickTree,
+        props.data.parentBrick,
+        props.data.paramCode
+      );
     });
-  }
-  
+  };
+
   useEffect(() => {
     const onKeyDown = (e) => {
       if (!isHovered) return;
       if (!e.ctrlKey) return;
       let charCode = String.fromCharCode(e.which).toLowerCase();
-      if(charCode === 'c') copy();
-      if(charCode === 'v') paste();
+      if (charCode === "c") copy();
+      if (charCode === "v") paste();
     };
 
-    window.addEventListener('keydown', onKeyDown);
+    window.addEventListener("keydown", onKeyDown);
     return () => {
-      window.removeEventListener('keydown', onKeyDown);
+      window.removeEventListener("keydown", onKeyDown);
     };
   });
 
@@ -94,7 +106,7 @@ export default function Brick(props) {
       onPointerEnter={() => (isHovered = true)}
       onPointerLeave={() => (isHovered = false)}
       style={{ width: `${width}rem` }}
-      onDoubleClick = { onDoubleClick }
+      onDoubleClick={onDoubleClick}
     >
       {!props.data.readonly && !props.data.small && (
         <div className={"remove-button"} onClick={onRemoveButtonClicked}>

@@ -37,11 +37,11 @@ export default function CollectionEditor({ templateCode, moduleName }) {
     sageApi.template
       .getSchema({ template: templateCode })
       .then((data) => setTemplate(new Template(data)));
-  }, [ templateCode, sageApi.template ])
+  }, [templateCode, sageApi.template]);
 
   useEffect(() => {
     load();
-  }, [ load ]);
+  }, [load]);
 
   const onPaginationChange = (pagination) => {
     setCookie(`${moduleName}.pagination.pageSize`, pagination.pageSize);
@@ -114,12 +114,13 @@ export default function CollectionEditor({ templateCode, moduleName }) {
               setFilteredField(visible ? field.code : undefined)
             }
             filterDropdownVisible={filteredField === field.code}
-            render={(_, object) => <field.type.valueRender
+            render={(_, object) => (
+              <field.type.valueRender
                 defaultValue={object.fields[field.code]}
                 type={field.type}
                 object={object}
               />
-            }
+            )}
           />
         ))}
         <Column
@@ -131,7 +132,10 @@ export default function CollectionEditor({ templateCode, moduleName }) {
                 key={"copy." + object.id}
                 onClick={() => {
                   sageApi.template
-                    .cloneObject({ template: templateCode, objectId: object._id })
+                    .cloneObject({
+                      template: templateCode,
+                      objectId: object._id,
+                    })
                     .then((res) => {
                       if (res.insertedId) {
                         navigate(`../${moduleName}.${res.insertedId}`);
@@ -154,7 +158,10 @@ export default function CollectionEditor({ templateCode, moduleName }) {
                     )
                   ) {
                     sageApi.template
-                      .removeObjectById({ template: templateCode, objectId: object._id })
+                      .removeObjectById({
+                        template: templateCode,
+                        objectId: object._id,
+                      })
                       .then((res) => {
                         if (res.deletedCount) {
                           load();
@@ -171,11 +178,13 @@ export default function CollectionEditor({ templateCode, moduleName }) {
       </Table>
       <Button
         onClick={() => {
-          sageApi.template.createObject({ template: templateCode }).then((res) => {
-            if (res.insertedId) {
-              navigate(`../${moduleName}.${res.insertedId}`);
-            }
-          });
+          sageApi.template
+            .createObject({ template: templateCode })
+            .then((res) => {
+              if (res.insertedId) {
+                navigate(`../${moduleName}.${res.insertedId}`);
+              }
+            });
         }}
       >
         Create

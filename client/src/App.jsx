@@ -24,7 +24,7 @@ export default function App() {
       <CookiesProvider>
         <BrowserRouter>
           <Routes>
-            <Route path=":projectName" element={<ProjectProvider/>}>
+            <Route path=":projectName" element={<ProjectProvider />}>
               <Route
                 path="template.:templateCode.schema"
                 element={<TemplateSchema />}
@@ -33,10 +33,7 @@ export default function App() {
                 path="template.:templateCode.:objectId"
                 element={<ObjectPage />}
               />
-              <Route
-                path="template.:templateCode"
-                element={<TemplatePage />}
-              />
+              <Route path="template.:templateCode" element={<TemplatePage />} />
               <Route
                 path="brickLibrary"
                 element={<BrickLibraryCollectionEditor />}
