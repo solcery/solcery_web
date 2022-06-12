@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Button, Select, Card } from "antd";
 import { useBrickLibrary } from "../contexts/brickLibrary";
 import { useUser } from "../contexts/user";
+import { useProject } from "../contexts/project";
 import { build, validate } from "../content";
 import { Link } from "react-router-dom";
 import { Session } from "../game";
@@ -9,25 +10,29 @@ import { DownloadOutlined } from "@ant-design/icons";
 const { Option } = Select;
 
 export default function Project() {
-  const [target, setTarget] = useState("web");
-  const [errors, setErrors] = useState([]);
-  const [unityData, setUnityData] = useState(undefined);
+  const [ target, setTarget ] = useState("web");
+  const [ errors, setErrors ] = useState([]);
+  const [ unityData, setUnityData ] = useState(undefined);
+  const { sageApi } = useProject();
 
   const { brickLibrary } = useBrickLibrary();
   const { layoutPresets } = useUser();
 
   const buildProject = async () => {
+    let content = await sageApi.project.dump();
     setErrors([]);
-    let res = await build({ targets: [target], brickLibrary });
+    let res = await build({ targets: [ target ], content });
     if (!res.status) {
       setErrors(res.errors);
       return;
     }
+    console.log(res.constructed)
   };
 
   const validateProject = async () => {
+    let content = await sageApi.project.dump();
     setErrors([]);
-    let res = await validate({ brickLibrary });
+    let res = await validate({ content });
     if (!res.status) {
       setErrors(res.errors);
       return;
@@ -51,9 +56,10 @@ export default function Project() {
   };
 
   const buildForUnity = async () => {
+    let content = await sageApi.project.dump();
     setUnityData(undefined);
     setErrors([]);
-    let res = await build({ targets: ["web", "unity_local"], brickLibrary });
+    let res = build({ targets: ["web", "unity_local"], content });
     if (!res.status) {
       setErrors(res.errors);
       return;

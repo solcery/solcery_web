@@ -1,4 +1,5 @@
 import { sageApi } from "../api";
+import { BrickLibrary } from "./brickLib";
 import { Template } from "../content/template";
 
 export * from "./types";
@@ -22,20 +23,20 @@ export const execute = async(func, extra) => {
   return meta;
 }
 
-export const validate = async ({ sageApi, brickLibrary }) => {
+export const validate = ({ content }) => {
   let meta = {
     errors: [],
-    brickLibrary,
     status: true,
+    brickLibrary: new BrickLibrary(content).bricks
   };
-  let templates = (await sageApi.project.getAllTemplates()).map(
+  let templates = content.templates.map(
     (template) => new Template(template)
   );
   for (let template of templates) {
     let fields = Object.values(template.fields).filter(
       (field) => field.type.validate
     );
-    let objects = await sageApi.template.getAllObjects(template.code);
+    let objects = content.objects.filter(obj => obj.template === template.code);
     for (let object of objects) {
       meta.object = object
       for (let field of fields) {
@@ -58,19 +59,17 @@ export const validate = async ({ sageApi, brickLibrary }) => {
   };
 };
 
-export const build = async ({ sageApi, targets, brickLibrary }) => {
-  //TODO: remove brickLibrary?
-
-  let validationResult = await validate({ brickLibrary });
+export const build = ({ targets, content }) => {
+  let validationResult = validate({ content });
   if (!validationResult.status) {
     return validationResult;
   }
-
   let result = Object.fromEntries(targets.map((target) => [target, {}]));
   let meta = {
     intIds: {},
     objectCodes: {},
-    brickLibrary,
+    brickLibrary: new BrickLibrary(content).bricks,
+
     addIntId: function (objectId) {
       let intId = Object.keys(this.intIds).length + 1;
       this.intIds[objectId] = intId;
@@ -90,11 +89,11 @@ export const build = async ({ sageApi, targets, brickLibrary }) => {
   };
 
 
-  let templates = (await sageApi.project.getAllTemplates()).map( // TODO: remove
+  let templates = content.templates.map( // TODO: remove
     (template) => new Template(template)
   );
-  let tpl = templates.map(async (template) => {
-    let objects = await sageApi.template.getAllObjects(template.code);
+  let tpl = templates.map(template => {
+    let objects = content.objects.filter(obj => obj.template === template.code);
     for (let obj of objects) {
       meta.addIntId(obj._id);
       if (obj.fields.code) {
@@ -103,7 +102,7 @@ export const build = async ({ sageApi, targets, brickLibrary }) => {
     }
     return [template.code, { template, objects }];
   });
-  meta.rawContent = Object.fromEntries(await Promise.all(tpl));
+  meta.rawContent = Object.fromEntries(tpl);
 
   meta.stringMacros = meta.rawContent.stringReplaceRules.objects
     .filter((object) => object.fields.source && object.fields.result)

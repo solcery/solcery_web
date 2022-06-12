@@ -1,39 +1,69 @@
 TODO:
 
-энтеры везде добавить
-escape for object window
-field validators, required for name, non empty for bricks
-refresh on delete
+users добавляется в проект в отельную DB
+singleton, projectSettings
+базовый проект
+сессия кладется в юзера
+
+objects => 
+escape for object window, hotkey provider
+
 
 миграция поднимает новый проект и показывает на нем
-
+field validators, required for name, non empty for bricks
+аддитивный поиск для строчек
+В фильтре енама писать не цифру
 api logs
 create new project
 merge keys for map and arrays
 caching template links on update in Link memo
-strange rerender behaviour on filter
-hotkey provider with hieararchy
-add exporter to apps
 object savedata check
 content check
 field descriptions
 копипаст для филдов
 enum -> link
 sealed and readonly templates and fields
-singleton, projectSettings
 Доступы
 таргеты констракта для полей
 Валидация на сохранении
 Переименовать fields в data
 Системные поля id и enabled
 Реактивное изменение и загрузка когда меняет другой
-Несколько админок
-Миграции
 Конфиг
 Топменю настраивается в монге (или вообще в контенте?)
 смержить map и array
 Нормальный рендер мап и эррэй
-target & packer for content builder
-РЕФАКТОР! УЖЕ! КАК ТАК
-перетаскивать все на ноду
-custom name для темплейтов
+
+На place появляется visibility_condition, в котором будет размещен брик с типом condition. Если он возвращает true, брик виден, если во
+
+
+
+
+
+Начиная с понедельника я буду прорабатывать работу с тайной. Работать она будет вокруг плейсов. Для простоты рассматриваем сценарий в котором есть два игрока:
+
+Плейсы бывают публичные и приватные. Публичные плейсы доступны всем игрокам, приватные плейсы 
+
+places: [
+	{
+		id: 5,
+		secret: {
+			owners: [],
+			hash: 
+
+		},
+		objects: [
+			{ 
+				type: 'card',
+				quantity: 7
+			},
+			{
+				type: 'token',
+				quantity: 3
+			}
+		],
+		attrs: [] //??
+	} 
+]
+
+

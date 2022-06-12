@@ -31,10 +31,32 @@ export class BrickLibrary {
     insertTable(this.bricks, brick, brick.lib, brick.func);
   }
 
-  constructor() {
+  constructor(content) {
     basicActions.forEach((brick) => this.addBrick(brick));
     basicConditions.forEach((brick) => this.addBrick(brick));
     basicValues.forEach((brick) => this.addBrick(brick));
+    if (!content || !content.objects) return;
+    let customBricks = content.objects
+      .filter(obj => obj.template === 'customBricks')
+      .filter(obj => obj.fields.brick && obj.fields.brick.brickTree)
+      .map((obj) => {
+        let params = [];
+        if (obj.fields.brick.brickParams) {
+          params = obj.fields.brick.brickParams.map((entry) =>
+            paramFromMapEntry(entry)
+          );
+        }
+        return {
+          lib: obj.fields.brick.brickType,
+          func: `custom.${obj._id}`,
+          name: obj.fields.name,
+          hidden: obj.fields.hidden,
+          params,
+        };
+      });
+    for (let customBrick of customBricks) {
+      this.addBrick(customBrick);
+    }
   }
 }
 

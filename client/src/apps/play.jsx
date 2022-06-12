@@ -4,27 +4,32 @@ import Unity, { UnityContext } from "react-unity-webgl";
 import { useBrickLibrary } from "../contexts/brickLibrary";
 import { build } from "../content";
 import { useUser } from "../contexts/user";
+import { useProject } from "../contexts/project";
 
 const unityPlayContext = new UnityContext({
-  loaderUrl: "game/WebGl.loader.js",
-  dataUrl: "game/WebGl.data",
-  frameworkUrl: "game/WebGl.framework.js",
-  codeUrl: "game/WebGl.wasm",
-  streamingAssetsUrl: "StreamingAssets",
+  loaderUrl: "/game/WebGl.loader.js",
+  dataUrl: "/game/WebGl.data",
+  frameworkUrl: "/game/WebGl.framework.js",
+  codeUrl: "/game/WebGl.wasm",
+  streamingAssetsUrl: "/StreamingAssets",
 });
 
 export default function Play() {
   const [gameSession, setGameSession] = useState();
   const { brickLibrary } = useBrickLibrary();
   const { layoutPresets } = useUser();
+  const { sageApi } = useProject();
 
   useEffect(() => {
     if (!brickLibrary) return;
     async function buildContent() {
-      let construction = await build({
+      let content = await sageApi.project.dump();
+      console.log(content)
+      let construction = build({
         targets: ["web", "unity"],
-        brickLibrary,
+        content,
       });
+      console.log(construction)
       if (construction.status) {
         let content = construction.constructed;
         let session = new Session(content, [1]);
@@ -66,7 +71,7 @@ export default function Play() {
     const USHORT_SIZE = 65536;
     let data = typeof param === "string" ? param : JSON.stringify(param);
     const chunks = [...stringChunk(data, USHORT_SIZE)];
-    // console.log(`Web - sending package to Unity client [${funcName}]: ${data}`);
+    console.log(`Web - sending package to Unity client [${funcName}]: ${data}`);
     for (let i = 0; i < chunks.length; i++) {
       let chunk_package = {
         count: chunks.length,
@@ -85,6 +90,7 @@ export default function Play() {
   useEffect(() => {
     if (!gameSession) return;
     unityPlayContext.on("OnUnityLoaded", async () => {
+      console.log('test')
       let content = gameSession.content.unity;
       clientCommand("UpdateGameContent", content);
       sendDiffLog(gameSession.game.diffLog);
@@ -97,7 +103,6 @@ export default function Play() {
     });
 
     return function () {
-      console.log('qutting1!!!')
       unityPlayContext.removeAllEventListeners();
     };
   }, [ gameSession ])

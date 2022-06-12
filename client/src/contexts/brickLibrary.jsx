@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
-import { BrickLibrary, paramFromMapEntry } from "../content/brickLib";
+import { BrickLibrary } from "../content/brickLib";
 import { useProject } from "./project";
 
 const BrickLibraryContext = React.createContext(undefined);
@@ -7,33 +7,12 @@ const BrickLibraryContext = React.createContext(undefined);
 export function BrickLibraryProvider(props) {
   // const [ revision ] = useState(0);
   const { sageApi } = useProject()
-  const [brickLibrary, setBrickLibrary] = useState(undefined);
+  const [ brickLibrary, setBrickLibrary ] = useState(undefined);
 
-  const load = () => {
-    let bl = new BrickLibrary();
-    sageApi.template.getAllObjects({ template: "customBricks" }).then((res) => {
-      let toAdd = res
-        .filter((obj) => obj.fields.brick && obj.fields.brick.brickTree)
-        .map((obj) => {
-          let params = [];
-          if (obj.fields.brick.brickParams) {
-            params = obj.fields.brick.brickParams.map((entry) =>
-              paramFromMapEntry(entry)
-            );
-          }
-          return {
-            lib: obj.fields.brick.brickType,
-            func: `custom.${obj._id}`,
-            name: obj.fields.name,
-            hidden: obj.fields.hidden,
-            params,
-          };
-        });
-      for (let customBrick of toAdd) {
-        bl.addBrick(customBrick);
-      }
-      setBrickLibrary(bl.bricks);
-    });
+  const load = async () => {
+    let content = await sageApi.project.dump();
+    let bl = new BrickLibrary(content);
+    setBrickLibrary(bl.bricks);
   };
 
   useEffect(() => {
