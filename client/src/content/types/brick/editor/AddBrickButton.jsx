@@ -5,8 +5,7 @@ import Select from "react-select";
 export default function AddBrickButton(props) {
   const brickType = props.data.brickType; // TODO: type
   const brickSignaturesOfType = props.data.brickLibrary[brickType];
-  const [isNodeTypeSelectorVisible, setNodeTypeSelectorVisible] =
-    useState(false);
+  const [isNodeTypeSelectorVisible, setNodeTypeSelectorVisible] = useState(false);
 
   const onAddButtonPointerUp = (event) => {
     setNodeTypeSelectorVisible(true);
@@ -60,12 +59,7 @@ export default function AddBrickButton(props) {
           } catch {}
           if (!pastedBrickTree) return;
 
-          props.data.onPaste(
-            pastedBrickTree,
-            props.data.brickTree,
-            props.data.parentBrick,
-            props.data.paramCode
-          );
+          props.data.onPaste(pastedBrickTree, props.data.brickTree, props.data.parentBrick, props.data.paramCode);
         });
       }
     };
@@ -87,23 +81,16 @@ export default function AddBrickButton(props) {
   return (
     <>
       <div
-        className={`add-brick-button ${
-          !props.data.readonly && !props.data.small ? "active" : ""
-        }`}
+        className={`add-brick-button ${!props.data.readonly && !props.data.small ? "active" : ""}`}
         onPointerUp={onAddButtonPointerUp}
         onPointerEnter={() => (isHovered = true)}
         onPointerLeave={() => (isHovered = false)}
       >
         +
       </div>
-      {props.data.parentBrick && (
-        <Handle type="target" position={Position.Top} />
-      )}
+      {props.data.parentBrick && <Handle type="target" position={Position.Top} />}
       {isNodeTypeSelectorVisible && (
-        <div
-          className="brick-subtype-selector nowheel"
-          onPointerUp={onSelectorPointerUp}
-        >
+        <div className="brick-subtype-selector nowheel" onPointerUp={onSelectorPointerUp}>
           <Select
             classNamePrefix="react-select"
             options={selectorOptions}

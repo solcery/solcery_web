@@ -42,9 +42,7 @@ export class BrickLibrary {
       .map((obj) => {
         let params = [];
         if (obj.fields.brick.brickParams) {
-          params = obj.fields.brick.brickParams.map((entry) =>
-            paramFromMapEntry(entry)
-          );
+          params = obj.fields.brick.brickParams.map((entry) => paramFromMapEntry(entry));
         }
         return {
           lib: obj.fields.brick.brickType,

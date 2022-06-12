@@ -32,11 +32,7 @@ export class Session {
       return this.game.useCard(command.object_id);
     }
     if (command.command_data_type === 2) {
-      return this.game.dropCard(
-        command.object_id,
-        command.drag_drop_id,
-        command.target_place_id
-      );
+      return this.game.dropCard(command.object_id, command.drag_drop_id, command.target_place_id);
     }
   };
 }
@@ -57,8 +53,7 @@ export class Game {
   }
 
   start = (layoutPresets) => {
-    if (!layoutPresets)
-      throw new Error("Error: Trying to initLayout without preset scheme");
+    if (!layoutPresets) throw new Error("Error: Trying to initLayout without preset scheme");
     for (let cardPack of Object.values(this.content.cards)) {
       if (!layoutPresets.includes(cardPack.preset)) continue;
       for (let i = 0; i < cardPack.amount; i++) {
@@ -74,10 +69,7 @@ export class Game {
         }
         let cardType = this.content.cardTypes[cardPack.cardType];
         if (cardType.action_on_create) {
-          this.runtime.execBrick(
-            cardType.action_on_create,
-            this.createContext(obj)
-          );
+          this.runtime.execBrick(cardType.action_on_create, this.createContext(obj));
         }
       }
     }
@@ -114,8 +106,7 @@ export class Game {
   };
 
   setAttr(attr, value) {
-    if (this.attrs[attr] === undefined)
-      throw new Error("Error trying to set unknown attr " + attr);
+    if (this.attrs[attr] === undefined) throw new Error("Error trying to set unknown attr " + attr);
     this.attrs[attr] = value;
     this.onGameAttrChanged(attr, value);
   }
@@ -208,8 +199,7 @@ class Entity {
   }
 
   setAttr(attr, value) {
-    if (this.attrs[attr] === undefined)
-      throw new Error(`trying to set unknown attr [${attr}]`);
+    if (this.attrs[attr] === undefined) throw new Error(`trying to set unknown attr [${attr}]`);
     this.attrs[attr] = value;
     this.game.onEntityAttrChanged(this, attr, value);
   }

@@ -28,10 +28,7 @@ class SMap {
     }
     if (meta.target === "web") {
       return Object.fromEntries(
-        value.map((val) => [
-          this.keyType.construct(val.key, meta),
-          this.valueType.construct(val.value, meta),
-        ])
+        value.map((val) => [this.keyType.construct(val.key, meta), this.valueType.construct(val.value, meta)])
       );
     }
   };

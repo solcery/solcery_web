@@ -32,15 +32,9 @@ export const ValueRender = (props) => {
       <>
         {value.map((entry, index) => (
           <div key={`${index}`}>
-            <props.type.keyType.valueRender
-              defaultValue={entry.key}
-              type={props.type.keyType}
-            />
+            <props.type.keyType.valueRender defaultValue={entry.key} type={props.type.keyType} />
             {" => "}
-            <props.type.valueType.valueRender
-              defaultValue={entry.value}
-              type={props.type.valueType}
-            />
+            <props.type.valueType.valueRender defaultValue={entry.value} type={props.type.valueType} />
           </div>
         ))}
       </>

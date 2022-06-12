@@ -1,11 +1,6 @@
 import dagre from "dagre";
 
-export default function makeLayoutedElements(
-  elements,
-  nodeSizesByID,
-  rootNodePos,
-  isNode
-) {
+export default function makeLayoutedElements(elements, nodeSizesByID, rootNodePos, isNode) {
   const dagreGraph = new dagre.graphlib.Graph();
   dagreGraph.setDefaultEdgeLabel(() => ({}));
   dagreGraph.setGraph({ rankdir: "TB" });

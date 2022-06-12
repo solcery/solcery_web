@@ -15,9 +15,7 @@ export function notify({
   }
   notification[type]({
     message: <span style={{ color: "black" }}>{message}</span>,
-    description: (
-      <span style={{ color: "black", opacity: 0.5 }}>{description}</span>
-    ),
+    description: <span style={{ color: "black", opacity: 0.5 }}>{description}</span>,
     placement,
     style: {
       backgroundColor: color,

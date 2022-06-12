@@ -46,9 +46,7 @@ export default function Play() {
         session.start(layoutPresets);
         setGameSession(session);
       } else {
-        window.alert(
-          "Cannot construct content, validation unsucessful. Please content in project menu"
-        );
+        window.alert("Cannot construct content, validation unsucessful. Please content in project menu");
       }
     }
     buildContent();
@@ -66,11 +64,7 @@ export default function Play() {
         value: chunks[i],
       };
       // console.log(`Web - sending package to Unity client [${funcName}]: ${JSON.stringify(chunk_package)}`);
-      unityPlayContext.send(
-        "ReactToUnity",
-        funcName,
-        JSON.stringify(chunk_package)
-      );
+      unityPlayContext.send("ReactToUnity", funcName, JSON.stringify(chunk_package));
     }
   }, []);
 

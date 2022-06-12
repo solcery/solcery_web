@@ -26,17 +26,12 @@ export default function Brick(props) {
   let nestedParams = [];
   let inlineParams = [];
   brickSignature.params.forEach((param) => {
-    if (param.type.brickType)
-      nestedParams.push(param); // TODO appropriate check
+    if (param.type.brickType) nestedParams.push(param); // TODO appropriate check
     else inlineParams.push(param);
   });
 
   const onRemoveButtonClicked = () => {
-    props.data.onRemoveButtonClicked(
-      props.data.brickTree,
-      props.data.parentBrick,
-      props.data.paramCode
-    );
+    props.data.onRemoveButtonClicked(props.data.brickTree, props.data.parentBrick, props.data.paramCode);
   };
 
   const onDoubleClick = () => {
@@ -73,12 +68,7 @@ export default function Brick(props) {
         });
       }
       if (!pastedBrickTree) return; // TODO: add validation
-      props.data.onPaste(
-        pastedBrickTree,
-        props.data.brickTree,
-        props.data.parentBrick,
-        props.data.paramCode
-      );
+      props.data.onPaste(pastedBrickTree, props.data.brickTree, props.data.parentBrick, props.data.paramCode);
     });
   };
 
@@ -100,9 +90,9 @@ export default function Brick(props) {
   let width = brickSignature.width ?? Math.max(15, 4 + nestedParams.length * 5);
   return (
     <div
-      className={`brick ${brickSignature.lib} ${brickSignature.func} ${
-        props.data.small ? "small" : ""
-      } ${props.data.readonly ? "readonly" : ""} ${errorBrick ? "error" : ""}`}
+      className={`brick ${brickSignature.lib} ${brickSignature.func} ${props.data.small ? "small" : ""} ${
+        props.data.readonly ? "readonly" : ""
+      } ${errorBrick ? "error" : ""}`}
       onPointerEnter={() => (isHovered = true)}
       onPointerLeave={() => (isHovered = false)}
       style={{ width: `${width}rem` }}
@@ -131,9 +121,7 @@ export default function Brick(props) {
           />
         </div>
       ))}
-      {props.data.parentBrick && (
-        <Handle type="target" position={Position.Top} />
-      )}
+      {props.data.parentBrick && <Handle type="target" position={Position.Top} />}
       {nestedParams.map((param, index) => (
         <Handle
           id={`h${props.id}-${param.code}`}
@@ -141,8 +129,7 @@ export default function Brick(props) {
           type="source"
           position={Position.Bottom}
           style={{
-            left:
-              Math.round((100 / (nestedParams.length + 1)) * (index + 1)) + "%",
+            left: Math.round((100 / (nestedParams.length + 1)) * (index + 1)) + "%",
           }}
         >
           <div className="handle-label">{param.name}</div>

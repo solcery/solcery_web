@@ -19,30 +19,24 @@ export const ValueRender = (props) => {
   };
 
   useEffect(() => {
-    sageApi.template
-      .getAllObjects({ template: props.type.templateCode })
-      .then((res) => {
-        if (!mountedRef.current) return null;
-        setObjects(
-          res.map((object) => {
-            return {
-              id: object._id,
-              title: object.fields.name,
-            };
-          })
-        );
-      });
+    sageApi.template.getAllObjects({ template: props.type.templateCode }).then((res) => {
+      if (!mountedRef.current) return null;
+      setObjects(
+        res.map((object) => {
+          return {
+            id: object._id,
+            title: object.fields.name,
+          };
+        })
+      );
+    });
   }, [props.type, sageApi]);
   if (!props.onChange) {
     if (!props.defaultValue) return <p>None</p>;
     if (!objects) return <>Loading ...</>;
     let obj = objects.find((obj) => obj.id === props.defaultValue);
     if (obj) {
-      return (
-        <a href={`/template.${props.type.templateCode}.${props.defaultValue}`}>
-          {obj.title}
-        </a>
-      );
+      return <a href={`/template.${props.type.templateCode}.${props.defaultValue}`}>{obj.title}</a>;
     } else {
       return <p>{`Missing object ${props.defaultValue}`}</p>;
     }
@@ -58,11 +52,7 @@ export const ValueRender = (props) => {
       onChange={onChange}
       defaultValue={props.defaultValue}
       filterOption={(input, option) => option.children.includes(input)}
-      filterSort={(optionA, optionB) =>
-        optionA.children
-          .toLowerCase()
-          .localeCompare(optionB.children.toLowerCase())
-      }
+      filterSort={(optionA, optionB) => optionA.children.toLowerCase().localeCompare(optionB.children.toLowerCase())}
     >
       <Option value={undefined}>None</Option>
       {objects.map((obj) => (

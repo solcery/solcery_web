@@ -34,9 +34,7 @@ class SBrick {
         this.validate(param, meta);
       }
       if (param === undefined) {
-        meta.error(
-          `No param '${paramSig.code}' found for brick '${v.lib}.${v.func}'!`
-        );
+        meta.error(`No param '${paramSig.code}' found for brick '${v.lib}.${v.func}'!`);
       }
     }
   };

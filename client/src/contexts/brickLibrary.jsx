@@ -19,11 +19,7 @@ export function BrickLibraryProvider(props) {
     load();
   }, [load]);
 
-  return (
-    <BrickLibraryContext.Provider value={{ brickLibrary, load }}>
-      {props.children}
-    </BrickLibraryContext.Provider>
-  );
+  return <BrickLibraryContext.Provider value={{ brickLibrary, load }}>{props.children}</BrickLibraryContext.Provider>;
 }
 
 export function useBrickLibrary() {

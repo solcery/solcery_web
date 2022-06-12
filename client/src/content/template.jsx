@@ -24,10 +24,7 @@ export class Template {
       if (field.buildTargets && field.buildTargets[meta.target]) {
         let buildCode = field.buildTargets[meta.target];
         if (object.fields[field.code] !== undefined) {
-          result[buildCode] = field.type.construct(
-            object.fields[field.code],
-            meta
-          );
+          result[buildCode] = field.type.construct(object.fields[field.code], meta);
         }
       }
     }

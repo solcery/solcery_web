@@ -170,8 +170,7 @@ export const basicActions = [
     exec: (runtime, params, ctx) => {
       let attrName = params.attr_name;
       let value = runtime.execBrick(params.value, ctx);
-      if (ctx.game.attrs[attrName] === undefined)
-        throw new Error("Trying to set unknown game attr " + attrName);
+      if (ctx.game.attrs[attrName] === undefined) throw new Error("Trying to set unknown game attr " + attrName);
       ctx.game.setAttr(attrName, value);
     },
   },
@@ -300,10 +299,7 @@ export const basicActions = [
         }
         return match;
       }
-      let res = params.message.replace(
-        /\{([a-zA-Z]+).?([_a-zA-Z0-9]+)?\}/g,
-        applyMacro
-      );
+      let res = params.message.replace(/\{([a-zA-Z]+).?([_a-zA-Z0-9]+)?\}/g, applyMacro);
       console[params.level](res);
     },
   },

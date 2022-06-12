@@ -23,12 +23,7 @@ export default function ObjectEditor({ schema, object, onSave, instant }) {
         SAVE
       </Button>
       <Table pagination={false} dataSource={tableData}>
-        <Column
-          title="Field"
-          key="Field"
-          dataIndex="fieldName"
-          render={(text, record) => <p>{record.field.name}</p>}
-        />
+        <Column title="Field" key="Field" dataIndex="fieldName" render={(text, record) => <p>{record.field.name}</p>} />
         <Column
           title="Value"
           key="value"

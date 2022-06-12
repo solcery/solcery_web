@@ -16,9 +16,7 @@ export const execute = async (func, extra) => {
   content.templates = content.templates.map((tpl) => new Template(tpl));
   for (let template of content.templates) {
     meta.template = template;
-    let objects = content.objects.filter(
-      (obj) => obj.template === template.code
-    );
+    let objects = content.objects.filter((obj) => obj.template === template.code);
     for (let object of objects) {
       meta.object = object;
       func(object, meta);
@@ -35,12 +33,8 @@ export const validate = ({ content }) => {
   };
   let templates = content.templates.map((template) => new Template(template));
   for (let template of templates) {
-    let fields = Object.values(template.fields).filter(
-      (field) => field.type.validate
-    );
-    let objects = content.objects.filter(
-      (obj) => obj.template === template.code
-    );
+    let fields = Object.values(template.fields).filter((field) => field.type.validate);
+    let objects = content.objects.filter((obj) => obj.template === template.code);
     for (let object of objects) {
       meta.object = object;
       for (let field of fields) {
@@ -97,9 +91,7 @@ export const build = ({ targets, content }) => {
     (template) => new Template(template)
   );
   let tpl = templates.map((template) => {
-    let objects = content.objects.filter(
-      (obj) => obj.template === template.code
-    );
+    let objects = content.objects.filter((obj) => obj.template === template.code);
     for (let obj of objects) {
       meta.addIntId(obj._id);
       if (obj.fields.code) {
@@ -127,12 +119,10 @@ export const build = ({ targets, content }) => {
       if (template.buildTargets) {
         let buildCode = template.buildTargets[target];
         if (buildCode) {
-          constructed[buildCode] = meta.rawContent[template.code].objects.map(
-            (obj) => {
-              meta.object = obj;
-              return template.construct(obj, meta);
-            }
-          );
+          constructed[buildCode] = meta.rawContent[template.code].objects.map((obj) => {
+            meta.object = obj;
+            return template.construct(obj, meta);
+          });
         }
       }
     }
@@ -143,9 +133,7 @@ export const build = ({ targets, content }) => {
     }
     if (target === "web") {
       for (let [code, objects] of Object.entries(constructed)) {
-        result[target][code] = Object.fromEntries(
-          objects.map((obj) => [obj.id, obj])
-        );
+        result[target][code] = Object.fromEntries(objects.map((obj) => [obj.id, obj]));
       }
     }
   }

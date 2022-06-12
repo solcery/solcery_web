@@ -77,8 +77,7 @@ export const basicValues = [
       { code: "else", name: "Else", type: "SBrick<value>" },
     ],
     exec: (runtime, params, ctx) => {
-      if (runtime.execBrick(params.if, ctx))
-        return runtime.execBrick(params.then, ctx);
+      if (runtime.execBrick(params.if, ctx)) return runtime.execBrick(params.then, ctx);
       else return runtime.execBrick(params.else, ctx);
     },
   },

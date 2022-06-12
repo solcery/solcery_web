@@ -48,10 +48,7 @@ export const basicConditions = [
       { code: "value2", name: "Value2", type: "SBrick<value>" },
     ],
     exec: (runtime, params, ctx) => {
-      return (
-        runtime.execBrick(params.value1, ctx) ===
-        runtime.execBrick(params.value2, ctx)
-      );
+      return runtime.execBrick(params.value1, ctx) === runtime.execBrick(params.value2, ctx);
     },
   },
   {
@@ -65,10 +62,7 @@ export const basicConditions = [
       { code: "value2", name: "Value2", type: "SBrick<value>" },
     ],
     exec: (runtime, params, ctx) => {
-      return (
-        runtime.execBrick(params.value1, ctx) >
-        runtime.execBrick(params.value2, ctx)
-      );
+      return runtime.execBrick(params.value1, ctx) > runtime.execBrick(params.value2, ctx);
     },
   },
   {
@@ -82,10 +76,7 @@ export const basicConditions = [
       { code: "value2", name: "Value2", type: "SBrick<value>" },
     ],
     exec: (runtime, params, ctx) => {
-      return (
-        runtime.execBrick(params.value1, ctx) <
-        runtime.execBrick(params.value2, ctx)
-      );
+      return runtime.execBrick(params.value1, ctx) < runtime.execBrick(params.value2, ctx);
     },
   },
   {
@@ -108,10 +99,7 @@ export const basicConditions = [
       { code: "cond2", name: "Cond #2", type: "SBrick<condition>" },
     ],
     exec: (runtime, params, ctx) => {
-      return (
-        runtime.execBrick(params.cond1, ctx) ||
-        runtime.execBrick(params.cond2, ctx)
-      );
+      return runtime.execBrick(params.cond1, ctx) || runtime.execBrick(params.cond2, ctx);
     },
   },
   {
@@ -125,10 +113,7 @@ export const basicConditions = [
       { code: "cond2", name: "Cond #2", type: "SBrick<condition>" },
     ],
     exec: (runtime, params, ctx) => {
-      return (
-        runtime.execBrick(params.cond1, ctx) &&
-        runtime.execBrick(params.cond2, ctx)
-      );
+      return runtime.execBrick(params.cond1, ctx) && runtime.execBrick(params.cond2, ctx);
     },
   },
   {

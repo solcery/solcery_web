@@ -69,14 +69,8 @@ const BrickParamsEditor = (props) => {
 
   return (
     <>
-      <paramMapType.valueRender
-        defaultValue={value}
-        type={paramMapType}
-        onChange={editMode && setValue}
-      />
-      {!props.readonly && !editMode && (
-        <Button onClick={() => setEditMode(!editMode)}>Edit</Button>
-      )}
+      <paramMapType.valueRender defaultValue={value} type={paramMapType} onChange={editMode && setValue} />
+      {!props.readonly && !editMode && <Button onClick={() => setEditMode(!editMode)}>Edit</Button>}
       {editMode && <Button onClick={apply}>Apply</Button>}
     </>
   );
@@ -86,34 +80,21 @@ export const ValueRender = (props) => {
   const { readonlyBricks } = useUser();
 
   const [brickType, setBrickType] = useState(
-    props.type.brickType
-      ? props.type.brickType
-      : props.defaultValue && props.defaultValue.brickType
+    props.type.brickType ? props.type.brickType : props.defaultValue && props.defaultValue.brickType
   );
-  const [brickParams, setBrickParams] = useState(
-    props.defaultValue ? props.defaultValue.brickParams : []
-  );
-  const [brickTree, setBrickTree] = useState(
-    props.defaultValue && props.defaultValue.brickTree
-  );
+  const [brickParams, setBrickParams] = useState(props.defaultValue ? props.defaultValue.brickParams : []);
+  const [brickTree, setBrickTree] = useState(props.defaultValue && props.defaultValue.brickTree);
 
   useEffect(() => {
     props.onChange && props.onChange({ brickType, brickParams, brickTree });
   }, [brickType, brickParams, brickTree, props]);
 
-  if (!props.onChange && (!props.defaultValue || !props.defaultValue.brickTree))
-    return <p>Empty</p>;
+  if (!props.onChange && (!props.defaultValue || !props.defaultValue.brickTree)) return <p>Empty</p>;
   if (!readonlyBricks && !props.onChange) return <p>Brick</p>;
   return (
     <>
-      {!brickType && (
-        <BrickTypeEditor defaultValue={brickType} onChange={setBrickType} />
-      )}
-      <BrickParamsEditor
-        readonly={!props.onChange}
-        defaultValue={brickParams}
-        onChange={setBrickParams}
-      />
+      {!brickType && <BrickTypeEditor defaultValue={brickType} onChange={setBrickType} />}
+      <BrickParamsEditor readonly={!props.onChange} defaultValue={brickParams} onChange={setBrickParams} />
       {brickType && (
         <BrickTreeEditor
           instant={props.instant}
@@ -150,16 +131,12 @@ export const BrickTreeEditor = (props) => {
     let bricks = {};
 
     Object.entries(brickLibrary).forEach(([lib, libBricks]) =>
-      Object.entries(libBricks).forEach(([brickFunc, brick]) =>
-        insertTable(bricks, brick, lib, brickFunc)
-      )
+      Object.entries(libBricks).forEach(([brickFunc, brick]) => insertTable(bricks, brick, lib, brickFunc))
     );
 
     let paramsLibrary = mapParams(props.brickParams);
     Object.entries(paramsLibrary).forEach(([lib, libBricks]) =>
-      Object.entries(libBricks).forEach(([brickFunc, brick]) =>
-        insertTable(bricks, brick, lib, brickFunc)
-      )
+      Object.entries(libBricks).forEach(([brickFunc, brick]) => insertTable(bricks, brick, lib, brickFunc))
     );
     setOwnBrickLibrary(bricks);
   }, [brickLibrary, props.brickParams]);

@@ -24,15 +24,9 @@ export const generic = {
 export class BrickRuntime {
   bricks = {};
   constructor(content) {
-    basicActions.forEach((brick) =>
-      insertTable(this.bricks, brick, brick.lib, brick.func)
-    );
-    basicConditions.forEach((brick) =>
-      insertTable(this.bricks, brick, brick.lib, brick.func)
-    );
-    basicValues.forEach((brick) =>
-      insertTable(this.bricks, brick, brick.lib, brick.func)
-    );
+    basicActions.forEach((brick) => insertTable(this.bricks, brick, brick.lib, brick.func));
+    basicConditions.forEach((brick) => insertTable(this.bricks, brick, brick.lib, brick.func));
+    basicValues.forEach((brick) => insertTable(this.bricks, brick, brick.lib, brick.func));
     if (!content) return;
     for (let obj of Object.values(content.customBricks)) {
       // TODO: wrong

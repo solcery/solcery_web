@@ -9,10 +9,7 @@ export const ValueRender = (props) => {
     return <>{props.type.titles[defaultIndex]}</>;
   }
   return (
-    <Select
-      defaultValue={props.type.values[defaultIndex]}
-      onChange={props.onChange}
-    >
+    <Select defaultValue={props.type.values[defaultIndex]} onChange={props.onChange}>
       {props.type.titles.map((value, index) => (
         <Option key={index} value={props.type.values[index]}>
           {value}
@@ -28,10 +25,7 @@ export const FilterRender = (props) => {
     return <>{props.type.titles[defaultIndex]}</>;
   }
   return (
-    <Select
-      defaultValue={props.type.titles[defaultIndex]}
-      onChange={props.onChange}
-    >
+    <Select defaultValue={props.type.titles[defaultIndex]} onChange={props.onChange}>
       {props.type.titles.map((value, index) => (
         <Option key={index} value={props.type.values[index]}>
           {value}

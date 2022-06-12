@@ -9,10 +9,7 @@ import ObjectPage from "./apps/objectPage";
 import TemplatePage from "./apps/templatePage";
 import ContentExporter from "./apps/contentExporter";
 import Migrator from "./apps/migrator";
-import {
-  BrickLibraryObjectEditor,
-  BrickLibraryCollectionEditor,
-} from "./apps/brickLibrary";
+import { BrickLibraryObjectEditor, BrickLibraryCollectionEditor } from "./apps/brickLibrary";
 import Play from "./apps/play";
 import Project from "./apps/project";
 import Profile from "./apps/profile";
@@ -25,23 +22,11 @@ export default function App() {
         <BrowserRouter>
           <Routes>
             <Route path=":projectName" element={<ProjectProvider />}>
-              <Route
-                path="template.:templateCode.schema"
-                element={<TemplateSchema />}
-              />
-              <Route
-                path="template.:templateCode.:objectId"
-                element={<ObjectPage />}
-              />
+              <Route path="template.:templateCode.schema" element={<TemplateSchema />} />
+              <Route path="template.:templateCode.:objectId" element={<ObjectPage />} />
               <Route path="template.:templateCode" element={<TemplatePage />} />
-              <Route
-                path="brickLibrary"
-                element={<BrickLibraryCollectionEditor />}
-              />
-              <Route
-                path="brickLibrary.:objectId"
-                element={<BrickLibraryObjectEditor />}
-              />
+              <Route path="brickLibrary" element={<BrickLibraryCollectionEditor />} />
+              <Route path="brickLibrary.:objectId" element={<BrickLibraryObjectEditor />} />
               <Route path="play" element={<Play />} />
               <Route path="project" element={<Project />} />
               <Route path="migrator" element={<Migrator />} />

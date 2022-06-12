@@ -26,11 +26,7 @@ export default function TemplateSchema() {
   return (
     <>
       <p>Template: {}</p>
-      <TextArea
-        rows={20}
-        defaultValue={schema}
-        onChange={(e) => setSchema(e.target.value)}
-      />
+      <TextArea rows={20} defaultValue={schema} onChange={(e) => setSchema(e.target.value)} />
       <Button onClick={save}> save </Button>
     </>
   );

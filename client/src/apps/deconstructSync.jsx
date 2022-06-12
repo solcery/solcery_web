@@ -72,15 +72,9 @@ export default function DeconstructSync() {
   return (
     <>
       <p>Template schema</p>
-      <TextArea
-        rows={10}
-        onChange={(e) => setTemplateSchemaJson(e.target.value)}
-      />
+      <TextArea rows={10} onChange={(e) => setTemplateSchemaJson(e.target.value)} />
       <p>Content schema</p>
-      <TextArea
-        rows={10}
-        onChange={(e) => setContentSchemaJson(e.target.value)}
-      />
+      <TextArea rows={10} onChange={(e) => setContentSchemaJson(e.target.value)} />
       <Button onClick={applyPayload}>Apply</Button>
     </>
   );

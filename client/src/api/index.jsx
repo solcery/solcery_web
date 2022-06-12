@@ -4,8 +4,7 @@ import { templateAPI } from "./template";
 const API_PATH = "/api/";
 
 const makeRequest = (data) => {
-  if (!data)
-    throw new Error("API request error: no data provided for API call!");
+  if (!data) throw new Error("API request error: no data provided for API call!");
   let url = new URLSearchParams();
   url = `${API_PATH}`;
   let request = {
@@ -24,8 +23,7 @@ export class SageAPIConnection {
   constructor(projectName) {
     this.projectName = projectName;
     for (let apiModule of apiModules) {
-      if (this[apiModule.name])
-        throw new Error("Error building SageAPIConnection, name conflict!");
+      if (this[apiModule.name]) throw new Error("Error building SageAPIConnection, name conflict!");
       this[apiModule.name] = {};
       for (let command of Object.values(apiModule.commands)) {
         this[apiModule.name][command.name] = (data) => {

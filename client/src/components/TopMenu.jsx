@@ -3,11 +3,7 @@ import { Link } from "react-router-dom";
 import React, { useEffect, useState } from "react";
 import { useProject } from "../contexts/project";
 import { useUser } from "../contexts/user";
-import {
-  UserOutlined,
-  CaretRightOutlined,
-  DeploymentUnitOutlined,
-} from "@ant-design/icons";
+import { UserOutlined, CaretRightOutlined, DeploymentUnitOutlined } from "@ant-design/icons";
 
 export const TopMenu = () => {
   const [templates, setTemplates] = useState([]);
@@ -23,21 +19,13 @@ export const TopMenu = () => {
       <Menu mode="horizontal">
         <Menu.Item key="project">
           <Link to="project" style={{ fontWeight: "bold" }}>
-            <Avatar
-              size={"small"}
-              icon=<DeploymentUnitOutlined />
-              style={{ marginRight: 7 }}
-            />
+            <Avatar size={"small"} icon=<DeploymentUnitOutlined /> style={{ marginRight: 7 }} />
             {projectName}
           </Link>
         </Menu.Item>
         <Menu.Item key="play">
           <Link to="play" style={{ fontWeight: "bold" }}>
-            <Avatar
-              size={"small"}
-              icon=<CaretRightOutlined />
-              style={{ marginRight: 7 }}
-            />
+            <Avatar size={"small"} icon=<CaretRightOutlined /> style={{ marginRight: 7 }} />
             Play
           </Link>
         </Menu.Item>
@@ -53,11 +41,7 @@ export const TopMenu = () => {
           ))}
         <Menu.Item key="profile">
           <Link to="profile" style={{ fontWeight: "bold" }}>
-            <Avatar
-              size={"small"}
-              icon=<UserOutlined />
-              style={{ marginRight: 7 }}
-            />
+            <Avatar size={"small"} icon=<UserOutlined /> style={{ marginRight: 7 }} />
             {nick}
           </Link>
         </Menu.Item>

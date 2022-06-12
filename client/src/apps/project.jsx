@@ -61,10 +61,7 @@ export default function Project() {
       setErrors(res.errors);
       return;
     }
-    let session = new Session(
-      { web: res.constructed.web, unity: res.constructed.unity_local },
-      [1]
-    );
+    let session = new Session({ web: res.constructed.web, unity: res.constructed.unity_local }, [1]);
     session.start(layoutPresets);
 
     let states = session.game.diffLog.map((state, index) => {
@@ -91,18 +88,12 @@ export default function Project() {
       </Card>
       <Card title="For unity local simulation">
         {unityData && (
-          <Button
-            icon=<DownloadOutlined />
-            onClick={() => downloadForUnityLocalSim("content")}
-          >
+          <Button icon=<DownloadOutlined /> onClick={() => downloadForUnityLocalSim("content")}>
             Content
           </Button>
         )}
         {unityData && (
-          <Button
-            icon=<DownloadOutlined />
-            onClick={() => downloadForUnityLocalSim("state")}
-          >
+          <Button icon=<DownloadOutlined /> onClick={() => downloadForUnityLocalSim("state")}>
             State
           </Button>
         )}
@@ -114,10 +105,7 @@ export default function Project() {
       {errors.length > 0 && (
         <Card title="Errors">
           {errors.map((err, index) => (
-            <Link
-              key={`error.${index}`}
-              to={`/template.${err.template}.${err.object}`}
-            >
+            <Link key={`error.${index}`} to={`/template.${err.template}.${err.object}`}>
               {err.message}
             </Link>
           ))}

@@ -34,9 +34,7 @@ export default function CollectionEditor({ templateCode, moduleName }) {
 
   const load = useCallback(() => {
     sageApi.template.getAllObjects({ template: templateCode }).then(setObjects);
-    sageApi.template
-      .getSchema({ template: templateCode })
-      .then((data) => setTemplate(new Template(data)));
+    sageApi.template.getSchema({ template: templateCode }).then((data) => setTemplate(new Template(data)));
   }, [templateCode, sageApi.template]);
 
   useEffect(() => {
@@ -56,8 +54,7 @@ export default function CollectionEditor({ templateCode, moduleName }) {
         if (filterValue === undefined) continue;
         let fieldFilter = field.type.filter;
         if (!fieldFilter) continue;
-        if (!field.type.filter.eq(object.fields[field.code], filterValue))
-          return false;
+        if (!field.type.filter.eq(object.fields[field.code], filterValue)) return false;
       }
       return true;
     })
@@ -90,12 +87,7 @@ export default function CollectionEditor({ templateCode, moduleName }) {
         {Object.values(template.fields).map((field) => (
           <Column
             filtered={filter[field.code] !== undefined}
-            title={
-              field.name +
-              (filter[field.code] !== undefined
-                ? `   [ ${filter[field.code]} ]`
-                : "")
-            }
+            title={field.name + (filter[field.code] !== undefined ? `   [ ${filter[field.code]} ]` : "")}
             key={`${moduleName}.${field.code}`}
             dataIndex={field.code}
             filterDropdown={
@@ -110,16 +102,10 @@ export default function CollectionEditor({ templateCode, moduleName }) {
                 />
               )
             }
-            onFilterDropdownVisibleChange={(visible) =>
-              setFilteredField(visible ? field.code : undefined)
-            }
+            onFilterDropdownVisibleChange={(visible) => setFilteredField(visible ? field.code : undefined)}
             filterDropdownVisible={filteredField === field.code}
             render={(_, object) => (
-              <field.type.valueRender
-                defaultValue={object.fields[field.code]}
-                type={field.type}
-                object={object}
-              />
+              <field.type.valueRender defaultValue={object.fields[field.code]} type={field.type} object={object} />
             )}
           />
         ))}
@@ -149,13 +135,7 @@ export default function CollectionEditor({ templateCode, moduleName }) {
                 key={"delete." + object._id}
                 onClick={() => {
                   if (
-                    window.confirm(
-                      "Deleting object [" +
-                        object.id +
-                        "] " +
-                        object.fields.title +
-                        ". Are you sure?"
-                    )
+                    window.confirm("Deleting object [" + object.id + "] " + object.fields.title + ". Are you sure?")
                   ) {
                     sageApi.template
                       .removeObjectById({
@@ -178,13 +158,11 @@ export default function CollectionEditor({ templateCode, moduleName }) {
       </Table>
       <Button
         onClick={() => {
-          sageApi.template
-            .createObject({ template: templateCode })
-            .then((res) => {
-              if (res.insertedId) {
-                navigate(`../${moduleName}.${res.insertedId}`);
-              }
-            });
+          sageApi.template.createObject({ template: templateCode }).then((res) => {
+            if (res.insertedId) {
+              navigate(`../${moduleName}.${res.insertedId}`);
+            }
+          });
         }}
       >
         Create

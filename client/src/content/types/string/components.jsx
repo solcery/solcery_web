@@ -2,13 +2,7 @@ import { useState } from "react";
 import { Input, Button } from "antd";
 import { Link, useLocation } from "react-router-dom";
 
-export const ValueRender = ({
-  defaultValue,
-  type,
-  onChange,
-  object,
-  onPressEnter,
-}) => {
+export const ValueRender = ({ defaultValue, type, onChange, object, onPressEnter }) => {
   const { pathname } = useLocation(); //TODO
   if (!onChange) {
     if (type.isPrimaryTitle && object) {

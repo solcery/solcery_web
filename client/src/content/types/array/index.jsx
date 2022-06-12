@@ -6,8 +6,7 @@ class SArray {
   constructor(data) {
     this.valueType = SType.from(data.valueType);
   }
-  construct = (value, meta) =>
-    value.map((val) => this.valueType.construct(val, meta));
+  construct = (value, meta) => value.map((val) => this.valueType.construct(val, meta));
   valueRender = ValueRender;
   default = () => [];
 }

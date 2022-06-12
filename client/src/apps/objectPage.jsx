@@ -13,12 +13,8 @@ export default function ObjectPage() {
   let { templateCode, objectId } = useParams();
 
   useEffect(() => {
-    sageApi.template
-      .getObjectById({ template: templateCode, objectId })
-      .then(setObject);
-    sageApi.template
-      .getSchema({ template: templateCode })
-      .then((data) => setTemplate(new Template(data)));
+    sageApi.template.getObjectById({ template: templateCode, objectId }).then(setObject);
+    sageApi.template.getSchema({ template: templateCode }).then((data) => setTemplate(new Template(data)));
   }, [sageApi.template, objectId, templateCode]);
 
   const onSave = (fields) => {

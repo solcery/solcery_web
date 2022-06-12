@@ -8,7 +8,5 @@ export const ValueRender = (props) => {
 
   if (!props.onChange) return <p>{props.defaultValue ? "True" : "False"}</p>;
 
-  return (
-    <Switch defaultChecked={props.defaultValue} onChange={props.onChange} />
-  );
+  return <Switch defaultChecked={props.defaultValue} onChange={props.onChange} />;
 };

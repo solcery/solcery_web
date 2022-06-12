@@ -31,11 +31,7 @@ export default function ContentExporter() {
       <Button onClick={exportContent}> Export </Button>
       <p></p>
       <p> IMPORT CONTENT </p>
-      <TextArea
-        placeholder="Paste content dump here"
-        rows={10}
-        onChange={(e) => setContentDump(e.target.value)}
-      />
+      <TextArea placeholder="Paste content dump here" rows={10} onChange={(e) => setContentDump(e.target.value)} />
       <Button onClick={importContent}> Import </Button>
     </>
   );

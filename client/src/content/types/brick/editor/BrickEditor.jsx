@@ -52,8 +52,7 @@ export const BrickEditor = (props) => {
         params: {},
       };
       brickSignature.params.forEach((param) => {
-        brick.params[param.code] =
-          param.value ?? (param.type.default && param.type.default());
+        brick.params[param.code] = param.value ?? (param.type.default && param.type.default());
       });
       if (parentBrick) {
         parentBrick.params[paramID] = brick;
@@ -84,11 +83,8 @@ export const BrickEditor = (props) => {
     (pastedBrickTree, bt, parentBrick, paramCode) => {
       if (!props.onChange || !active) return;
       if (parentBrick) {
-        const brickSignature =
-          props.brickLibrary[parentBrick.lib][parentBrick.func];
-        const param = brickSignature.params.find(
-          (param) => param.code === paramCode
-        );
+        const brickSignature = props.brickLibrary[parentBrick.lib][parentBrick.func];
+        const param = brickSignature.params.find((param) => param.code === paramCode);
         if (param.type.brickType === pastedBrickTree.lib) {
           parentBrick.params[paramCode] = pastedBrickTree;
           onChange(JSON.parse(JSON.stringify(bt)));
@@ -137,27 +133,12 @@ export const BrickEditor = (props) => {
         },
       };
     },
-    [
-      props.brickLibrary,
-      props.brickClass,
-      addBrick,
-      onPaste,
-      active,
-      props.onChange,
-    ]
+    [props.brickLibrary, props.brickClass, addBrick, onPaste, active, props.onChange]
   );
 
   const makeAddButtonWithEdgeElements = useCallback(
     (brickID, brickType, brickTree, parentBrick, parentBrickID, paramCode) => {
-      const elements = [
-        makeAddButtonElement(
-          brickID,
-          brickType,
-          brickTree,
-          parentBrick,
-          paramCode
-        ),
-      ];
+      const elements = [makeAddButtonElement(brickID, brickType, brickTree, parentBrick, paramCode)];
       elements.push({
         id: `e${parentBrickID}-${brickID}`,
         source: parentBrickID,
@@ -195,23 +176,12 @@ export const BrickEditor = (props) => {
         },
       };
     },
-    [
-      active,
-      onChange,
-      props.onChange,
-      brickTree,
-      props.brickLibrary,
-      props.brickClass,
-      removeBrick,
-      onPaste,
-    ]
+    [active, onChange, props.onChange, brickTree, props.brickLibrary, props.brickClass, removeBrick, onPaste]
   );
 
   const makeBrickWithEdgeElements = useCallback(
     (brickID, brick, brickTree, parentBrick, parentBrickID, paramID) => {
-      const elements = [
-        makeBrickElement(brickID, brick, brickTree, parentBrick, paramID),
-      ];
+      const elements = [makeBrickElement(brickID, brick, brickTree, parentBrick, paramID)];
       if (parentBrickID) {
         elements.push({
           id: `e${parentBrickID}-${brickID}`,
@@ -230,23 +200,9 @@ export const BrickEditor = (props) => {
     (brickTree) => {
       const elements = [];
 
-      const processBrick = (
-        brick,
-        parentBrickID = null,
-        parentBrick = null,
-        paramCode = ""
-      ) => {
+      const processBrick = (brick, parentBrickID = null, parentBrick = null, paramCode = "") => {
         const brickID = Number(++brickUniqueID).toString();
-        elements.push(
-          ...makeBrickWithEdgeElements(
-            brickID,
-            brick,
-            brickTree,
-            parentBrick,
-            parentBrickID,
-            paramCode
-          )
-        );
+        elements.push(...makeBrickWithEdgeElements(brickID, brick, brickTree, parentBrick, parentBrickID, paramCode));
         let brickSignature = props.brickLibrary[brick.lib][brick.func];
         if (!brickSignature) {
           return elements;
@@ -279,22 +235,13 @@ export const BrickEditor = (props) => {
 
       return elements;
     },
-    [
-      props.brickLibrary,
-      makeAddButtonWithEdgeElements,
-      makeBrickWithEdgeElements,
-    ]
+    [props.brickLibrary, makeAddButtonWithEdgeElements, makeBrickWithEdgeElements]
   );
 
   const onNodeSizesChange = (nodeSizesByID) => {
     const rootNodePos = { x: width * 0.5, y: height * 0.1 };
     setState({
-      elements: makeLayoutedElements(
-        state.elements,
-        nodeSizesByID,
-        rootNodePos,
-        isNode
-      ),
+      elements: makeLayoutedElements(state.elements, nodeSizesByID, rootNodePos, isNode),
       isLayouted: true,
     });
   };
@@ -304,15 +251,7 @@ export const BrickEditor = (props) => {
     if (brickTree) {
       elements = makeBrickTreeElements(brickTree);
     } else {
-      elements = [
-        makeAddButtonElement(
-          Number(++brickUniqueID).toString(),
-          props.brickType,
-          null,
-          null,
-          0
-        ),
-      ];
+      elements = [makeAddButtonElement(Number(++brickUniqueID).toString(), props.brickType, null, null, 0)];
     }
     setState({ elements: elements, isLayouted: false });
     if (editorRef.current) {

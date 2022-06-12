@@ -26,11 +26,7 @@ export const ValueRender = (props) => {
 
   return (
     <>
-      <Image
-        style={{ maxHeight: props.type.previewHeight }}
-        width={props.type.previewWidth}
-        src={value}
-      />
+      <Image style={{ maxHeight: props.type.previewHeight }} width={props.type.previewWidth} src={value} />
       <Input
         type="text"
         defaultValue={value}

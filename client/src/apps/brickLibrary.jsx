@@ -8,12 +8,7 @@ import { notify } from "../components/notification";
 import { useBrickLibrary } from "../contexts/brickLibrary";
 
 export function BrickLibraryCollectionEditor() {
-  return (
-    <CollectionEditor
-      moduleName={"brickLibrary"}
-      templateCode={"customBricks"}
-    />
-  );
+  return <CollectionEditor moduleName={"brickLibrary"} templateCode={"customBricks"} />;
 }
 
 export function BrickLibraryObjectEditor() {
@@ -27,12 +22,8 @@ export function BrickLibraryObjectEditor() {
   let { objectId } = useParams();
 
   useEffect(() => {
-    sageApi.template
-      .getObjectById({ template: "customBricks", objectId })
-      .then(setObject);
-    sageApi.template
-      .getSchema({ template: "customBricks" })
-      .then((data) => setTemplate(new Template(data)));
+    sageApi.template.getObjectById({ template: "customBricks", objectId }).then(setObject);
+    sageApi.template.getSchema({ template: "customBricks" }).then((data) => setTemplate(new Template(data)));
   }, [objectId, sageApi.template]);
 
   const onSave = (fields) => {
@@ -54,12 +45,5 @@ export function BrickLibraryObjectEditor() {
         }
       });
   };
-  return (
-    <ObjectEditor
-      schema={template}
-      object={object}
-      onSave={onSave}
-      instant={searchParams.get("instant")}
-    />
-  );
+  return <ObjectEditor schema={template} object={object} onSave={onSave} instant={searchParams.get("instant")} />;
 }

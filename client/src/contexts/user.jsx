@@ -36,9 +36,7 @@ export function UserProvider(props) {
     if (user) return;
     if (!sageApi) return;
     if (!cookies[`session.${projectName}`]) return;
-    sageApi.user
-      .get({ id: cookies[`session.${projectName}`] })
-      .then((res) => loadUser(res));
+    sageApi.user.get({ id: cookies[`session.${projectName}`] }).then((res) => loadUser(res));
   }, [user, projectName, sageApi, cookies]);
 
   const auth = useCallback(() => {
@@ -85,15 +83,10 @@ export function UserProvider(props) {
         {error && <Alert message={error} banner={true} />}
       </>
     );
-  return (
-    <UserContext.Provider value={Object.assign({ reload }, user)}>
-      {props.children}
-    </UserContext.Provider>
-  );
+  return <UserContext.Provider value={Object.assign({ reload }, user)}>{props.children}</UserContext.Provider>;
 }
 
 export function useUser() {
-  const { id, nick, css, layoutPresets, reload, readonlyBricks } =
-    useContext(UserContext);
+  const { id, nick, css, layoutPresets, reload, readonlyBricks } = useContext(UserContext);
   return { id, nick, css, layoutPresets, reload, readonlyBricks };
 }
