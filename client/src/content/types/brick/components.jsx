@@ -1,8 +1,7 @@
 import { ReactFlowProvider } from "react-flow-renderer";
 import { BrickEditor } from "./editor/BrickEditor";
-import React, { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 import { paramFromMapEntry } from "../../brickLib";
-import { useLocation } from "react-router-dom";
 import { Select, Button } from "antd";
 import { SType } from "../base";
 import { insertTable } from "../../../utils";
@@ -100,7 +99,7 @@ export const ValueRender = (props) => {
 
   useEffect(() => {
     props.onChange && props.onChange({ brickType, brickParams, brickTree });
-  }, [brickType, brickParams, brickTree, props.onChange]);
+  }, [ brickType, brickParams, brickTree, props ]);
 
   if (!props.onChange && (!props.defaultValue || !props.defaultValue.brickTree))
     return <p>Empty</p>;
@@ -135,7 +134,7 @@ export const BrickTreeEditor = (props) => {
 
   const mapParams = (paramsArray) => {
     let bricks = {};
-    let params = paramsArray
+    paramsArray
       .filter((entry) => entry.key !== "")
       .map((entry) => paramFromMapEntry(entry))
       .forEach((param) => {

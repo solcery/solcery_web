@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { Button, Select, Card } from "antd";
-import { useBrickLibrary } from "../contexts/brickLibrary";
 import { useUser } from "../contexts/user";
 import { useProject } from "../contexts/project";
 import { build, validate } from "../content";
@@ -14,8 +13,6 @@ export default function Project() {
   const [ errors, setErrors ] = useState([]);
   const [ unityData, setUnityData ] = useState(undefined);
   const { sageApi } = useProject();
-
-  const { brickLibrary } = useBrickLibrary();
   const { layoutPresets } = useUser();
 
   const buildProject = async () => {
@@ -41,12 +38,12 @@ export default function Project() {
   };
 
   const downloadAsJSON = async (filename, data) => {
-    let date = Date.now();
+    // let date = Date.now();
     let json = JSON.stringify(data, undefined, 2);
     const element = document.createElement("a");
     const file = new Blob([json], { type: "text/plain" });
     element.href = URL.createObjectURL(file);
-    element.download = `${filename}.json`; // TODO: data
+    element.download = `${filename}.json`; // TODO: date
     document.body.appendChild(element); // Required for this to work in FireFox
     element.click();
   };

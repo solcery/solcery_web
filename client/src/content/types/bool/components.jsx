@@ -5,7 +5,7 @@ export const ValueRender = (props) => {
   
   useEffect(() => {
     if (props.onChange) props.onChange(props.defaultValue ?? false);
-  }, [props.defaultValue]);
+  }, [ props ]);
 
   if (!props.onChange) return <p>{props.defaultValue ? "True" : "False"}</p>;
 

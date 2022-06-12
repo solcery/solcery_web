@@ -1,4 +1,3 @@
-import { sageApi } from "../api";
 import { BrickLibrary } from "./brickLib";
 import { Template } from "../content/template";
 

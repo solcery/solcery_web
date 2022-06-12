@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Session } from "../game";
 import Unity, { UnityContext } from "react-unity-webgl";
 import { useBrickLibrary } from "../contexts/brickLibrary";
@@ -14,6 +14,18 @@ const unityPlayContext = new UnityContext({
   streamingAssetsUrl: "/StreamingAssets",
 });
 
+function* stringChunk(s, maxBytes) {
+  const SPACE_CODE = 32;
+  let buf = Buffer.from(s);
+  while (buf.length) {
+    let i = buf.lastIndexOf(SPACE_CODE, maxBytes + 1);
+    if (i < 0) i = buf.indexOf(SPACE_CODE, maxBytes);
+    if (i < 0) i = buf.length;
+    yield buf.slice(0, i).toString();
+    buf = buf.slice(i + 1);
+  }
+}
+
 export default function Play() {
   const [gameSession, setGameSession] = useState();
   const { brickLibrary } = useBrickLibrary();
@@ -24,12 +36,10 @@ export default function Play() {
     if (!brickLibrary) return;
     async function buildContent() {
       let content = await sageApi.project.dump();
-      console.log(content)
       let construction = build({
         targets: ["web", "unity"],
         content,
       });
-      console.log(construction)
       if (construction.status) {
         let content = construction.constructed;
         let session = new Session(content, [1]);
@@ -42,32 +52,9 @@ export default function Play() {
       }
     }
     buildContent();
-  }, [brickLibrary, layoutPresets]);
+  }, [ brickLibrary, layoutPresets, sageApi.project ]);
 
-  const sendDiffLog = (diffLog, send) => {
-    let states = diffLog.map((state, index) => {
-      return {
-        id: index,
-        state_type: state.delay ? 1 : 0,
-        value: state,
-      };
-    });
-    clientCommand("UpdateGameState", { states });
-  };
-
-  function* stringChunk(s, maxBytes) {
-    const SPACE_CODE = 32;
-    let buf = Buffer.from(s);
-    while (buf.length) {
-      let i = buf.lastIndexOf(SPACE_CODE, maxBytes + 1);
-      if (i < 0) i = buf.indexOf(SPACE_CODE, maxBytes);
-      if (i < 0) i = buf.length;
-      yield buf.slice(0, i).toString();
-      buf = buf.slice(i + 1);
-    }
-  }
-
-  const clientCommand = (funcName, param) => {
+  const clientCommand = useCallback((funcName, param) => {
     const USHORT_SIZE = 65536;
     let data = typeof param === "string" ? param : JSON.stringify(param);
     const chunks = [...stringChunk(data, USHORT_SIZE)];
@@ -85,7 +72,19 @@ export default function Play() {
         JSON.stringify(chunk_package)
       );
     }
-  };
+  }, []);
+
+  const sendDiffLog = useCallback((diffLog, send) => {
+    let states = diffLog.map((state, index) => {
+      return {
+        id: index,
+        state_type: state.delay ? 1 : 0,
+        value: state,
+      };
+    });
+    clientCommand("UpdateGameState", { states });
+  }, [clientCommand]);
+
 
   useEffect(() => {
     if (!gameSession) return;
@@ -105,7 +104,7 @@ export default function Play() {
     return function () {
       unityPlayContext.removeAllEventListeners();
     };
-  }, [ gameSession ])
+  }, [ gameSession, clientCommand, sendDiffLog ])
 
   return !gameSession ? (
     <></>

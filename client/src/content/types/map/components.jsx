@@ -4,7 +4,7 @@ const ADD_ELEMENT_BUTTON_LABEL = " + ";
 const REMOVE_ELEMENT_BUTTON_LABEL = " - ";
 
 export const ValueRender = (props) => {
-  const [value, setValue] = useState(props.defaultValue ?? []);
+  const [ value ] = useState(props.defaultValue ?? []);
   const [revision, setRevision] = useState(0);
 
   const onChange = (newValue, index, type) => {

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { Table, Button } from "antd";
 import { Template } from "../content/template";
@@ -32,16 +32,16 @@ export default function CollectionEditor({ templateCode, moduleName }) {
     setFilter(Object.assign({}, filter));
   };
 
-  const load = () => {
+  const load = useCallback(() => {
     sageApi.template.getAllObjects({ template: templateCode }).then(setObjects);
     sageApi.template
       .getSchema({ template: templateCode })
       .then((data) => setTemplate(new Template(data)));
-  }
+  }, [ templateCode, sageApi.template ])
 
   useEffect(() => {
     load();
-  }, [templateCode]);
+  }, [ load ]);
 
   const onPaginationChange = (pagination) => {
     setCookie(`${moduleName}.pagination.pageSize`, pagination.pageSize);

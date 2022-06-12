@@ -1,4 +1,4 @@
-import { execute, SString } from '../../content';
+import { execute } from '../../content';
 
 const migrateFields = (object, meta) => {
   if (object.template === 'cardTypes') {

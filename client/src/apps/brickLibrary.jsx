@@ -31,7 +31,7 @@ export function BrickLibraryObjectEditor() {
     sageApi.template
       .getSchema({ template: 'customBricks' })
       .then((data) => setTemplate(new Template(data)));
-  }, [ objectId ]);
+  }, [ objectId, sageApi.template ]);
 
   const onSave = (fields) => {
     sageApi.template

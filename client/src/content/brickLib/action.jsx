@@ -281,7 +281,6 @@ export const basicActions = [
     ],
     exec: (runtime, params, ctx) => {
       function applyMacro(match, obj, param) {
-        let res = match;
         var src = undefined;
         if (obj === 'obj' ) {
           src = ctx.object.attrs;

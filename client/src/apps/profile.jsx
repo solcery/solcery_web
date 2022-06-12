@@ -1,4 +1,3 @@
-import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { Template } from "../content/template";
 import { useProject } from "../contexts/project";
@@ -25,7 +24,7 @@ export default function Profile() {
 
   useEffect(() => {
     sageApi.user.get({ id }).then(setUser);
-  }, [ id ]);
+  }, [ id, sageApi.user ]);
 
   const onSave = (fields) => {
     console.log(fields)

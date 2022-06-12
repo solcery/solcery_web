@@ -16,7 +16,7 @@ export const TopMenu = () => {
 
   useEffect(() => {
     sageApi.project.getAllTemplates().then(setTemplates);
-  }, []);
+  }, [ sageApi.project ]);
 
   return (
     <>

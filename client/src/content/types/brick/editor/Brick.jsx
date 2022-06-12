@@ -24,7 +24,6 @@ export default function Brick(props) {
     }
   }
 
-
   let nestedParams = [];
   let inlineParams = [];
   brickSignature.params.forEach((param) => {
@@ -91,7 +90,7 @@ export default function Brick(props) {
     <div
       className={`brick ${brickSignature.lib} ${brickSignature.func} ${
         props.data.small ? "small" : ""
-      } ${props.data.readonly ? "readonly" : ""}`}
+      } ${props.data.readonly ? "readonly" : ""} ${errorBrick ? "error" : ""}`}
       onPointerEnter={() => (isHovered = true)}
       onPointerLeave={() => (isHovered = false)}
       style={{ width: `${width}rem` }}

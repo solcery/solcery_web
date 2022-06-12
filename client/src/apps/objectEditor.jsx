@@ -1,11 +1,8 @@
 import { Table, Button } from "antd";
-import { useProject } from "../contexts/project";
 
 const { Column } = Table;
 
 export default function ObjectEditor({ schema, object, onSave, instant }) {
-  const { sageApi } = useProject();
-
   const setField = (fieldCode, value) => {
     object.fields[fieldCode] = value;
   };

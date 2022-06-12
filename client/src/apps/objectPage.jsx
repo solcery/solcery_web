@@ -18,7 +18,7 @@ export default function ObjectPage() {
     sageApi.template
       .getSchema({ template: templateCode })
       .then((data) => setTemplate(new Template(data)));
-  }, [ objectId, templateCode ]);
+  }, [ sageApi.template, objectId, templateCode ]);
 
   const onSave = (fields) => {
     sageApi.template

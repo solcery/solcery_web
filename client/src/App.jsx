@@ -1,5 +1,4 @@
 import React from "react-dom";
-import { TopMenu } from "./components/TopMenu";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ProjectProvider } from "./contexts/project";
 import { CookiesProvider } from "react-cookie";
