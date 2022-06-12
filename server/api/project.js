@@ -1,8 +1,6 @@
 const db = require("../db/connection");
-var ObjectId = require("mongodb").ObjectId;
-
-const TEMPLATE_COLLECTION = "templates";
-const OBJECT_COLLECTION = "objects";
+const { ObjectId } = require("mongodb");
+const { TEMPLATE_COLLECTION, OBJECT_COLLECTION } = require("../db/names");
 
 const project = {};
 

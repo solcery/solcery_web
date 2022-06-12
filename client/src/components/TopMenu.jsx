@@ -2,6 +2,7 @@ import { Menu, Avatar } from "antd";
 import { Link } from "react-router-dom";
 import React, { useEffect, useState } from "react";
 import { useProject } from "../contexts/project";
+import { useUser } from "../contexts/user";
 import {
   UserOutlined,
   CaretRightOutlined,
@@ -11,6 +12,7 @@ import {
 export const TopMenu = () => {
   const [templates, setTemplates] = useState([]);
   const { sageApi, projectName } = useProject();
+  const { nick } = useUser();
 
   useEffect(() => {
     sageApi.project.getAllTemplates().then(setTemplates);
@@ -42,8 +44,9 @@ export const TopMenu = () => {
             </Menu.Item>
           ))}
         <Menu.Item key="profile">
-          <Link to="profile">
-            <Avatar size={"small"} icon=<UserOutlined /> />
+          <Link to="profile" style={{ fontWeight: 'bold' }}>
+            <Avatar size={"small"} icon=<UserOutlined />  style={{ marginRight: 7 }}/>
+            { nick }
           </Link>
         </Menu.Item>
       </Menu>

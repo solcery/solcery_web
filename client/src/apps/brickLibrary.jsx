@@ -1,3 +1,6 @@
+import { useEffect, useState } from "react";
+import { Template } from "../content/template";
+import { useProject } from "../contexts/project";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import ObjectEditor from "./objectEditor";
 import CollectionEditor from "./collectionEditor";
@@ -14,25 +17,41 @@ export function BrickLibraryCollectionEditor() {
 }
 
 export function BrickLibraryObjectEditor() {
-  let { objectId } = useParams();
-  const { load } = useBrickLibrary();
+  const [object, setObject] = useState(undefined);
+  const [template, setTemplate] = useState(undefined);
   const { search } = useLocation();
   const searchParams = new URLSearchParams(search);
+  const { load } = useBrickLibrary();
   const navigate = useNavigate();
-  const onSave = () => {
-    load();
-    notify({
-      message: "Brick updated",
-      description: `${objectId}`,
-      color: "#DDFFDD",
-    });
-    navigate(`/brickLibrary`);
+  const { sageApi } = useProject();
+  let { objectId } = useParams();
+
+  useEffect(() => {
+    sageApi.template.getObjectById({ template: 'customBricks', objectId }).then(setObject);
+    sageApi.template
+      .getSchema({ template: 'customBricks' })
+      .then((data) => setTemplate(new Template(data)));
+  }, [ objectId ]);
+
+  const onSave = (fields) => {
+    sageApi.template
+      .updateObjectById({ template: 'customBricks', objectId, fields: object.fields })
+      .then((res) => {
+        if (res.modifiedCount) {
+          load();
+          notify({
+            message: "Object updated",
+            description: `${objectId}`,
+            color: "#DDFFDD",
+          });
+          navigate(`../brickLibrary`);
+        }
+      });
   };
   return (
     <ObjectEditor
-      key={objectId}
-      templateCode={"customBricks"}
-      objectId={objectId}
+      schema={template}
+      object={object}
       onSave={onSave}
       instant={searchParams.get('instant')}
     />

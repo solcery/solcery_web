@@ -8,9 +8,9 @@ const UserContext = React.createContext(undefined);
 
 export function UserProvider(props) {
 
-  const [cookies, setCookie] = useCookies();
-  const [user, setUser] = useState(undefined);
-  const { projectName, sageApi} = useProject();
+  const [ cookies, setCookie ] = useCookies();
+  const [ user, setUser ] = useState(undefined);
+  const { projectName, sageApi } = useProject();
 
   const [login, setLogin] = useState(undefined);
   const [password, setPassword] = useState(undefined);
@@ -18,24 +18,21 @@ export function UserProvider(props) {
 
   const loadUser = (userData) => {
     if (!userData) return;
-    setUser({
+    setUser(Object.assign({
       id: userData._id,
-      css: userData.fields.css,
-      layoutPresets: userData.fields.layoutPresets,
-      readonlyBricks: userData.fields.readonlyBricks,
-    });
+      nick: userData.login,
+    }, userData.fields));
   };
 
-  const reload = (id) => {
-    sageApi.template.getObjectById({ template: "users", objectId: id }).then((res) => loadUser(res));
+  const reload = () => {
+    sageApi.user.get({ id: user.id }).then((res) => loadUser(res));
   };
 
   useEffect(() => {
     if (user) return;
     if (!sageApi) return;
     if (!cookies[`session.${projectName}`]) return;
-    sageApi.template
-      .getObjectById({ template: "users", objectId: cookies[`session.${projectName}`] })
+    sageApi.user.get({ id: cookies[`session.${projectName}`] })
       .then((res) => loadUser(res));
   }, [ user, projectName, sageApi ]);
 
@@ -44,21 +41,12 @@ export function UserProvider(props) {
       setError("Please specify login and password!");
       return;
     }
-    sageApi.template.getAllObjects({ template: "users" }).then((res) => {
-      let userObject = res.find((usr) => usr.fields.name === login);
-      if (!userObject) {
-        setError(`Incorrect username '${login}' for project '${projectName}'!`);
-        return;
-      }
-      if (userObject.fields.password !== password) {
-        setError(`Incorrect password!`);
-        return;
-      }
+    sageApi.user.login({ login, password }).then((res) => {
       const SESSION_LENGTH = 86400 * 30 * 1000;
-      setCookie(`session.${projectName}`, userObject._id, {
+      setCookie(`session.${projectName}`, res._id, {
         expires: new Date(new Date().getTime() + SESSION_LENGTH),
       });
-      loadUser(userObject);
+      loadUser(res);
     });
   }, [login, password, projectName, setCookie]);
 
@@ -100,7 +88,7 @@ export function UserProvider(props) {
 }
 
 export function useUser() {
-  const { id, css, layoutPresets, reload, readonlyBricks } =
+  const { id, nick, css, layoutPresets, reload, readonlyBricks } =
     useContext(UserContext);
-  return { id, css, layoutPresets, reload, readonlyBricks };
+  return { id, nick, css, layoutPresets, reload, readonlyBricks };
 }

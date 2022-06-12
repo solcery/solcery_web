@@ -1,8 +1,6 @@
 const db = require("../db/connection");
-var ObjectId = require("mongodb").ObjectId;
-
-const OBJECT_COLLECTION = "objects";
-const TEMPLATE_COLLECTION = "templates";
+const { OBJECT_COLLECTION, TEMPLATE_COLLECTION  } = require("../db/names");
+const { ObjectId } = require("mongodb");
 
 const template = {};
 
@@ -14,15 +12,6 @@ template.getAllObjects = async function (response, data) {
     .find(query)
     .toArray();
   response.json(objects);
-};
-
-template.getOne = async function (response, data) {
-  let query = Object.assign({ template: data.params.template }, data.params.query);
-  let object = await db
-    .getDb(data.project)
-    .collection(OBJECT_COLLECTION)
-    .findOne(query);
-  response.json(object);
 };
 
 template.getObjectById = async function (response, data) {

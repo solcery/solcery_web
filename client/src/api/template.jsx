@@ -1,23 +1,20 @@
-export const templateAPI = {
-  name: 'template',
-  commands: {}
-};
+const commands = {}
 
-templateAPI.commands.getAllObjects = {
+commands.getAllObjects = {
   name: 'getAllObjects',
   params: {
     template: true,
   }
 }
 
-templateAPI.commands.getSchema = {
+commands.getSchema = {
   name: 'getSchema',
   params: {
     template: true,
   }
 }
 
-templateAPI.commands.setSchema = {
+commands.setSchema = {
   name: 'setSchema',
   params: {
     template: true,
@@ -25,7 +22,7 @@ templateAPI.commands.setSchema = {
   }
 }
 
-templateAPI.commands.getObjectById = {
+commands.getObjectById = {
   name: 'getObjectById',
   params: {
     template: true,
@@ -33,7 +30,7 @@ templateAPI.commands.getObjectById = {
   }
 }
 
-templateAPI.commands.updateObjectById = {
+commands.updateObjectById = {
   name: 'updateObjectById',
   params: {
     template: true,
@@ -42,7 +39,7 @@ templateAPI.commands.updateObjectById = {
   }
 }
 
-templateAPI.commands.createObject = {
+commands.createObject = {
   name: 'createObject',
   params: {
     template: true,
@@ -50,7 +47,7 @@ templateAPI.commands.createObject = {
   }
 }
 
-templateAPI.commands.cloneObject = {
+commands.cloneObject = {
   name: 'cloneObject',
   params: {
     template: true,
@@ -58,7 +55,7 @@ templateAPI.commands.cloneObject = {
   }
 }
 
-templateAPI.commands.removeObjectById = {
+commands.removeObjectById = {
   name: 'removeObjectById',
   params: {
     template: true,
@@ -66,17 +63,7 @@ templateAPI.commands.removeObjectById = {
   }
 }
 
-// templateAPI.commands.removeAll = {
-//   name: 'removeAll',
-//   params: {
-//     template: true,
-//   }
-// }
-
-// templateAPI.commands.createMany = {
-//   name: 'createMany',
-//   params: {
-//     template: true,
-//     objects: true,
-//   }
-// }
+export const templateAPI = {
+  name: 'template',
+  commands,
+};

@@ -11,7 +11,8 @@ const PORT = process.env.PORT || 5000;
 
 const apiLibrary = {
   project: require('./api/project'),
-  template: require('./api/template')
+  template: require('./api/template'),
+  user: require('./api/user'),
 };
 
 // Multi-process to utilize all CPU cores.

@@ -1,0 +1,9 @@
+const TEMPLATE_COLLECTION = "templates";
+const OBJECT_COLLECTION = "objects";
+const USERS_COLLECTION = "users";
+
+module.exports = {
+	TEMPLATE_COLLECTION,
+	OBJECT_COLLECTION,
+	USERS_COLLECTION,
+} 

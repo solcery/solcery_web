@@ -1,38 +1,19 @@
-import React, { useEffect, useState } from "react";
-import { Template } from "../content/template";
 import { Table, Button } from "antd";
 import { useProject } from "../contexts/project";
 
 const { Column } = Table;
 
-export default function ObjectEditor({ templateCode, objectId, onSave, instant }) {
-  const [object, setObject] = useState(undefined);
-  const [template, setTemplate] = useState(undefined);
+export default function ObjectEditor({ schema, object, onSave, instant }) {
   const { sageApi } = useProject();
-
-  useEffect(() => {
-    sageApi.template.getObjectById({ template: templateCode, objectId }).then(setObject);
-    sageApi.template
-      .getSchema({ template: templateCode })
-      .then((data) => setTemplate(new Template(data)));
-  }, [objectId, templateCode]);
 
   const setField = (fieldCode, value) => {
     object.fields[fieldCode] = value;
   };
 
-  const save = () => {
-    sageApi.template
-      .updateObjectById({ template: templateCode, objectId, fields: object.fields })
-      .then((res) => {
-        if (res.modifiedCount) {
-          if (onSave) onSave();
-        }
-      });
-  };
+  const save = () => onSave(object.fields);
 
-  if (!template || !object) return <>NO DATA</>; // TODO
-  let tableData = Object.values(template.fields).map((field) => {
+  if (!schema || !object) return <>NO DATA</>; // TODO
+  let tableData = Object.values(schema.fields).map((field) => {
     return {
       key: field.code,
       field: field,

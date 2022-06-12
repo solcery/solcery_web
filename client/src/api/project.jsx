@@ -1,30 +1,32 @@
-export const projectAPI = {
-  name: 'project',
-  commands: {}
-};
+const commands = {}
 
-projectAPI.commands.getAllTemplates = {
+commands.getAllTemplates = {
   name: 'getAllTemplates',
 };
 
-projectAPI.commands.restore = {
+commands.restore = {
   name: 'restore',
   params: { 
     src: true
   },
 };
 
-projectAPI.commands.dump = {
+commands.dump = {
   name: 'dump',
 };
 
-projectAPI.commands.getContent = {
+commands.getContent = {
   name: 'getContent',
 };
 
-projectAPI.commands.migrate = {
+commands.migrate = {
   name: 'migrate',
   params: {
     objects: true
   },
+};
+
+export const projectAPI = {
+  name: 'project',
+  commands,
 };

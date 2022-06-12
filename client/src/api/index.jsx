@@ -1,4 +1,5 @@
 import { projectAPI } from "./project";
+import { userAPI } from "./user";
 import { templateAPI } from "./template";
 const API_PATH = "/api/";
 
@@ -16,7 +17,7 @@ const makeRequest = (data) => {
   return fetch(url, request).then((response) => response.json());
 }
 
-let apiModules = [ projectAPI, templateAPI ];
+let apiModules = [ projectAPI, templateAPI, userAPI ];
 
 export class SageAPIConnection {
   constructor(projectName) {
