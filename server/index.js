@@ -9,11 +9,8 @@ require("dotenv").config({ path: "./config.env" });
 const isDev = process.env.NODE_ENV !== "production";
 const PORT = process.env.PORT || 5000;
 
-const apiLibrary = {
-  project: require('./api/project'),
-  template: require('./api/template'),
-  user: require('./api/user'),
-};
+const apiCall = require('./api/entrypoint');
+
 
 // Multi-process to utilize all CPU cores.
 if (!isDev && cluster.isMaster) {
@@ -41,16 +38,7 @@ if (!isDev && cluster.isMaster) {
   app.use(bodyParser.json({ limit: "10mb" }));
 
   app.post("/api/*", (request, response) => {
-    let data = request.body;
-    let moduleApi = apiLibrary[data.module];
-    if (!moduleApi) {
-      throw `API error: unknown API module '${data.module}'!`;
-    }
-    let command = moduleApi[data.command] // TODO
-    if (!command) {
-      throw `API error: unknown API command '${data.command}'!`;
-    }
-    command(response, data);
+    apiCall(response, request.body);
   });
 
   // All remaining requests return the React app, so it can handle routing.
