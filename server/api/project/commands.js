@@ -24,7 +24,4 @@ commands.migrate = {
 	},
 };
 
-export const projectAPI = {
-	name: 'project',
-	commands,
-};
+module.exports = commands;

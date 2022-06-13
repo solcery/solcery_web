@@ -1,10 +1,10 @@
-const db = require("../db/connection");
-const { OBJECT_COLLECTION, TEMPLATE_COLLECTION  } = require("../db/names");
+const db = require("../../db/connection");
+const { OBJECT_COLLECTION, TEMPLATE_COLLECTION  } = require("../../db/names");
 const { ObjectId } = require("mongodb");
 
-const template = {};
+const funcs = {};
 
-template.getAllObjects = async function (response, data) {
+funcs.getAllObjects = async function (response, data) {
   let query = Object.assign({ template: data.params.template }, data.params.query);
   let objects = await db
     .getDb(data.project)
@@ -14,7 +14,7 @@ template.getAllObjects = async function (response, data) {
   response.json(objects);
 };
 
-template.getObjectById = async function (response, data) {
+funcs.getObjectById = async function (response, data) {
   let query = {
     _id: ObjectId(data.params.objectId),
     template: data.params.template,
@@ -26,7 +26,7 @@ template.getObjectById = async function (response, data) {
   response.json(object);
 };
 
-template.getSchema = async function (response, data) {
+funcs.getSchema = async function (response, data) {
   let query = {
     code: data.params.template,
   };
@@ -37,7 +37,7 @@ template.getSchema = async function (response, data) {
   response.json(schema);
 };
 
-template.setSchema = async function (response, data) {
+funcs.setSchema = async function (response, data) {
   let schema = Object.assign({}, data.params.schema);
   var query = {
     _id: ObjectId(schema._id),
@@ -59,7 +59,7 @@ template.setSchema = async function (response, data) {
     });
 };
 
-template.create = async function (response, data) {
+funcs.create = async function (response, data) {
   // TODO: validate
   object = {
     _id: new ObjectId(),
@@ -74,7 +74,7 @@ template.create = async function (response, data) {
     });
 };
 
-template.updateObjectById = async function (response, data) {
+funcs.updateObjectById = async function (response, data) {
   // TODO: validate
   var query = {
     _id: ObjectId(data.params.objectId),
@@ -89,7 +89,7 @@ template.updateObjectById = async function (response, data) {
     });
 };
 
-template.cloneObject = async function (response, data) {
+funcs.cloneObject = async function (response, data) {
   // TODO: validate
   let query = {
     _id: ObjectId(data.params.objectId),
@@ -111,7 +111,7 @@ template.cloneObject = async function (response, data) {
     });
 };
 
-template.removeObjectById = async function (response, data) {
+funcs.removeObjectById = async function (response, data) {
   let query = {
     _id: ObjectId(data.params.objectId),
     template: data.params.template,
@@ -124,4 +124,5 @@ template.removeObjectById = async function (response, data) {
     });
 };
 
-module.exports = template;
+const commands = require('./commands');
+module.exports = { commands, funcs };

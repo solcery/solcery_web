@@ -43,7 +43,4 @@ commands.update = {
 	},
 };
 
-export const userAPI = {
-	name: 'user',
-	commands,
-};
+module.exports = commands;

@@ -20,23 +20,27 @@ const makeRequest = (data) => {
 let apiModules = [projectAPI, templateAPI, userAPI];
 
 export class SageAPIConnection {
+	session = undefined;
 	constructor(projectName) {
 		this.projectName = projectName;
 		for (let apiModule of apiModules) {
 			if (this[apiModule.name]) throw new Error('Error building SageAPIConnection, name conflict!');
 			this[apiModule.name] = {};
-			for (let command of Object.values(apiModule.commands)) {
-				this[apiModule.name][command.name] = (data) => {
+			for (let [commandName, command] of Object.entries(apiModule.commands)) {
+				this[apiModule.name][commandName] = (data) => {
 					let requestData = {
 						project: this.projectName,
 						module: apiModule.name,
-						command: command.name,
+						command: commandName,
 						params: {},
 					};
 					if (command.params) {
 						for (let param of Object.keys(command.params)) {
 							requestData.params[param] = data[param];
 						}
+					}
+					if (command.private) {
+						requestData.session = this.session;
 					}
 					return makeRequest(requestData);
 				};

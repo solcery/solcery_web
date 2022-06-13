@@ -9,14 +9,16 @@ const UserContext = React.createContext(undefined);
 export function UserProvider(props) {
 	const [cookies, setCookie] = useCookies();
 	const [user, setUser] = useState(undefined);
-	const { projectName, sageApi } = useProject();
+	const { projectName, sageApi, setUserSession } = useProject();
 
 	const [login, setLogin] = useState(undefined);
 	const [password, setPassword] = useState(undefined);
 	const [error, setError] = useState(undefined);
 
-	const loadUser = (userData) => {
+	const loadUser = useCallback((userData) => {
 		if (!userData) return;
+    if (!userData.session) return;
+    if (!setUserSession) return;
 		setUser(
 			Object.assign(
 				{
@@ -26,7 +28,8 @@ export function UserProvider(props) {
 				userData.fields
 			)
 		);
-	};
+    setUserSession(userData.session)
+	}, [ setUserSession ]);
 
 	const reload = () => {
 		sageApi.user.get({ id: user.id }).then((res) => loadUser(res));

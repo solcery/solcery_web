@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState, useCallback } from 'react';
 import { useParams, Outlet } from 'react-router-dom';
 import { SageAPIConnection } from '../api';
 import { BrickLibraryProvider } from './brickLibrary';
@@ -11,6 +11,10 @@ export function ProjectProvider(props) {
 	let { projectName } = useParams();
 	let [sageApi, setSageApi] = useState();
 
+	const setUserSession = useCallback((session) => {
+		sageApi.session = session;
+	}, [ sageApi ])
+
 	useEffect(() => {
 		if (!projectName) return;
 		document.title = `${projectName} - Sage`;
@@ -18,7 +22,7 @@ export function ProjectProvider(props) {
 	}, [projectName]);
 
 	return (
-		<ProjectContext.Provider value={{ projectName, sageApi }}>
+		<ProjectContext.Provider value={{ projectName, sageApi, setUserSession }}>
 			<UserProvider>
 				<BrickLibraryProvider>
 					<TopMenu style={{ backgroundColor: 'black' }} />
@@ -30,6 +34,6 @@ export function ProjectProvider(props) {
 }
 
 export function useProject() {
-	const { projectName, sageApi } = useContext(ProjectContext);
-	return { projectName, sageApi };
+	const { projectName, sageApi, setUserSession } = useContext(ProjectContext);
+	return { projectName, sageApi, setUserSession };
 }

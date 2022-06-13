@@ -1,10 +1,10 @@
-const db = require("../db/connection");
-const { USERS_COLLECTION } = require("../db/names");
+const db = require("../../db/connection");
+const { USERS_COLLECTION } = require("../../db/names");
 const { ObjectId } = require("mongodb");
 
-const user = {};
+const funcs = {};
 
-user.getSession = async function (response, data) {
+funcs.getSession = async function (response, data) {
   let query = {
     session: data.params.session
   };
@@ -15,7 +15,7 @@ user.getSession = async function (response, data) {
   response.json(await result);
 };
 
-user.login = async function (response, data) {
+funcs.login = async function (response, data) {
   let query = {
     login: data.params.login,
     password: data.params.password,
@@ -35,7 +35,7 @@ user.login = async function (response, data) {
     });
 };
 
-user.update = async function (response, data) {
+funcs.update = async function (response, data) {
   if (!data.params.fields) {
     throw new Error('NO PARAMS');
   }
@@ -53,7 +53,7 @@ user.update = async function (response, data) {
     });
 };
 
-user.create = async function (response, data) {
+funcs.create = async function (response, data) {
   // TODO: validate
   object = {
     _id: new ObjectId(),
@@ -70,4 +70,5 @@ user.create = async function (response, data) {
     });
 };
 
-module.exports = user;
+const commands = require('./commands');
+module.exports = { commands, funcs };

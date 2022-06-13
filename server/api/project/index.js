@@ -1,10 +1,10 @@
-const db = require("../db/connection");
+const db = require("../../db/connection");
 const { ObjectId } = require("mongodb");
-const { TEMPLATE_COLLECTION, OBJECT_COLLECTION } = require("../db/names");
+const { TEMPLATE_COLLECTION, OBJECT_COLLECTION } = require("../../db/names");
 
-const project = {};
+const funcs = {};
 
-project.getAllTemplates = async function (response, data) {
+funcs.getAllTemplates = async function (response, data) {
   let result = db
     .getDb(data.project)
     .collection(TEMPLATE_COLLECTION)
@@ -13,7 +13,7 @@ project.getAllTemplates = async function (response, data) {
   response.json(await result);
 };
 
-project.dump = async function (response, data) {
+funcs.dump = async function (response, data) {
   let objects = await db
     .getDb(data.project)
     .collection(OBJECT_COLLECTION)
@@ -27,7 +27,7 @@ project.dump = async function (response, data) {
   response.json({ objects, templates });
 };
 
-project.restore = async function (response, data) {
+funcs.restore = async function (response, data) {
   let { objects, templates } = data.params.src;
 
   await db // Removing all templates
@@ -60,7 +60,7 @@ project.restore = async function (response, data) {
   response.json(result);
 };
 
-project.getContent = async function (response, data) {
+funcs.getContent = async function (response, data) {
   let templates = await db
     .getDb(data.project)
     .collection(TEMPLATE_COLLECTION)
@@ -75,7 +75,7 @@ project.getContent = async function (response, data) {
 };
 
 
-project.migrate = async function (response, data) {
+funcs.migrate = async function (response, data) {
   let replaces = data.params.objects.map(object => {
     let obj = Object.assign({}, object);
     delete obj._id;
@@ -95,4 +95,5 @@ project.migrate = async function (response, data) {
     });
 };
 
-module.exports = project;
+const commands = require('./commands');
+module.exports = { commands, funcs };
