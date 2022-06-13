@@ -1,9 +1,11 @@
 const TEMPLATE_COLLECTION = "templates";
 const OBJECT_COLLECTION = "objects";
 const USERS_COLLECTION = "users";
+const LOGS_COLLECTION = "logs";
 
 module.exports = {
 	TEMPLATE_COLLECTION,
 	OBJECT_COLLECTION,
 	USERS_COLLECTION,
+	LOGS_COLLECTION
 } 
