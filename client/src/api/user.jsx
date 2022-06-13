@@ -8,10 +8,10 @@ commands.login = {
 	},
 };
 
-commands.get = {
-	name: 'get',
+commands.getSession = {
+	name: 'getSession',
 	params: {
-		id: true,
+		session: true,
 	},
 };
 

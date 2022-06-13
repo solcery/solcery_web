@@ -4,9 +4,9 @@ const { ObjectId } = require("mongodb");
 
 const user = {};
 
-user.get = async function (response, data) {
+user.getSession = async function (response, data) {
   let query = {
-    _id: ObjectId(data.params.id),
+    session: data.params.session
   };
   let result = db
     .getDb(data.project)
@@ -20,11 +20,19 @@ user.login = async function (response, data) {
     login: data.params.login,
     password: data.params.password,
   };
-  let result = db
+  let result = await db
     .getDb(data.project)
     .collection(USERS_COLLECTION)
     .findOne(query);
-  response.json(await result);
+  if (!result) return; // TODO
+  result.session = new ObjectId().toString();
+  console.log(result.session)
+  let session = db.getDb(data.project)
+    .collection(USERS_COLLECTION)
+    .updateOne(query, { $set: { session: result.session } }, function (err, res) {
+      if (err) throw err;
+      response.json(result);
+    });
 };
 
 user.update = async function (response, data) {

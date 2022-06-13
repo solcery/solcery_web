@@ -36,7 +36,7 @@ export function UserProvider(props) {
 		if (user) return;
 		if (!sageApi) return;
 		if (!cookies[`session.${projectName}`]) return;
-		sageApi.user.get({ id: cookies[`session.${projectName}`] }).then((res) => loadUser(res));
+		sageApi.user.getSession({ session: cookies[`session.${projectName}`] }).then((res) => loadUser(res));
 	}, [user, projectName, sageApi, cookies]);
 
 	const auth = useCallback(() => {
@@ -46,7 +46,7 @@ export function UserProvider(props) {
 		}
 		sageApi.user.login({ login, password }).then((res) => {
 			const SESSION_LENGTH = 86400 * 30 * 1000;
-			setCookie(`session.${projectName}`, res._id, {
+			setCookie(`session.${projectName}`, res.session, {
 				expires: new Date(new Date().getTime() + SESSION_LENGTH),
 			});
 			loadUser(res);
