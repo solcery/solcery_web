@@ -15,6 +15,17 @@ funcs.getSession = async function (response, data) {
   response.json(await result);
 };
 
+funcs.getById = async function (response, data) {
+  let query = {
+    _id: ObjectId(data.params.id)
+  };
+  let result = db
+    .getDb(data.project)
+    .collection(USERS_COLLECTION)
+    .findOne(query);
+  response.json(await result);
+};
+
 funcs.login = async function (response, data) {
   let query = {
     login: data.params.login,

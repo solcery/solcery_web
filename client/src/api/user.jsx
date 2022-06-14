@@ -11,6 +11,14 @@ commands.login = {
 	},
 };
 
+commands.getById = {
+	params: {
+		id: {
+			required: true,
+		},
+	},
+};
+
 commands.getSession = {
 	params: {
 		session: {

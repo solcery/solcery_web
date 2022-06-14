@@ -17,18 +17,18 @@ export function UserProvider(props) {
 
 	const loadUser = useCallback((userData) => {
 		if (!userData) return;
-    if (!userData.session) return;
-    if (!setUserSession) return;
-		setUser(
-			Object.assign(
-				{
-					id: userData._id,
-					nick: userData.login,
-				},
-				userData.fields
-			)
-		);
-    setUserSession(userData.session)
+	    if (!userData.session) return;
+	    if (!setUserSession) return;
+			setUser(
+				Object.assign(
+					{
+						id: userData._id,
+						nick: userData.login,
+					},
+					userData.fields
+				)
+			);
+	    setUserSession(userData.session)
 	}, [ setUserSession ]);
 
 	const reload = () => {

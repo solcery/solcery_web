@@ -13,8 +13,6 @@ export default function Profile() {
 	const template = new Template({
 		code: 'users',
 		fields: [
-			{ code: 'login', name: 'Login', type: 'SString' },
-			{ code: 'password', name: 'Password', type: 'SString' },
 			{ code: 'css', name: 'CSS', type: 'SString' },
 			{ code: 'readonlyBricks', name: 'Show readonly bricks', type: 'SBool' },
 			{
@@ -26,11 +24,10 @@ export default function Profile() {
 	});
 
 	useEffect(() => {
-		sageApi.user.get({ id }).then(setUser);
-	}, [id, sageApi.user]);
+		sageApi.user.getById({ id }).then(setUser);
+	}, [sageApi.user, id]);
 
 	const onSave = (fields) => {
-		console.log(fields);
 		sageApi.user.update({ id, fields }).then((res) => {
 			if (res.modifiedCount) {
 				reload();

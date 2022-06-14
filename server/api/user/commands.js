@@ -19,6 +19,15 @@ commands.getSession = {
 	},
 };
 
+commands.getById = {
+	params: {
+		id: {
+			required: true,
+		},
+	},
+};
+
+
 commands.create = {
 	private: true,
 	params: {
