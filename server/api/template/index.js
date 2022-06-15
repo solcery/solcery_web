@@ -59,7 +59,7 @@ funcs.setSchema = async function (response, data) {
     });
 };
 
-funcs.create = async function (response, data) {
+funcs.createObject = async function (response, data) {
   // TODO: validate
   object = {
     _id: new ObjectId(),

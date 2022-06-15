@@ -15,11 +15,11 @@ export default function TemplateSchema() {
 	};
 
 	useEffect(() => {
-		sageApi.template.getSchema(templateCode).then(loadSchema);
+		sageApi.template.getSchema({ template: templateCode }).then(loadSchema);
 	}, [templateCode, sageApi.template]);
 
 	const save = () => {
-		sageApi.template.setSchema(templateCode, JSON.parse(schema));
+		sageApi.template.setSchema({ template: templateCode, schema: JSON.parse(schema) });
 	};
 
 	if (!schema) return <>Loading</>;
