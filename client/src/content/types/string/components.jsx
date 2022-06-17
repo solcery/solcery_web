@@ -1,53 +1,47 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Input, Button } from 'antd';
 import { Link, useLocation } from 'react-router-dom';
 
-export const ValueRender = ({ defaultValue, type, onChange, object, onPressEnter }) => {
+export const ValueRender = (props) => {
+	let valueRenderRef = useRef();
 	const { pathname } = useLocation(); //TODO
-	if (!onChange) {
-		if (type.isPrimaryTitle && object) {
-			return <Link to={`${pathname}.${object._id}`}>{defaultValue}</Link>;
-		} else {
-			return <>{defaultValue}</>;
+
+	useEffect(() => {
+		if (props.isFilter) {
+			setTimeout(() => valueRenderRef.current?.focus(), 100);
 		}
-	}
-	return type.textArea ? (
+	});
+
+	if (!props.onChange) {
+		if (props.type.isPrimaryTitle && props.object) {
+			return <Link to={`${pathname}.${props.object._id}`}>{props.defaultValue}</Link>;
+		} else {
+			return <>{props.defaultValue}</>;
+		}
+	};
+
+	return props.type.textArea ? (
 		<Input.TextArea
-			style={type.width && { width: `${type.width}px` }}
+			style={props.type.width && { width: `${props.type.width}px` }}
 			type="text"
-			rows={type.textArea.rows ?? 5}
-			defaultValue={defaultValue}
-			onPressEnter={onPressEnter}
+			ref = { valueRenderRef }
+			rows={props.type.textArea.rows ?? 5}
+			defaultValue={props.defaultValue}
+			onPressEnter={props.onPressEnter}
 			onChange={(event) => {
-				onChange && onChange(event.target.value);
+				props.onChange && props.onChange(event.target.value);
 			}}
 		/>
 	) : (
 		<Input
-			style={type.width && { width: `${type.width}px` }}
+			style={props.type.width && { width: `${props.type.width}px` }}
 			type="text"
-			defaultValue={defaultValue}
-			onPressEnter={onPressEnter}
+			ref = { valueRenderRef }
+			defaultValue={props.defaultValue}
+			onPressEnter={props.onPressEnter}
 			onChange={(event) => {
-				onChange && onChange(event.target.value);
+				props.onChange && props.onChange(event.target.value);
 			}}
 		/>
-	);
-};
-
-export const FilterRender = ({ defaultValue, onChange, type }) => {
-	const [value, setValue] = useState(defaultValue);
-	return (
-		<div>
-			<type.valueRender
-				defaultValue={defaultValue}
-				onChange={(event) => {
-					setValue(event.target.value);
-				}}
-				onPressEnter={() => onChange(value)}
-			/>
-			<Button onClick={() => onChange(value)}>APPLY</Button>
-			<Button onClick={() => onChange(undefined)}>CLEAR</Button>
-		</div>
 	);
 };
