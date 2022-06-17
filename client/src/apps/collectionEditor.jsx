@@ -8,15 +8,16 @@ import { useCookies } from 'react-cookie';
 const { Column } = Table;
 
 export default function CollectionEditor({ templateCode, moduleName }) {
-	const filterCookieName = `${moduleName}.filter`;
-	const [cookies, setCookie, removeCookie] = useCookies([filterCookieName]);
+	const [cookies, setCookie, removeCookie] = useCookies();
 	const { sageApi } = useProject();
 	const navigate = useNavigate();
 
 	const [objects, setObjects] = useState();
 	const [template, setTemplate] = useState();
 	const [filteredField, setFilteredField] = useState();
-	const [filter, setFilter] = useState(cookies[filterCookieName] ?? {});
+	const [filter, setFilter] = useState({});
+
+	const filterCookieName = `${moduleName}.filter`;
 
 	const setFieldFilter = (fieldCode, filterValue) => {
 		if (filterValue === undefined) {
@@ -36,6 +37,11 @@ export default function CollectionEditor({ templateCode, moduleName }) {
 		sageApi.template.getAllObjects({ template: templateCode }).then(setObjects);
 		sageApi.template.getSchema({ template: templateCode }).then((data) => setTemplate(new Template(data)));
 	}, [templateCode, sageApi.template]);
+
+
+	useEffect(() => {
+		setFilter(cookies[filterCookieName] ?? {})
+	}, [ moduleName ])
 
 	useEffect(() => {
 		load();
@@ -69,6 +75,7 @@ export default function CollectionEditor({ templateCode, moduleName }) {
 	return (
 		<>
 			<Table
+				key = { `${moduleName}.${templateCode}`}
 				dataSource={tableData}
 				onRow={(record, rowIndex) => {
 					return {
@@ -93,6 +100,7 @@ export default function CollectionEditor({ templateCode, moduleName }) {
 						filterDropdown={
 							field.type.filter && (
 								<field.type.filter.render
+									key={field.code + filter[field.code]}
 									type={field.type}
 									defaultValue={filter[field.code]}
 									onChange={(value) => {
@@ -102,6 +110,12 @@ export default function CollectionEditor({ templateCode, moduleName }) {
 								/>
 							)
 						}
+						onHeaderCell = {
+							() => ({
+								onDoubleClick: () => setFilteredField(field.code),
+							})
+						}
+						filtered = { filter[field.code] !== undefined }
 						onFilterDropdownVisibleChange={(visible) => setFilteredField(visible ? field.code : undefined)}
 						filterDropdownVisible={filteredField === field.code}
 						render={(_, object) => (
