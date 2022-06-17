@@ -1,7 +1,7 @@
 import { Button, Input } from 'antd';
 import { useState } from 'react';
 import { useProject } from '../contexts/project';
-import { migrator } from './migrators/tokenAddedToTokenLinked';
+import { migrator } from './migrators/17.06.22_eclipse';
 
 const { TextArea } = Input;
 
