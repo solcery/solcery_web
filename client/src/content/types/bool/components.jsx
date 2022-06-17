@@ -3,8 +3,9 @@ import { Switch } from 'antd';
 
 export const ValueRender = (props) => {
 	useEffect(() => {
-		if (props.onChange) props.onChange(props.defaultValue ?? false);
-	}, [props]);
+		if (props.isFilter && props.onChange)
+		props.onChange(false);
+	}, [ props.isFilter, props.onChange ]);
 
 	if (!props.onChange) return <p>{props.defaultValue ? 'True' : 'False'}</p>;
 
