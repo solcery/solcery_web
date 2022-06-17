@@ -28,7 +28,7 @@ const checkParams = (command, params) => {
 
 const log = (user, data) => {
   entry = {
-    timestamp: Date.now(),
+    timestamp: new Date(Date.now()),
     userId: user._id,
     command: data.command,
     params: data.params,
