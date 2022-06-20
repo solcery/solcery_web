@@ -28,8 +28,11 @@ export class Session {
 
 	handlePlayerCommand = (command) => {
 		this.log.push(command);
-		if (command.command_data_type === 0) {
-			return this.game.useCard(command.object_id);
+		if (command.command_data_type === 0 ) {
+			return this.game.objectEvent(command.object_id, 'action_on_left_click');
+		}
+		if (command.command_data_type === 1 ) {
+			return this.game.objectEvent(command.object_id, 'action_on_right_click');
 		}
 		if (command.command_data_type === 2) {
 			return this.game.dropCard(command.object_id, command.drag_drop_id, command.target_place_id);
@@ -77,15 +80,15 @@ export class Game {
 		this.closeDiff();
 	};
 
-	useCard = (objectId) => {
+	objectEvent = (objectId, event) => {
 		this.diffLog = [];
 		this.startDiff(true);
 		let object = this.objects[objectId];
 		if (!object) throw new Error('Attempt to use unexistent object!');
 		let ctx = this.createContext(object);
 		let cardType = this.content.cardTypes[object.tplId];
-		if (cardType.action) {
-			this.runtime.execBrick(cardType.action, ctx);
+		if (cardType[event]) {
+			this.runtime.execBrick(cardType[event], ctx);
 		}
 		this.closeDiff();
 	};

@@ -3,6 +3,7 @@
     <type fullname="Solcery.Widgets_new.Cards.Widgets.CardInContainerWidgetLayout" preserve="all" />
     <type fullname="Solcery.Widgets_new.Container.Hands.PlaceWidgetHandLayout" preserve="all" />
     <type fullname="Solcery.Widgets_new.Container.Stacks.PlaceWidgetStackLayout" preserve="all" />
+    <type fullname="Solcery.Widgets_new.Eclipse.CardFull.PlaceWidgetEclipseCardFullLayout" preserve="all" />
     <type fullname="Solcery.Widgets_new.Eclipse.Cards.EclipseCardInContainerWidgetLayout" preserve="all" />
     <type fullname="Solcery.Widgets_new.Eclipse.Cards.Timers.EclipseCardTimerLayout" preserve="all" />
     <type fullname="Solcery.Widgets_new.Eclipse.Cards.Tokens.EclipseCardTokenLayout" preserve="all" />
@@ -11,11 +12,11 @@
     <type fullname="Solcery.Widgets_new.Eclipse.Effects.EclipseCardEffectLayout" preserve="all" />
     <type fullname="Solcery.Widgets_new.Eclipse.Tokens.ListTokensInContainerWidgetLayout" preserve="all" />
     <type fullname="Solcery.Widgets_new.Eclipse.Tokens.TokenInContainerWidgetLayout" preserve="all" />
-    <type fullname="Solcery.Widgets_new.Eclipse.TokensStockpile.PlaceWidgetEclipseTokensLayout" preserve="all" />
+    <type fullname="Solcery.Widgets_new.Eclipse.TokensStockpile.PlaceWidgetEclipseTokenStorageLayout" preserve="all" />
     <type fullname="Solcery.Widgets_new.Simple.Buttons.PlaceWidgetButtonLayout" preserve="all" />
     <type fullname="Solcery.Widgets_new.Simple.Pictures.PlaceWidgetPictureLayout" preserve="all" />
-    <type fullname="Solcery.Widgets_new.Simple.Titles.PlaceWidgetTitleLayout" preserve="all" />
-    <type fullname="Solcery.Widgets_new.Simple.Widgets.PlaceWidgetWidgetLayout" preserve="all" />
+    <type fullname="Solcery.Widgets_new.Simple.Titles.PlaceWidgetTextLayout" preserve="all" />
+    <type fullname="Solcery.Widgets_new.Simple.Widgets.PlaceWidgetPictureWithNumberLayout" preserve="all" />
     <type fullname="Solcery.Widgets_new.Tooltip.TMPTooltipBehaviour" preserve="all" />
     <type fullname="Solcery.Widgets_new.Tooltip.TooltipLayout" preserve="all" />
   </assembly>
@@ -59,6 +60,10 @@
     <type fullname="UnityEngine.U2D.SpriteAtlas" preserve="all" />
     <type fullname="UnityEngine.Events.PersistentCallGroup" preserve="nothing" serialized="true" />
     <type fullname="UnityEngine.RectOffset" preserve="nothing" serialized="true" />
+  </assembly>
+  <assembly fullname="UnityEngine.ParticleSystemModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
+    <type fullname="UnityEngine.ParticleSystem" preserve="all" />
+    <type fullname="UnityEngine.ParticleSystemRenderer" preserve="all" />
   </assembly>
   <assembly fullname="UnityEngine.TextRenderingModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
     <type fullname="UnityEngine.Font" preserve="all" />
