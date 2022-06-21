@@ -30,12 +30,12 @@ export default function Profile() {
 	const onSave = (fields) => {
 		sageApi.user.update({ id, fields }).then((res) => {
 			if (res.modifiedCount) {
-				reload();
 				notify({
 					message: 'User updated',
 					description: `${id}`,
 					color: '#DDFFDD',
 				});
+				reload();
 			}
 		});
 	};

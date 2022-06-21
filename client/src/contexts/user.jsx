@@ -32,7 +32,7 @@ export function UserProvider(props) {
 	}, [ setUserSession ]);
 
 	const reload = () => {
-		sageApi.user.get({ id: user.id }).then((res) => loadUser(res));
+		sageApi.user.getById({ id: user.id }).then((res) => loadUser(res));
 	};
 
 	useEffect(() => {
