@@ -40,6 +40,12 @@ class SString {
 		},
 		render: DefaultFilterRender,
 	};
+
+	sorter = (a, b) => {
+		if (!a) a = '';
+		if (!b) b = '';
+		return a.localeCompare(b);
+	}
 }
 
 SType.register('SString', SString);
