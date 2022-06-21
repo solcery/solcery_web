@@ -23,7 +23,7 @@ export default function Project() {
 			setErrors(res.errors);
 			return;
 		}
-		console.log(res.constructed);
+		console.log(JSON.stringify(res.constructed));
 	};
 
 	const validateProject = async () => {
