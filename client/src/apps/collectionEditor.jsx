@@ -16,6 +16,8 @@ export default function CollectionEditor({ templateCode, moduleName }) {
 	const [template, setTemplate] = useState();
 	const [filteredField, setFilteredField] = useState();
 	const [filter, setFilter] = useState({});
+	const [ currentPage, setCurrentPage ] = useState(1);
+	const [ pageSize, setPageSize ] = useState(10);
 
 	const filterCookieName = `${moduleName}.filter`;
 
@@ -30,6 +32,7 @@ export default function CollectionEditor({ templateCode, moduleName }) {
 		} else {
 			removeCookie(filterCookieName);
 		}
+		setCurrentPage(1);
 		setFilter(Object.assign({}, filter));
 	};
 
@@ -38,6 +41,12 @@ export default function CollectionEditor({ templateCode, moduleName }) {
 		sageApi.template.getSchema({ template: templateCode }).then((data) => setTemplate(new Template(data)));
 	}, [templateCode, sageApi.template]);
 
+	useEffect(() => {
+		if (cookies[`${moduleName}.pagination.current`])
+			setCurrentPage(parseInt(cookies[`${moduleName}.pagination.current`]));
+		if (cookies[`${moduleName}.pagination.pageSize`])
+			setPageSize(parseInt(cookies[`${moduleName}.pagination.pageSize`]));
+	}, [])
 
 	useEffect(() => {
 		setFilter(cookies[filterCookieName] ?? {})
@@ -48,8 +57,10 @@ export default function CollectionEditor({ templateCode, moduleName }) {
 	}, [load]);
 
 	const onPaginationChange = (pagination) => {
-		setCookie(`${moduleName}.pagination.pageSize`, pagination.pageSize);
+		setCurrentPage(pagination.current)
+		setPageSize(pagination.pageSize)
 		setCookie(`${moduleName}.pagination.current`, pagination.current);
+		setCookie(`${moduleName}.pagination.pageSize`, pagination.pageSize);
 	};
 	if (!template || !objects || !filter) return <>NO DATA</>;
 
@@ -72,6 +83,12 @@ export default function CollectionEditor({ templateCode, moduleName }) {
 			};
 		});
 
+	const pagination = {
+		current: currentPage,
+		pageSize: pageSize,
+		onChange: onPaginationChange,
+	}
+
 	return (
 		<>
 			<Table
@@ -85,11 +102,7 @@ export default function CollectionEditor({ templateCode, moduleName }) {
 					};
 				}}
 				onChange={onPaginationChange}
-				pagination={{
-					defaultCurrent: cookies[`${moduleName}.pagination.current`] ?? 1,
-					defaultPageSize: cookies[`${moduleName}.pagination.pageSize`] ?? 10,
-					onChange: onPaginationChange,
-				}}
+				pagination={pagination}
 			>
 				{Object.values(template.fields).map((field) => (
 					<Column
@@ -115,6 +128,7 @@ export default function CollectionEditor({ templateCode, moduleName }) {
 								onDoubleClick: () => setFilteredField(field.code),
 							})
 						}
+						sorter = { field.type.sorter && ((a, b) => field.type.sorter(a.fields[field.code], b.fields[field.code])) }
 						filtered = { filter[field.code] !== undefined }
 						onFilterDropdownVisibleChange={(visible) => setFilteredField(visible ? field.code : undefined)}
 						filterDropdownVisible={filteredField === field.code}
