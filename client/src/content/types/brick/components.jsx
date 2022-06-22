@@ -70,7 +70,7 @@ const BrickParamsEditor = (props) => {
 	return (
 		<>
 			<paramMapType.valueRender defaultValue={value} type={paramMapType} onChange={editMode && setValue} />
-			{!props.readonly && !editMode && <Button onClick={() => setEditMode(!editMode)}>Edit</Button>}
+			{!props.readonly && !editMode && <Button onClick={() => setEditMode(!editMode)}>Edit params</Button>}
 			{editMode && <Button onClick={apply}>Apply</Button>}
 		</>
 	);
@@ -94,7 +94,7 @@ export const ValueRender = (props) => {
 	return (
 		<>
 			{!brickType && <BrickTypeEditor defaultValue={brickType} onChange={setBrickType} />}
-			<BrickParamsEditor readonly={!props.onChange} defaultValue={brickParams} onChange={setBrickParams} />
+			{props.type.params && <BrickParamsEditor readonly={!props.onChange} defaultValue={brickParams} onChange={setBrickParams} />}
 			{brickType && (
 				<BrickTreeEditor
 					instant={props.instant}
