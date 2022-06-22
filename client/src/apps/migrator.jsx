@@ -1,7 +1,8 @@
 import { Button, Input } from 'antd';
 import { useState } from 'react';
 import { useProject } from '../contexts/project';
-import { migrator } from './migrators/17.06.22_eclipse';
+import { migrator } from './migrators/22.06.22_retrodates';
+import { SageAPIConnection} from '../api';
 
 const { TextArea } = Input;
 
@@ -10,9 +11,11 @@ export default function Migrator() {
 	const { sageApi } = useProject();
 
 	const applyMigrator = async () => {
+		let oldApi = new SageAPIConnection('project_eclipse')
+		let oldContent = await oldApi.project.getContent();
 		let content = await sageApi.project.getContent();
+		let { objects } = migrator(content, oldContent);
 		setResult(JSON.stringify(content, undefined, 2));
-		let objects = migrator(content);
 		sageApi.project.migrate({ objects });
 	};
 
