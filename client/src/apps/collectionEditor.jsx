@@ -48,7 +48,7 @@ export default function CollectionEditor({ templateCode, moduleName }) {
 			setCurrentPage(parseInt(cookies[`${moduleName}.pagination.current`]));
 		if (cookies[`${moduleName}.pagination.pageSize`])
 			setPageSize(parseInt(cookies[`${moduleName}.pagination.pageSize`]));
-	}, [])
+	}, [ moduleName ])
 
 	useEffect(() => {
 		setFilter(cookies[filterCookieName] ?? {})
@@ -75,12 +75,13 @@ export default function CollectionEditor({ templateCode, moduleName }) {
 		onSorterChange(sorter)
 	};
 
-	const onPaginationChange = (pagination) => {
-		setCurrentPage(pagination.current)
-		setPageSize(pagination.pageSize)
-		setCookie(`${moduleName}.pagination.current`, pagination.current);
-		setCookie(`${moduleName}.pagination.pageSize`, pagination.pageSize);
+	const onPaginationChange = (current, pageSize) => {
+		setCurrentPage(current)
+		setCookie(`${moduleName}.pagination.current`, current);
+		setPageSize(pageSize)
+		setCookie(`${moduleName}.pagination.pageSize`, pageSize);
 	};
+
 
 	if (!template || !objects || !filter) return <>NO DATA</>;
 
@@ -107,6 +108,7 @@ export default function CollectionEditor({ templateCode, moduleName }) {
 		current: currentPage,
 		pageSize: pageSize,
 		onChange: onPaginationChange,
+		showSizeChanger: true,
 	}
 
 	return (
