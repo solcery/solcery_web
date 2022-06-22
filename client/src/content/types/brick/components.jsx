@@ -10,10 +10,10 @@ import { useUser } from '../../../contexts/user';
 
 const { Option } = Select;
 
-const BrickTypeEditor = ({ defaultValue, onChange }) => {
-	if (defaultValue) return <></>;
+const BrickTypeEditor = (props) => {
+	if (props.defaultValue) return <></>;
 	return (
-		<Select onChange={onChange} defaultValue={defaultValue}>
+		<Select onChange={props.onChange} defaultValue={props.defaultValue}>
 			<Option key="action" value="action">
 				Action
 			</Option>
@@ -160,12 +160,12 @@ export const BrickTreeEditor = (props) => {
 	);
 };
 
-export const FilterRender = ({ defaultValue, onChange }) => {
-	const [value, setValue] = useState(defaultValue);
+export const FilterRender = (props) => {
+	const [value, setValue] = useState(props.defaultValue ?? 'action');
 
 	return (
 		<div>
-			<Select defaultValue="value" onChange={setValue}>
+			<Select defaultValue={value} onChange={setValue}>
 				<Option key="action" value="action">
 					Action
 				</Option>
@@ -176,8 +176,8 @@ export const FilterRender = ({ defaultValue, onChange }) => {
 					Value
 				</Option>
 			</Select>
-			<Button onClick={() => onChange(value)}>APPLY</Button>
-			<Button onClick={() => onChange()}>CLEAR</Button>
+			<Button onClick={() => props.onChange(value)}>APPLY</Button>
+			<Button onClick={() => props.onChange()}>CLEAR</Button>
 		</div>
 	);
 };
