@@ -1,5 +1,6 @@
 import { SType, defaultFilter } from '../base';
 import { ValueRender } from './components';
+import moment from 'moment';
 
 class SDate {
 	static fromString = (data) => new SDate({ time: data });
@@ -16,11 +17,11 @@ class SDate {
 		}
 		return res;
 	}
-
+	forceSortOrder = 'ascend'; //TODO remove
 	sorter = (a, b) => { 
-		if (!a) a = 0; 
-		if (!b) b = 0; 
-		return a - b;  
+		if (!a) return -1;
+		if (!b) return 1;
+		return moment(a).unix() - moment(b).unix();  
 	}
 }
 
