@@ -16,10 +16,12 @@ export default function CollectionEditor({ templateCode, moduleName }) {
 	const [template, setTemplate] = useState();
 	const [filteredField, setFilteredField] = useState();
 	const [filter, setFilter] = useState({});
+	const [sorter, setSorter] = useState({});
 	const [ currentPage, setCurrentPage ] = useState(1);
 	const [ pageSize, setPageSize ] = useState(10);
 
 	const filterCookieName = `${moduleName}.filter`;
+	const sorterCookieName = `${moduleName}.sorter`;
 
 	const setFieldFilter = (fieldCode, filterValue) => {
 		if (filterValue === undefined) {
@@ -50,11 +52,28 @@ export default function CollectionEditor({ templateCode, moduleName }) {
 
 	useEffect(() => {
 		setFilter(cookies[filterCookieName] ?? {})
+		setSorter(cookies[sorterCookieName] ?? {})
 	}, [ moduleName ])
 
 	useEffect(() => {
 		load();
 	}, [load]);
+
+	const onSorterChange = (sorter) => {
+		let result = {}
+		if (!Array.isArray(sorter)) {
+			sorter = [ sorter ]
+		}
+		for (let sorterEntry of sorter) {
+			result[sorterEntry.field] = sorterEntry.order;
+		}
+		setSorter(result)
+		setCookie(sorterCookieName, result)
+	}
+
+	const onTableChange = (pagination, filter, sorter) => {
+		onSorterChange(sorter)
+	};
 
 	const onPaginationChange = (pagination) => {
 		setCurrentPage(pagination.current)
@@ -62,6 +81,7 @@ export default function CollectionEditor({ templateCode, moduleName }) {
 		setCookie(`${moduleName}.pagination.current`, pagination.current);
 		setCookie(`${moduleName}.pagination.pageSize`, pagination.pageSize);
 	};
+
 	if (!template || !objects || !filter) return <>NO DATA</>;
 
 	let tableData = objects
@@ -101,10 +121,10 @@ export default function CollectionEditor({ templateCode, moduleName }) {
 						},
 					};
 				}}
-				onChange={onPaginationChange}
+				onChange={onTableChange}
 				pagination={pagination}
 			>
-				{Object.values(template.fields).map((field) => (
+				{Object.values(template.fields).map((field, fieldIndex) => (
 					<Column
 						filtered={filter[field.code] !== undefined}
 						title={field.name + (filter[field.code] !== undefined ? `   [ ${filter[field.code]} ]` : '')}
@@ -128,7 +148,14 @@ export default function CollectionEditor({ templateCode, moduleName }) {
 								onDoubleClick: () => setFilteredField(field.code),
 							})
 						}
-						sorter = { field.type.sorter && ((a, b) => field.type.sorter(a.fields[field.code], b.fields[field.code])) }
+						sorter = { field.type.sorter && {
+							compare: (a, b) => field.type.sorter(a.fields[field.code], b.fields[field.code]),
+							multiple: -fieldIndex,
+						}}
+						sortOrder = {
+							sorter[field.code]
+						}
+						
 						filtered = { filter[field.code] !== undefined }
 						onFilterDropdownVisibleChange={(visible) => setFilteredField(visible ? field.code : undefined)}
 						filterDropdownVisible={filteredField === field.code}
