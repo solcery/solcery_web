@@ -37,9 +37,10 @@ export default function Play() {
 		async function buildContent() {
 			let content = await sageApi.project.dump();
 			let construction = build({
-				targets: ['web', 'unity'],
+				targets: ['web', 'unity_local'],
 				content,
 			});
+			construction.constructed.unity = construction.constructed.unity_local;
 			if (construction.status) {
 				let content = construction.constructed;
 				let session = new Session(content, [1]);
@@ -85,7 +86,6 @@ export default function Play() {
 	useEffect(() => {
 		if (!gameSession) return;
 		unityPlayContext.on('OnUnityLoaded', async () => {
-			console.log('test');
 			let content = gameSession.content.unity;
 			clientCommand('UpdateGameContent', content);
 			sendDiffLog(gameSession.game.diffLog);
