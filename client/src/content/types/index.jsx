@@ -8,3 +8,4 @@ export * from './array';
 export * from './map';
 export * from './link';
 export * from './brick';
+export * from './date';
