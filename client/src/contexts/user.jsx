@@ -70,17 +70,20 @@ export function UserProvider(props) {
 	if (!user)
 		return (
 			<>
+				<h1> Project name: { projectName } </h1>
 				<Input
 					placeholder="Login"
 					onChange={(e) => {
 						setLogin(e.target.value);
 					}}
+					onPressEnter={auth}
 				/>
 				<Input.Password
 					placeholder="Password"
 					onChange={(e) => {
 						setPassword(e.target.value);
 					}}
+					onPressEnter={auth}
 				/>
 				<Button onClick={auth}>LOGIN</Button>
 				{error && <Alert message={error} banner={true} />}
