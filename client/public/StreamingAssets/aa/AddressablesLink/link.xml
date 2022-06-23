@@ -1,8 +1,10 @@
 <linker>
   <assembly fullname="GameAssembly, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
+    <type fullname="Solcery.ClickHandlerBehaviour" preserve="all" />
     <type fullname="Solcery.Widgets_new.Cards.Widgets.CardInContainerWidgetLayout" preserve="all" />
     <type fullname="Solcery.Widgets_new.Container.Hands.PlaceWidgetHandLayout" preserve="all" />
     <type fullname="Solcery.Widgets_new.Container.Stacks.PlaceWidgetStackLayout" preserve="all" />
+    <type fullname="Solcery.Widgets_new.Eclipse.CardFull.PlaceWidgetEclipseCardFullLayout" preserve="all" />
     <type fullname="Solcery.Widgets_new.Eclipse.Cards.EclipseCardInContainerWidgetLayout" preserve="all" />
     <type fullname="Solcery.Widgets_new.Eclipse.Cards.Timers.EclipseCardTimerLayout" preserve="all" />
     <type fullname="Solcery.Widgets_new.Eclipse.Cards.Tokens.EclipseCardTokenLayout" preserve="all" />

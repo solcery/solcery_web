@@ -11,6 +11,12 @@ function Pointer_stringify(s, len) {
 
 Module["Pointer_stringify"] = Pointer_stringify;
 
+function SendMessage(gameObject, func, param) {
+ if (param === undefined) Module.ccall("SendMessage", null, [ "string", "string" ], [ gameObject, func ]); else if (typeof param === "string") Module.ccall("SendMessageString", null, [ "string", "string", "string" ], [ gameObject, func, param ]); else if (typeof param === "number") Module.ccall("SendMessageFloat", null, [ "string", "string", "number" ], [ gameObject, func, param ]); else throw "" + param + " is does not have a type which is supported by SendMessage.";
+}
+
+Module["SendMessage"] = SendMessage;
+
 var stackTraceReference = "(^|\\n)(\\s+at\\s+|)jsStackTrace(\\s+\\(|@)([^\\n]+):\\d+:\\d+(\\)|)(\\n|$)";
 
 var stackTraceReferenceMatch = jsStackTrace().match(new RegExp(stackTraceReference));
@@ -33,36 +39,6 @@ var abort = function(what) {
  if (Module.abortHandler && Module.abortHandler(message)) return;
  throw message;
 };
-
-Module["SetFullscreen"] = function(fullscreen) {
- if (typeof runtimeInitialized === "undefined" || !runtimeInitialized) {
-  console.log("Runtime not initialized yet.");
- } else if (typeof JSEvents === "undefined") {
-  console.log("Player not loaded yet.");
- } else {
-  var tmp = JSEvents.canPerformEventHandlerRequests;
-  JSEvents.canPerformEventHandlerRequests = function() {
-   return 1;
-  };
-  Module.ccall("SetFullscreen", null, [ "number" ], [ fullscreen ]);
-  JSEvents.canPerformEventHandlerRequests = tmp;
- }
-};
-
-if (typeof ENVIRONMENT_IS_PTHREAD === "undefined" || !ENVIRONMENT_IS_PTHREAD) {
- Module["preRun"].push(function() {
-  var unityFileSystemInit = Module["unityFileSystemInit"] || function() {
-   FS.mkdir("/idbfs");
-   FS.mount(IDBFS, {}, "/idbfs");
-   Module.addRunDependency("JS_FileSystem_Mount");
-   FS.syncfs(true, function(err) {
-    if (err) console.log("IndexedDB is not available. Data will not persist in cache and PlayerPrefs will not be saved.");
-    Module.removeRunDependency("JS_FileSystem_Mount");
-   });
-  };
-  unityFileSystemInit();
- });
-}
 
 var videoInputDevices = [];
 
@@ -157,11 +133,35 @@ if (!navigator.mediaDevices) {
  }
 }, 0);
 
-function SendMessage(gameObject, func, param) {
- if (param === undefined) Module.ccall("SendMessage", null, [ "string", "string" ], [ gameObject, func ]); else if (typeof param === "string") Module.ccall("SendMessageString", null, [ "string", "string", "string" ], [ gameObject, func, param ]); else if (typeof param === "number") Module.ccall("SendMessageFloat", null, [ "string", "string", "number" ], [ gameObject, func, param ]); else throw "" + param + " is does not have a type which is supported by SendMessage.";
+if (typeof ENVIRONMENT_IS_PTHREAD === "undefined" || !ENVIRONMENT_IS_PTHREAD) {
+ Module["preRun"].push(function() {
+  var unityFileSystemInit = Module["unityFileSystemInit"] || function() {
+   FS.mkdir("/idbfs");
+   FS.mount(IDBFS, {}, "/idbfs");
+   Module.addRunDependency("JS_FileSystem_Mount");
+   FS.syncfs(true, function(err) {
+    if (err) console.log("IndexedDB is not available. Data will not persist in cache and PlayerPrefs will not be saved.");
+    Module.removeRunDependency("JS_FileSystem_Mount");
+   });
+  };
+  unityFileSystemInit();
+ });
 }
 
-Module["SendMessage"] = SendMessage;
+Module["SetFullscreen"] = function(fullscreen) {
+ if (typeof runtimeInitialized === "undefined" || !runtimeInitialized) {
+  console.log("Runtime not initialized yet.");
+ } else if (typeof JSEvents === "undefined") {
+  console.log("Player not loaded yet.");
+ } else {
+  var tmp = JSEvents.canPerformEventHandlerRequests;
+  JSEvents.canPerformEventHandlerRequests = function() {
+   return 1;
+  };
+  Module.ccall("SetFullscreen", null, [ "number" ], [ fullscreen ]);
+  JSEvents.canPerformEventHandlerRequests = tmp;
+ }
+};
 
 var moduleOverrides = {};
 
@@ -1174,26 +1174,26 @@ var tempDouble;
 var tempI64;
 
 var ASM_CONSTS = {
- 5664056: function() {
+ 5660136: function() {
   Module["emscripten_get_now_backup"] = performance.now;
  },
- 5664111: function($0) {
+ 5660191: function($0) {
   performance.now = function() {
    return $0;
   };
  },
- 5664159: function($0) {
+ 5660239: function($0) {
   performance.now = function() {
    return $0;
   };
  },
- 5664207: function() {
+ 5660287: function() {
   performance.now = Module["emscripten_get_now_backup"];
  },
- 5664262: function() {
+ 5660342: function() {
   return Module.webglContextAttributes.premultipliedAlpha;
  },
- 5664323: function() {
+ 5660403: function() {
   return Module.webglContextAttributes.preserveDrawingBuffer;
  }
 };
@@ -10265,7 +10265,7 @@ function _emscripten_resize_heap(requestedSize) {
   return false;
  }
  for (var cutDown = 1; cutDown <= 4; cutDown *= 2) {
-  var overGrownHeapSize = oldSize * (1 + 0, 2 / cutDown);
+  var overGrownHeapSize = oldSize * (1 + .2 / cutDown);
   overGrownHeapSize = Math.min(overGrownHeapSize, requestedSize + 100663296);
   var newSize = Math.min(maxHeapSize, alignUp(Math.max(requestedSize, overGrownHeapSize), 65536));
   var replacement = emscripten_realloc_buffer(newSize);
@@ -14708,13 +14708,13 @@ var dynCall_viiiiii = Module["dynCall_viiiiii"] = createExportWrapper("dynCall_v
 
 var dynCall_viiiii = Module["dynCall_viiiii"] = createExportWrapper("dynCall_viiiii");
 
+var dynCall_iiiiii = Module["dynCall_iiiiii"] = createExportWrapper("dynCall_iiiiii");
+
 var dynCall_i = Module["dynCall_i"] = createExportWrapper("dynCall_i");
 
 var dynCall_v = Module["dynCall_v"] = createExportWrapper("dynCall_v");
 
 var dynCall_iiij = Module["dynCall_iiij"] = createExportWrapper("dynCall_iiij");
-
-var dynCall_iiiiii = Module["dynCall_iiiiii"] = createExportWrapper("dynCall_iiiiii");
 
 var dynCall_iiiiiiii = Module["dynCall_iiiiiiii"] = createExportWrapper("dynCall_iiiiiiii");
 
@@ -15726,17 +15726,6 @@ function invoke_vii(index, a1, a2) {
  }
 }
 
-function invoke_iiii(index, a1, a2, a3) {
- var sp = stackSave();
- try {
-  return dynCall_iiii(index, a1, a2, a3);
- } catch (e) {
-  stackRestore(sp);
-  if (e !== e + 0 && e !== "longjmp") throw e;
-  _setThrew(1, 0);
- }
-}
-
 function invoke_iii(index, a1, a2) {
  var sp = stackSave();
  try {
@@ -15748,10 +15737,87 @@ function invoke_iii(index, a1, a2) {
  }
 }
 
-function invoke_viii(index, a1, a2, a3) {
+function invoke_iiiiii(index, a1, a2, a3, a4, a5) {
  var sp = stackSave();
  try {
-  dynCall_viii(index, a1, a2, a3);
+  return dynCall_iiiiii(index, a1, a2, a3, a4, a5);
+ } catch (e) {
+  stackRestore(sp);
+  if (e !== e + 0 && e !== "longjmp") throw e;
+  _setThrew(1, 0);
+ }
+}
+
+function invoke_iiii(index, a1, a2, a3) {
+ var sp = stackSave();
+ try {
+  return dynCall_iiii(index, a1, a2, a3);
+ } catch (e) {
+  stackRestore(sp);
+  if (e !== e + 0 && e !== "longjmp") throw e;
+  _setThrew(1, 0);
+ }
+}
+
+function invoke_viiii(index, a1, a2, a3, a4) {
+ var sp = stackSave();
+ try {
+  dynCall_viiii(index, a1, a2, a3, a4);
+ } catch (e) {
+  stackRestore(sp);
+  if (e !== e + 0 && e !== "longjmp") throw e;
+  _setThrew(1, 0);
+ }
+}
+
+function invoke_iiiii(index, a1, a2, a3, a4) {
+ var sp = stackSave();
+ try {
+  return dynCall_iiiii(index, a1, a2, a3, a4);
+ } catch (e) {
+  stackRestore(sp);
+  if (e !== e + 0 && e !== "longjmp") throw e;
+  _setThrew(1, 0);
+ }
+}
+
+function invoke_fiii(index, a1, a2, a3) {
+ var sp = stackSave();
+ try {
+  return dynCall_fiii(index, a1, a2, a3);
+ } catch (e) {
+  stackRestore(sp);
+  if (e !== e + 0 && e !== "longjmp") throw e;
+  _setThrew(1, 0);
+ }
+}
+
+function invoke_diii(index, a1, a2, a3) {
+ var sp = stackSave();
+ try {
+  return dynCall_diii(index, a1, a2, a3);
+ } catch (e) {
+  stackRestore(sp);
+  if (e !== e + 0 && e !== "longjmp") throw e;
+  _setThrew(1, 0);
+ }
+}
+
+function invoke_viif(index, a1, a2, a3) {
+ var sp = stackSave();
+ try {
+  dynCall_viif(index, a1, a2, a3);
+ } catch (e) {
+  stackRestore(sp);
+  if (e !== e + 0 && e !== "longjmp") throw e;
+  _setThrew(1, 0);
+ }
+}
+
+function invoke_viid(index, a1, a2, a3) {
+ var sp = stackSave();
+ try {
+  dynCall_viid(index, a1, a2, a3);
  } catch (e) {
   stackRestore(sp);
   if (e !== e + 0 && e !== "longjmp") throw e;
@@ -15763,6 +15829,17 @@ function invoke_vi(index, a1) {
  var sp = stackSave();
  try {
   dynCall_vi(index, a1);
+ } catch (e) {
+  stackRestore(sp);
+  if (e !== e + 0 && e !== "longjmp") throw e;
+  _setThrew(1, 0);
+ }
+}
+
+function invoke_viii(index, a1, a2, a3) {
+ var sp = stackSave();
+ try {
+  dynCall_viii(index, a1, a2, a3);
  } catch (e) {
   stackRestore(sp);
   if (e !== e + 0 && e !== "longjmp") throw e;
@@ -15785,39 +15862,6 @@ function invoke_v(index) {
  var sp = stackSave();
  try {
   dynCall_v(index);
- } catch (e) {
-  stackRestore(sp);
-  if (e !== e + 0 && e !== "longjmp") throw e;
-  _setThrew(1, 0);
- }
-}
-
-function invoke_iiiiii(index, a1, a2, a3, a4, a5) {
- var sp = stackSave();
- try {
-  return dynCall_iiiiii(index, a1, a2, a3, a4, a5);
- } catch (e) {
-  stackRestore(sp);
-  if (e !== e + 0 && e !== "longjmp") throw e;
-  _setThrew(1, 0);
- }
-}
-
-function invoke_iiiii(index, a1, a2, a3, a4) {
- var sp = stackSave();
- try {
-  return dynCall_iiiii(index, a1, a2, a3, a4);
- } catch (e) {
-  stackRestore(sp);
-  if (e !== e + 0 && e !== "longjmp") throw e;
-  _setThrew(1, 0);
- }
-}
-
-function invoke_viiii(index, a1, a2, a3, a4) {
- var sp = stackSave();
- try {
-  dynCall_viiii(index, a1, a2, a3, a4);
  } catch (e) {
   stackRestore(sp);
   if (e !== e + 0 && e !== "longjmp") throw e;
@@ -16012,17 +16056,6 @@ function invoke_vidi(index, a1, a2, a3) {
  }
 }
 
-function invoke_diii(index, a1, a2, a3) {
- var sp = stackSave();
- try {
-  return dynCall_diii(index, a1, a2, a3);
- } catch (e) {
-  stackRestore(sp);
-  if (e !== e + 0 && e !== "longjmp") throw e;
-  _setThrew(1, 0);
- }
-}
-
 function invoke_viiiiiiiii(index, a1, a2, a3, a4, a5, a6, a7, a8, a9) {
  var sp = stackSave();
  try {
@@ -16038,28 +16071,6 @@ function invoke_dii(index, a1, a2) {
  var sp = stackSave();
  try {
   return dynCall_dii(index, a1, a2);
- } catch (e) {
-  stackRestore(sp);
-  if (e !== e + 0 && e !== "longjmp") throw e;
-  _setThrew(1, 0);
- }
-}
-
-function invoke_viid(index, a1, a2, a3) {
- var sp = stackSave();
- try {
-  dynCall_viid(index, a1, a2, a3);
- } catch (e) {
-  stackRestore(sp);
-  if (e !== e + 0 && e !== "longjmp") throw e;
-  _setThrew(1, 0);
- }
-}
-
-function invoke_viif(index, a1, a2, a3) {
- var sp = stackSave();
- try {
-  dynCall_viif(index, a1, a2, a3);
  } catch (e) {
   stackRestore(sp);
   if (e !== e + 0 && e !== "longjmp") throw e;
@@ -16093,17 +16104,6 @@ function invoke_fifi(index, a1, a2, a3) {
  var sp = stackSave();
  try {
   return dynCall_fifi(index, a1, a2, a3);
- } catch (e) {
-  stackRestore(sp);
-  if (e !== e + 0 && e !== "longjmp") throw e;
-  _setThrew(1, 0);
- }
-}
-
-function invoke_fiii(index, a1, a2, a3) {
- var sp = stackSave();
- try {
-  return dynCall_fiii(index, a1, a2, a3);
  } catch (e) {
   stackRestore(sp);
   if (e !== e + 0 && e !== "longjmp") throw e;
@@ -16562,6 +16562,17 @@ function invoke_vidd(index, a1, a2, a3) {
  }
 }
 
+function invoke_jiiii(index, a1, a2, a3, a4) {
+ var sp = stackSave();
+ try {
+  return dynCall_jiiii(index, a1, a2, a3, a4);
+ } catch (e) {
+  stackRestore(sp);
+  if (e !== e + 0 && e !== "longjmp") throw e;
+  _setThrew(1, 0);
+ }
+}
+
 function invoke_ji(index, a1) {
  var sp = stackSave();
  try {
@@ -16643,17 +16654,6 @@ function invoke_vijii(index, a1, a2, a3, a4, a5) {
  var sp = stackSave();
  try {
   dynCall_vijii(index, a1, a2, a3, a4, a5);
- } catch (e) {
-  stackRestore(sp);
-  if (e !== e + 0 && e !== "longjmp") throw e;
-  _setThrew(1, 0);
- }
-}
-
-function invoke_jiiii(index, a1, a2, a3, a4) {
- var sp = stackSave();
- try {
-  return dynCall_jiiii(index, a1, a2, a3, a4);
  } catch (e) {
   stackRestore(sp);
   if (e !== e + 0 && e !== "longjmp") throw e;
@@ -17920,50 +17920,6 @@ if (!Object.getOwnPropertyDescriptor(Module, "runAndAbortIfError")) Module["runA
  abort("'runAndAbortIfError' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)");
 };
 
-if (!Object.getOwnPropertyDescriptor(Module, "WEBAudio")) Module["WEBAudio"] = function() {
- abort("'WEBAudio' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)");
-};
-
-if (!Object.getOwnPropertyDescriptor(Module, "jsAudioAddPendingBlockedAudio")) Module["jsAudioAddPendingBlockedAudio"] = function() {
- abort("'jsAudioAddPendingBlockedAudio' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)");
-};
-
-if (!Object.getOwnPropertyDescriptor(Module, "jsAudioPlayPendingBlockedAudio")) Module["jsAudioPlayPendingBlockedAudio"] = function() {
- abort("'jsAudioPlayPendingBlockedAudio' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)");
-};
-
-if (!Object.getOwnPropertyDescriptor(Module, "jsAudioPlayBlockedAudios")) Module["jsAudioPlayBlockedAudios"] = function() {
- abort("'jsAudioPlayBlockedAudios' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)");
-};
-
-if (!Object.getOwnPropertyDescriptor(Module, "jsAudioMixinSetPitch")) Module["jsAudioMixinSetPitch"] = function() {
- abort("'jsAudioMixinSetPitch' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)");
-};
-
-if (!Object.getOwnPropertyDescriptor(Module, "jsAudioCreateCompressedSoundClip")) Module["jsAudioCreateCompressedSoundClip"] = function() {
- abort("'jsAudioCreateCompressedSoundClip' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)");
-};
-
-if (!Object.getOwnPropertyDescriptor(Module, "jsAudioCreateUncompressedSoundClip")) Module["jsAudioCreateUncompressedSoundClip"] = function() {
- abort("'jsAudioCreateUncompressedSoundClip' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)");
-};
-
-if (!Object.getOwnPropertyDescriptor(Module, "jsAudioCreateUncompressedSoundClipFromPCM")) Module["jsAudioCreateUncompressedSoundClipFromPCM"] = function() {
- abort("'jsAudioCreateUncompressedSoundClipFromPCM' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)");
-};
-
-if (!Object.getOwnPropertyDescriptor(Module, "jsAudioCreateUncompressedSoundClipFromCompressedAudio")) Module["jsAudioCreateUncompressedSoundClipFromCompressedAudio"] = function() {
- abort("'jsAudioCreateUncompressedSoundClipFromCompressedAudio' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)");
-};
-
-if (!Object.getOwnPropertyDescriptor(Module, "jsAudioCreateChannel")) Module["jsAudioCreateChannel"] = function() {
- abort("'jsAudioCreateChannel' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)");
-};
-
-if (!Object.getOwnPropertyDescriptor(Module, "jsDomCssEscapeId")) Module["jsDomCssEscapeId"] = function() {
- abort("'jsDomCssEscapeId' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)");
-};
-
 if (!Object.getOwnPropertyDescriptor(Module, "fs")) Module["fs"] = function() {
  abort("'fs' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)");
 };
@@ -17982,26 +17938,6 @@ if (!Object.getOwnPropertyDescriptor(Module, "mobile_input_hide_delay")) Module[
 
 if (!Object.getOwnPropertyDescriptor(Module, "mobile_input_ignore_blur_event")) Module["mobile_input_ignore_blur_event"] = function() {
  abort("'mobile_input_ignore_blur_event' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)");
-};
-
-if (!Object.getOwnPropertyDescriptor(Module, "JS_ScreenOrientation_callback")) Module["JS_ScreenOrientation_callback"] = function() {
- abort("'JS_ScreenOrientation_callback' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)");
-};
-
-if (!Object.getOwnPropertyDescriptor(Module, "JS_ScreenOrientation_eventHandler")) Module["JS_ScreenOrientation_eventHandler"] = function() {
- abort("'JS_ScreenOrientation_eventHandler' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)");
-};
-
-if (!Object.getOwnPropertyDescriptor(Module, "JS_ScreenOrientation_requestedLockType")) Module["JS_ScreenOrientation_requestedLockType"] = function() {
- abort("'JS_ScreenOrientation_requestedLockType' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)");
-};
-
-if (!Object.getOwnPropertyDescriptor(Module, "JS_ScreenOrientation_appliedLockType")) Module["JS_ScreenOrientation_appliedLockType"] = function() {
- abort("'JS_ScreenOrientation_appliedLockType' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)");
-};
-
-if (!Object.getOwnPropertyDescriptor(Module, "JS_ScreenOrientation_timeoutID")) Module["JS_ScreenOrientation_timeoutID"] = function() {
- abort("'JS_ScreenOrientation_timeoutID' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)");
 };
 
 if (!Object.getOwnPropertyDescriptor(Module, "JS_OrientationSensor_frequencyRequest")) Module["JS_OrientationSensor_frequencyRequest"] = function() {
@@ -18132,12 +18068,56 @@ if (!Object.getOwnPropertyDescriptor(Module, "JS_DeviceMotion_remove")) Module["
  abort("'JS_DeviceMotion_remove' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)");
 };
 
-if (!Object.getOwnPropertyDescriptor(Module, "IDBFS")) Module["IDBFS"] = function() {
- abort("'IDBFS' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)");
+if (!Object.getOwnPropertyDescriptor(Module, "WEBAudio")) Module["WEBAudio"] = function() {
+ abort("'WEBAudio' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)");
 };
 
-if (!Object.getOwnPropertyDescriptor(Module, "UNETWebSocketsInstances")) Module["UNETWebSocketsInstances"] = function() {
- abort("'UNETWebSocketsInstances' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)");
+if (!Object.getOwnPropertyDescriptor(Module, "jsAudioAddPendingBlockedAudio")) Module["jsAudioAddPendingBlockedAudio"] = function() {
+ abort("'jsAudioAddPendingBlockedAudio' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)");
+};
+
+if (!Object.getOwnPropertyDescriptor(Module, "jsAudioPlayPendingBlockedAudio")) Module["jsAudioPlayPendingBlockedAudio"] = function() {
+ abort("'jsAudioPlayPendingBlockedAudio' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)");
+};
+
+if (!Object.getOwnPropertyDescriptor(Module, "jsAudioPlayBlockedAudios")) Module["jsAudioPlayBlockedAudios"] = function() {
+ abort("'jsAudioPlayBlockedAudios' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)");
+};
+
+if (!Object.getOwnPropertyDescriptor(Module, "jsAudioMixinSetPitch")) Module["jsAudioMixinSetPitch"] = function() {
+ abort("'jsAudioMixinSetPitch' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)");
+};
+
+if (!Object.getOwnPropertyDescriptor(Module, "jsAudioCreateCompressedSoundClip")) Module["jsAudioCreateCompressedSoundClip"] = function() {
+ abort("'jsAudioCreateCompressedSoundClip' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)");
+};
+
+if (!Object.getOwnPropertyDescriptor(Module, "jsAudioCreateUncompressedSoundClip")) Module["jsAudioCreateUncompressedSoundClip"] = function() {
+ abort("'jsAudioCreateUncompressedSoundClip' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)");
+};
+
+if (!Object.getOwnPropertyDescriptor(Module, "jsAudioCreateUncompressedSoundClipFromPCM")) Module["jsAudioCreateUncompressedSoundClipFromPCM"] = function() {
+ abort("'jsAudioCreateUncompressedSoundClipFromPCM' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)");
+};
+
+if (!Object.getOwnPropertyDescriptor(Module, "jsAudioCreateUncompressedSoundClipFromCompressedAudio")) Module["jsAudioCreateUncompressedSoundClipFromCompressedAudio"] = function() {
+ abort("'jsAudioCreateUncompressedSoundClipFromCompressedAudio' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)");
+};
+
+if (!Object.getOwnPropertyDescriptor(Module, "jsAudioCreateChannel")) Module["jsAudioCreateChannel"] = function() {
+ abort("'jsAudioCreateChannel' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)");
+};
+
+if (!Object.getOwnPropertyDescriptor(Module, "wr")) Module["wr"] = function() {
+ abort("'wr' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)");
+};
+
+if (!Object.getOwnPropertyDescriptor(Module, "jsDomCssEscapeId")) Module["jsDomCssEscapeId"] = function() {
+ abort("'jsDomCssEscapeId' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)");
+};
+
+if (!Object.getOwnPropertyDescriptor(Module, "IDBFS")) Module["IDBFS"] = function() {
+ abort("'IDBFS' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)");
 };
 
 if (!Object.getOwnPropertyDescriptor(Module, "videoInstances")) Module["videoInstances"] = function() {
@@ -18146,10 +18126,6 @@ if (!Object.getOwnPropertyDescriptor(Module, "videoInstances")) Module["videoIns
 
 if (!Object.getOwnPropertyDescriptor(Module, "videoInstanceIdCounter")) Module["videoInstanceIdCounter"] = function() {
  abort("'videoInstanceIdCounter' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)");
-};
-
-if (!Object.getOwnPropertyDescriptor(Module, "hasSRGBATextures")) Module["hasSRGBATextures"] = function() {
- abort("'hasSRGBATextures' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)");
 };
 
 if (!Object.getOwnPropertyDescriptor(Module, "jsVideoEnded")) Module["jsVideoEnded"] = function() {
@@ -18192,8 +18168,28 @@ if (!Object.getOwnPropertyDescriptor(Module, "activeWebCams")) Module["activeWeb
  abort("'activeWebCams' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)");
 };
 
-if (!Object.getOwnPropertyDescriptor(Module, "wr")) Module["wr"] = function() {
- abort("'wr' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)");
+if (!Object.getOwnPropertyDescriptor(Module, "UNETWebSocketsInstances")) Module["UNETWebSocketsInstances"] = function() {
+ abort("'UNETWebSocketsInstances' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)");
+};
+
+if (!Object.getOwnPropertyDescriptor(Module, "JS_ScreenOrientation_callback")) Module["JS_ScreenOrientation_callback"] = function() {
+ abort("'JS_ScreenOrientation_callback' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)");
+};
+
+if (!Object.getOwnPropertyDescriptor(Module, "JS_ScreenOrientation_eventHandler")) Module["JS_ScreenOrientation_eventHandler"] = function() {
+ abort("'JS_ScreenOrientation_eventHandler' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)");
+};
+
+if (!Object.getOwnPropertyDescriptor(Module, "JS_ScreenOrientation_requestedLockType")) Module["JS_ScreenOrientation_requestedLockType"] = function() {
+ abort("'JS_ScreenOrientation_requestedLockType' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)");
+};
+
+if (!Object.getOwnPropertyDescriptor(Module, "JS_ScreenOrientation_appliedLockType")) Module["JS_ScreenOrientation_appliedLockType"] = function() {
+ abort("'JS_ScreenOrientation_appliedLockType' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)");
+};
+
+if (!Object.getOwnPropertyDescriptor(Module, "JS_ScreenOrientation_timeoutID")) Module["JS_ScreenOrientation_timeoutID"] = function() {
+ abort("'JS_ScreenOrientation_timeoutID' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)");
 };
 
 if (!Object.getOwnPropertyDescriptor(Module, "instances")) Module["instances"] = function() {
