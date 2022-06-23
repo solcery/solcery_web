@@ -162,7 +162,14 @@ export default function CollectionEditor({ templateCode, moduleName }) {
 						onFilterDropdownVisibleChange={(visible) => setFilteredField(visible ? field.code : undefined)}
 						filterDropdownVisible={filteredField === field.code}
 						render={(_, object) => (
-							<field.type.valueRender defaultValue={object.fields[field.code]} type={field.type} object={object} />
+							<field.type.valueRender 
+								defaultValue={object.fields[field.code]} 
+								type={field.type} 
+								object={object} 
+								objectId={object._id}
+								templateCode={templateCode}
+								fieldCode={field.code}
+							/>
 						)}
 					/>
 				))}

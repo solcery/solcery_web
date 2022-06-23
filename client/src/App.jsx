@@ -14,6 +14,7 @@ import Play from './apps/play';
 import Project from './apps/project';
 import Profile from './apps/profile';
 import TemplateSchema from './apps/templateSchema';
+import BrickEditor from './apps/brickEditor';
 
 export default function App() {
 	return (
@@ -26,6 +27,7 @@ export default function App() {
 							<Route path="template.:templateCode.:objectId" element={<ObjectPage />} />
 							<Route path="template.:templateCode" element={<TemplatePage />} />
 							<Route path="brickLibrary" element={<BrickLibraryCollectionEditor />} />
+							<Route path="brickEditor.:templateCode.:objectId.:fieldCode" element={<BrickEditor />} />
 							<Route path="brickLibrary.:objectId" element={<BrickLibraryObjectEditor />} />
 							<Route path="play" element={<Play />} />
 							<Route path="project" element={<Project />} />

@@ -38,7 +38,7 @@ export default function Brick(props) {
 		let isCustomBrick = brick.func.includes('custom'); // TODO: add 'custom' key to brick itself
 		if (!isCustomBrick) return;
 		let objId = brick.func.split('.')[1];
-		window.open(`brickLibrary.${objId}?instant=brick`, '_blank');
+		window.open(`brickEditor.customBricks.${objId}.brick`, '_blank', 'noopener');
 	};
 
 	let isHovered = false;

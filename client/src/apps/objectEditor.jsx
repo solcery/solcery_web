@@ -36,6 +36,10 @@ export default function ObjectEditor({ schema, object, onSave, instant }) {
 								setField(record.field.code, value);
 							}}
 							type={record.field.type}
+							object={object} 
+							objectId={object._id}
+							templateCode={schema.code}
+							fieldCode={record.key}
 						/>
 					)}
 				/>

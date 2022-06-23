@@ -1,5 +1,5 @@
-import { ReactFlowProvider } from 'react-flow-renderer';
 import { BrickEditor } from './editor/BrickEditor';
+import { ReactFlowProvider } from 'react-flow-renderer';
 import { useState, useEffect } from 'react';
 import { paramFromMapEntry } from '../../brickLib';
 import { Select, Button } from 'antd';
@@ -97,12 +97,13 @@ export const ValueRender = (props) => {
 			{props.type.params && <BrickParamsEditor readonly={!props.onChange} defaultValue={brickParams} onChange={setBrickParams} />}
 			{brickType && (
 				<BrickTreeEditor
-					instant={props.instant}
 					brickParams={brickParams}
 					brickTree={brickTree}
 					brickType={brickType}
-					type={props.type}
 					onChange={props.onChange && setBrickTree}
+					objectId={props.objectId}
+					templateCode={props.templateCode}
+					fieldCode={props.fieldCode}
 				/>
 			)}
 		</>
@@ -141,21 +142,36 @@ export const BrickTreeEditor = (props) => {
 		setOwnBrickLibrary(bricks);
 	}, [brickLibrary, props.brickParams]);
 
+	const openInNewTab = () => {
+		if (props.fullscreen) return;
+		let opn = window.open(`brickEditor.${props.templateCode}.${props.objectId}.${props.fieldCode}?mode=edit`, '_blank', props.onChange ? undefined : 'noopener');
+		window.requestData = () => {
+			if (opn.loadData) {
+				opn.loadData(props)
+			}
+		}
+		window.onApply = (brickTree) => {
+			props.onChange(brickTree)
+			opn.close();
+		}
+	};
+
 	if (!ownBrickLibrary) return <>Loading...</>;
 	return (
 		<>
-			<ReactFlowProvider>
-				<BrickEditor
-					instant={props.instant}
-					width={300}
-					height={200}
-					brickLibrary={ownBrickLibrary}
-					brickTree={props.brickTree}
-					brickType={props.brickType}
-					type={props.type}
-					onChange={props.onChange}
-				/>
-			</ReactFlowProvider>
+			<div onClick={openInNewTab}> 
+				<ReactFlowProvider>
+					<BrickEditor
+						fullscreen = {props.fullscreen}
+						width={300}
+						height={200}
+						brickLibrary={ownBrickLibrary}
+						brickTree={props.brickTree}
+						brickType={props.brickType}
+						onChange={props.onChange}
+					/>
+				</ReactFlowProvider>
+			</div> 
 		</>
 	);
 };
