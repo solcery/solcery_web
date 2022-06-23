@@ -30,11 +30,10 @@ class SBrick {
 		}
 		for (let paramSig of brickSignature.params) {
 			let param = v.params[paramSig.code];
-			if (paramSig.type instanceof SBrick) {
-				this.validate(param, meta);
-			}
-			if (param === undefined) {
+			if (param === undefined || param === null) { // TODO: undefined only
 				meta.error(`No param '${paramSig.code}' found for brick '${v.lib}.${v.func}'!`);
+			} else if (paramSig.type instanceof SBrick) {
+				this.validate(param, meta);
 			}
 		}
 	};
