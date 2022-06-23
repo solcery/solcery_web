@@ -1,6 +1,7 @@
 import React from 'react-dom';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Switch } from 'react-router-dom';
 import { ProjectProvider } from './contexts/project';
+import { TopMenu } from './components/TopMenu';
 import { CookiesProvider } from 'react-cookie';
 import './App.less';
 import './App.css';
@@ -16,6 +17,8 @@ import Profile from './apps/profile';
 import TemplateSchema from './apps/templateSchema';
 import BrickEditor from './apps/brickEditor';
 
+
+<TopMenu style={{ backgroundColor: 'black' }} />
 export default function App() {
 	return (
 		<>
@@ -23,17 +26,19 @@ export default function App() {
 				<BrowserRouter>
 					<Routes>
 						<Route path=":projectName" element={<ProjectProvider />}>
-							<Route path="template.:templateCode.schema" element={<TemplateSchema />} />
-							<Route path="template.:templateCode.:objectId" element={<ObjectPage />} />
-							<Route path="template.:templateCode" element={<TemplatePage />} />
-							<Route path="brickLibrary" element={<BrickLibraryCollectionEditor />} />
 							<Route path="brickEditor.:templateCode.:objectId.:fieldCode" element={<BrickEditor />} />
-							<Route path="brickLibrary.:objectId" element={<BrickLibraryObjectEditor />} />
-							<Route path="play" element={<Play />} />
-							<Route path="project" element={<Project />} />
-							<Route path="migrator" element={<Migrator />} />
-							<Route path="export" element={<ContentExporter />} />
-							<Route path="profile" element={<Profile />} />
+							<Route path="" element={<TopMenu style={{ backgroundColor: 'black' }} />}>
+								<Route path="template.:templateCode.schema" element={<TemplateSchema />} />
+								<Route path="template.:templateCode.:objectId" element={<ObjectPage />} />
+								<Route path="template.:templateCode" element={<TemplatePage />} />
+								<Route path="brickLibrary" element={<BrickLibraryCollectionEditor />} />
+								<Route path="brickLibrary.:objectId" element={<BrickLibraryObjectEditor />} />
+								<Route path="play" element={<Play />} />
+								<Route path="project" element={<Project />} />
+								<Route path="migrator" element={<Migrator />} />
+								<Route path="export" element={<ContentExporter />} />
+								<Route path="profile" element={<Profile />} />
+							</Route>
 						</Route>
 					</Routes>
 				</BrowserRouter>

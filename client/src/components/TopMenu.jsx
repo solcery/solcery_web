@@ -1,5 +1,5 @@
 import { Menu, Avatar } from 'antd';
-import { Link } from 'react-router-dom';
+import { Link, Outlet } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
 import { useProject } from '../contexts/project';
 import { useUser } from '../contexts/user';
@@ -46,6 +46,7 @@ export const TopMenu = () => {
 					</Link>
 				</Menu.Item>
 			</Menu>
+			<Outlet />
 		</>
 	);
 };

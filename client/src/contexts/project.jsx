@@ -25,7 +25,6 @@ export function ProjectProvider(props) {
 		<ProjectContext.Provider value={{ projectName, sageApi, setUserSession }}>
 			<UserProvider>
 				<BrickLibraryProvider>
-					<TopMenu style={{ backgroundColor: 'black' }} />
 					<Outlet />
 				</BrickLibraryProvider>
 			</UserProvider>

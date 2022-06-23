@@ -3,13 +3,15 @@ import { Input, Button } from 'antd';
 import { useCookies } from 'react-cookie';
 import { useProject } from './project';
 import { Alert } from 'antd';
+import { useParams } from 'react-router-dom';
 
 const UserContext = React.createContext(undefined);
 
 export function UserProvider(props) {
 	const [cookies, setCookie] = useCookies();
 	const [user, setUser] = useState(undefined);
-	const { projectName, sageApi, setUserSession } = useProject();
+	const { projectName } = useParams();
+	const { sageApi, setUserSession } = useProject();
 
 	const [login, setLogin] = useState(undefined);
 	const [password, setPassword] = useState(undefined);
@@ -36,6 +38,7 @@ export function UserProvider(props) {
 	};
 
 	useEffect(() => {
+		console.log(user, projectName, sageApi, cookies)
 		if (user) return;
 		if (!sageApi) return;
 		if (!cookies[`session.${projectName}`]) return;
@@ -67,6 +70,7 @@ export function UserProvider(props) {
 		}
 	}, [user]);
 
+	if (!user && sageApi) return <></>;
 	if (!user)
 		return (
 			<>
