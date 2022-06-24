@@ -9,12 +9,12 @@ export default function BrickEditor() {
 	const [ value, setValue ] = useState();
 	const [ brickType, setBrickType ] = useState();
 	const [ brickLibrary, setBrickLibrary ] = useState();
-	const { sageApi } = useProject();
-	
-	useEffect(() => {
-	}, [ templateCode, objectId, fieldCode ])
+	const [ connectedProjectName, setConnectedProjectName ] = useState();
+	const { sageApi, projectName } = useProject();
+	const [ editMode, setEditMode ] = useState(false);
 
 	window.loadData = (props) => {
+		setEditMode(true);
 		setValue({
 			brickParams: props.brickParams,
 			brickType: props.brickType,
@@ -23,11 +23,12 @@ export default function BrickEditor() {
 	}
 
 	useEffect(() => {
-		if (window.opener) {
+		if (window.opener && window.opener.getProjectName() === projectName) {
 			window.opener.requestData()
 		} else {
 			sageApi.template.getObjectById({ template: templateCode, objectId }).then((res) => {
 				setValue(JSON.parse(JSON.stringify(res.fields[fieldCode])))
+				setEditMode(false)
 			})
 		}
 		const onKeyDown = (e) => {
@@ -40,14 +41,12 @@ export default function BrickEditor() {
 		return () => {
 			window.removeEventListener('keydown', onKeyDown);
 		};
-	}, [])
+	}, [ sageApi, projectName ])
 
 	if (!value) return <>Loading</>;
 
 	const onApply = (val) => {
-		if (window.opener) {
-			window.opener.onApply(val);
-		}
+		window.opener.onApply(val);
 	}
 
 	return <BrickTreeEditor
@@ -55,7 +54,7 @@ export default function BrickEditor() {
 		brickParams={value.brickParams}
 		brickTree={value.brickTree}
 		brickType={value.brickType}
-		onChange={window.opener ? onApply : undefined}
+		onChange={editMode ? onApply : undefined}
 
 	/>;
 }
