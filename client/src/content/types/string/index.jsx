@@ -47,7 +47,11 @@ class SString {
 		return a.localeCompare(b);
 	}
 
-	eq = (a, b) => a === b;
+	eq = (a, b) => {
+		if (!a) a = '';
+		if (!b) b = '';
+		return a === b
+	};
 }
 
 SType.register('SString', SString);

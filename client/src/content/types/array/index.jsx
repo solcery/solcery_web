@@ -11,6 +11,8 @@ class SArray {
 	default = () => [];
 	eq = (a, b) => {
 		if (a === b) return true;
+		if (a && !b) return false;
+		if (b && !a) return false;
 		if (a.length != b.length) return false;
 		for (let i in a) {
 			if (!this.valueType.eq(a[i], b[i])) return false;
