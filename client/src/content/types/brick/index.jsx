@@ -1,6 +1,17 @@
 import { SType } from '../../index';
 import { ValueRender, FilterRender } from './components';
 
+const validateBrick = (v) => {
+	if (v.func === 'error') return false;
+	if (v === undefined) return true;
+	for (let param of Object.values(v.params)) {
+		if (param === null) return false;
+		if (param.lib) {
+			if (!validateBrick(param)) return false;
+		}
+	}
+	return true;
+}
 
 const argFromParam = (param) => {
 	return {
@@ -59,14 +70,8 @@ class SBrick {
 	validateField = (value) => {
 		if (value === undefined) return true;
 		let v = value.brickTree;
-		let params = value.brickParams;
 		if (!v) return true;
-		if (v.func === 'error') return false;
-		if (v === undefined) return true;
-		for (let param of Object.values(v.params)) {
-			if (param === null) return false;
-		}
-		return true;
+		return validateBrick(v);
 	}
 
 	construct = (value, meta) => {
