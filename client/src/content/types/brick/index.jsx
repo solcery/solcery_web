@@ -130,6 +130,7 @@ class SBrick {
 	valueRender = ValueRender;
 	default = () => null;
 	eq = (a, b) => JSON.stringify(a) === JSON.stringify(b);
+	clone = (a) => JSON.parse(JSON.stringify(a));
 }
 
 SType.register('SBrick', SBrick);

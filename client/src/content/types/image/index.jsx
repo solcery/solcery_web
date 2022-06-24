@@ -15,6 +15,7 @@ class SImage {
 	valueRender = ValueRender;
 	default = '';
 	eq = (a, b) => a === b;
+	clone = (a) => a;
 }
 
 SType.register('SImage', SImage);

@@ -18,6 +18,7 @@ class SInt {
 		console.log(a, b)
 		return a === b;
 	}
+	clone = (a) => a;
 }
 
 SType.register('SInt', SInt);

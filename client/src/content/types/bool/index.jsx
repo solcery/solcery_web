@@ -8,6 +8,7 @@ class SBool {
 	filter = defaultFilter;
 	default = () => false;
 	eq = (a, b) => a === b;
+	clone = (a) => a;
 }
 
 SType.register('SBool', SBool);

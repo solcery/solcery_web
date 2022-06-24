@@ -55,6 +55,8 @@ class SString {
 		if (!b) b = '';
 		return a === b
 	};
+	
+	clone = (a) => a;
 }
 
 SType.register('SString', SString);

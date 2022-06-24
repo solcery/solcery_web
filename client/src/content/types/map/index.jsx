@@ -44,7 +44,11 @@ class SMap {
 			if (!this.valueType.eq(a[i].value, b[i].value) || !this.keyType.eq(a[i].key, b[i].key)) return false;
 		}
 		return true;
-	}
+	};
+	clone = (value) => value ? value.map(val => ({
+		key: this.keyType.clone(val.key),
+		value: this.valueType.clone(val.value)
+	})) : undefined;
 }
 
 SType.register('SMap', SMap);

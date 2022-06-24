@@ -24,6 +24,7 @@ class SDate {
 		return moment(a).unix() - moment(b).unix();  
 	};
 	eq = (a, b) => a === b;
+	clone = (a) => a;
 }
 
 SType.register('SDate', SDate);

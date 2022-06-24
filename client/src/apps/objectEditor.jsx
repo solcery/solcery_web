@@ -15,7 +15,7 @@ export default function ObjectEditor(props) {
 		let res = {}
 		for (let field of Object.values(props.schema.fields)) {
 			let status = 'old';
-			let value = props.object.fields[field.code]
+			let value = field.type.clone(props.object.fields[field.code])
 			let validator = field.type.validateField;
 			if (validator && !validator(value)) status = 'error';
 			res[field.code] = { value, status }

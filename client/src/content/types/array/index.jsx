@@ -19,6 +19,7 @@ class SArray {
 		}
 		return true;
 	}
+	clone = (value) => value ? value.map(val => this.valueType.clone(val)) : undefined;
 }
 
 SType.register('SArray', SArray);

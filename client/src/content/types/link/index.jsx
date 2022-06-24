@@ -22,6 +22,7 @@ class SLink {
 	valueRender = ValueRender;
 	default = () => undefined;
 	eq = (a, b) => a === b;
+	clone = (a) => a;
 }
 
 SType.register('SLink', SLink);

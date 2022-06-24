@@ -12,6 +12,7 @@ class SEnum {
 	filter = defaultFilter;
 	default = () => this.values[0];
 	eq = (a, b) => a === b;
+	clone = (a) => a;
 }
 
 SType.register('SEnum', SEnum);
