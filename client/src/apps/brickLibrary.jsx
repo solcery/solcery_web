@@ -31,7 +31,7 @@ export function BrickLibraryObjectEditor() {
 			.updateObjectById({
 				template: 'customBricks',
 				objectId,
-				fields: object.fields,
+				fields,
 			})
 			.then((res) => {
 				if (res.modifiedCount) {
