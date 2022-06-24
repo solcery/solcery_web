@@ -45,11 +45,14 @@ funcs.update = async function (data) {
   if (!data.params.fields) {
     throw new Error('NO PARAMS');
   }
-  // TODO: validate
   var query = {
     _id: ObjectId(data.params.id),
   };
-  var values = { $set: { fields: data.params.fields } };
+  let fields = {}
+  for (let [ field, value ] of Object.entries(data.params.fields)) {
+    fields[`fields.${field}`] = value;
+  }
+  var values = { $set: fields };
   return await db.getDb(data.project)
     .collection(USERS_COLLECTION)
     .updateOne(query, values)
