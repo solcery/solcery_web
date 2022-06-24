@@ -61,7 +61,13 @@ export default function ObjectEditor(props) {
 				payload[fieldCode] = value;
 			}
 		}
-		console.log(payload)
+		if (Object.keys(payload).length === 0) {
+			notify({
+				message: `Not saved`,
+				description: 'Cannot save object, no changes in fields',
+				color: '#FFFFDD',
+			});
+		}
 		props.onSave(payload);
 	}
 
