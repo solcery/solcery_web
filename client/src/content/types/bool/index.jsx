@@ -7,6 +7,7 @@ class SBool {
 	valueRender = ValueRender;
 	filter = defaultFilter;
 	default = () => false;
+	eq = (a, b) => a === b;
 }
 
 SType.register('SBool', SBool);

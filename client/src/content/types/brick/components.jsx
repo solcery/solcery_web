@@ -85,9 +85,10 @@ export const ValueRender = (props) => {
 	const [brickParams, setBrickParams] = useState(props.defaultValue ? props.defaultValue.brickParams : []);
 	const [brickTree, setBrickTree] = useState(props.defaultValue && props.defaultValue.brickTree);
 
-	useEffect(() => {
-		props.onChange && props.onChange({ brickType, brickParams, brickTree });
-	}, [brickType, brickParams, brickTree, props]);
+	const onChangeBrickTree = (bt) => {
+		props.onChange({ brickType, brickParams, brickTree: bt });
+		setBrickTree(JSON.parse(JSON.stringify(bt)))
+	}
 
 	if (!props.onChange && (!props.defaultValue || !props.defaultValue.brickTree)) return <p>Empty</p>;
 	if (!readonlyBricks && !props.onChange) return <p>Brick</p>;
@@ -100,7 +101,7 @@ export const ValueRender = (props) => {
 					brickParams={brickParams}
 					brickTree={brickTree}
 					brickType={brickType}
-					onChange={props.onChange && setBrickTree}
+					onChange={props.onChange && onChangeBrickTree}
 					objectId={props.objectId}
 					templateCode={props.templateCode}
 					fieldCode={props.fieldCode}
@@ -144,7 +145,7 @@ export const BrickTreeEditor = (props) => {
 
 	const openInNewTab = () => {
 		if (props.fullscreen) return;
-		let opn = window.open(`brickEditor.${props.templateCode}.${props.objectId}.${props.fieldCode}?mode=edit`, '_blank', props.onChange ? undefined : 'noopener');
+		let opn = window.open(`brickEditor.${props.templateCode}.${props.objectId}.${props.fieldCode}${props.onChange ? '?edit' : ''}`, '_blank', props.onChange ? undefined : 'noopener');
 		window.requestData = () => {
 			if (opn.loadData) {
 				opn.loadData(props)

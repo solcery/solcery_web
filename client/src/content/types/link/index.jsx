@@ -21,6 +21,7 @@ class SLink {
 	filter = defaultFilter;
 	valueRender = ValueRender;
 	default = () => undefined;
+	eq = (a, b) => a === b;
 }
 
 SType.register('SLink', SLink);

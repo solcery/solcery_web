@@ -1,6 +1,24 @@
 import { SType } from '../../index';
 import { ValueRender, FilterRender } from './components';
 
+
+const argFromParam = (param) => {
+	return {
+		lib: param.type.brickType,
+		func: `arg`,
+		name: `Arg [${param.name}]`,
+		params: [
+			{
+				code: 'name',
+				name: 'Name',
+				type: SType.from('SString'),
+				value: param.code,
+				readonly: true,
+			},
+		],
+	};
+};
+
 class SBrick {
 	static fromString = (data) => new SBrick({ brickType: data });
 
@@ -22,7 +40,7 @@ class SBrick {
 		if (value === undefined) return;
 		let v = value;
 		if (v.brickParams) v = v.brickTree;
-		if (!v) return undefined;
+		if (!v) return;
 		let brickSignature = meta.brickLibrary[v.lib][v.func];
 		if (!brickSignature) {
 			meta.error(`No brick '${v.lib}.${v.func}'' found in brick library!`);
@@ -37,6 +55,19 @@ class SBrick {
 			}
 		}
 	};
+
+	validateField = (value) => {
+		if (value === undefined) return true;
+		let v = value.brickTree;
+		let params = value.brickParams;
+		if (!v) return true;
+		if (v.func === 'error') return false;
+		if (v === undefined) return true;
+		for (let param of Object.values(v.params)) {
+			if (param === null) return false;
+		}
+		return true;
+	}
 
 	construct = (value, meta) => {
 		if (value === undefined) return; //TODO: Общий обходчик бриков на констракт и validate
@@ -92,7 +123,8 @@ class SBrick {
 		return result;
 	};
 	valueRender = ValueRender;
-	default = '';
+	default = () => null;
+	eq = (a, b) => JSON.stringify(a) === JSON.stringify(b);
 }
 
 SType.register('SBrick', SBrick);

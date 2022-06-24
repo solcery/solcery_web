@@ -35,6 +35,14 @@ class SMap {
 
 	valueRender = ValueRender;
 	default = () => [];
+	eq = (a, b) => {
+		if (a === b) return true;
+		if (a.length != b.length) return false;
+		for (let i in a) {
+			if (!this.valueType.eq(a[i].value, b[i].value) || !this.keyType.eq(a[i].key, b[i].key)) return false;
+		}
+		return true;
+	}
 }
 
 SType.register('SMap', SMap);

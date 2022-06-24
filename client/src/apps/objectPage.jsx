@@ -22,7 +22,7 @@ export default function ObjectPage() {
 			.updateObjectById({
 				template: templateCode,
 				objectId,
-				fields: object.fields,
+				fields,
 			})
 			.then((res) => {
 				if (res.modifiedCount) {

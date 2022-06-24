@@ -38,7 +38,6 @@ export function UserProvider(props) {
 	};
 
 	useEffect(() => {
-		console.log(user, projectName, sageApi, cookies)
 		if (user) return;
 		if (!sageApi) return;
 		if (!cookies[`session.${projectName}`]) return;

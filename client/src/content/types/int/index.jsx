@@ -11,7 +11,8 @@ class SInt {
 		if (!a) a = 0; 
 		if (!b) b = 0; 
 		return a - b;  
-	}
+	};
+	eq = (a, b) => a === b;
 }
 
 SType.register('SInt', SInt);

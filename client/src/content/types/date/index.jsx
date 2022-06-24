@@ -22,7 +22,8 @@ class SDate {
 		if (!a) return -1;
 		if (!b) return 1;
 		return moment(a).unix() - moment(b).unix();  
-	}
+	};
+	eq = (a, b) => a === b;
 }
 
 SType.register('SDate', SDate);

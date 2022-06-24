@@ -11,6 +11,7 @@ class SEnum {
 	valueRender = ValueRender;
 	filter = defaultFilter;
 	default = () => this.values[0];
+	eq = (a, b) => a === b;
 }
 
 SType.register('SEnum', SEnum);

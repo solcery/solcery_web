@@ -82,10 +82,14 @@ funcs.updateObjectById = async function (response, data) {
     _id: ObjectId(data.params.objectId),
     template: data.params.template,
   };
-  var values = { $set: { fields: data.params.fields } };
+  let fields = {}
+  for (let [ field, value ] of Object.entries(data.params.fields)) {
+    fields[`fields.${field}`] = value;
+  }
+  var update = { $set: fields };
   db.getDb(data.project)
     .collection(OBJECT_COLLECTION)
-    .updateOne(query, values, function (err, res) {
+    .updateOne(query, update, function (err, res) {
       if (err) throw err;
       response.json(res);
     });

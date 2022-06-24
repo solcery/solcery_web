@@ -14,6 +14,7 @@ class SImage {
 	construct = (value, meta) => value;
 	valueRender = ValueRender;
 	default = '';
+	eq = (a, b) => a === b;
 }
 
 SType.register('SImage', SImage);

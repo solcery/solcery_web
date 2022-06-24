@@ -1,0 +1,11 @@
+.old {
+	color: white;
+}
+
+.changed {
+	color: yellow;
+}
+
+.error {
+	color: red;
+}
