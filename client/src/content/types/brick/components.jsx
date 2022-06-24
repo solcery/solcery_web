@@ -7,6 +7,7 @@ import { SType } from '../base';
 import { insertTable } from '../../../utils';
 import { useBrickLibrary } from '../../../contexts/brickLibrary';
 import { useUser } from '../../../contexts/user';
+import { useProject } from '../../../contexts/project';
 
 const { Option } = Select;
 
@@ -83,7 +84,12 @@ export const ValueRender = (props) => {
 		props.type.brickType ? props.type.brickType : props.defaultValue && props.defaultValue.brickType
 	);
 	const [brickParams, setBrickParams] = useState(props.defaultValue ? props.defaultValue.brickParams : []);
-	const [brickTree, setBrickTree] = useState(props.defaultValue && props.defaultValue.brickTree);
+	const [brickTree, setBrickTree] = useState();
+
+	useEffect(() => {
+		if (props.defaultValue && props.defaultValue.brickTree)
+			setBrickTree(JSON.parse(JSON.stringify(props.defaultValue.brickTree)))
+	}, [ props.defaultValue ])
 
 	const onChangeBrickTree = (bt) => {
 		props.onChange({ brickType, brickParams, brickTree: bt });
@@ -114,6 +120,7 @@ export const ValueRender = (props) => {
 export const BrickTreeEditor = (props) => {
 	const [ownBrickLibrary, setOwnBrickLibrary] = useState();
 	const { brickLibrary } = useBrickLibrary();
+	const { projectName } = useProject();
 
 	const mapParams = (paramsArray) => {
 		let bricks = {};
@@ -150,6 +157,9 @@ export const BrickTreeEditor = (props) => {
 			if (opn.loadData) {
 				opn.loadData(props)
 			}
+		}
+		window.getProjectName = () => {
+			return projectName
 		}
 		window.onApply = (brickTree) => {
 			props.onChange(brickTree)
