@@ -15,6 +15,8 @@ commands.dump = {};
 
 commands.getContent = {};
 
+commands.getLogs = {};
+
 commands.migrate = {
 	private: true,
 	params: {

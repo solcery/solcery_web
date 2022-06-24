@@ -1,6 +1,6 @@
 const db = require("../../db/connection");
 const { ObjectId } = require("mongodb");
-const { TEMPLATE_COLLECTION, OBJECT_COLLECTION } = require("../../db/names");
+const { TEMPLATE_COLLECTION, OBJECT_COLLECTION, LOGS_COLLECTION } = require("../../db/names");
 
 const funcs = {};
 
@@ -73,6 +73,15 @@ funcs.getContent = async function (data) {
     .toArray();
   return { templates, objects };
 };
+
+funcs.getLogs = async function (data) {
+  return await db
+    .getDb(data.project)
+    .collection(LOGS_COLLECTION)
+    .find({})
+    .toArray();
+};
+
 
 
 funcs.migrate = async function (data) {
