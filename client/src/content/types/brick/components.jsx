@@ -86,11 +86,6 @@ export const ValueRender = (props) => {
 	const [brickParams, setBrickParams] = useState(props.defaultValue ? props.defaultValue.brickParams : []);
 	const [brickTree, setBrickTree] = useState(props.defaultValue ? props.defaultValue.brickTree : undefined);
 
-	// useEffect(() => {
-	// 	if (props.defaultValue && props.defaultValue.brickTree)
-	// 		setBrickTree(JSON.parse(JSON.stringify(props.defaultValue.brickTree)))
-	// }, [ props.defaultValue ])
-
 	const onChangeBrickTree = (bt) => {
 		props.onChange({ brickType, brickParams, brickTree: bt });
 		setBrickTree(bt)
@@ -98,8 +93,6 @@ export const ValueRender = (props) => {
 
 	if (!props.onChange && (!props.defaultValue || !props.defaultValue.brickTree)) return <p>Empty</p>;
 	if (!readonlyBricks && !props.onChange) return <p>Brick</p>;
-	console.log(props.defaultValue)
-	console.log(brickTree)
 	return (
 		<>
 			{!brickType && <BrickTypeEditor defaultValue={brickType} onChange={setBrickType} />}
