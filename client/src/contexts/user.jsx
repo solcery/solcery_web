@@ -50,6 +50,7 @@ export function UserProvider(props) {
 			return;
 		}
 		sageApi.user.login({ login, password }).then((res) => {
+			console.log(res)
 			const SESSION_LENGTH = 86400 * 30 * 1000;
 			setCookie(`session.${projectName}`, res.session, {
 				expires: new Date(new Date().getTime() + SESSION_LENGTH),
@@ -68,8 +69,7 @@ export function UserProvider(props) {
 			}
 		}
 	}, [user]);
-
-	if (!user && sageApi) return <></>;
+	if (!sageApi) return <></>;
 	if (!user)
 		return (
 			<>

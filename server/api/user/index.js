@@ -35,9 +35,10 @@ funcs.login = async function (data) {
     .findOne(query);
   if (!result) return; // TODO
   result.session = new ObjectId().toString();
-  return await db.getDb(data.project)
+  await db.getDb(data.project)
     .collection(USERS_COLLECTION)
     .updateOne(query, { $set: { session: result.session } })
+  return result;
 };
 
 funcs.update = async function (data) {
