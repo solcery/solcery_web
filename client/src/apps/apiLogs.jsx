@@ -34,8 +34,6 @@ export default function ApiLogs() {
 			module: entry.module,
 		}));
 
-	console.log(tableData);
-
 	return (
 		<>
 			<Table dataSource={tableData}>
