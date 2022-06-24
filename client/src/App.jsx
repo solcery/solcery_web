@@ -18,8 +18,6 @@ import ApiLogs from './apps/apiLogs';
 import TemplateSchema from './apps/templateSchema';
 import BrickEditor from './apps/brickEditor';
 
-
-<TopMenu style={{ backgroundColor: 'black' }} />
 export default function App() {
 	return (
 		<>
