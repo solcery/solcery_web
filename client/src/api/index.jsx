@@ -14,7 +14,11 @@ const makeRequest = (data) => {
 		},
 		body: JSON.stringify(data),
 	};
-	return fetch(url, request).then((response) => response.json());
+	return fetch(url, request).then(response => {
+		return response.json().then(res => {
+			return res.data
+		})
+	});
 };
 
 let apiModules = [projectAPI, templateAPI, userAPI];

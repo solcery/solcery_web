@@ -3,6 +3,7 @@ const commands = {};
 commands.getAllTemplates = {};
 
 commands.restore = {
+	log: true,
 	private: true,
 	params: {
 		src: {
@@ -16,6 +17,7 @@ commands.dump = {};
 commands.getContent = {};
 
 commands.migrate = {
+	log: true,
 	private: true,
 	params: {
 		objects: {

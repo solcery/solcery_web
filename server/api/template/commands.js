@@ -17,6 +17,7 @@ commands.getSchema = {
 };
 
 commands.setSchema = {
+	log: true,
 	private: true,
 	params: {
 		template: {
@@ -40,6 +41,7 @@ commands.getObjectById = {
 };
 
 commands.updateObjectById = {
+	log: true,
 	private: true,
 	params: {
 		template: {
@@ -55,6 +57,7 @@ commands.updateObjectById = {
 };
 
 commands.createObject = {
+	log: true,
 	private: true,
 	params: {
 		template: {
@@ -64,6 +67,7 @@ commands.createObject = {
 };
 
 commands.cloneObject = {
+	log: true,
 	private: true,
 	params: {
 		template: {
@@ -76,6 +80,7 @@ commands.cloneObject = {
 };
 
 commands.removeObjectById = {
+	log: true,
 	private: true,
 	params: {
 		template: {

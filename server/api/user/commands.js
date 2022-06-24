@@ -1,6 +1,7 @@
 const commands = {};
 
 commands.login = {
+	log: true,
 	params: {
 		login: {
 			required: true,
@@ -29,6 +30,7 @@ commands.getById = {
 
 
 commands.create = {
+	log: true,
 	private: true,
 	params: {
 		login: {
@@ -41,6 +43,7 @@ commands.create = {
 };
 
 commands.update = {
+	log: true,
 	private: true,
 	params: {
 		id: {

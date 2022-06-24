@@ -4,16 +4,16 @@ const { TEMPLATE_COLLECTION, OBJECT_COLLECTION } = require("../../db/names");
 
 const funcs = {};
 
-funcs.getAllTemplates = async function (response, data) {
+funcs.getAllTemplates = async function (data) {
   let result = db
     .getDb(data.project)
     .collection(TEMPLATE_COLLECTION)
     .find({})
     .toArray();
-  response.json(await result);
+  return await result;
 };
 
-funcs.dump = async function (response, data) {
+funcs.dump = async function (data) {
   let objects = await db
     .getDb(data.project)
     .collection(OBJECT_COLLECTION)
@@ -24,10 +24,10 @@ funcs.dump = async function (response, data) {
     .collection(TEMPLATE_COLLECTION)
     .find({})
     .toArray();
-  response.json({ objects, templates });
+  return { objects, templates };
 };
 
-funcs.restore = async function (response, data) {
+funcs.restore = async function (data) {
   let { objects, templates } = data.params.src;
 
   await db // Removing all templates
@@ -57,10 +57,10 @@ funcs.restore = async function (response, data) {
       if (err) throw err;
       result.objects = res;
     });
-  response.json(result);
+  return result;
 };
 
-funcs.getContent = async function (response, data) {
+funcs.getContent = async function (data) {
   let templates = await db
     .getDb(data.project)
     .collection(TEMPLATE_COLLECTION)
@@ -71,11 +71,11 @@ funcs.getContent = async function (response, data) {
     .collection(OBJECT_COLLECTION)
     .find({})
     .toArray();
-  response.json({ templates, objects });
+  return { templates, objects };
 };
 
 
-funcs.migrate = async function (response, data) {
+funcs.migrate = async function (data) {
   let replaces = data.params.objects.map(object => {
     let obj = Object.assign({}, object);
     delete obj._id;
@@ -86,12 +86,12 @@ funcs.migrate = async function (response, data) {
       }
     }
   });
-  await db // Creating all objects
+  return db // Creating all objects
     .getDb(data.project)
     .collection(OBJECT_COLLECTION)
     .bulkWrite(replaces, function (err, res) {
       if (err) throw err;
-      response.json(res);
+      return res;
     });
 };
 

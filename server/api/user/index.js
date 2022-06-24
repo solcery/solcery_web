@@ -4,29 +4,27 @@ const { ObjectId } = require("mongodb");
 
 const funcs = {};
 
-funcs.getSession = async function (response, data) {
+funcs.getSession = async function (data) {
   let query = {
     session: data.params.session
   };
-  let result = db
+  return await db
     .getDb(data.project)
     .collection(USERS_COLLECTION)
     .findOne(query);
-  response.json(await result);
 };
 
-funcs.getById = async function (response, data) {
+funcs.getById = async function (data) {
   let query = {
     _id: ObjectId(data.params.id)
   };
-  let result = db
+  return await db
     .getDb(data.project)
     .collection(USERS_COLLECTION)
     .findOne(query);
-  response.json(await result);
 };
 
-funcs.login = async function (response, data) {
+funcs.login = async function (data) {
   let query = {
     login: data.params.login,
     password: data.params.password,
@@ -37,34 +35,26 @@ funcs.login = async function (response, data) {
     .findOne(query);
   if (!result) return; // TODO
   result.session = new ObjectId().toString();
-  console.log(result.session)
-  let session = db.getDb(data.project)
+  return await db.getDb(data.project)
     .collection(USERS_COLLECTION)
-    .updateOne(query, { $set: { session: result.session } }, function (err, res) {
-      if (err) throw err;
-      response.json(result);
-    });
+    .updateOne(query, { $set: { session: result.session } })
 };
 
-funcs.update = async function (response, data) {
+funcs.update = async function (data) {
   if (!data.params.fields) {
     throw new Error('NO PARAMS');
   }
   // TODO: validate
-  console.log(data)
   var query = {
     _id: ObjectId(data.params.id),
   };
   var values = { $set: { fields: data.params.fields } };
-  db.getDb(data.project)
+  return await db.getDb(data.project)
     .collection(USERS_COLLECTION)
-    .updateOne(query, values, function (err, res) {
-      if (err) throw err;
-      response.json(res);
-    });
+    .updateOne(query, values)
 };
 
-funcs.create = async function (response, data) {
+funcs.create = async function (data) {
   // TODO: validate
   object = {
     _id: new ObjectId(),
@@ -73,12 +63,9 @@ funcs.create = async function (response, data) {
       password: data.password,
     }
   };
-  db.getDb(data.project)
+  return await db.getDb(data.project)
     .collection(USERS_COLLECTION)
-    .insertOne(object, function (err, res) {
-      if (err) throw err;
-      response.json(res);
-    });
+    .insertOne(object);
 };
 
 const commands = require('./commands');

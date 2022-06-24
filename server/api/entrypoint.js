@@ -26,48 +26,73 @@ const checkParams = (command, params) => {
   return true;
 }
 
-const log = (user, data) => {
+const log = (data) => {
   entry = {
     timestamp: new Date(Date.now()),
-    userId: user._id,
+    userId: data.userId,
+    module: data.module,
     command: data.command,
     params: data.params,
+    response: data.response,
   };
   db.getDb(data.project)
     .collection(LOGS_COLLECTION)
-    .insertOne(entry, function (err, res) {
-      if (err) throw err;
-    });
+    .insertOne(entry)
 }
 
-const checkUser = async (session, project) => {
+const getUserSession = async (session, project) => {
   let query = { session };
   let result = await db
     .getDb(project)
     .collection(USERS_COLLECTION)
     .findOne(query);
-  if (result) return result;
-  throw `Unauthorized access!`;
+  return result;
 }
 
 const apiCall = async (response, data) => {
+  let error = undefined;
+  let result = {
+    status: true,
+  }
+  let user = undefined;
   let moduleApi = apiLibrary[data.module];
-  if (!moduleApi) {
-    throw `API error: unknown API module '${data.module}'!`;
+  let command = moduleApi[data.command];
+  try {
+    if (!moduleApi) {
+      throw `API error: unknown API module '${data.module}'!`;
+    }
+    if (!command) {
+      throw `API error: unknown API command '${data.command}'!`;
+    }
+    if (!command.system && !data.project) {
+      throw `API error: project not set for project-specific command!`;
+    }
+    if (data.session) {
+      user = await getUserSession(data.session, data.project);
+    }
+    if (command.private && !user) {
+      throw `API error: Unauthorized access!`
+    }
+    checkParams(command, data.params); 
+    result.data = await command.func(data);
   }
-  let command = moduleApi[data.command] // TODO
-  if (!command) {
-    throw `API error: unknown API command '${data.command}'!`;
+  catch (err) {
+    result.error = err;
+    result.status = false;
   }
-  if (!command.system && !data.project) {
-    throw `API error: project not set!`;
+  finally {
+    if (result.error || (command && command.log)) 
+      log({ 
+        userId: user && user._id,
+        module: data.module,
+        command: data.command,
+        params: data.params,
+        project: data.project,
+        response: result,
+        level: result.error ? 'error' : 'log',
+      })
+    response.json(result)
   }
-  if (command.private) {
-    let user = await checkUser(data.session, data.project);
-    log(user, data)
-  }
-  checkParams(command, data.params); 
-  command.func(response, data);
 }
 
 module.exports = apiCall

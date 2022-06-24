@@ -4,40 +4,37 @@ const { ObjectId } = require("mongodb");
 
 const funcs = {};
 
-funcs.getAllObjects = async function (response, data) {
+funcs.getAllObjects = async function (data) {
   let query = Object.assign({ template: data.params.template }, data.params.query);
-  let objects = await db
+  return await db
     .getDb(data.project)
     .collection(OBJECT_COLLECTION)
     .find(query)
     .toArray();
-  response.json(objects);
 };
 
-funcs.getObjectById = async function (response, data) {
+funcs.getObjectById = async function (data) {
   let query = {
     _id: ObjectId(data.params.objectId),
     template: data.params.template,
   };
-  let object = await db
+  return await db
     .getDb(data.project)
     .collection(OBJECT_COLLECTION)
     .findOne(query);
-  response.json(object);
 };
 
-funcs.getSchema = async function (response, data) {
+funcs.getSchema = async function (data) {
   let query = {
     code: data.params.template,
   };
-  let schema = await db
+  return await db
     .getDb(data.project)
     .collection(TEMPLATE_COLLECTION)
     .findOne(query);
-  response.json(schema);
 };
 
-funcs.setSchema = async function (response, data) {
+funcs.setSchema = async function (data) {
   let schema = Object.assign({}, data.params.schema);
   var query = {
     _id: ObjectId(schema._id),
@@ -51,15 +48,12 @@ funcs.setSchema = async function (response, data) {
       hidden: schema.hidden,
     },
   };
-  db.getDb(data.project)
+  return await db.getDb(data.project)
     .collection(TEMPLATE_COLLECTION)
-    .updateOne(query, values, function (err, res) {
-      if (err) throw err;
-      response.json(res);
-    });
+    .updateOne(query, values)
 };
 
-funcs.createObject = async function (response, data) {
+funcs.createObject = async function (data) {
   // TODO: validate
   object = {
     _id: new ObjectId(),
@@ -68,15 +62,12 @@ funcs.createObject = async function (response, data) {
       creationTime: new Date(Date.now()),
     },
   };
-  db.getDb(data.project)
+  return await db.getDb(data.project)
     .collection(OBJECT_COLLECTION)
-    .insertOne(object, function (err, res) {
-      if (err) throw err;
-      response.json(res);
-    });
+    .insertOne(object)
 };
 
-funcs.updateObjectById = async function (response, data) {
+funcs.updateObjectById = async function (data) {
   // TODO: validate
   var query = {
     _id: ObjectId(data.params.objectId),
@@ -87,15 +78,12 @@ funcs.updateObjectById = async function (response, data) {
     fields[`fields.${field}`] = value;
   }
   var update = { $set: fields };
-  db.getDb(data.project)
+  return await db.getDb(data.project)
     .collection(OBJECT_COLLECTION)
-    .updateOne(query, update, function (err, res) {
-      if (err) throw err;
-      response.json(res);
-    });
+    .updateOne(query, update)
 };
 
-funcs.cloneObject = async function (response, data) {
+funcs.cloneObject = async function (data) {
   // TODO: validate
   let query = {
     _id: ObjectId(data.params.objectId),
@@ -110,25 +98,19 @@ funcs.cloneObject = async function (response, data) {
   }
   object._id = new ObjectId();
   object.fields.creationTime = new Date(Date.now());
-  db.getDb(data.project)
+  return await db.getDb(data.project)
     .collection(OBJECT_COLLECTION)
-    .insertOne(object, function (err, res) {
-      if (err) throw err;
-      response.json(res);
-    });
+    .insertOne(object)
 };
 
-funcs.removeObjectById = async function (response, data) {
+funcs.removeObjectById = async function (data) {
   let query = {
     _id: ObjectId(data.params.objectId),
     template: data.params.template,
   };
-  db.getDb(data.project)
+  return await db.getDb(data.project)
     .collection(OBJECT_COLLECTION)
-    .deleteOne(query, function (err, res) {
-      if (err) throw err;
-      response.json(res);
-    });
+    .deleteOne(query)
 };
 
 const commands = require('./commands');
