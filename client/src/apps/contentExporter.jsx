@@ -1,14 +1,24 @@
-import { Button, Input } from 'antd';
+import { Button, Input, Select } from 'antd';
 import { useState } from 'react';
 import { useProject } from '../contexts/project';
 const { TextArea } = Input;
+const { Option } = Select;
 
 export default function ContentExporter() {
 	const [contentDump, setContentDump] = useState();
+	const [exportType, setExportType] = useState('full');
 	const { sageApi } = useProject();
 
+
+
 	const exportContent = async () => {
-		let content = await sageApi.project.dump();
+		let params = {
+			objects: exportType === 'full' || exportType === 'objects',
+			templates: exportType === 'full' || exportType === 'templates',
+		}
+
+		console.log(params)
+		let content = await sageApi.project.getContent(params);
 		let projectName = sageApi.projectName;
 
 		let date = Date.now();
@@ -27,6 +37,11 @@ export default function ContentExporter() {
 
 	return (
 		<>
+			<Select onChange={setExportType} defaultValue='full'>
+				<Option value = 'full'>Full</Option>
+				<Option value = 'templates'>Templates</Option>
+				<Option value = 'objects'>Objects</Option>
+			</Select>
 			<p> EXPORT CONTENT: </p>
 			<Button onClick={exportContent}> Export </Button>
 			<p></p>

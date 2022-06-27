@@ -1,7 +1,5 @@
 const commands = {};
 
-commands.getAllTemplates = {};
-
 commands.restore = {
 	log: true,
 	private: true,
@@ -12,11 +10,18 @@ commands.restore = {
 	},
 };
 
-commands.dump = {};
+commands.getContent = {
+	params: {
+		objects: true,
+		templates: true,
+	}
+};
 
-commands.getContent = {};
-
-commands.getLogs = {};
+commands.getLogs = {
+	params: {
+		query: true,
+	}
+};
 
 commands.migrate = {
 	log: true,

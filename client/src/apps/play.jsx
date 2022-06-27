@@ -35,7 +35,7 @@ export default function Play() {
 	useEffect(() => {
 		if (!brickLibrary) return;
 		async function buildContent() {
-			let content = await sageApi.project.dump();
+			let content = await sageApi.project.getContent({ objects: true, templates: true });
 			let construction = build({
 				targets: ['web', 'unity_local'],
 				content,

@@ -1,8 +1,7 @@
 const commands = {};
 
-commands.getAllTemplates = {};
-
 commands.restore = {
+	log: true,
 	private: true,
 	params: {
 		src: {
@@ -11,13 +10,21 @@ commands.restore = {
 	},
 };
 
-commands.dump = {};
+commands.getContent = {
+	params: {
+		objects: true,
+		templates: true,
+	}
+};
 
-commands.getContent = {};
-
-commands.getLogs = {};
+commands.getLogs = {
+	params: {
+		query: true,
+	}
+};
 
 commands.migrate = {
+	log: true,
 	private: true,
 	params: {
 		objects: {
@@ -25,6 +32,7 @@ commands.migrate = {
 		},
 	},
 };
+
 
 export const projectAPI = {
 	name: 'project',

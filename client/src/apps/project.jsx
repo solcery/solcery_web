@@ -16,7 +16,7 @@ export default function Project() {
 	const { layoutPresets } = useUser();
 
 	const buildProject = async () => {
-		let content = await sageApi.project.dump();
+		let content = await sageApi.project.getContent({ objects: true, templates: true });
 		setErrors([]);
 		let res = await build({ targets: [target], content });
 		if (!res.status) {
@@ -27,7 +27,7 @@ export default function Project() {
 	};
 
 	const validateProject = async () => {
-		let content = await sageApi.project.dump();
+		let content = await sageApi.project.getContent({ objects: true, templates: true });
 		setErrors([]);
 		let res = await validate({ content });
 		if (!res.status) {
@@ -53,7 +53,7 @@ export default function Project() {
 	};
 
 	const buildForUnity = async () => {
-		let content = await sageApi.project.dump();
+		let content = await sageApi.project.getContent({ objects: true, templates: true });
 		setUnityData(undefined);
 		setErrors([]);
 		let res = build({ targets: ['web', 'unity_local'], content });

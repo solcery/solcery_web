@@ -12,8 +12,8 @@ export default function Migrator() {
 
 	const applyMigrator = async () => {
 		let oldApi = new SageAPIConnection('project_eclipse')
-		let oldContent = await oldApi.project.getContent();
-		let content = await sageApi.project.getContent();
+		let oldContent = await oldApi.project.getContent({ objects: true, templates: true });
+		let content = await sageApi.project.getContent({ objects: true, templates: true });
 		let { objects } = migrator(content, oldContent);
 		setResult(JSON.stringify(content, undefined, 2));
 		sageApi.project.migrate({ objects });

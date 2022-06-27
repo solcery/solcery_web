@@ -11,7 +11,7 @@ export const TopMenu = () => {
 	const { nick } = useUser();
 
 	useEffect(() => {
-		sageApi.project.getAllTemplates().then(setTemplates);
+		sageApi.project.getContent({ templates: true }).then((res) => setTemplates(res.templates));
 	}, [sageApi.project]);
 
 	return (

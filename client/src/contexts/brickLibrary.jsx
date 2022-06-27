@@ -10,7 +10,7 @@ export function BrickLibraryProvider(props) {
 	const [brickLibrary, setBrickLibrary] = useState(undefined);
 
 	const load = useCallback(async () => {
-		let content = await sageApi.project.dump();
+		let content = await sageApi.project.getContent({ objects: true, templates: true });
 		let bl = new BrickLibrary(content);
 		setBrickLibrary(bl.bricks);
 	}, [sageApi.project]);
