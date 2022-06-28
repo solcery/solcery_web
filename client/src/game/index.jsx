@@ -197,12 +197,12 @@ class Entity {
 		this.attrs = {};
 		this.game = game;
 		for (let attr of Object.values(game.content.attributes)) {
-			this.attrs[attr.code] = 0;
+			this.setAttr(attr.code, 0, true);
 		}
 	}
 
-	setAttr(attr, value) {
-		if (this.attrs[attr] === undefined) throw new Error(`trying to set unknown attr [${attr}]`);
+	setAttr(attr, value, init = false) {
+		if (this.attrs[attr] === undefined && !init) throw new Error(`trying to set unknown attr [${attr}]`);
 		this.attrs[attr] = value;
 		this.game.onEntityAttrChanged(this, attr, value);
 	}

@@ -217,7 +217,7 @@ export const basicActions = [
 			let card_type = runtime.execBrick(params.card_type, ctx);
 			let place = runtime.execBrick(params.place, ctx);
 			let newObj = ctx.game.createEntity(card_type);
-			newObj.attrs.place = place;
+			newObj.setAttr('place', place);
 			let oldObj = ctx.object;
 			ctx.object = newObj;
 			runtime.execBrick(params.action, ctx);
