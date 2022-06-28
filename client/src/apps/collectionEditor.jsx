@@ -52,19 +52,37 @@ const HeaderSorter = (props) => {
 
 const HeaderFilter = (props) => {
 	const [opened, setOpened] = useState(false);
-	const [value, setValue] = useState(props.value)
-	let filtered = value !== undefined;
+	const [filterValue, setFilterValue] = useState(props.value)
+	const [inputValue, setInputValue] = useState(props.value)
+	let filtered = filterValue !== undefined;
 
 	const apply = () => {
 		setOpened(false);
-		props.onChange(value);
+		setFilterValue(inputValue)
+		props.onChange(inputValue);
 	}
 
 	const clear = () => {
-		setValue(undefined);
-		setOpened(false);
+		setInputValue(undefined);
+		setFilterValue(undefined)
 		props.onChange(undefined);
+		setOpened(false);
 	}
+
+	const onKeyDown = (event) => {
+		if (event.keyCode === 27) {
+			setOpened(false);
+			setInputValue(filterValue)
+		}
+	}
+
+	useEffect(() => {
+		document.addEventListener("keydown", onKeyDown);
+		return () => {
+			document.removeEventListener("keydown", onKeyDown);
+		};
+	}, []);
+
 
 	return (
 		<>
@@ -80,7 +98,7 @@ const HeaderFilter = (props) => {
 					<div style ={{ display: 'flex' }}>
 						<props.field.type.filter.render
 							type={props.field.type}
-							defaultValue={value}
+							defaultValue={filterValue}
 						/>
 						<FilterOutlined style={{ marginLeft: '8px', marginTop: 'auto', marginBottom: 'auto' }} />
 					</div>
@@ -91,8 +109,7 @@ const HeaderFilter = (props) => {
 					</div>
 				}
 			</Button>}
-			{opened && 
-				<div style={{ 
+			{opened && <div style={{ 
 					width: '300px',
 					display: 'flex'
 				}}>
@@ -100,7 +117,8 @@ const HeaderFilter = (props) => {
 						key={props.field.code + props.value}
 						type={props.field.type}
 						defaultValue={props.value}
-						onChange={setValue}
+						onChange={setInputValue}
+						onPressEnter={apply}
 					/>
 					<Button onClick={apply}>APPLY</Button>
 					<Button onClick={clear}>CLEAR</Button>
@@ -120,8 +138,6 @@ const HeaderCell = (props) => {
 				value = { props.sorter }
 				field = { props.field}
 			/>}
-		</div>
-		<div style = {{ height: '30px', marginTop: '10px', display: 'flex' }}>
 			{props.field.type.filter && <HeaderFilter
 				value = { props.filter }
 				field = { props.field }
@@ -138,7 +154,6 @@ export default function CollectionEditor({ templateCode, moduleName }) {
 
 	const [objects, setObjects] = useState();
 	const [template, setTemplate] = useState();
-	const [filteredField, setFilteredField] = useState();
 	const [filter, setFilter] = useState({});
 	const [sorter, setSorter] = useState({});
 	const [ currentPage, setCurrentPage ] = useState(1);
