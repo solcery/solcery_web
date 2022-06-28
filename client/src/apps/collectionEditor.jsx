@@ -1,11 +1,135 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Table, Button } from 'antd';
+import { Table, Button, Row } from 'antd';
 import { Template } from '../content/template';
 import { useProject } from '../contexts/project';
 import { useCookies } from 'react-cookie';
+import { FilterOutlined } from '@ant-design/icons';
 
 const { Column } = Table;
+
+const HeaderSorter = (props) => {
+	const [ order, setOrder ] = useState(props.value);
+
+	useEffect(() => {
+		setOrder(props.value);
+	}, [ props, props.value ]);
+
+	const toggle = (fieldCode) => {
+		let newOrder;
+		switch (order) {
+			case 1:
+				newOrder = -1;
+				break;
+			case -1:
+				newOrder = undefined;
+				break;
+			default:
+				newOrder = 1;
+				break;
+		}
+		setOrder(newOrder);
+		props.onChange && props.onChange(newOrder);
+	}
+
+	let sortName = 'Sort';
+	if (order === 1) sortName = 'Sort: A -> Z';
+	if (order === -1) sortName = 'Sort: Z -> A';
+
+	return (
+		<Button style={{ 
+				fontColor: order ? 'white' : 'dimgray',
+				color: order ? undefined : 'dimgray',
+				backgroundColor: order ? '#104055' : undefined,
+			}} 
+			onClick={toggle}
+		>
+			{ sortName}
+		</Button>
+	);
+}
+
+
+const HeaderFilter = (props) => {
+	const [opened, setOpened] = useState(false);
+	const [value, setValue] = useState(props.value)
+	let filtered = value !== undefined;
+
+	const apply = () => {
+		setOpened(false);
+		props.onChange(value);
+	}
+
+	const clear = () => {
+		setValue(undefined);
+		setOpened(false);
+		props.onChange(undefined);
+	}
+
+	return (
+		<>
+			{!opened && <Button 
+				style = {{ 
+					color: filtered ? undefined : 'dimgray',
+					fontColor: filtered ? 'white' : 'dimgray',
+					backgroundColor: filtered ? '#104055' : undefined,
+				}} 
+				onClick={() => setOpened(true)}
+			>
+				{filtered ? 
+					<div style ={{ display: 'flex' }}>
+						<props.field.type.filter.render
+							type={props.field.type}
+							defaultValue={value}
+						/>
+						<FilterOutlined style={{ marginLeft: '8px', marginTop: 'auto', marginBottom: 'auto' }} />
+					</div>
+				:
+					<div>
+						Filter
+						<FilterOutlined style={{ marginLeft: '8px', marginTop: '4px'}}/>
+					</div>
+				}
+			</Button>}
+			{opened && 
+				<div style={{ 
+					width: '300px',
+					display: 'flex'
+				}}>
+					<props.field.type.filter.render
+						key={props.field.code + props.value}
+						type={props.field.type}
+						defaultValue={props.value}
+						onChange={setValue}
+					/>
+					<Button onClick={apply}>APPLY</Button>
+					<Button onClick={clear}>CLEAR</Button>
+			</div>}
+		</>
+	);
+}
+
+const HeaderCell = (props) => {
+	return <div>
+		<div style={{ wordWrap: 'break-word', fontSize: '16px', height: '30px', marginBottom: '10px' }}>
+			<p>{ props.field.name }</p>
+		</div>
+		<div style = {{ height: '30px', marginTop: '10px', display: 'flex' }}>
+			{props.field.type.sorter && <HeaderSorter
+				onChange = {props.onSorterChange}
+				value = { props.sorter }
+				field = { props.field}
+			/>}
+		</div>
+		<div style = {{ height: '30px', marginTop: '10px', display: 'flex' }}>
+			{props.field.type.filter && <HeaderFilter
+				value = { props.filter }
+				field = { props.field }
+				onChange = {props.onFilterChange}
+			/>}
+		</div>
+	</div>		
+}
 
 export default function CollectionEditor({ templateCode, moduleName }) {
 	const [cookies, setCookie, removeCookie] = useCookies();
@@ -35,6 +159,7 @@ export default function CollectionEditor({ templateCode, moduleName }) {
 			removeCookie(filterCookieName);
 		}
 		setCurrentPage(1);
+		setCookie(`${moduleName}.pagination.current`, 1);
 		setFilter(Object.assign({}, filter));
 	};
 
@@ -59,21 +184,11 @@ export default function CollectionEditor({ templateCode, moduleName }) {
 		load();
 	}, [load]);
 
-	const onSorterChange = (sorter) => {
-		let result = {}
-		if (!Array.isArray(sorter)) {
-			sorter = [ sorter ]
-		}
-		for (let sorterEntry of sorter) {
-			result[sorterEntry.field] = sorterEntry.order;
-		}
-		setSorter(result)
-		setCookie(sorterCookieName, result)
+	const setFieldSorter = (fieldCode, value) => {
+		sorter[fieldCode] = value;
+		setCookie(sorterCookieName, sorter)
+		setSorter(JSON.parse(JSON.stringify(sorter)));
 	}
-
-	const onTableChange = (pagination, filter, sorter) => {
-		onSorterChange(sorter)
-	};
 
 	const onPaginationChange = (current, pageSize) => {
 		setCurrentPage(current)
@@ -84,7 +199,6 @@ export default function CollectionEditor({ templateCode, moduleName }) {
 
 
 	if (!template || !objects || !filter) return <>NO DATA</>;
-
 	let tableData = objects
 		.filter((object) => {
 			for (let field of Object.values(template.fields)) {
@@ -102,6 +216,16 @@ export default function CollectionEditor({ templateCode, moduleName }) {
 				key: object._id,
 				fields: Object.assign({}, object.fields),
 			};
+		})
+		.sort((a, b) => {
+			for (let [ fieldCode, sortOrder ] of Object.entries(sorter)) {
+				let fieldSorter = template.fields[fieldCode].type.sorter;
+				let res = fieldSorter(a.fields[fieldCode], b.fields[fieldCode]) * sortOrder;
+				if (res !== 0) {
+					return res;
+				}
+			}
+			return 0;
 		});
 
 	const pagination = {
@@ -123,44 +247,21 @@ export default function CollectionEditor({ templateCode, moduleName }) {
 						},
 					};
 				}}
-				onChange={onTableChange}
 				pagination={pagination}
 			>
 				{Object.values(template.fields).map((field, fieldIndex) => (
 					<Column
-						filtered={filter[field.code] !== undefined}
-						title={field.name + (filter[field.code] !== undefined ? `   [ ${filter[field.code]} ]` : '')}
 						key={`${moduleName}.${field.code}`}
 						dataIndex={field.code}
-						filterDropdown={
-							field.type.filter && (
-								<field.type.filter.render
-									key={field.code + filter[field.code]}
-									type={field.type}
-									defaultValue={filter[field.code]}
-									onChange={(value) => {
-										setFieldFilter(field.code, value);
-										setFilteredField();
-									}}
-								/>
-							)
-						}
-						onHeaderCell = {
-							() => ({
-								onDoubleClick: () => setFilteredField(field.code),
-							})
-						}
-						sorter = { field.type.sorter && {
-							compare: (a, b) => field.type.sorter(a.fields[field.code], b.fields[field.code]),
-							multiple: -fieldIndex,
-						}}
-						sortOrder = {
-							sorter[field.code]
-						}
-						
-						filtered = { filter[field.code] !== undefined }
-						onFilterDropdownVisibleChange={(visible) => setFilteredField(visible ? field.code : undefined)}
-						filterDropdownVisible={filteredField === field.code}
+						title = {<HeaderCell
+							key = {`${moduleName}.${field.code}.header`}
+							field = { field }
+							sorter = { sorter[field.code]}
+							onSorterChange = { value => setFieldSorter(field.code, value) }
+
+							filter = { filter[field.code] }
+							onFilterChange = { value => setFieldFilter(field.code, value) }
+						/>}
 						render={(_, object) => (
 							<field.type.valueRender 
 								defaultValue={object.fields[field.code]} 

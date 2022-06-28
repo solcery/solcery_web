@@ -7,7 +7,7 @@ export const ValueRender = (props) => {
 		props.onChange(false);
 	}, [ props.isFilter, props.onChange ]);
 
-	if (!props.onChange) return <p>{props.defaultValue ? 'True' : 'False'}</p>;
+	if (!props.onChange) return <>{props.defaultValue ? 'True' : 'False'}</>;
 
 	return <Switch defaultChecked={props.defaultValue} onChange={props.onChange} />;
 };

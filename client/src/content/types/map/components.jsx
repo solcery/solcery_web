@@ -31,7 +31,7 @@ export const ValueRender = (props) => {
 		return (
 			<>
 				{value.map((entry, index) => (
-					<div key={`${index}`}>
+					<div style = {{ display: 'flex' }} key={`${index}`}>
 						<props.type.keyType.valueRender defaultValue={entry.key} type={props.type.keyType} />
 						{' => '}
 						<props.type.valueType.valueRender defaultValue={entry.value} type={props.type.valueType} />
@@ -41,33 +41,37 @@ export const ValueRender = (props) => {
 		);
 	return (
 		<>
-			{value.map((entry, index) => (
-				<div key={`${revision}.${index}`}>
-					<Button
-						onClick={() => {
-							removeElement(index);
-						}}
-					>
-						{REMOVE_ELEMENT_BUTTON_LABEL}
-					</Button>
-					<props.type.keyType.valueRender
-						defaultValue={entry.key}
-						type={props.type.keyType}
-						onChange={(newValue) => {
-							onChange(newValue, index, 'key');
-						}}
-					/>{' '}
-					=>
-					<props.type.valueType.valueRender
-						defaultValue={entry.value}
-						type={props.type.valueType}
-						onChange={(newValue) => {
-							onChange(newValue, index, 'value');
-						}}
-					/>
-				</div>
-			))}
-			<Button onClick={addNewElement}>{ADD_ELEMENT_BUTTON_LABEL}</Button>
+			<div>
+				{value.map((entry, index) => (
+					<div style = {{ display: 'flex' }} key={`${revision}.${index}`}>
+						<Button
+							onClick={() => {
+								removeElement(index);
+							}}
+						>
+							{REMOVE_ELEMENT_BUTTON_LABEL}
+						</Button>
+						<props.type.keyType.valueRender
+							defaultValue={entry.key}
+							type={props.type.keyType}
+							onChange={(newValue) => {
+								onChange(newValue, index, 'key');
+							}}
+						/>{' '}
+						=>
+						<props.type.valueType.valueRender
+							defaultValue={entry.value}
+							type={props.type.valueType}
+							onChange={(newValue) => {
+								onChange(newValue, index, 'value');
+							}}
+						/>
+					</div>
+				))}
+			</div>
+			<div>
+				<Button onClick={addNewElement}>{ADD_ELEMENT_BUTTON_LABEL}</Button>
+			</div>
 		</>
 	);
 };

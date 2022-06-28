@@ -13,16 +13,12 @@ export const DefaultFilterRender = (props) => {
 	}
 
 	return (
-		<div>
-			<props.type.valueRender
-				type={props.type}
-				defaultValue={props.defaultValue}
-				onChange={setValue}
-				onPressEnter={apply}
-				isFilter = { true }
-			/>
-			<Button onClick={apply}>APPLY</Button>
-			<Button onClick={clear}>CLEAR</Button>
-		</div>
+		<props.type.valueRender
+			type={props.type}
+			defaultValue={props.defaultValue}
+			onChange={props.onChange}
+			onPressEnter={apply}
+			isFilter = { true }
+		/>
 	);
 };

@@ -12,17 +12,23 @@ import { useProject } from '../../../contexts/project';
 const { Option } = Select;
 
 const BrickTypeEditor = (props) => {
-	if (props.defaultValue) return <></>;
+	let defaultValue = props.defaultValue ?? 'action'
+	const titles = {
+		action: 'Action',
+		condition: 'Condition',
+		value: 'Value',
+	}
+	if (!props.onChange) return <>{titles[defaultValue]}</>;
 	return (
-		<Select onChange={props.onChange} defaultValue={props.defaultValue}>
-			<Option key="action" value="action">
-				Action
+		<Select style = {{ minWidth: '100px' }} onChange={props.onChange} defaultValue={ props.defaultValue }>
+			<Option value='action'>
+				{ titles.action }
 			</Option>
-			<Option key="condition" value="condition">
-				Condition
+			<Option value="condition">
+				{ titles.condition }
 			</Option>
-			<Option key="value" value="value">
-				Value
+			<Option value="value">
+				{ titles.value }
 			</Option>
 		</Select>
 	);
@@ -91,12 +97,17 @@ export const ValueRender = (props) => {
 		setBrickTree(bt)
 	}
 
-	if (!props.onChange && (!props.defaultValue || !props.defaultValue.brickTree)) return <p>Empty</p>;
-	if (!readonlyBricks && !props.onChange) return <p>Brick</p>;
+	if (!props.onChange && (!props.defaultValue || !props.defaultValue.brickTree)) return <>Empty</>;
+	if (!readonlyBricks && !props.onChange) return <>{`Brick(${brickType ?? 'none'})`}</>;
 	return (
 		<>
-			{!brickType && <BrickTypeEditor defaultValue={brickType} onChange={setBrickType} />}
-			{props.type.params && <BrickParamsEditor readonly={!props.onChange} defaultValue={brickParams} onChange={setBrickParams} />}
+			{!props.type.brickType && 
+			<div>
+				Type: <BrickTypeEditor defaultValue={brickType} onChange={!brickType ? setBrickType : undefined} />
+			</div>}
+			{props.type.params && <div>
+				Params: <BrickParamsEditor readonly={!props.onChange} defaultValue={brickParams} onChange={setBrickParams} />
+			</div>}
 			{brickType && (
 				<BrickTreeEditor
 					brickParams={brickParams}
@@ -182,24 +193,4 @@ export const BrickTreeEditor = (props) => {
 	);
 };
 
-export const FilterRender = (props) => {
-	const [value, setValue] = useState(props.defaultValue ?? 'action');
-
-	return (
-		<div>
-			<Select defaultValue={value} onChange={setValue}>
-				<Option key="action" value="action">
-					Action
-				</Option>
-				<Option key="condition" value="condition">
-					Condition
-				</Option>
-				<Option key="value" value="value">
-					Value
-				</Option>
-			</Select>
-			<Button onClick={() => props.onChange(value)}>APPLY</Button>
-			<Button onClick={() => props.onChange()}>CLEAR</Button>
-		</div>
-	);
-};
+export const FilterRender = BrickTypeEditor;
