@@ -17,7 +17,6 @@ class SString {
 
 		// Applying macros
 		function applyLinkMacro(match, template, code) {
-			console.log(meta.rawContent)
 			let templateObjects = meta.rawContent[template];
 			if (!templateObjects) return match;
 			let obj = templateObjects.objects.find((obj) => obj.fields.code === code);
@@ -28,7 +27,7 @@ class SString {
 		for (let { source, result } of meta.stringMacros) {
 			res = res.replaceAll(source, result);
 		}
-		res = res.replace(/<link=([a-zA-Z]+).([a-zA-Z0-9]+)>/, applyLinkMacro);
+		res = res.replace(/<link=([a-zA-Z]+).([a-zA-Z0-9]+)>/g, applyLinkMacro);
 		return res;
 	};
 
