@@ -79,6 +79,7 @@ export default function Builder() {
 
 	return (
 		<>
+			<h1>Builder</h1>
 			<Card title="Test targets">
 				<Select defaultValue="web" onChange={setTarget}>
 					<Option value="web">Web</Option>

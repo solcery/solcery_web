@@ -28,6 +28,11 @@ export const TopMenu = () => {
 							Export content
 						</Link>
 					</Menu.Item>
+					<Menu.Item key='import' >
+						<Link to="import">
+							Import content
+						</Link>
+					</Menu.Item>
 					<Menu.Item key='migrator' >
 						<Link to="migrator">
 							Migrations

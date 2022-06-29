@@ -9,6 +9,7 @@ import './App.css';
 import ObjectPage from './apps/objectPage';
 import TemplatePage from './apps/templatePage';
 import ContentExporter from './apps/contentExporter';
+import ContentImporter from './apps/contentImporter';
 import Migrator from './apps/migrator';
 import { BrickLibraryObjectEditor, BrickLibraryCollectionEditor } from './apps/brickLibrary';
 import Play from './apps/play';
@@ -37,6 +38,7 @@ export default function App() {
 								<Route path="builder" element={<Builder />} />
 								<Route path="migrator" element={<Migrator />} />
 								<Route path="export" element={<ContentExporter />} />
+								<Route path="import" element={<ContentImporter />} />
 								<Route path="profile" element={<Profile />} />
 							</Route>
 						</Route>
