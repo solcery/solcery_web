@@ -264,7 +264,7 @@ export default function CollectionEditor({ templateCode, moduleName }) {
 				}}
 				pagination={pagination}
 			>
-				{Object.values(template.fields).map((field, fieldIndex) => (
+				{Object.values(template.fields).filter(field => !field.hidden).map((field, fieldIndex) => (
 					<Column
 						key={`${moduleName}.${field.code}`}
 						dataIndex={field.code}
