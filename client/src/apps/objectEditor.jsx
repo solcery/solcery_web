@@ -100,9 +100,9 @@ export default function ObjectEditor(props) {
 					render={(text, record) => (
 						<record.field.type.valueRender
 							defaultValue={record.value}
-							onChange={(value) => {
+							onChange={!record.field.readonly ? (value) => {
 								setField(record.field.code, value);
-							}}
+							} : undefined}
 							type={record.field.type}
 							object={props.object} 
 							objectId={props.object._id}
