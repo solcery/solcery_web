@@ -3,12 +3,15 @@ import { SType } from './types';
 export class Template {
 	constructor(data) {
 		Object.assign(this, data);
-		for (let field of this.fields) {
-			field.type = SType.from(field.type);
+		this.fields = {}
+		for (let field of Object.values(data.fields)) {
+			let newField = Object.assign({}, field);
+			newField.type = SType.from(newField.type);
+			this.fields[field.code] = newField;
 		}
 	}
 
-	construct = (object, meta) => {
+	build = (object, meta) => {
 		let result = {};
 		result.id = meta.getIntId(object._id);
 		for (let field of Object.values(this.fields)) {
