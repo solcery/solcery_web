@@ -21,7 +21,7 @@ class SDate {
 	sorter = (a, b) => { 
 		if (!a) return -1;
 		if (!b) return 1;
-		return moment(a).unix() - moment(b).unix();  
+		return a - b;  
 	};
 	eq = (a, b) => a === b;
 	clone = (a) => a;
