@@ -1,5 +1,10 @@
 TODO:
 
+skipExport
+showInList
+
+
+Пофиксить null филды в places/dragndrops
 required филды
 миграция схем
 Баг с копипастом бриков
