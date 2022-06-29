@@ -50,7 +50,6 @@ export function UserProvider(props) {
 			return;
 		}
 		sageApi.user.login({ login, password }).then((res) => {
-			console.log(res)
 			const SESSION_LENGTH = 86400 * 30 * 1000;
 			setCookie(`session.${projectName}`, res.session, {
 				expires: new Date(new Date().getTime() + SESSION_LENGTH),
@@ -96,6 +95,6 @@ export function UserProvider(props) {
 }
 
 export function useUser() {
-	const { id, nick, css, layoutPresets, reload, readonlyBricks } = useContext(UserContext);
-	return { id, nick, css, layoutPresets, reload, readonlyBricks };
+	const { id, doubleClickToOpenObject, fastCopy, nick, css, layoutPresets, reload, readonlyBricks } = useContext(UserContext);
+	return { id, doubleClickToOpenObject, fastCopy, nick, css, layoutPresets, reload, readonlyBricks };
 }

@@ -20,6 +20,8 @@ export default function Profile() {
 				name: 'Layout presets',
 				type: 'SArray<SString>',
 			},
+			{ code: 'fastCopy', name: 'Fast object copy', type: 'SBool' },
+			{ code: 'doubleClickToOpenObject', name: 'Open objects with double click', type: 'SBool' },
 		],
 	});
 

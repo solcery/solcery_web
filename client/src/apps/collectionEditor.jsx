@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { Table, Button, Row } from 'antd';
 import { Template } from '../content/template';
 import { useProject } from '../contexts/project';
+import { useUser } from '../contexts/user';
+import { notify } from '../components/notification';
 import { useCookies } from 'react-cookie';
 import { FilterOutlined } from '@ant-design/icons';
 
@@ -158,6 +160,7 @@ export default function CollectionEditor({ templateCode, moduleName }) {
 	const [sorter, setSorter] = useState({});
 	const [ currentPage, setCurrentPage ] = useState(1);
 	const [ pageSize, setPageSize ] = useState(10);
+	const { fastCopy, doubleClickToOpenObject } = useUser();
 
 	const filterCookieName = `${moduleName}.filter`;
 	const sorterCookieName = `${moduleName}.sorter`;
@@ -255,17 +258,18 @@ export default function CollectionEditor({ templateCode, moduleName }) {
 			<Table
 				key = { `${moduleName}.${templateCode}`}
 				dataSource={tableData}
-				onRow={(record, rowIndex) => {
+				pagination={pagination}
+				onRow={doubleClickToOpenObject && function(record, rowIndex) {
 					return {
 						onDoubleClick: (event) => {
 							navigate(`../${moduleName}.${record._id}`);
 						},
 					};
 				}}
-				pagination={pagination}
 			>
 				{Object.values(template.fields).filter(field => !field.hidden).map((field, fieldIndex) => (
 					<Column
+
 						key={`${moduleName}.${field.code}`}
 						dataIndex={field.code}
 						title = {<HeaderCell
@@ -304,7 +308,17 @@ export default function CollectionEditor({ templateCode, moduleName }) {
 										})
 										.then((res) => {
 											if (res.insertedId) {
-												navigate(`../${moduleName}.${res.insertedId}`);
+												if (fastCopy) {
+													navigate(`../${moduleName}.${res.insertedId}`);
+												} else {
+													notify({ 
+														message: 'Object created', 
+														color: '#DDFFDD',
+														description: res.insertedId,
+														url: `${moduleName}.${res.insertedId}`
+													});
+													load();
+												}
 											}
 										});
 								}}
@@ -324,6 +338,11 @@ export default function CollectionEditor({ templateCode, moduleName }) {
 											})
 											.then((res) => {
 												if (res.deletedCount) {
+													notify({ 
+														message: 'Object deleted', 
+														color: '#DDFFDD',
+														description: object._id
+													});
 													load();
 												}
 											});
