@@ -1,5 +1,11 @@
 import { BrickRuntime } from '../content/brickLib';
 
+const STATE_TYPES = {
+	state: 0,
+	delay: 1,
+	timer: 2,
+}
+
 const objectToArray = (obj) => {
 	return Object.entries(obj).map(([key, value]) => {
 		return { key, value };
@@ -163,7 +169,7 @@ export class Game {
 
 	closeDiff() {
 		if (!this.diff) return;
-		let packedDiff = {
+		let value = {
 			attrs: objectToArray(this.diff.attrs),
 			objects: Object.values(this.diff.objects).map((object) => {
 				return {
@@ -174,15 +180,42 @@ export class Game {
 			}),
 		};
 		if (!this.diffLog) this.diffLog = [];
-		this.diffLog.push(packedDiff);
+		this.diffLog.push({
+			state_type: STATE_TYPES.state,
+			value,
+		});
 		this.diff = undefined;
 	}
 
 	animate(duration) {
 		this.closeDiff();
 		this.diffLog.push({
-			delay: duration,
+			state_type: STATE_TYPES.delay,
+			value: {
+				delay: duration,
+			}
 		});
+	}
+
+	startTimer(object, duration) {
+		this.diffLog.push({
+			state_type: STATE_TYPES.timer,
+			value: {
+				object_id: object.id,
+				start: true,
+				duration,
+			}
+		})
+	}
+
+	stopTimer(object) {
+		this.diffLog.push({
+			state_type: STATE_TYPES.timer,
+			value: {
+				object_id: object.id,
+				start: false,
+			}
+		})
 	}
 }
 

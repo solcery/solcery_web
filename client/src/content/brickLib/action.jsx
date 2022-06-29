@@ -250,6 +250,29 @@ export const basicActions = [
 	},
 	{
 		type: 0,
+		subtype: 15,
+		lib: 'action',
+		func: 'start_timer',
+		name: 'Start Timer',
+		params: [{ code: 'duration', name: 'Duration', type: 'SBrick<value>' }],
+		exec: (runtime, params, ctx) => {
+			let duration = runtime.execBrick(params.duration, ctx);
+			ctx.game.startTimer(ctx.object, duration);
+		},
+	},
+	{
+		type: 0,
+		subtype: 16,
+		lib: 'action',
+		func: 'stop_timer',
+		name: 'Stop Timer',
+		params: [],
+		exec: (runtime, params, ctx) => {
+			ctx.game.stopTimer(ctx.object);
+		},
+	},
+	{
+		type: 0,
 		subtype: 0,
 		lib: 'action',
 		func: 'console_log',
