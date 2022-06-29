@@ -8,7 +8,7 @@ import { Session } from '../game';
 import { DownloadOutlined } from '@ant-design/icons';
 const { Option } = Select;
 
-export default function Project() {
+export default function Builder() {
 	const [target, setTarget] = useState('web');
 	const [errors, setErrors] = useState([]);
 	const [unityData, setUnityData] = useState(undefined);

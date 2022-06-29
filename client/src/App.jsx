@@ -12,7 +12,7 @@ import ContentExporter from './apps/contentExporter';
 import Migrator from './apps/migrator';
 import { BrickLibraryObjectEditor, BrickLibraryCollectionEditor } from './apps/brickLibrary';
 import Play from './apps/play';
-import Project from './apps/project';
+import Builder from './apps/builder';
 import Profile from './apps/profile';
 import ApiLogs from './apps/apiLogs';
 import TemplateSchema from './apps/templateSchema';
@@ -34,7 +34,7 @@ export default function App() {
 								<Route path="brickLibrary.:objectId" element={<BrickLibraryObjectEditor />} />
 								<Route path="play" element={<Play />} />
 								<Route path="apiLogs" element={<ApiLogs />} />
-								<Route path="project" element={<Project />} />
+								<Route path="builder" element={<Builder />} />
 								<Route path="migrator" element={<Migrator />} />
 								<Route path="export" element={<ContentExporter />} />
 								<Route path="profile" element={<Profile />} />

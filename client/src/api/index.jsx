@@ -31,7 +31,7 @@ export class SageAPIConnection {
 			if (this[apiModule.name]) throw new Error('Error building SageAPIConnection, name conflict!');
 			this[apiModule.name] = {};
 			for (let [commandName, command] of Object.entries(apiModule.commands)) {
-				this[apiModule.name][commandName] = (data) => {
+				this[apiModule.name][commandName] = (data = {}) => {
 					let requestData = {
 						project: this.projectName,
 						module: apiModule.name,
