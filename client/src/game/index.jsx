@@ -115,7 +115,7 @@ export class Game {
 	};
 
 	setAttr(attr, value) {
-		if (this.attrs[attr] === undefined) throw new Error('Error trying to set unknown attr ' + attr);
+		if (this.attrs[attr] === undefined) throw new Error('Error trying to set unknown game attr ' + attr);
 		this.attrs[attr] = value;
 		this.onGameAttrChanged(attr, value);
 	}
@@ -235,7 +235,7 @@ class Entity {
 	}
 
 	setAttr(attr, value, init = false) {
-		if (this.attrs[attr] === undefined && !init) throw new Error(`trying to set unknown attr [${attr}]`);
+		if (this.attrs[attr] === undefined && !init) throw new Error(`trying to set unknown entity attr [${attr}]`);
 		this.attrs[attr] = value;
 		this.game.onEntityAttrChanged(this, attr, value);
 	}
