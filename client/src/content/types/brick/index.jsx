@@ -63,11 +63,13 @@ class SBrick {
 				meta.error(`No param '${paramSig.code}' found for brick '${v.lib}.${v.func}'!`);
 			} else if (paramSig.type instanceof SBrick) {
 				this.validate(param, meta);
+			} else if (paramSig.type.validate) {
+				paramSig.type.validate(param, meta)
 			}
 		}
 	};
 
-	validateField = (value) => {
+	validateField = (value) => { // client validation before saving
 		if (value === undefined) return true;
 		let v = value.brickTree;
 		if (!v) return true;
