@@ -30,11 +30,12 @@ export const validate = ({ content }) => {
 		errors: [],
 		status: true,
 		brickLibrary: new BrickLibrary(content).bricks,
+		content,
 	};
 	let templates = content.templates.map(template => new Template(template));
 	for (let template of templates) {
 		let fields = Object.values(template.fields).filter((field) => field.type.validate);
-		let objects = content.objects.filter((obj) => obj.template === template.code);
+		let objects = content.objects.filter(obj => obj.template === template.code);
 		for (let object of objects) {
 			meta.object = object;
 			for (let field of fields) {
