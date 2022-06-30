@@ -9,6 +9,15 @@ class SLink {
 		this.field = data.field;
 	}
 
+	validate = (value, meta) => {
+		if (value === undefined) return;
+		let obj = meta.content.objects.find(obj => obj._id === value);
+		if (!obj) {
+			meta.error(`Broken link [${value}]!`);
+			return;
+		}
+	};
+
 	construct = (value, meta) => {
 		if (this.field) {
 			let tpl = meta.rawContent[this.templateCode];
