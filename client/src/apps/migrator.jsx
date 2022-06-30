@@ -1,7 +1,7 @@
 import { Button, Input } from 'antd';
 import { useState } from 'react';
 import { useProject } from '../contexts/project';
-import { migrator } from './migrators/29.06.22_applyToCreatures';
+import { migrator } from './migrators/30.06.22_tplIdsBricks';
 import { SageAPIConnection} from '../api';
 
 const { TextArea } = Input;
