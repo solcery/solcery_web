@@ -218,7 +218,7 @@ export default function CollectionEditor({ templateCode, moduleName }) {
 
 	if (!template || !objects || !filter) return <>NO DATA</>;
 	let tableData = objects
-		.filter((object) => {
+		.filter(object => {
 			for (let field of Object.values(template.fields)) {
 				let filterValue = filter[field.code];
 				if (filterValue === undefined) continue;
@@ -228,7 +228,7 @@ export default function CollectionEditor({ templateCode, moduleName }) {
 			}
 			return true;
 		})
-		.map((object) => {
+		.map(object => {
 			return {
 				_id: object._id,
 				key: object._id,
@@ -237,11 +237,17 @@ export default function CollectionEditor({ templateCode, moduleName }) {
 		})
 		.sort((a, b) => {
 			for (let [ fieldCode, sortOrder ] of Object.entries(sorter)) {
-				let fieldSorter = template.fields[fieldCode].type.sorter;
-				let res = fieldSorter(a.fields[fieldCode], b.fields[fieldCode]) * sortOrder;
-				if (res !== 0) {
-					return res;
+				if (fieldCode !== 'creationTime') { //TODO:
+					let fieldSorter = template.fields[fieldCode].type.sorter;
+					let res = fieldSorter(a.fields[fieldCode], b.fields[fieldCode]) * sortOrder;
+					if (res !== 0) {
+						return res;
+					}
 				}
+			}
+			let timeSorter = template.fields.creationTime.type.sorter
+			if (timeSorter) {
+				return timeSorter(a.fields.creationTime, b.fields.creationTime);
 			}
 			return 0;
 		});
