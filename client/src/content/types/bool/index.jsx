@@ -1,14 +1,12 @@
-import { SType, defaultFilter } from '../base';
+import { SType } from '../base';
 import { ValueRender } from './components';
 
-class SBool {
+class SBool extends SType {
 	static fromString = () => new SBool();
-	construct = (value, meta) => value;
 	valueRender = ValueRender;
-	filter = defaultFilter;
 	default = () => false;
-	eq = (a, b) => a === b;
-	clone = (a) => a;
+
+	sort = (a, b) => +a- +b;
 }
 
 SType.register('SBool', SBool);

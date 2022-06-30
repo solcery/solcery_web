@@ -1,10 +1,11 @@
 import { SType, defaultFilter } from '../base';
 import { ValueRender } from './components';
 
-class SLink {
+class SLink extends SType {
 	static fromString = (data) => new SLink({ templateCode: data });
 
-	constructor(data) {
+	constructor(data = {}) {
+		super();
 		this.templateCode = data.templateCode;
 		this.field = data.field;
 	}
@@ -18,7 +19,7 @@ class SLink {
 		}
 	};
 
-	construct = (value, meta) => {
+	build = (value, meta) => {
 		if (this.field) {
 			let tpl = meta.rawContent[this.templateCode];
 			let obj = tpl.objects.find((obj) => obj._id === value);
@@ -27,11 +28,9 @@ class SLink {
 		}
 		return meta.getIntId(value);
 	};
-	filter = defaultFilter;
+
 	valueRender = ValueRender;
 	default = () => undefined;
-	eq = (a, b) => a === b;
-	clone = (a) => a;
 }
 
 SType.register('SLink', SLink);

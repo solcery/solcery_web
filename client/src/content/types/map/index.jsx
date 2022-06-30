@@ -3,7 +3,7 @@ import { ValueRender } from './components';
 
 const MAP_TYPES_DELIMETER = '|';
 
-class SMap {
+class SMap extends SType {
 	static fromString = (data) => {
 		let typeDatas = data.split(MAP_TYPES_DELIMETER);
 		return new SMap({
@@ -12,12 +12,13 @@ class SMap {
 		});
 	};
 
-	constructor(data) {
+	constructor(data = {}) {
+		super();
 		this.valueType = SType.from(data.valueType);
 		this.keyType = SType.from(data.keyType);
 	}
 
-	construct = (value, meta) => {
+	build = (value, meta) => {
 		if (meta.target.includes('unity')) {
 			return value.map((val) => {
 				return {
@@ -36,8 +37,7 @@ class SMap {
 	valueRender = ValueRender;
 	default = () => [];
 	eq = (a, b) => {
-		if (a && !b) return false;
-		if (b && !a) return false;
+		if (!a !== !b) return false; //XOR
 		if (a === b) return true;
 		if (a.length != b.length) return false;
 		for (let i in a) {

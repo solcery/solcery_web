@@ -2,14 +2,16 @@ import { SType, defaultFilter } from '../base';
 import { ValueRender } from './components';
 import moment from 'moment';
 
-class SDate {
-	static fromString = (data) => new SDate({ time: data });
-	constructor(data) {
+class SDate extends SType {
+	static fromString = (data) => new SDate({ excludeTime: data === 'excludeTime' });
+
+	constructor(data = {}) {
+		super();
 		this.excludeTime = data.excludeTime;
 	}
 
 	valueRender = ValueRender;
-	construct = (value, meta) => value;
+	
 	default = () => {
 		let res = Date.now();
 		if (this.excludeTime) {
@@ -17,14 +19,8 @@ class SDate {
 		}
 		return res;
 	}
-	forceSortOrder = 'ascend'; //TODO remove
-	sorter = (a, b) => { 
-		if (!a) return -1;
-		if (!b) return 1;
-		return a - b;  
-	};
-	eq = (a, b) => a === b;
-	clone = (a) => a;
+
+	sort = (a, b) => a ?? 0 - b ?? 0;
 }
 
 SType.register('SDate', SDate);

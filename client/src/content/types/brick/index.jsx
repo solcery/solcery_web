@@ -30,10 +30,11 @@ const argFromParam = (param) => {
 	};
 };
 
-class SBrick {
+class SBrick extends SType {
 	static fromString = (data) => new SBrick({ brickType: data });
 
 	constructor(data) {
+		super();
 		this.brickType = data.brickType;
 		this.params = data.params;
 
@@ -76,7 +77,7 @@ class SBrick {
 		return validateBrick(v);
 	}
 
-	construct = (value, meta) => {
+	build = (value, meta) => {
 		if (value === undefined) return; //TODO: Общий обходчик бриков на констракт и validate
 		let v = value;
 		if (v.brickParams) v = v.brickTree;
@@ -130,7 +131,7 @@ class SBrick {
 		return result;
 	};
 	valueRender = ValueRender;
-	default = () => null;
+	default = () => undefined; // TODO
 	eq = (a, b) => JSON.stringify(a) === JSON.stringify(b);
 	clone = (a) => {
 		if (!a) return a;

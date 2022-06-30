@@ -16,12 +16,12 @@ const fromString = (src) => {
 	return _stypebyclassname[name].fromString(data);
 };
 
-export const SType = {
-	register: (classname, constructor) => {
+export class SType {
+	static register(classname, constructor) {
 		_stypebyclassname[classname] = constructor;
-	},
+	};
 
-	from: (src) => {
+	static from(src) {
 		switch (typeof src) {
 			case 'string':
 				return fromString(src);
@@ -30,8 +30,18 @@ export const SType = {
 			default:
 				throw new Error('Unknown type definition from mongo');
 		}
-	},
-};
+	};
+
+	clone = (a) => a;
+	eq = (a, b) => a === b;
+	build = (value, meta) => value;
+	sort = (a, b) => a ?? 0 - b ?? 0;
+
+	filter = {
+		eq: this.eq,
+		render: DefaultFilterRender,
+	}
+}
 
 export const defaultFilter = {
 	eq: (value, filterValue) => value === filterValue,
