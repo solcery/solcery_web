@@ -279,6 +279,7 @@ export const BrickEditor = (props) => {
 		<>
 			<div style={style}>
 				{props.fullscreen && props.onChange && <Button onClick={save}>SAVE</Button>}
+				{props.fullscreen && <Button onClick={window.close}>CLOSE</Button>}
 				<div
 					ref={editorRef}
 					className="brick-editor"
