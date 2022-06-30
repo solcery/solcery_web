@@ -26,6 +26,29 @@ export const basicValues = [
 		type: 2,
 		subtype: 0,
 		lib: 'value',
+		func: 'place',
+		name: 'Place',
+		params: [
+			{ 
+				code: 'value', 
+				name: 'Value', 
+				type: { 
+					name: 'SLink',
+					data: {
+						templateCode: 'places',
+						field: 'placeId',
+					}
+				}
+			}
+		],
+		exec: (runtime, params, ctx) => {
+			return params.value;
+		},
+	},
+	{
+		type: 2,
+		subtype: 0,
+		lib: 'value',
 		func: 'cardType',
 		name: 'Card type',
 		params: [{ code: 'value', name: 'Value', type: 'SLink<cardTypes>' }],
