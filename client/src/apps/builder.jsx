@@ -64,13 +64,10 @@ export default function Builder() {
 		let session = new Session({ web: res.constructed.web, unity: res.constructed.unity_local }, [1]);
 		session.start(layoutPresets);
 
-		let states = session.game.diffLog.map((state, index) => {
-			return {
-				id: index,
-				state_type: state.delay ? 1 : 0,
-				value: state,
-			};
-		});
+		let states = session.game.diffLog;
+		for (let index in states) {
+			states[index].id = index;
+		}
 		setUnityData({
 			content: res.constructed.unity_local,
 			state: { states },
