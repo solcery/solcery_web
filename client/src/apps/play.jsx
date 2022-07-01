@@ -40,8 +40,8 @@ export default function Play() {
 				targets: ['web', 'unity_local'],
 				content,
 			});
-			construction.constructed.unity = construction.constructed.unity_local;
 			if (construction.status) {
+				construction.constructed.unity = construction.constructed.unity_local;
 				let content = construction.constructed;
 				let session = new Session(content, [1]);
 				session.start(layoutPresets);
