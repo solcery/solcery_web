@@ -135,7 +135,7 @@ const HeaderCell = (props) => {
 			<p>{ props.field.name }</p>
 		</div>
 		<div style = {{ height: '30px', marginTop: '10px', display: 'flex' }}>
-			{props.field.type.sorter && <HeaderSorter
+			{props.field.type.sort && <HeaderSorter
 				onChange = {props.onSorterChange}
 				value = { props.sorter }
 				field = { props.field}
@@ -238,14 +238,14 @@ export default function CollectionEditor({ templateCode, moduleName }) {
 		.sort((a, b) => {
 			for (let [ fieldCode, sortOrder ] of Object.entries(sorter)) {
 				if (fieldCode !== 'creationTime') { //TODO:
-					let fieldSorter = template.fields[fieldCode].type.sorter;
+					let fieldSorter = template.fields[fieldCode].type.sort;
 					let res = fieldSorter(a.fields[fieldCode], b.fields[fieldCode]) * sortOrder;
 					if (res !== 0) {
 						return res;
 					}
 				}
 			}
-			let timeSorter = template.fields.creationTime.type.sorter
+			let timeSorter = template.fields.creationTime.type.sort
 			if (timeSorter) {
 				return timeSorter(a.fields.creationTime, b.fields.creationTime);
 			}
