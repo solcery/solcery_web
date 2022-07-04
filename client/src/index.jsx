@@ -1,5 +1,5 @@
 import React, { render } from 'react-dom';
-import App from './App';
+import Sage from './builds/Sage';
 
 const rootElement = document.getElementById('root');
-render(<App />, rootElement);
+render(<Sage />, rootElement);

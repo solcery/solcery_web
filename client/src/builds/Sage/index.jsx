@@ -1,25 +1,25 @@
 import React from 'react-dom';
 import { BrowserRouter, Routes, Route, Switch } from 'react-router-dom';
-import { ProjectProvider } from './contexts/project';
-import { TopMenu } from './components/TopMenu';
+import { ProjectProvider } from '../../contexts/project';
+import { TopMenu } from '../../components/TopMenu';
 import { CookiesProvider } from 'react-cookie';
-import './App.less';
-import './App.css';
+import './Sage.less';
+import './Sage.css';
 
-import ObjectPage from './apps/objectPage';
-import TemplatePage from './apps/templatePage';
-import ContentExporter from './apps/contentExporter';
-import ContentImporter from './apps/contentImporter';
-import Migrator from './apps/migrator';
-import { BrickLibraryObjectEditor, BrickLibraryCollectionEditor } from './apps/brickLibrary';
-import Play from './apps/play';
-import Builder from './apps/builder';
-import Profile from './apps/profile';
-import ApiLogs from './apps/apiLogs';
-import TemplateSchema from './apps/templateSchema';
-import BrickEditor from './apps/brickEditor';
+import ObjectPage from '../../apps/objectPage';
+import TemplatePage from '../../apps/templatePage';
+import ContentExporter from '../../apps/contentExporter';
+import ContentImporter from '../../apps/contentImporter';
+import Migrator from '../../apps/migrator';
+import { BrickLibraryObjectEditor, BrickLibraryCollectionEditor } from '../../apps/brickLibrary';
+import Play from '../../apps/play';
+import Builder from '../../apps/builder';
+import Profile from '../../apps/profile';
+import ApiLogs from '../../apps/apiLogs';
+import TemplateSchema from '../../apps/templateSchema';
+import BrickEditor from '../../apps/brickEditor';
 
-export default function App() {
+export default function Sage() {
 	return (
 		<>
 			<CookiesProvider>
