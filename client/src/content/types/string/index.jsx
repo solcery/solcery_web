@@ -27,7 +27,7 @@ class SString {
 		for (let { source, result } of meta.stringMacros) {
 			res = res.replaceAll(source, result);
 		}
-		res = res.replace(/<link=([a-zA-Z]+).([a-zA-Z0-9]+)>/g, applyLinkMacro);
+		res = res.replace(/<link=([a-zA-Z]+).([a-zA-Z0-9_]+)>/g, applyLinkMacro);
 		return res;
 	};
 
