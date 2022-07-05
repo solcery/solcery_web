@@ -7,10 +7,10 @@ import { useUser } from '../contexts/user';
 import { useProject } from '../contexts/project';
 
 const unityPlayContext = new UnityContext({
-	loaderUrl: '/game/WebGl.loader.js',
-	dataUrl: '/game/WebGl.data',
-	frameworkUrl: '/game/WebGl.framework.js',
-	codeUrl: '/game/WebGl.wasm',
+	loaderUrl: '/Build/WebGl.loader.js',
+	dataUrl: '/Build/WebGl.data',
+	frameworkUrl: '/Build/WebGl.framework.js',
+	codeUrl: '/Build/WebGl.wasm',
 	streamingAssetsUrl: '/StreamingAssets',
 });
 
