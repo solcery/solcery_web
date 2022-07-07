@@ -280,10 +280,10 @@ export const basicActions = [
 		func: 'transform',
 		name: 'Transform',
 		params: [
-			{ code: 'tplId', name: 'Tpl Id', type: 'SLink<cardTypes>' }
+			{ code: 'tpl_id', name: 'Tpl Id', type: 'SLink<cardTypes>' }
 		],
 		exec: (runtime, params, ctx) => {
-			ctx.object.transform(params.tplId);
+			ctx.object.transform(params.tpl_id);
 		},
 	},
 	{
