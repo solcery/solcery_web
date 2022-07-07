@@ -132,6 +132,17 @@ export class Game {
 		return this.runtime.context(object, extra);
 	}
 
+	onEntityTransform(entity) {
+		if (!this.diff) this.startDiff();
+		if (!this.diff.objects[entity.id]) {
+			this.diff.objects[entity.id] = {
+				id: entity.id,
+				attrs: {},
+			};
+		}
+		this.diff.objects[entity.id].tplId = entity.tplId;
+	}
+
 	onEntityAttrChanged(entity, attr, value) {
 		if (!this.diff) this.startDiff();
 		if (!this.diff.objects[entity.id]) {
@@ -238,5 +249,10 @@ class Entity {
 		if (this.attrs[attr] === undefined && !init) throw new Error(`trying to set unknown entity attr [${attr}]`);
 		this.attrs[attr] = value;
 		this.game.onEntityAttrChanged(this, attr, value);
+	}
+
+	transform(tplId) {
+		this.tplId = tplId;
+		this.game.onEntityTransform(this)
 	}
 }
