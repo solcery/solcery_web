@@ -18,19 +18,18 @@ export function UserProvider(props) {
 	const [error, setError] = useState(undefined);
 
 	const loadUser = useCallback((userData) => {
-		console.log('loadUser', userData)
 		if (!userData) return;
 	    if (!userData.session) return;
 	    if (!setUserSession) return;
-			setUser(
-				Object.assign(
-					{
-						id: userData._id,
-						nick: userData.login,
-					},
-					userData.fields
-				)
-			);
+		setUser(
+			Object.assign(
+				{
+					id: userData._id,
+					nick: userData.login,
+				},
+				userData.fields
+			)
+		);
 	    setUserSession(userData.session)
 	}, [ setUserSession ]);
 
@@ -42,8 +41,6 @@ export function UserProvider(props) {
 		if (user) return;
 		if (!sageApi) return;
 		if (!cookies[`session.${projectName}`]) return;
-		console.log(cookies)
-		console.log('LOADING USERSESSION ', cookies[`session.${projectName}`]);
 		sageApi.user.getSession({ session: cookies[`session.${projectName}`] }).then(res => loadUser(res));
 	}, [user, projectName, sageApi, cookies]);
 
@@ -54,7 +51,6 @@ export function UserProvider(props) {
 		}
 		sageApi.user.login({ login, password }).then((res) => {
 			const SESSION_LENGTH = 86400 * 30 * 1000;
-			console.log('SETCOOKIE')
 			setCookie(`session.${projectName}`, res.session, {
 				expires: new Date(new Date().getTime() + SESSION_LENGTH),
 				path: '/',

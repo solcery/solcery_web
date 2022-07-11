@@ -7,6 +7,7 @@ import { Button } from 'antd';
 import LayoutHelper from './LayoutHelper';
 import makeLayoutedElements from './dagreLayout';
 import { notify } from '../../../../components/notification';
+import { useHotkey } from '../../../../contexts/hotkey';
 import './BrickEditor.scss';
 
 let brickUniqueID = 0;
@@ -81,7 +82,7 @@ export const BrickEditor = (props) => {
 					});
 				}
 			} else {
-				if (pastedBrickTree.lib === props.brickType) {
+				if (pastedBrickTree.lib === props.brickType || props.brickType === 'any') {
 					setBrickTree(pastedBrickTree);
 					notify({ message: 'Pasted successfully', color: '#DDFFDD' });
 				} else {
@@ -246,15 +247,14 @@ export const BrickEditor = (props) => {
 	}, [state.isLayouted]);
 
 	const save = () => {
-		if (!props.onChange) return;
-		props.onChange(brickTree);
+		props.onChange && props.onChange(brickTree);
 	};
 	
 	const editorRef = useRef(null);
 	return (
 		<div className ={`brick-editor-frame ${props.fullscreen ? 'fullscreen' : 'small'}`}>
 			{props.fullscreen && props.onChange && <Button onClick={save}>SAVE</Button>}
-			{props.fullscreen && <Button onClick={() => navigate('../')}>CLOSE</Button>}
+			{/*{props.fullscreen && props.onCancel && <Button onClick={exit}>CLOSE</Button>}*/}
 			<div
 				ref={editorRef}
 				className="brick-editor"

@@ -1,29 +1,85 @@
 import React, { useContext, useEffect, useState, useCallback } from 'react';
 
+export const hotkeys = [
+	'ctrl+c',
+	'ctrl+s',
+	'escape'
+];
+
 const HotkeyContext = React.createContext(undefined);
 
 export function HotkeyProvider(props) {
-	let { projectName } = useParams();
-	let [sageApi, setSageApi] = useState();
-
-	const setUserSession = useCallback((session) => {
-		sageApi.session = session;
-	}, [ sageApi ])
+	const [ listeners, setListeners ] = useState();
 
 	useEffect(() => {
-		if (!projectName) return;
-		document.title = `${projectName} - Sage`;
-		setSageApi(new SageAPIConnection(projectName));
-	}, [projectName]);
+		let l = {}
+		for (let hotkey of hotkeys) {
+			l[hotkey] = {
+				subscriptions: 0,
+				callbacks: [],
+			}
+		}
+		setListeners(l)
+	}, [ ])
+
+	const handle = (hotkey, e) => {
+		if (!listeners) return;
+		if (hotkeys.indexOf(hotkey) < 0) return;
+		let callbacks = listeners[hotkey].callbacks
+		if (!callbacks) return; 
+		let subscription = callbacks[callbacks.length - 1]
+		console.log(subscription)
+		if (subscription.preventDefault) {
+			e.preventDefault();
+		}
+		subscription.callback();
+	}
+	
+	const addHotkey = useCallback((data) => {
+		if (!listeners) return;
+		let id = listeners[data.key].subscriptions++;
+		listeners[data.key].callbacks.push(Object.assign({ id }, data));
+		console.log(listeners)
+		return id;
+	}, [ listeners ]);
+
+	const removeHotkey = useCallback((hotkey, id) => {
+		if (!listeners) return;
+		let list = listeners[hotkey].callbacks;
+		let index = list.findIndex(sub => sub.id === id);
+		if (index >= 0) {
+			list.splice(index, 1)
+		}
+	}, [ listeners ]);
+
+	useEffect(() => {
+		const onKeyDown = (e) => {
+			let key = e.key.toLowerCase();
+			if (e.ctrlKey) key = 'ctrl+' + key;
+			handle(key, e)
+		};
+		window.addEventListener('keydown', onKeyDown);
+		return () => {
+			window.removeEventListener('keydown', onKeyDown);
+		};
+	});
 
 	return (
-		<HotkeyContext.Provider value={{}}>
+		<HotkeyContext.Provider value={{ useHotkey, addHotkey, removeHotkey }}>
 			{props.children}
 		</HotkeyContext.Provider>
 	);
 }
 
-export function useProject() {
-	const { } = useContext(HotkeyContext);
-	return { };
-}
+export const useHotkey = (data, callback) => {
+	const { addHotkey, removeHotkey } = useContext(HotkeyContext)
+	let hotkey = typeof data === 'string' ? { key: data } : data;
+	hotkey.callback = callback
+	useEffect(() => {
+		let id = addHotkey(hotkey)
+		return () => {
+			removeHotkey(hotkey.key, id)
+		};
+	}, [ addHotkey, removeHotkey ])
+	return callback;
+};

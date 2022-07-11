@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Template } from '../content/template';
 import { useProject } from '../contexts/project';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
-import ObjectEditor from './objectEditor';
+import DocumentEditor from './documentEditor';
 import CollectionEditor from './collectionEditor';
 import { notify } from '../components/notification';
 import { useBrickLibrary } from '../contexts/brickLibrary';
@@ -44,5 +44,5 @@ export function BrickLibraryObjectEditor() {
 				}
 			});
 	};
-	return <ObjectEditor schema={template} object={object} onSave={onSave} />;
+	return <DocumentEditor schema={template} object={object} onSave={onSave} />;
 }

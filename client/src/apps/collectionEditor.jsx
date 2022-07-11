@@ -363,7 +363,7 @@ export default function CollectionEditor({ templateCode, moduleName }) {
 				onClick={() => {
 					sageApi.template.createObject({ template: templateCode }).then((res) => {
 						if (res.insertedId) {
-							navigate(`../${moduleName}.${res.insertedId}`);
+							navigate(`/${res.insertedId}`);
 						}
 					});
 				}}

@@ -1,16 +1,17 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { Template } from '../content/template';
 import { useProject } from '../contexts/project';
 import { useUser } from '../contexts/user';
-import ObjectEditor from './objectEditor';
+import DocumentEditor from './documentEditor';
+import Document from '../content/document';
 import { notify } from '../components/notification';
 
 export default function Profile() {
 	const { id, reload } = useUser();
-	const [user, setUser] = useState(undefined);
+	const [ doc, setDoc ] = useState(undefined);
 	const { sageApi } = useProject();
 
-	const template = new Template({
+	const schema = {
 		code: 'users',
 		fields: [
 			{ code: 'css', name: 'CSS', type: 'SString' },
@@ -23,14 +24,18 @@ export default function Profile() {
 			{ code: 'fastCopy', name: 'Open copied objects immediately', type: 'SBool' },
 			{ code: 'doubleClickToOpenObject', name: 'Open objects with double click', type: 'SBool' },
 		],
-	});
+	};
+
+	const reloadDoc = useCallback(() => {
+		sageApi.user.getById({ id }).then(res => setDoc(new Document(schema, res.fields)));
+	}, [ sageApi.user, id ]);
 
 	useEffect(() => {
-		sageApi.user.getById({ id }).then(setUser);
-	}, [sageApi.user, id]);
+		reloadDoc()
+	}, [ reloadDoc ]);
 
 	const onSave = (fields) => {
-		sageApi.user.update({ id, fields }).then((res) => {
+		return sageApi.user.update({ id, fields }).then(res => {
 			if (res.modifiedCount) {
 				notify({
 					message: 'User updated',
@@ -38,8 +43,11 @@ export default function Profile() {
 					color: '#DDFFDD',
 				});
 				reload();
+				reloadDoc();
 			}
 		});
 	};
-	return <ObjectEditor schema={template} object={user} onSave={onSave} />;
+
+	if (!id || !doc) return <></>
+	return <DocumentEditor doc={doc} onSave={onSave} />;
 }
