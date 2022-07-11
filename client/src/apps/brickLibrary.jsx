@@ -15,7 +15,6 @@ export function BrickLibraryObjectEditor() {
 	const [object, setObject] = useState(undefined);
 	const [template, setTemplate] = useState(undefined);
 	const { search } = useLocation();
-	const searchParams = new URLSearchParams(search);
 	const { load } = useBrickLibrary();
 	const navigate = useNavigate();
 	const { sageApi } = useProject();
@@ -45,5 +44,5 @@ export function BrickLibraryObjectEditor() {
 				}
 			});
 	};
-	return <ObjectEditor schema={template} object={object} onSave={onSave} instant={searchParams.get('instant')} />;
+	return <ObjectEditor schema={template} object={object} onSave={onSave} />;
 }

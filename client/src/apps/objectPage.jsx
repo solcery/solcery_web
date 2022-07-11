@@ -1,39 +1,30 @@
-import { useParams, useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation, Outlet } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { Template } from '../content/template';
 import { useProject } from '../contexts/project';
+import { useTemplate } from '../contexts/template';
+import { useObject } from '../contexts/object';
 import ObjectEditor from './objectEditor';
 import { notify } from '../components/notification';
+import { BrickTreeEditor } from '../content/types/brick/components';
 
 export default function ObjectPage() {
-	const [object, setObject] = useState(undefined);
-	const [template, setTemplate] = useState(undefined);
+	const { object } = useObject();
+	const { template } = useTemplate();
 	const navigate = useNavigate();
 	const { sageApi } = useProject();
-	let { templateCode, objectId } = useParams();
+	const location = useLocation();
 
-	useEffect(() => {
-		sageApi.template.getObjectById({ template: templateCode, objectId }).then(setObject);
-		sageApi.template.getSchema({ template: templateCode }).then((data) => setTemplate(new Template(data)));
-	}, [sageApi.template, objectId, templateCode]);
-
-	const onSave = (fields) => {
-		sageApi.template
-			.updateObjectById({
-				template: templateCode,
-				objectId,
-				fields,
-			})
-			.then((res) => {
-				if (res.modifiedCount) {
-					notify({
-						message: 'Object updated',
-						description: `${objectId}`,
-						color: '#DDFFDD',
-					});
-					navigate(`../template.${templateCode}`);
-				}
-			});
+	const onSave = () => {
+		console.log(location)
+		notify({
+			message: 'Object updated',
+			description: `${object._id}`,
+			color: '#DDFFDD',
+		});
+		navigate(`../../`); //Why do we go 2 levels upwards
 	};
-	return <ObjectEditor schema={template} object={object} onSave={onSave} />;
+	return <ObjectEditor schema={template} object={object} onSave={onSave}>
+		<Outlet/>
+	</ObjectEditor>;
 }

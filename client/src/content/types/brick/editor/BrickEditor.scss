@@ -1,3 +1,29 @@
+.brick-editor-frame {
+	left: 0px;
+	top: 0px;
+	bottom: 0px;
+	right: 0px;
+}
+
+.brick-editor-frame.fullscreen {
+	background-color: black;
+	position: fixed;
+	display: inline;
+}
+
+.brick-editor-frame.small {
+	width: 300;
+	height: 200;
+}
+
+.brick-editor-frame.small * {
+	pointer-events: none;
+}
+
+.brick-editor-frame.small:hover {
+	background-color: rgba(255, 255, 255, 0.05);
+}
+
 .brick-editor {
 	font-family: sans-serif;
 	color: #fff;

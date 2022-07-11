@@ -1,7 +1,7 @@
 import { Button, Input } from 'antd';
 import { useState } from 'react';
 import { useProject } from '../contexts/project';
-import { migrator } from './migrators/04.07.22_ISOtoUnux';
+import { migrator } from './migrators/09.07.22_newBricks';
 import { SageAPIConnection} from '../api';
 
 const { TextArea } = Input;

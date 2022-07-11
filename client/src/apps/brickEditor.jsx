@@ -1,60 +1,58 @@
 import { useEffect, useState, useCallback } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import CollectionEditor from './collectionEditor';
 import { useProject } from '../contexts/project';
+import { useObject } from '../contexts/object';
+import { useTemplate } from '../contexts/template';
 import { BrickTreeEditor } from '../content/types/brick/components';
+import { getTable } from '../utils';
+import { SCustomBrick, SBrick } from '../content/types';
 
 export default function BrickEditor() {
-	let { templateCode, objectId, fieldCode } = useParams();
+	const navigate = useNavigate();
+	const { object, setField } = useObject();
+	let { brickPath } = useParams();
+	let { template } = useTemplate();
 	const [ value, setValue ] = useState();
-	const [ brickType, setBrickType ] = useState();
-	const [ brickLibrary, setBrickLibrary ] = useState();
-	const [ connectedProjectName, setConnectedProjectName ] = useState();
-	const { sageApi, projectName } = useProject();
-	const [ editMode, setEditMode ] = useState(false);
-
-	window.loadData = (props) => {
-		setEditMode(true);
-		setValue({
-			brickParams: props.brickParams,
-			brickType: props.brickType,
-			brickTree: props.brickTree
-		})
-	}
 
 	useEffect(() => {
-		if (window.opener && window.opener.getProjectName() === projectName) {
-			window.opener.requestData()
-		} else {
-			sageApi.template.getObjectById({ template: templateCode, objectId }).then((res) => {
-				setValue(JSON.parse(JSON.stringify(res.fields[fieldCode])))
-				setEditMode(false)
-			})
-		}
-		const onKeyDown = (e) => {
-			if (e.keyCode === 27) { //Escape
-				window.close();
-			}
-		};
-
-		window.addEventListener('keydown', onKeyDown);
-		return () => {
-			window.removeEventListener('keydown', onKeyDown);
-		};
-	}, [ sageApi, projectName ])
-
-	if (!value) return <>Loading</>;
-
+		if (!object) return;
+		let res = getTable(object.fields, ...splittedPath);
+		if (res) setValue(res);
+	}, [ object ])
+	
 	const onApply = (val) => {
-		window.opener.onApply(val);
+		let bt = {
+			brickTree: val,
+			brickParams: value.brickParams
+		}
+		console.log(bt)
+		setField(bt, splittedPath)
+		navigate('../')
 	}
+	if (!object) return <></>;
+	if (!template) return <></>;
 
-	return <BrickTreeEditor
+	let splittedPath = brickPath.split('.');
+
+	if (!value) return <>NO VALUE</>;
+
+
+	let fieldType = template.fields[splittedPath[0]].type
+
+	// let brickType;
+	// if (value) {
+	// 	brickType = value.lib;
+	// } else {
+	// 	brickType = fieldType.brickType ?? 'any';
+	// }
+
+	return (<BrickTreeEditor
 		fullscreen
 		brickParams={value.brickParams}
 		brickTree={value.brickTree}
-		brickType={value.brickType}
-		onChange={editMode ? onApply : undefined}
-
-	/>;
+		brickType={fieldType.brickType ?? 'any'}
+		type = {fieldType}
+		onChange={onApply}
+	/>);
 }

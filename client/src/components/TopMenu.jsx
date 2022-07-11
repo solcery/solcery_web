@@ -50,13 +50,13 @@ export const TopMenu = () => {
 					</Link>
 				</Menu.Item>
 				<Menu.Item key="brickLibrary">
-					<Link to="brickLibrary">Brick library</Link>
+					<Link to="template/customBricks">Brick library</Link>
 				</Menu.Item>
 				{templates
 					.filter((template) => !template.hidden)
 					.map((template) => (
 						<Menu.Item key={template.code}>
-							<Link to={`template.${template.code}`}>{template.name}</Link>
+							<Link to={`template/${template.code}`}>{template.name}</Link>
 						</Menu.Item>
 					))}
 				<Menu.Item key="profile" icon=<UserOutlined /> >

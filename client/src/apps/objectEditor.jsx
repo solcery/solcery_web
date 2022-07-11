@@ -1,83 +1,50 @@
 import { Table, Button } from 'antd';
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
+import { useObject } from '../contexts/object';
+import { useTemplate } from '../contexts/template';
 import { notify } from '../components/notification';
 import './objectEditor.css'
 
 const { Column } = Table;
 
 export default function ObjectEditor(props) {
+	const { object, setField, saveObject, fieldStatus } = useObject();
+	const { template } = useTemplate();
 
-	const [ fields, setFields ] = useState(undefined);
-	const [ revision, setRevision ] = useState(1)
-
-	useEffect(() => {
-		if (!props.object || !props.schema) return;
-		let res = {}
-		for (let field of Object.values(props.schema.fields)) {
-			let status = 'old';
-			let value = field.type.clone(props.object.fields[field.code])
-			let validator = field.type.validateField;
-			if (validator && !validator(value)) status = 'error';
-			res[field.code] = { value, status }
+	const save = () => { // TODO: move to object context
+		const onSaveSuccess = (res) => {
+			props.onSave(res)
 		}
-		setFields(res)
-	}, [ props.object, props.schema ])
 
-	const setField = (fieldCode, value) => {
-		let field = props.schema.fields[fieldCode]
-		if (field.type.eq(value, props.object.fields[fieldCode])) {
-			fields[fieldCode] = {
-				value: undefined,
-				status: 'old'
-			}
-			setRevision(revision + 1)
-		} else {
-			let oldStatus = fields[fieldCode].status
-			let status = 'changed'
-			let validator = props.schema.fields[fieldCode].type.validateField
-			if (validator) {
-				if (!validator(value)) status = 'error';
-			}
-			fields[fieldCode] = { value, status}
-			if (oldStatus !== status) {
-				setRevision(revision + 1);
-			}
-		}
-	};
-
-	const save = () => {
-		let payload = {};
-		for (let [ fieldCode, { value, status }] of Object.entries(fields)) {
-			if (status === 'error') {
-				let fieldName = props.schema.fields[fieldCode].name
+		const onSaveFail = (reason) => {
+			if (reason.error === 'emptySaveData') {
 				notify({
-					message: `${fieldName}`,
-					description: 'Cannot save object, validation not passed',
+					message: `Not saved`,
+					description: 'Cannot save object, no changes in fields',
+					color: '#FFFFDD',
+				});
+			}
+			if (reason.error === 'invalidField') {
+				let fieldName = template.fields[reason.fieldCode].name;
+				notify({
+					message: `Error`,
+					description: `Invalid value for field '${fieldName}'` ,
 					color: '#FFDDDD',
 				});
-				return;
-			}
-			if (status === 'changed') {
-				payload[fieldCode] = value;
-			}
+			} 
 		}
-		if (Object.keys(payload).length === 0) {
-			notify({
-				message: `Not saved`,
-				description: 'Cannot save object, no changes in fields',
-				color: '#FFFFDD',
-			});
-		}
-		props.onSave(payload);
+		saveObject().then(onSaveSuccess, onSaveFail)
 	}
 
-	if (!fields || !props.schema) return <>NO DATA</>; // TODO
-	let tableData = Object.values(props.schema.fields).map((field) => {
+	if (!template || !object || !fieldStatus) return <>Loading</>;
+
+	let fields = object.fields;
+	let tableData = Object.values(template.fields).map(field => {
 		return {
 			key: field.code,
 			field: field,
-			value: fields[field.code].value,
-			status: fields[field.code].status
+			value: fields[field.code],
+			status: fieldStatus[field.code]
 		};
 	});
 	return (
@@ -101,13 +68,15 @@ export default function ObjectEditor(props) {
 						<record.field.type.valueRender
 							defaultValue={record.value}
 							onChange={!record.field.readonly ? (value) => {
-								setField(record.field.code, value);
+								setField(value, [ record.field.code ]);
 							} : undefined}
 							type={record.field.type}
-							object={props.object} 
-							objectId={props.object._id}
-							templateCode={props.schema.code}
-							fieldCode={record.key}
+							path={{
+								moduleName: props.moduleName,
+								templateCode: props.schema.code,
+								objectId: props.object._id,
+								fieldPath: [ record.field.code ],
+							}}
 						/>
 					)}
 				/>
@@ -118,3 +87,4 @@ export default function ObjectEditor(props) {
 		</>
 	);
 }
+

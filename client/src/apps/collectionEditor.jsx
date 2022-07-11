@@ -266,11 +266,7 @@ export default function CollectionEditor({ templateCode, moduleName }) {
 				dataSource={tableData}
 				pagination={pagination}
 				onRow={doubleClickToOpenObject && function(record, rowIndex) {
-					return {
-						onDoubleClick: (event) => {
-							navigate(`../${moduleName}.${record._id}`);
-						},
-					};
+					return { onDoubleClick: event => navigate(`${record._id}`) };
 				}}
 			>
 				{Object.values(template.fields).filter(field => !field.hidden).map((field, fieldIndex) => (
@@ -290,11 +286,13 @@ export default function CollectionEditor({ templateCode, moduleName }) {
 						render={(_, object) => (
 							<field.type.valueRender 
 								defaultValue={object.fields[field.code]} 
-								type={field.type} 
-								object={object} 
-								objectId={object._id}
-								templateCode={templateCode}
-								fieldCode={field.code}
+								type={field.type}
+								path={{
+									moduleName,
+									templateCode,
+									objectId: object._id,
+									fieldPath: [ field.code ]
+								}}
 							/>
 						)}
 					/>
