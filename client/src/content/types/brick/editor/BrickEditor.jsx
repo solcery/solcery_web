@@ -22,14 +22,14 @@ export const BrickEditor = (props) => {
 	let height = props.fullscreen ? window.innerHeight : 200;
 
 	const [state, setState] = useState({ elements: [], isLayouted: false });
-	const [brickTree, setBrickTree] = useState(props.brickTree);
+	const [brickTree, setBt] = useState(props.brickTree);
 	const { fitView } = useZoomPanHelper();
 	const navigate = useNavigate();
 
-	useEffect(() => {
-		setBrickTree(props.brickTree)
-	}, [ props.brickTree ])
-
+	const setBrickTree = (bt) => {
+		setBt(bt)
+		props.onChange && props.onChange(bt)
+	}
 	const addBrick = useCallback(
 		(brickSignature, bt, parentBrick, paramID) => {
 			if (!props.onChange) return;
@@ -48,7 +48,7 @@ export const BrickEditor = (props) => {
 				setBrickTree(brick);
 			}
 		},
-		[props.fullscreen, props]
+		[props]
 	);
 
 	const removeBrick = useCallback(
@@ -62,7 +62,7 @@ export const BrickEditor = (props) => {
 				setBrickTree(null);
 			}
 		},
-		[props, props.fullscreen]
+		[props]
 	);
 
 	const onPaste = useCallback(
@@ -93,7 +93,7 @@ export const BrickEditor = (props) => {
 				}
 			}
 		},
-		[props, props.fullscreen]
+		[props]
 	);
 
 	const makeAddButtonElement = useCallback(
@@ -252,9 +252,7 @@ export const BrickEditor = (props) => {
 	
 	const editorRef = useRef(null);
 	return (
-		<div className ={`brick-editor-frame ${props.fullscreen ? 'fullscreen' : 'small'}`}>
-			{props.fullscreen && props.onChange && <Button onClick={save}>SAVE</Button>}
-			{/*{props.fullscreen && props.onCancel && <Button onClick={exit}>CLOSE</Button>}*/}
+		
 			<div
 				ref={editorRef}
 				className="brick-editor"
@@ -278,7 +276,6 @@ export const BrickEditor = (props) => {
 					<LayoutHelper onNodeSizesChange={onNodeSizesChange} />
 				</ReactFlow>
 			</div>
-		</div>
 	);
 };
 

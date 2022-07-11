@@ -45,24 +45,20 @@ const argFromParam = (param) => {
 
 export const ValueRender = (props) => {
 	const { objectId } = useParams();
-	const [ value, setValue ] = useState(props.defaultValue || {});
+	const [ brickTree, setBrickTree ] = useState(props.defaultValue ? props.defaultValue.brickTree : undefined);
+	const [ brickParams, setBrickParams ] = useState(props.defaultValue ? props.defaultValue.brickParams : [])
 	const navigate = useNavigate();
 
-	let params;
-	if (props.type.params) {
-		params = {
-			type: paramMapType,
-			onChange: (val) => {
-				console.log(val)
-			}
-		}
+	const onChangeBrickParams = (bp) => {
+		props.onChange({ brickParams: bp, brickTree });
+		setBrickParams(paramMapType.clone(bp))
 	}
 	return (
 		<>
-			{params && <params.type.valueRender 
-				defaultValue={value.brickParams} 
-				type ={params.type}
-				onChange={params.onChange}
+			{props.type.params && <paramMapType.valueRender 
+				defaultValue={brickParams} 
+				type ={paramMapType}
+				onChange={props.onChange && onChangeBrickParams}
 				path = {{ ...props.path, fieldPath: [ ... props.path.fieldPath, 'brickParams' ] }}
 			/>}
 			<div
@@ -74,10 +70,9 @@ export const ValueRender = (props) => {
 				navigate(path)
 			}}> 
 				<BrickTreeEditor
-					brickParams={value.brickParams} 
+					brickParams={brickParams} 
 					brickType={props.type.brickType ?? 'any'}
-					brickTree={props.type.clone(value.brickTree)}
-					type = {props.type}
+					brickTree={brickTree}
 				/>
 			</div>
 		</>
@@ -89,12 +84,6 @@ export const ValueRender = (props) => {
 export const BrickTreeEditor = (props) => {
 	const [ownBrickLibrary, setOwnBrickLibrary] = useState();
 	const { brickLibrary } = useBrickLibrary();
-	const [ value, setValue ] = useState()
-
-	useEffect(() => {
-		setValue(props.type.clone(props.brickTree))
-	}, [ props.brickTree ])
-
 
 	const mapParams = (paramsArray) => {
 		let bricks = {};
@@ -132,7 +121,7 @@ export const BrickTreeEditor = (props) => {
 			<BrickEditor
 				fullscreen = {props.fullscreen}
 				brickLibrary={ownBrickLibrary}
-				brickTree={value}
+				brickTree={props.brickTree}
 				brickType={props.brickType}
 				onChange={props.onChange}
 			/>

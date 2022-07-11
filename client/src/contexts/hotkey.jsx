@@ -26,10 +26,9 @@ export function HotkeyProvider(props) {
 		if (!listeners) return;
 		if (hotkeys.indexOf(hotkey) < 0) return;
 		let callbacks = listeners[hotkey].callbacks
-		if (!callbacks) return; 
+		if (callbacks.length === 0) return; 
 		let subscription = callbacks[callbacks.length - 1]
-		console.log(subscription)
-		if (subscription.preventDefault) {
+		if (subscription.noDefault) {
 			e.preventDefault();
 		}
 		subscription.callback();
@@ -80,6 +79,6 @@ export const useHotkey = (data, callback) => {
 		return () => {
 			removeHotkey(hotkey.key, id)
 		};
-	}, [ addHotkey, removeHotkey ])
+	}, [ callback, addHotkey, removeHotkey ])
 	return callback;
 };
