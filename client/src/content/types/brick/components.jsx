@@ -1,9 +1,9 @@
 import { BrickEditor } from './editor/BrickEditor';
 import { ReactFlowProvider } from 'react-flow-renderer';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, Link } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { paramFromMapEntry } from '../../brickLib';
-import { Select, Button } from 'antd';
+import { Select, Button, Popover } from 'antd';
 import { SType } from '../base';
 import { insertTable } from '../../../utils';
 import { useBrickLibrary } from '../../../contexts/brickLibrary';
@@ -47,12 +47,24 @@ export const ValueRender = (props) => {
 	const { objectId } = useParams();
 	const [ brickTree, setBrickTree ] = useState(props.defaultValue ? props.defaultValue.brickTree : undefined);
 	const [ brickParams, setBrickParams ] = useState(props.defaultValue ? props.defaultValue.brickParams : [])
+	const { showReadonlyBricks } = useUser();
 	const navigate = useNavigate();
 
 	const onChangeBrickParams = (bp) => {
 		props.onChange({ brickParams: bp, brickTree });
 		setBrickParams(paramMapType.clone(bp))
 	}
+	let path = props.path.fieldPath.join('.'); 
+	if (!objectId) {
+		path = props.path.objectId + '/' + path
+	}
+
+	let brickTreeEditor = (<BrickTreeEditor
+		brickParams={brickParams} 
+		brickType={props.type.brickType ?? 'any'}
+		brickTree={brickTree}
+	/>);
+
 	return (
 		<>
 			{props.type.params && <paramMapType.valueRender 
@@ -61,25 +73,20 @@ export const ValueRender = (props) => {
 				onChange={props.onChange && onChangeBrickParams}
 				path = {{ ...props.path, fieldPath: [ ... props.path.fieldPath, 'brickParams' ] }}
 			/>}
-			<div
-				onClick={() => {
-				let path = props.path.fieldPath.join('.');
-				if (!objectId) {
-					path = props.path.objectId + '/' + path
-				}
-				navigate(path)
-			}}> 
-				<BrickTreeEditor
-					brickParams={brickParams} 
-					brickType={props.type.brickType ?? 'any'}
-					brickTree={brickTree}
-				/>
+			{props.onChange || showReadonlyBricks ?
+			<div onClick={() => { navigate(path) }}> 
+				{ brickTreeEditor }
 			</div>
+			:
+			<Popover content={brickTreeEditor}>
+    			<Link to={path}>
+    				{ brickTree ? `Brick. ${ props.type.brickType ?? 'any' }` : 'EMPTY' }
+				</Link>
+  			</Popover>
+			}
 		</>
 	);
 };
-
-
 
 export const BrickTreeEditor = (props) => {
 	const [ownBrickLibrary, setOwnBrickLibrary] = useState();
