@@ -1,60 +1,71 @@
 import { useEffect, useState, useCallback } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import CollectionEditor from './collectionEditor';
 import { useProject } from '../contexts/project';
+import { useHotkey } from '../contexts/hotkey';
+import { useDocument } from '../contexts/document';
+import { useTemplate } from '../contexts/template';
+import { Button } from 'antd'
 import { BrickTreeEditor } from '../content/types/brick/components';
+import { getTable } from '../utils';
+import { SCustomBrick, SBrick } from '../content/types';
+import './brickEditor.css'
 
 export default function BrickEditor() {
-	let { templateCode, objectId, fieldCode } = useParams();
+	const navigate = useNavigate();
+	const { doc } = useDocument();
+	let { templateCode, objectId, brickPath } = useParams();
 	const [ value, setValue ] = useState();
-	const [ brickType, setBrickType ] = useState();
-	const [ brickLibrary, setBrickLibrary ] = useState();
-	const [ connectedProjectName, setConnectedProjectName ] = useState();
-	const { sageApi, projectName } = useProject();
-	const [ editMode, setEditMode ] = useState(false);
+	const [ changed, setChanged ] = useState(false);
+	let splittedPath = brickPath.split('.');
 
-	window.loadData = (props) => {
-		setEditMode(true);
-		setValue({
-			brickParams: props.brickParams,
-			brickType: props.brickType,
-			brickTree: props.brickTree
-		})
+	const goUp = () => {
+		navigate('../');
 	}
 
 	useEffect(() => {
-		if (window.opener && window.opener.getProjectName() === projectName) {
-			window.opener.requestData()
-		} else {
-			sageApi.template.getObjectById({ template: templateCode, objectId }).then((res) => {
-				setValue(JSON.parse(JSON.stringify(res.fields[fieldCode])))
-				setEditMode(false)
-			})
-		}
-		const onKeyDown = (e) => {
-			if (e.keyCode === 27) { //Escape
-				window.close();
-			}
+		if (!doc) return;
+		let fieldType = doc.schema[splittedPath[0]].type;
+		let res = getTable(doc.fields, ...splittedPath) ?? {
+			brickParams: [],
+			brickTree: undefined,
 		};
+		setValue(fieldType.clone(res))
+	}, [ doc ])
 
-		window.addEventListener('keydown', onKeyDown);
-		return () => {
-			window.removeEventListener('keydown', onKeyDown);
-		};
-	}, [ sageApi, projectName ])
-
-	if (!value) return <>Loading</>;
-
-	const onApply = (val) => {
-		window.opener.onApply(val);
+	const onChangeBrickTree = (brickTree) => {
+		value.brickTree = brickTree;
+		let old = getTable(doc.fields, ...splittedPath);
+		let fieldType = doc.schema[splittedPath[0]].type;
+		setChanged(!fieldType.eq(old, value))
 	}
 
-	return <BrickTreeEditor
-		fullscreen
-		brickParams={value.brickParams}
-		brickTree={value.brickTree}
-		brickType={value.brickType}
-		onChange={editMode ? onApply : undefined}
+	const save = useCallback(() => {
+		doc.setField(value, splittedPath)
+		goUp();
+	}, [ value ]);
+	useHotkey({ key: 'ctrl+s', noDefault: true }, save);
+	
+	const cancel = useHotkey('escape', () => {
+		if (changed && !window.confirm('You have unsaved changed. Still leave?')) return;
+		goUp();
+	})
 
-	/>;
+	if (!doc) return <>NO DOC</>;
+	let path = [ templateCode, objectId, ... splittedPath ].join(' > ');
+	let fieldType = doc.schema[splittedPath[0]].type
+	return (
+		<div className={'brick-editor-fullscreen'}>
+			<p style={{ color: changed ? 'yellow' : 'white' }}>{path}</p>
+			{<Button onClick={save}>SAVE</Button>}
+			{<Button onClick={cancel}>CANCEL</Button>}
+			{value && <BrickTreeEditor
+				fullscreen
+				brickParams={value.brickParams}
+				brickTree={value.brickTree}
+				brickType={fieldType.brickType ?? 'any'}
+				onChange={onChangeBrickTree}
+			/>}
+		</div>
+	);
 }

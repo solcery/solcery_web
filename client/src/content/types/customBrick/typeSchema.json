@@ -1,0 +1,26 @@
+{
+  "name": "SStruct",
+  "data": {
+    "fields": [
+      {
+        "code": "brickType",
+        "name": "Type",
+        "type": {
+          "name": "SEnum",
+          "data": {
+            "values": [
+              "action",
+              "condition",
+              "value"
+            ],
+            "titles": [
+              "Action",
+              "Condition",
+              "Value"
+            ]
+          }
+        }
+      }
+    ]
+  }
+}

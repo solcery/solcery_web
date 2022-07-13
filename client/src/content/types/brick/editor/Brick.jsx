@@ -2,8 +2,11 @@ import { useEffect } from 'react';
 import { Handle, Position } from 'react-flow-renderer';
 import { useNavigate } from 'react-router-dom';
 import { notify } from '../../../../components/notification';
+import { useProject } from '../../../../contexts/project';
+
 
 export default function Brick(props) {
+	let { projectName } = useProject();
 	const navigate = useNavigate();
 	const brick = props.data.brick;
 	const brickLibrary = props.data.brickLibrary;
@@ -38,7 +41,7 @@ export default function Brick(props) {
 		let isCustomBrick = brick.func.includes('custom'); // TODO: add 'custom' key to brick itself
 		if (!isCustomBrick) return;
 		let objId = brick.func.split('.')[1];
-		window.open(`brickEditor.customBricks.${objId}.brick`, '_blank', 'noopener');
+		window.open(`/${projectName}/template/customBricks/${objId}/brick`, '_blank', 'noopener');
 	};
 
 	let isHovered = false;
@@ -90,7 +93,7 @@ export default function Brick(props) {
 	let width = brickSignature.width ?? Math.max(15, 4 + nestedParams.length * 5);
 	return (
 		<div
-			className={`brick ${brickSignature.lib} ${brickSignature.func} ${props.data.small ? 'small' : ''} ${
+			className={`brick ${brickSignature.lib} ${brickSignature.func} ${props.data.fullscreen ? '' : 'small'} ${
 				props.data.readonly ? 'readonly' : ''
 			} ${errorBrick ? 'error' : ''}`}
 			onPointerEnter={() => (isHovered = true)}
@@ -98,7 +101,7 @@ export default function Brick(props) {
 			style={{ width: `${width}rem` }}
 			onDoubleClick={onDoubleClick}
 		>
-			{!props.data.readonly && !props.data.small && (
+			{!props.data.readonly && props.data.fullscreen && (
 				<div className={'remove-button'} onClick={onRemoveButtonClicked}>
 					x
 				</div>

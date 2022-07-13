@@ -21,15 +21,15 @@ export function UserProvider(props) {
 		if (!userData) return;
 	    if (!userData.session) return;
 	    if (!setUserSession) return;
-			setUser(
-				Object.assign(
-					{
-						id: userData._id,
-						nick: userData.login,
-					},
-					userData.fields
-				)
-			);
+		setUser(
+			Object.assign(
+				{
+					id: userData._id,
+					nick: userData.login,
+				},
+				userData.fields
+			)
+		);
 	    setUserSession(userData.session)
 	}, [ setUserSession ]);
 
@@ -41,7 +41,7 @@ export function UserProvider(props) {
 		if (user) return;
 		if (!sageApi) return;
 		if (!cookies[`session.${projectName}`]) return;
-		sageApi.user.getSession({ session: cookies[`session.${projectName}`] }).then((res) => loadUser(res));
+		sageApi.user.getSession({ session: cookies[`session.${projectName}`] }).then(res => loadUser(res));
 	}, [user, projectName, sageApi, cookies]);
 
 	const auth = useCallback(() => {
@@ -53,6 +53,7 @@ export function UserProvider(props) {
 			const SESSION_LENGTH = 86400 * 30 * 1000;
 			setCookie(`session.${projectName}`, res.session, {
 				expires: new Date(new Date().getTime() + SESSION_LENGTH),
+				path: '/',
 			});
 			loadUser(res);
 		});

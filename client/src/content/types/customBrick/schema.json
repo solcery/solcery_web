@@ -1,0 +1,37 @@
+{
+  "name": "SStruct",
+  "data": {
+    "fields": [
+      {
+        "code": "brickParams",
+        "name": "Params",
+        "type": {
+          "name": "SMap",
+          "data": {
+            "keyType": "SString",
+            "valueType": {
+              "name": "SEnum",
+              "data": {
+                "values": [
+                  "action",
+                  "condition",
+                  "value"
+                ],
+                "titles": [
+                  "Action",
+                  "Condition",
+                  "Value"
+                ]
+              }
+            }
+          }
+        }
+      },
+       {
+        "code": "brickTree",
+        "name": "Brick Tree",
+        "type": "SBrick"
+      }
+    ]
+  }
+}

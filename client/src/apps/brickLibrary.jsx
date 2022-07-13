@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Template } from '../content/template';
 import { useProject } from '../contexts/project';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
-import ObjectEditor from './objectEditor';
+import DocumentEditor from './documentEditor';
 import CollectionEditor from './collectionEditor';
 import { notify } from '../components/notification';
 import { useBrickLibrary } from '../contexts/brickLibrary';
@@ -15,7 +15,6 @@ export function BrickLibraryObjectEditor() {
 	const [object, setObject] = useState(undefined);
 	const [template, setTemplate] = useState(undefined);
 	const { search } = useLocation();
-	const searchParams = new URLSearchParams(search);
 	const { load } = useBrickLibrary();
 	const navigate = useNavigate();
 	const { sageApi } = useProject();
@@ -45,5 +44,5 @@ export function BrickLibraryObjectEditor() {
 				}
 			});
 	};
-	return <ObjectEditor schema={template} object={object} onSave={onSave} instant={searchParams.get('instant')} />;
+	return <DocumentEditor schema={template} object={object} onSave={onSave} />;
 }

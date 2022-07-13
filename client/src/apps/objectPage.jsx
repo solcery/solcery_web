@@ -1,39 +1,46 @@
-import { useParams, useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation, useParams, Outlet } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { Template } from '../content/template';
 import { useProject } from '../contexts/project';
-import ObjectEditor from './objectEditor';
+import { useBrickLibrary } from '../contexts/brickLibrary';
+import { useTemplate } from '../contexts/template';
+import { useDocument } from '../contexts/document';
+import DocumentEditor from './documentEditor';
 import { notify } from '../components/notification';
+import { BrickTreeEditor } from '../content/types/brick/components';
 
 export default function ObjectPage() {
-	const [object, setObject] = useState(undefined);
-	const [template, setTemplate] = useState(undefined);
-	const navigate = useNavigate();
+	const { objectId } = useParams();
 	const { sageApi } = useProject();
-	let { templateCode, objectId } = useParams();
+	const { template } = useTemplate();
+	const { load } = useBrickLibrary();
+	const { doc } = useDocument();
+	const navigate = useNavigate();
 
-	useEffect(() => {
-		sageApi.template.getObjectById({ template: templateCode, objectId }).then(setObject);
-		sageApi.template.getSchema({ template: templateCode }).then((data) => setTemplate(new Template(data)));
-	}, [sageApi.template, objectId, templateCode]);
+	const goUp = () => {
+		navigate(`../../`); //Why do we go 2 levels upwards	
+	}
 
-	const onSave = (fields) => {
-		sageApi.template
-			.updateObjectById({
-				template: templateCode,
-				objectId,
-				fields,
-			})
-			.then((res) => {
-				if (res.modifiedCount) {
-					notify({
-						message: 'Object updated',
-						description: `${objectId}`,
-						color: '#DDFFDD',
-					});
-					navigate(`../template.${templateCode}`);
-				}
-			});
+	const onExit = () => {
+		goUp();
+	}
+
+	const onSave = (payload) => {
+		sageApi.template.updateObjectById({ 
+			template: template.code,
+			objectId,
+			fields: payload
+		}).then(res => {
+			if (res.modifiedCount === 1) {
+				notify({
+					message: 'Object updated',
+					description: `${objectId}`,
+					color: '#DDFFDD',
+				});
+				load();
+				goUp();
+			}
+		})
 	};
-	return <ObjectEditor schema={template} object={object} onSave={onSave} />;
+	return <DocumentEditor doc={doc} onSave={onSave} onExit={onExit}/>;
 }

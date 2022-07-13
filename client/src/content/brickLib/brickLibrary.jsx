@@ -46,7 +46,7 @@ export class BrickLibrary {
 					params = obj.fields.brick.brickParams.map((entry) => paramFromMapEntry(entry));
 				}
 				return {
-					lib: obj.fields.brick.brickType,
+					lib: obj.fields.brick.brickTree.lib,
 					func: `custom.${obj._id}`,
 					name: obj.fields.name,
 					hidden: obj.fields.hidden,

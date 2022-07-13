@@ -1,11 +1,13 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import ReactFlow, { ReactFlowProvider, isNode, useZoomPanHelper } from 'react-flow-renderer';
+import { useNavigate } from 'react-router-dom';
 import AddBrickButton from './AddBrickButton';
 import Brick from './Brick';
 import { Button } from 'antd';
 import LayoutHelper from './LayoutHelper';
 import makeLayoutedElements from './dagreLayout';
 import { notify } from '../../../../components/notification';
+import { useHotkey } from '../../../../contexts/hotkey';
 import './BrickEditor.scss';
 
 let brickUniqueID = 0;
@@ -16,24 +18,18 @@ const nodeTypes = {
 };
 
 export const BrickEditor = (props) => {
-	let width = props.fullscreen ? window.innerWidth : props.width;
-	let height = props.fullscreen ? window.innerHeight : props.height;
+	let width = props.fullscreen ? window.innerWidth : 300;
+	let height = props.fullscreen ? window.innerHeight : 200;
 
 	const [state, setState] = useState({ elements: [], isLayouted: false });
-	const [brickTree, setBrickTree] = useState(props.brickTree);
+	const [brickTree, setBt] = useState(props.brickTree);
 	const { fitView } = useZoomPanHelper();
+	const navigate = useNavigate();
 
-	const sleepAndFit = useCallback(() => {
-		new Promise((resolve) => setTimeout(resolve, 50)).then(() => {
-			fitView();
-		});
-	}, [ fitView ]);
-
-	useEffect(() => {
-		setBrickTree(props.brickTree)
-		sleepAndFit()
-	}, [ props.brickTree ])
-
+	const setBrickTree = (bt) => {
+		setBt(bt)
+		props.onChange && props.onChange(bt)
+	}
 	const addBrick = useCallback(
 		(brickSignature, bt, parentBrick, paramID) => {
 			if (!props.onChange) return;
@@ -52,7 +48,7 @@ export const BrickEditor = (props) => {
 				setBrickTree(brick);
 			}
 		},
-		[props.fullscreen, props]
+		[props]
 	);
 
 	const removeBrick = useCallback(
@@ -63,11 +59,10 @@ export const BrickEditor = (props) => {
 				parentBrick.params[paramCode] = null;
 				setBrickTree(JSON.parse(JSON.stringify(bt)));
 			} else {
-				sleepAndFit();
 				setBrickTree(null);
 			}
 		},
-		[props, props.fullscreen, sleepAndFit]
+		[props]
 	);
 
 	const onPaste = useCallback(
@@ -87,8 +82,7 @@ export const BrickEditor = (props) => {
 					});
 				}
 			} else {
-				if (pastedBrickTree.lib === props.brickType) {
-					sleepAndFit();
+				if (pastedBrickTree.lib === props.brickType || props.brickType === 'any') {
 					setBrickTree(pastedBrickTree);
 					notify({ message: 'Pasted successfully', color: '#DDFFDD' });
 				} else {
@@ -99,14 +93,11 @@ export const BrickEditor = (props) => {
 				}
 			}
 		},
-		[props, props.fullscreen, sleepAndFit]
+		[props]
 	);
 
 	const makeAddButtonElement = useCallback(
 		(brickID, brickType, brickTree, parentBrick, paramCode) => {
-			if (!brickType) {
-				throw new Error('NO BRICK');
-			}
 			return {
 				id: brickID,
 				type: 'add',
@@ -121,6 +112,7 @@ export const BrickEditor = (props) => {
 					onBrickSubtypeSelected: addBrick,
 					onPaste: onPaste,
 					readonly: !props.onChange,
+					fullscreen: props.fullscreen,
 				},
 			};
 		},
@@ -163,7 +155,7 @@ export const BrickEditor = (props) => {
 						  }
 						: null,
 					readonly: !props.onChange,
-					small: !props.fullscreen,
+					fullscreen: props.fullscreen,
 				},
 			};
 		},
@@ -231,6 +223,7 @@ export const BrickEditor = (props) => {
 			elements: makeLayoutedElements(state.elements, nodeSizesByID, rootNodePos, isNode),
 			isLayouted: true,
 		});
+		
 	};
 
 	useEffect(() => {
@@ -248,64 +241,41 @@ export const BrickEditor = (props) => {
 
 	useEffect(() => {
 		if (state.isLayouted && editorRef.current) {
+			fitView()
 			editorRef.current.style.visibility = 'visible';
 		}
 	}, [state.isLayouted]);
 
-	const editorRef = useRef(null);
-
-	const onLoad = (reactFlowInstance) => {
-		sleepAndFit();
-	};
-
 	const save = () => {
-		if (!props.onChange) return;
-		props.onChange(brickTree);
+		props.onChange && props.onChange(brickTree);
 	};
-
-	let style = {
-		backgroundColor: props.fullscreen ? 'black' : 'transparent',
-		pointerEvents: props.fullscreen ? 'auto' : 'none',
-		position: props.fullscreen ? 'fixed' : 'relative',
-		left: 0,
-		top: 0,
-		bottom: 0,
-		right: 0,
-		display: props.fullscreen ? 'inline' : 'block',
-	};
-
+	
+	const editorRef = useRef(null);
 	return (
 		
-		<>
-			<div style={style}>
-				{props.fullscreen && props.onChange && <Button onClick={save}>SAVE</Button>}
-				{props.fullscreen && <Button onClick={window.close}>CLOSE</Button>}
-				<div
-					ref={editorRef}
-					className="brick-editor"
-					style={{
-						width: width,
-						height: height,
-					}}
+			<div
+				ref={editorRef}
+				className="brick-editor"
+				style={{
+					width,
+					height
+				}}
+			>
+				<ReactFlow
+					nodeTypes={nodeTypes}
+					elements={state.elements}
+					nodesDraggable={false}
+					nodesConnectable={false}
+					zoomOnDoubleClick={false}
+					paneMoveable={props.fullscreen ? true : false}
+					zoomOnScroll={props.fullscreen ? true : false}
+					zoomOnPinch={props.fullscreen ? true : false}
+					minZoom={props.edit ? 0.4 : 0.001}
+					maxZoom={1}
 				>
-					<ReactFlow
-						nodeTypes={nodeTypes}
-						elements={state.elements}
-						nodesDraggable={false}
-						nodesConnectable={false}
-						zoomOnDoubleClick={false}
-						paneMoveable={props.fullscreen}
-						zoomOnScroll={props.fullscreen}
-						zoomOnPinch={props.fullscreen}
-						onLoad={onLoad}
-						minZoom={props.fullscreen ? 0.4 : 0.001}
-						maxZoom={1}
-					>
-						<LayoutHelper onNodeSizesChange={onNodeSizesChange} />
-					</ReactFlow>
-				</div>
+					<LayoutHelper onNodeSizesChange={onNodeSizesChange} />
+				</ReactFlow>
 			</div>
-		</>
 	);
 };
 
