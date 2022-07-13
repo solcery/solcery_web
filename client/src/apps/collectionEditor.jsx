@@ -172,12 +172,12 @@ export default function CollectionEditor({ templateCode, moduleName }) {
 			filter[fieldCode] = filterValue;
 		}
 		if (Object.keys(filter).length > 0) {
-			setCookie(filterCookieName, filter);
+			setCookie(filterCookieName, filter, { path = '/' });
 		} else {
 			removeCookie(filterCookieName);
 		}
 		setCurrentPage(1);
-		setCookie(`${moduleName}.pagination.current`, 1);
+		setCookie(`${moduleName}.pagination.current`, 1, { path = '/' });
 		setFilter(Object.assign({}, filter));
 	};
 
@@ -204,15 +204,15 @@ export default function CollectionEditor({ templateCode, moduleName }) {
 
 	const setFieldSorter = (fieldCode, value) => {
 		sorter[fieldCode] = value;
-		setCookie(sorterCookieName, sorter);
+		setCookie(sorterCookieName, sorter, { path = '/' });
 		setSorter(JSON.parse(JSON.stringify(sorter)));
 	};
 
 	const onPaginationChange = (current, pageSize) => {
 		setCurrentPage(current);
-		setCookie(`${moduleName}.pagination.current`, current);
+		setCookie(`${moduleName}.pagination.current`, current, { path = '/' });
 		setPageSize(pageSize);
-		setCookie(`${moduleName}.pagination.pageSize`, pageSize);
+		setCookie(`${moduleName}.pagination.pageSize`, pageSize, { path = '/' });
 	};
 
 	if (!template || !objects || !filter) return <>NO DATA</>;
