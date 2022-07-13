@@ -313,7 +313,7 @@ export default function CollectionEditor({ templateCode, moduleName }) {
 										.then((res) => {
 											if (res.insertedId) {
 												if (fastCopy) {
-													navigate(`../${moduleName}.${res.insertedId}`);
+													navigate(`${res.insertedId}`);
 												} else {
 													notify({ 
 														message: 'Object created', 
@@ -363,7 +363,7 @@ export default function CollectionEditor({ templateCode, moduleName }) {
 				onClick={() => {
 					sageApi.template.createObject({ template: templateCode }).then((res) => {
 						if (res.insertedId) {
-							navigate(`/${res.insertedId}`);
+							navigate(`${res.insertedId}`);
 						}
 					});
 				}}

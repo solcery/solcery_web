@@ -1,14 +1,10 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import CollectionEditor from './collectionEditor';
-import { useProject } from '../contexts/project';
 import { useHotkey } from '../contexts/hotkey';
 import { useDocument } from '../contexts/document';
-import { useTemplate } from '../contexts/template';
 import { Button } from 'antd'
 import { BrickTreeEditor } from '../content/types/brick/components';
 import { getTable } from '../utils';
-import { SCustomBrick, SBrick } from '../content/types';
 import './brickEditor.css'
 
 export default function BrickEditor() {
@@ -17,28 +13,33 @@ export default function BrickEditor() {
 	let { templateCode, objectId, brickPath } = useParams();
 	const [ value, setValue ] = useState();
 	const [ changed, setChanged ] = useState(false);
-	let splittedPath = brickPath.split('.');
+	const [ splittedPath, setSplittedPath ] = useState();
 
 	const goUp = () => {
 		navigate('../');
 	}
 
 	useEffect(() => {
-		if (!doc) return;
+		setSplittedPath(brickPath.split('.'))
+	}, [ brickPath ])
+
+	useEffect(() => {
+		if (!doc || !splittedPath) return;
 		let fieldType = doc.schema[splittedPath[0]].type;
 		let res = getTable(doc.fields, ...splittedPath) ?? {
 			brickParams: [],
 			brickTree: undefined,
 		};
 		setValue(fieldType.clone(res))
-	}, [ doc ])
+	}, [ doc, doc.fields, doc.schema, splittedPath ])
 
-	const onChangeBrickTree = (brickTree) => {
+	const onChangeBrickTree = useCallback((brickTree) => {
+		if (!doc) return;
 		value.brickTree = brickTree;
 		let old = getTable(doc.fields, ...splittedPath);
 		let fieldType = doc.schema[splittedPath[0]].type;
 		setChanged(!fieldType.eq(old, value))
-	}
+	}, [ splittedPath, doc, doc.fields ]);
 
 	const save = useCallback(() => {
 		doc.setField(value, splittedPath)

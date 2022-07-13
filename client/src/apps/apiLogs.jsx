@@ -1,9 +1,6 @@
-import React, { useEffect, useState, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Table, Button } from 'antd';
-import { Template } from '../content/template';
+import React, { useEffect, useState } from 'react';
+import { Table } from 'antd';
 import { useProject } from '../contexts/project';
-import { useCookies } from 'react-cookie';
 
 const { Column } = Table;
 
@@ -11,11 +8,10 @@ export default function ApiLogs() {
 	const { sageApi } = useProject();
 
 	const [logs, setLogs] = useState();
-	const [users, setUsers ] = useState();
 
 	useEffect(() => {
 		sageApi.project.getLogs().then(setLogs)
-	}, []);
+	}, [ sageApi.project ]);
 
 	useEffect(() => {
 		console.log(logs)
