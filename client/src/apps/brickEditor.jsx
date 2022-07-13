@@ -52,7 +52,7 @@ export default function BrickEditor() {
 		goUp();
 	})
 
-	if (!doc) return <>NO DOC</>;
+	if (!doc || !splittedPath ) return <>NO DOC</>;
 	let path = [ templateCode, objectId, ... splittedPath ].join(' > ');
 	let fieldType = doc.schema[splittedPath[0]].type
 	return (
