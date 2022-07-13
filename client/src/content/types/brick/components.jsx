@@ -47,7 +47,7 @@ export const ValueRender = (props) => {
 	const { objectId } = useParams();
 	const [ brickTree, setBrickTree ] = useState(props.defaultValue ? props.defaultValue.brickTree : undefined);
 	const [ brickParams, setBrickParams ] = useState(props.defaultValue ? props.defaultValue.brickParams : [])
-	const { showReadonlyBricks } = useUser();
+	const { readonlyBricks } = useUser();
 	const navigate = useNavigate();
 
 	const onChangeBrickParams = (bp) => {
@@ -73,7 +73,7 @@ export const ValueRender = (props) => {
 				onChange={props.onChange && onChangeBrickParams}
 				path = {{ ...props.path, fieldPath: [ ... props.path.fieldPath, 'brickParams' ] }}
 			/>}
-			{props.onChange || showReadonlyBricks ?
+			{props.onChange || readonlyBricks ?
 			<div onClick={() => { navigate(path) }}> 
 				{ brickTreeEditor }
 			</div>
