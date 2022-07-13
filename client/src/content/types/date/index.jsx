@@ -1,6 +1,5 @@
-import { SType, defaultFilter } from '../base';
+import { SType } from '../base';
 import { ValueRender } from './components';
-import moment from 'moment';
 
 class SDate {
 	static fromString = (data) => new SDate({ time: data });

@@ -1,11 +1,8 @@
-import React, { useContext, useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useProject } from './project';
 import { useTemplate } from './template';
 import { useParams, Outlet } from 'react-router-dom';
-import { SageAPIConnection } from '../api';
 import { DocumentProvider } from './document';
-import { TopMenu } from '../components/TopMenu';
-import { insertTable } from '../utils';
 import Document from '../content/document';
 
 export function ObjectDocProvider(props) {

@@ -42,7 +42,7 @@ export function UserProvider(props) {
 		if (!sageApi) return;
 		if (!cookies[`session.${projectName}`]) return;
 		sageApi.user.getSession({ session: cookies[`session.${projectName}`] }).then(res => loadUser(res));
-	}, [user, projectName, sageApi, cookies]);
+	}, [loadUser, user, projectName, sageApi, cookies]);
 
 	const auth = useCallback(() => {
 		if (!login || !password) {
@@ -57,7 +57,7 @@ export function UserProvider(props) {
 			});
 			loadUser(res);
 		});
-	}, [login, password, projectName, setCookie, sageApi]);
+	}, [loadUser, login, password, projectName, setCookie, sageApi]);
 
 	useEffect(() => {
 		if (user && user.css) {

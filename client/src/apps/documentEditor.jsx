@@ -1,6 +1,5 @@
 import { Table, Button } from 'antd';
-import React, { useState, useEffect, useContext } from 'react';
-import { useDocument } from '../contexts/document';
+import React, { useState } from 'react';
 import { useHotkey } from '../contexts/hotkey';
 import { notify } from '../components/notification';
 import './documentEditor.css'
@@ -11,28 +10,6 @@ export default function DocumentEditor(props) {
 	const [ revision, setRevision ] = useState(1);
 
 	const save = useHotkey({ key: 'ctrl+s', noDefault: true }, () => { // TODO: move to object context
-		const onSaveSuccess = (res) => {
-			props.onSave(res)
-		}
-
-		const onSaveFail = (reason) => {
-			if (reason.error === 'emptySaveData') {
-				notify({
-					message: `Not saved`,
-					description: 'Cannot save object, no changes in fields',
-					color: '#FFFFDD',
-				});
-			}
-			if (reason.error === 'invalidField') {
-				let fieldName = props.schema.fields[reason.fieldCode].name;
-				notify({
-					message: `Error`,
-					description: `Invalid value for field '${fieldName}'` ,
-					color: '#FFDDDD',
-				});
-			} 
-		}
-
 		let res = props.doc.getChanges();
 		if (res) {
 			props.onSave(res)
@@ -50,7 +27,7 @@ export default function DocumentEditor(props) {
 		setRevision(revision + 1)
 	}
 
-	const exit = useHotkey('escape', () => {
+	useHotkey('escape', () => {
 		let changed = false;
 		for (let status of Object.values(props.doc.fieldStatus)) {
 			if (status === 'changed') {

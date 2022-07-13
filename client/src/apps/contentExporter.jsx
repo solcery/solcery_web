@@ -1,4 +1,4 @@
-import { Button, Input, Select } from 'antd';
+import { Button, Select } from 'antd';
 import { useState } from 'react';
 import { useProject } from '../contexts/project';
 const { Option } = Select;

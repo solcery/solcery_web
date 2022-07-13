@@ -1,10 +1,6 @@
-import React, { useContext, useEffect, useState, useCallback } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { useProject } from './project';
 import { useParams, Outlet } from 'react-router-dom';
-import { SageAPIConnection } from '../api';
-import { BrickLibraryProvider } from './brickLibrary';
-import { TopMenu } from '../components/TopMenu';
-import { UserProvider } from './user';
 import { Template } from '../content/template';
 
 const TemplateContext = React.createContext(undefined);

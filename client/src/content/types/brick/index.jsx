@@ -13,22 +13,22 @@ const validateBrick = (v) => {
 	return true;
 }
 
-const argFromParam = (param) => {
-	return {
-		lib: param.type.brickType,
-		func: `arg`,
-		name: `Arg [${param.name}]`,
-		params: [
-			{
-				code: 'name',
-				name: 'Name',
-				type: SType.from('SString'),
-				value: param.code,
-				readonly: true,
-			},
-		],
-	};
-};
+// const argFromParam = (param) => {
+// 	return {
+// 		lib: param.type.brickType,
+// 		func: `arg`,
+// 		name: `Arg [${param.name}]`,
+// 		params: [
+// 			{
+// 				code: 'name',
+// 				name: 'Name',
+// 				type: SType.from('SString'),
+// 				value: param.code,
+// 				readonly: true,
+// 			},
+// 		],
+// 	};
+// };
 
 class SBrick {
 	static fromString = (data) => new SBrick({ brickType: data });

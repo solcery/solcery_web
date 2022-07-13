@@ -1,13 +1,11 @@
 import { useEffect } from 'react';
 import { Handle, Position } from 'react-flow-renderer';
-import { useNavigate } from 'react-router-dom';
 import { notify } from '../../../../components/notification';
 import { useProject } from '../../../../contexts/project';
 
 
 export default function Brick(props) {
 	let { projectName } = useProject();
-	const navigate = useNavigate();
 	const brick = props.data.brick;
 	const brickLibrary = props.data.brickLibrary;
 

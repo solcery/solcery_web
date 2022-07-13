@@ -6,7 +6,7 @@ const { Option } = Select;
 export const ValueRender = (props) => {
 	const [objects, setObjects] = useState(undefined);
 	const mountedRef = useRef(true);
-	const { sageApi, projectName } = useProject();
+	const { sageApi } = useProject();
 
 	useEffect(() => {
 		return () => {

@@ -1,13 +1,10 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import ReactFlow, { ReactFlowProvider, isNode, useZoomPanHelper } from 'react-flow-renderer';
-import { useNavigate } from 'react-router-dom';
+import ReactFlow, { isNode, useZoomPanHelper } from 'react-flow-renderer';
 import AddBrickButton from './AddBrickButton';
 import Brick from './Brick';
-import { Button } from 'antd';
 import LayoutHelper from './LayoutHelper';
 import makeLayoutedElements from './dagreLayout';
 import { notify } from '../../../../components/notification';
-import { useHotkey } from '../../../../contexts/hotkey';
 import './BrickEditor.scss';
 
 let brickUniqueID = 0;
@@ -22,14 +19,14 @@ export const BrickEditor = (props) => {
 	let height = props.fullscreen ? window.innerHeight : 200;
 
 	const [state, setState] = useState({ elements: [], isLayouted: false });
-	const [brickTree, setBt] = useState(props.brickTree);
+	const [brickTree, setBrickTree] = useState(props.brickTree);
 	const { fitView } = useZoomPanHelper();
-	const navigate = useNavigate();
 
-	const setBrickTree = (bt) => {
-		setBt(bt)
+	const onChangeBrickTree = useCallback((bt) => {
+		setBrickTree(bt)
 		props.onChange && props.onChange(bt)
-	}
+	}, [ props ]);
+
 	const addBrick = useCallback(
 		(brickSignature, bt, parentBrick, paramID) => {
 			if (!props.onChange) return;
@@ -43,12 +40,12 @@ export const BrickEditor = (props) => {
 			});
 			if (parentBrick) {
 				parentBrick.params[paramID] = brick;
-				setBrickTree(JSON.parse(JSON.stringify(bt)));
+				onChangeBrickTree(JSON.parse(JSON.stringify(bt)));
 			} else {
-				setBrickTree(brick);
+				onChangeBrickTree(brick);
 			}
 		},
-		[props]
+		[props, onChangeBrickTree]
 	);
 
 	const removeBrick = useCallback(
@@ -57,12 +54,12 @@ export const BrickEditor = (props) => {
 
 			if (parentBrick) {
 				parentBrick.params[paramCode] = null;
-				setBrickTree(JSON.parse(JSON.stringify(bt)));
+				onChangeBrickTree(JSON.parse(JSON.stringify(bt)));
 			} else {
-				setBrickTree(null);
+				onChangeBrickTree(null);
 			}
 		},
-		[props]
+		[props, onChangeBrickTree]
 	);
 
 	const onPaste = useCallback(
@@ -73,7 +70,7 @@ export const BrickEditor = (props) => {
 				const param = brickSignature.params.find((param) => param.code === paramCode);
 				if (param.type.brickType === pastedBrickTree.lib) {
 					parentBrick.params[paramCode] = pastedBrickTree;
-					setBrickTree(JSON.parse(JSON.stringify(bt)));
+					onChangeBrickTree(JSON.parse(JSON.stringify(bt)));
 					notify({ message: 'Pasted successfully', color: '#DDFFDD' });
 				} else {
 					notify({
@@ -83,7 +80,7 @@ export const BrickEditor = (props) => {
 				}
 			} else {
 				if (pastedBrickTree.lib === props.brickType || props.brickType === 'any') {
-					setBrickTree(pastedBrickTree);
+					onChangeBrickTree(pastedBrickTree);
 					notify({ message: 'Pasted successfully', color: '#DDFFDD' });
 				} else {
 					notify({
@@ -93,7 +90,7 @@ export const BrickEditor = (props) => {
 				}
 			}
 		},
-		[props]
+		[props, onChangeBrickTree]
 	);
 
 	const makeAddButtonElement = useCallback(
@@ -151,7 +148,7 @@ export const BrickEditor = (props) => {
 					onPaste: onPaste,
 					onChange: props.onChange
 						? () => {
-								setBrickTree(bt);
+								onChangeBrickTree(bt);
 						  }
 						: null,
 					readonly: !props.onChange,
@@ -159,7 +156,7 @@ export const BrickEditor = (props) => {
 				},
 			};
 		},
-		[props.fullscreen, props.onChange, brickTree, props.brickLibrary, props.brickClass, removeBrick, onPaste]
+		[props.fullscreen, props.onChange, brickTree, props.brickLibrary, props.brickClass, removeBrick, onPaste, onChangeBrickTree]
 	);
 
 	const makeBrickWithEdgeElements = useCallback(
@@ -244,11 +241,7 @@ export const BrickEditor = (props) => {
 			fitView()
 			editorRef.current.style.visibility = 'visible';
 		}
-	}, [state.isLayouted]);
-
-	const save = () => {
-		props.onChange && props.onChange(brickTree);
-	};
+	}, [state.isLayouted, fitView ]);
 	
 	const editorRef = useRef(null);
 	return (

@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Table, Button, Row } from 'antd';
+import { Table, Button } from 'antd';
 import { Template } from '../content/template';
 import { useProject } from '../contexts/project';
 import { useUser } from '../contexts/user';
@@ -83,7 +83,7 @@ const HeaderFilter = (props) => {
 		return () => {
 			document.removeEventListener("keydown", onKeyDown);
 		};
-	}, []);
+	});
 
 
 	return (
@@ -191,12 +191,12 @@ export default function CollectionEditor({ templateCode, moduleName }) {
 			setCurrentPage(parseInt(cookies[`${moduleName}.pagination.current`]));
 		if (cookies[`${moduleName}.pagination.pageSize`])
 			setPageSize(parseInt(cookies[`${moduleName}.pagination.pageSize`]));
-	}, [ moduleName ])
+	}, [ moduleName, cookies ])
 
 	useEffect(() => {
 		setFilter(cookies[filterCookieName] ?? {})
 		setSorter(cookies[sorterCookieName] ?? {})
-	}, [ moduleName ])
+	}, [ moduleName, cookies, filterCookieName, sorterCookieName ])
 
 	useEffect(() => {
 		load();

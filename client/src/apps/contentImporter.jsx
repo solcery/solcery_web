@@ -1,4 +1,4 @@
-import { Button, Input, Select } from 'antd';
+import { Button, Input } from 'antd';
 import { useState } from 'react';
 import { useProject } from '../contexts/project';
 const { TextArea } = Input;

@@ -5,7 +5,7 @@ class SStruct {
 	constructor(data) {
 		this.fields = []
 		for (let field of data.fields) {
-			let fld = { ... field }
+			let fld = { ...field }
 			fld.type = SType.from(field.type)
 			this.fields.push(fld);
 		}

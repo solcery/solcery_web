@@ -1,14 +1,13 @@
 import { BrickEditor } from './editor/BrickEditor';
 import { ReactFlowProvider } from 'react-flow-renderer';
 import { useNavigate, useParams, Link } from 'react-router-dom';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { paramFromMapEntry } from '../../brickLib';
-import { Select, Button, Popover } from 'antd';
+import { Select, Popover } from 'antd';
 import { SType } from '../base';
 import { insertTable } from '../../../utils';
 import { useBrickLibrary } from '../../../contexts/brickLibrary';
 import { useUser } from '../../../contexts/user';
-import { useProject } from '../../../contexts/project';
 
 const { Option } = Select;
 
@@ -45,7 +44,7 @@ const argFromParam = (param) => {
 
 export const ValueRender = (props) => {
 	const { objectId } = useParams();
-	const [ brickTree, setBrickTree ] = useState(props.defaultValue ? props.defaultValue.brickTree : undefined);
+	let brickTree = useRef(props.defaultValue ? props.defaultValue.brickTree : undefined)
 	const [ brickParams, setBrickParams ] = useState(props.defaultValue ? props.defaultValue.brickParams : [])
 	const { readonlyBricks } = useUser();
 	const navigate = useNavigate();
@@ -62,7 +61,7 @@ export const ValueRender = (props) => {
 	let brickTreeEditor = (<BrickTreeEditor
 		brickParams={brickParams} 
 		brickType={props.type.brickType ?? 'any'}
-		brickTree={brickTree}
+		brickTree={brickTree.current}
 	/>);
 
 	return (
@@ -71,7 +70,7 @@ export const ValueRender = (props) => {
 				defaultValue={brickParams} 
 				type ={paramMapType}
 				onChange={props.onChange && onChangeBrickParams}
-				path = {{ ...props.path, fieldPath: [ ... props.path.fieldPath, 'brickParams' ] }}
+				path = {{ ...props.path, fieldPath: [ ...props.path.fieldPath, 'brickParams' ] }}
 			/>}
 			{props.onChange || readonlyBricks ?
 			<div onClick={() => { navigate(path) }}> 

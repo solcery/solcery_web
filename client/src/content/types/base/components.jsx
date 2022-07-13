@@ -1,6 +1,3 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { Button } from 'antd';
-
 export const DefaultFilterRender = (props) => {
 	return (
 		<props.type.valueRender

@@ -5,7 +5,7 @@ export const ValueRender = (props) => {
 	useEffect(() => {
 		if (props.isFilter && props.onChange)
 		props.onChange(false);
-	}, [ props.isFilter, props.onChange ]);
+	}, [ props, props.isFilter, props.onChange ]);
 
 	if (!props.onChange) return <>{props.defaultValue ? 'True' : 'False'}</>;
 

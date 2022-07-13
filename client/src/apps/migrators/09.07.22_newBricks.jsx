@@ -1,5 +1,3 @@
-import { execute } from '../../content';
-
 export const migrator = (content) => {
 	let objects = [];
 	for (let object of content.objects) {

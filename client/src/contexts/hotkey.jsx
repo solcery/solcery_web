@@ -71,13 +71,13 @@ export function HotkeyProvider(props) {
 
 export const useHotkey = (data, callback) => {
 	const { addHotkey, removeHotkey } = useContext(HotkeyContext)
-	let hotkey = typeof data === 'string' ? { key: data } : data;
-	hotkey.callback = callback
 	useEffect(() => {
+		let hotkey = typeof data === 'string' ? { key: data } : data;
+		hotkey.callback = callback
 		let id = addHotkey(hotkey)
 		return () => {
 			removeHotkey(hotkey.key, id)
 		};
-	}, [ callback, addHotkey, removeHotkey ])
+	}, [ data, callback, addHotkey, removeHotkey ])
 	return callback;
 };

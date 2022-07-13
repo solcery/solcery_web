@@ -1,13 +1,10 @@
-import { useNavigate, useLocation, useParams, Outlet } from 'react-router-dom';
-import { useEffect, useState } from 'react';
-import { Template } from '../content/template';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useProject } from '../contexts/project';
 import { useBrickLibrary } from '../contexts/brickLibrary';
 import { useTemplate } from '../contexts/template';
 import { useDocument } from '../contexts/document';
 import DocumentEditor from './documentEditor';
 import { notify } from '../components/notification';
-import { BrickTreeEditor } from '../content/types/brick/components';
 
 export default function ObjectPage() {
 	const { objectId } = useParams();

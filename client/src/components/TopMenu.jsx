@@ -1,4 +1,4 @@
-import { Menu, Avatar } from 'antd';
+import { Menu } from 'antd';
 import { Link, Outlet } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
 import { useProject } from '../contexts/project';
