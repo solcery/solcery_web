@@ -7,10 +7,10 @@ export default function AddBrickButton(props) {
 	const brickLibrary = props.data.brickLibrary;
 	const brickSignatures = [];
 	if (brickType === 'any') {
-		Object.values(brickLibrary).forEach(lib => Object.values(lib).forEach(brick => brickSignatures.push(brick)));
+		Object.values(brickLibrary).forEach((lib) => Object.values(lib).forEach((brick) => brickSignatures.push(brick)));
 	} else {
-		let lib = brickLibrary[brickType]
-		Object.values(lib).forEach(brick => brickSignatures.push(brick))
+		let lib = brickLibrary[brickType];
+		Object.values(lib).forEach((brick) => brickSignatures.push(brick));
 	}
 	const [isNodeTypeSelectorVisible, setNodeTypeSelectorVisible] = useState(false);
 
@@ -79,8 +79,8 @@ export default function AddBrickButton(props) {
 		};
 	});
 	const selectorOptions = brickSignatures
-		.filter(sig => !sig.hidden)
-		.map(sig => {
+		.filter((sig) => !sig.hidden)
+		.map((sig) => {
 			return { value: sig, label: sig.name };
 		});
 	return (

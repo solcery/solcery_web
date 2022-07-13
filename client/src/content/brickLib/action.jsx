@@ -254,9 +254,7 @@ export const basicActions = [
 		lib: 'action',
 		func: 'start_timer',
 		name: 'Start Timer',
-		params: [
-			{ code: 'duration', name: 'Duration', type: 'SBrick<value>' }
-		],
+		params: [{ code: 'duration', name: 'Duration', type: 'SBrick<value>' }],
 		exec: (runtime, params, ctx) => {
 			let duration = runtime.execBrick(params.duration, ctx);
 			ctx.game.startTimer(ctx.object, duration);
@@ -279,9 +277,7 @@ export const basicActions = [
 		lib: 'action',
 		func: 'transform',
 		name: 'Transform',
-		params: [
-			{ code: 'tpl_id', name: 'Tpl Id', type: 'SLink<cardTypes>' }
-		],
+		params: [{ code: 'tpl_id', name: 'Tpl Id', type: 'SLink<cardTypes>' }],
 		exec: (runtime, params, ctx) => {
 			ctx.object.transform(params.tpl_id);
 		},

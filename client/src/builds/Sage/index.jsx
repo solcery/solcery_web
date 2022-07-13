@@ -1,9 +1,9 @@
 import React from 'react-dom';
-import { BrowserRouter, Routes, Route, Switch } from 'react-router-dom';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { HotkeyProvider } from '../../contexts/hotkey';
 import { ProjectProvider } from '../../contexts/project';
 import { TemplateProvider } from '../../contexts/template';
-import { ObjectDocProvider } from '../../contexts/object';
+import { ObjectDocProvider } from '../../contexts/objectDocRoute';
 import { TopMenu } from '../../components/TopMenu';
 import { CookiesProvider } from 'react-cookie';
 import './Sage.less';
@@ -14,7 +14,6 @@ import TemplatePage from '../../apps/templatePage';
 import ContentExporter from '../../apps/contentExporter';
 import ContentImporter from '../../apps/contentImporter';
 import Migrator from '../../apps/migrator';
-import { BrickLibraryObjectEditor, BrickLibraryCollectionEditor } from '../../apps/brickLibrary';
 import Play from '../../apps/play';
 import Builder from '../../apps/builder';
 import Profile from '../../apps/profile';
@@ -31,18 +30,16 @@ export default function Sage() {
 						<Routes>
 							<Route path=":projectName" element={<ProjectProvider />}>
 								<Route path="" element={<TopMenu style={{ backgroundColor: 'black' }} />}>
-									<Route path='template'>
-										<Route path=':templateCode' element={<TemplateProvider/> }>
+									<Route path="template">
+										<Route path=":templateCode" element={<TemplateProvider />}>
 											<Route exact path="schema" element={<TemplateSchema />} />
 											<Route path=":objectId" element={<ObjectDocProvider />}>
-												<Route exact path='' element={<ObjectPage />}/>
-												<Route path=":brickPath" element={<BrickEditor/>} />
-											</Route>	
-											<Route exact path='' element={<TemplatePage />}/>
+												<Route exact path="" element={<ObjectPage />} />
+												<Route path=":brickPath" element={<BrickEditor />} />
+											</Route>
+											<Route exact path="" element={<TemplatePage />} />
 										</Route>
 									</Route>
-									<Route path="brickLibrary" element={<BrickLibraryCollectionEditor />} />
-									<Route path="brickLibrary.:objectId" element={<BrickLibraryObjectEditor />} />
 									<Route path="play" element={<Play />} />
 									<Route path="apiLogs" element={<ApiLogs />} />
 									<Route path="builder" element={<Builder />} />

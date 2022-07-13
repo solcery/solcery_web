@@ -4,7 +4,7 @@ const STATE_TYPES = {
 	state: 0,
 	delay: 1,
 	timer: 2,
-}
+};
 
 const objectToArray = (obj) => {
 	return Object.entries(obj).map(([key, value]) => {
@@ -34,10 +34,10 @@ export class Session {
 
 	handlePlayerCommand = (command) => {
 		this.log.push(command);
-		if (command.command_data_type === 0 ) {
+		if (command.command_data_type === 0) {
 			return this.game.objectEvent(command.object_id, 'action_on_left_click');
 		}
-		if (command.command_data_type === 1 ) {
+		if (command.command_data_type === 1) {
 			return this.game.objectEvent(command.object_id, 'action_on_right_click');
 		}
 		if (command.command_data_type === 2) {
@@ -204,7 +204,7 @@ export class Game {
 			state_type: STATE_TYPES.delay,
 			value: {
 				delay: duration,
-			}
+			},
 		});
 	}
 
@@ -215,8 +215,8 @@ export class Game {
 				object_id: object.id,
 				start: true,
 				duration,
-			}
-		})
+			},
+		});
 	}
 
 	stopTimer(object) {
@@ -225,8 +225,8 @@ export class Game {
 			value: {
 				object_id: object.id,
 				start: false,
-			}
-		})
+			},
+		});
 	}
 }
 
@@ -253,6 +253,6 @@ class Entity {
 
 	transform(tplId) {
 		this.tplId = tplId;
-		this.game.onEntityTransform(this)
+		this.game.onEntityTransform(this);
 	}
 }

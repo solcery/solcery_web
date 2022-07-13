@@ -5,7 +5,7 @@ commands.restore = {
 	private: true,
 	params: {
 		src: {
-			required: true
+			required: true,
 		},
 	},
 };
@@ -14,13 +14,13 @@ commands.getContent = {
 	params: {
 		objects: true,
 		templates: true,
-	}
+	},
 };
 
 commands.getLogs = {
 	params: {
 		query: true,
-	}
+	},
 };
 
 commands.migrate = {
@@ -28,11 +28,10 @@ commands.migrate = {
 	private: true,
 	params: {
 		objects: {
-			required: true
+			required: true,
 		},
 	},
 };
-
 
 export const projectAPI = {
 	name: 'project',

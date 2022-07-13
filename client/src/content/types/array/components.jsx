@@ -38,7 +38,7 @@ export const ValueRender = (props) => {
 	return (
 		<>
 			{value.map((val, index) => (
-				<div style={{ display: 'flex'}} key={`${revision}.${index}`}>
+				<div style={{ display: 'flex' }} key={`${revision}.${index}`}>
 					<Button
 						onClick={() => {
 							removeElement(index);

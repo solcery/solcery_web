@@ -1,4 +1,4 @@
-const commands = {}
+const commands = {};
 
 commands.getAllObjects = {
 	params: {
@@ -22,7 +22,7 @@ commands.setSchema = {
 		template: {
 			required: true,
 		},
-		schema: { 
+		schema: {
 			required: true,
 		},
 	},

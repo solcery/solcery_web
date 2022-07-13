@@ -1,7 +1,3 @@
 export default function Game() {
-	return (
-		<>
-			Some
-		</>
-	);
+	return <>Some</>;
 }

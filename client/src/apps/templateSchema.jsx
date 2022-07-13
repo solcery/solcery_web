@@ -22,14 +22,14 @@ export default function TemplateSchema() {
 	const save = () => {
 		let schema;
 		try {
-			schema = JSON.parse(jsonSchema)
+			schema = JSON.parse(jsonSchema);
 		} catch {
 			notify({ message: 'JSON parsing error', color: '#FFDDDD' });
 			return;
 		}
-		console.log(schema)
+		console.log(schema);
 		if (schema) {
-			sageApi.template.setSchema({ template: templateCode, schema }).then(res => {
+			sageApi.template.setSchema({ template: templateCode, schema }).then((res) => {
 				if (res.acknowledged) {
 					notify({ message: 'Schema applied!', color: '#DDFFDD' });
 				}
