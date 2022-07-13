@@ -38,7 +38,6 @@ export function HotkeyProvider(props) {
 		if (!listeners) return;
 		let id = listeners[data.key].subscriptions++;
 		listeners[data.key].callbacks.push(Object.assign({ id }, data));
-		console.log(listeners)
 		return id;
 	}, [ listeners ]);
 
