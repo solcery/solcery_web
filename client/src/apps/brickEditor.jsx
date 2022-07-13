@@ -38,8 +38,8 @@ export default function BrickEditor() {
 		value.brickTree = brickTree;
 		let old = getTable(doc.fields, ...splittedPath);
 		let fieldType = doc.schema[splittedPath[0]].type;
-		setChanged(!fieldType.eq(old, value))
-	}, [ splittedPath, doc, doc.fields ]);
+		// setChanged(!fieldType.eq(old, value))
+	}, [ splittedPath, doc, doc.fields, value ]);
 
 	const save = useCallback(() => {
 		doc.setField(value, splittedPath)
