@@ -1,12 +1,18 @@
 import { Button, Input } from 'antd';
-import { useProject } from '../contexts/project';
+import { useProject } from '../../contexts/project';
 import { useParams } from 'react-router-dom';
 import { useState, useEffect } from 'react';
-import { notify } from '../components/notification';
+import { notify } from '../../components/notification';
+import StorageViewer from '../storage';
 
 const { TextArea } = Input;
 
-export default function TemplateSchema() {
+export function TemplatePage() {
+	let { templateCode } = useParams();
+	return <StorageViewer templateCode={templateCode} moduleName={`template.${templateCode}`} />;
+}
+
+export function TemplateSchema() {
 	const { templateCode } = useParams();
 	const [jsonSchema, setJsonSchema] = useState();
 	const { sageApi } = useProject();

@@ -1,12 +1,12 @@
 import { useNavigate, useParams } from 'react-router-dom';
-import { useProject } from '../contexts/project';
-import { useBrickLibrary } from '../contexts/brickLibrary';
-import { useTemplate } from '../contexts/template';
-import { useDocument } from '../contexts/document';
-import DocumentEditor from './documentEditor';
-import { notify } from '../components/notification';
+import { useProject } from '../../contexts/project';
+import { useBrickLibrary } from '../../contexts/brickLibrary';
+import { useTemplate } from '../../contexts/template';
+import { useDocument } from '../../contexts/document';
+import DocumentEditor from '../document';
+import { notify } from '../../components/notification';
 
-export default function ObjectPage() {
+export function ObjectPage() {
 	const { objectId } = useParams();
 	const { sageApi } = useProject();
 	const { template } = useTemplate();

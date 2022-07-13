@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Table } from 'antd';
-import { useProject } from '../contexts/project';
+import { useProject } from '../../contexts/project';
 
 const { Column } = Table;
 
@@ -12,10 +12,6 @@ export default function ApiLogs() {
 	useEffect(() => {
 		sageApi.project.getLogs().then(setLogs);
 	}, [sageApi.project]);
-
-	useEffect(() => {
-		console.log(logs);
-	}, [logs]);
 
 	if (!logs) return <></>;
 	let tableData = logs.map((entry) => ({

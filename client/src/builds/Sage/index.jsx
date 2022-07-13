@@ -9,16 +9,14 @@ import { CookiesProvider } from 'react-cookie';
 import './Sage.less';
 import './Sage.css';
 
-import ObjectPage from '../../apps/objectPage';
-import TemplatePage from '../../apps/templatePage';
-import ContentExporter from '../../apps/contentExporter';
-import ContentImporter from '../../apps/contentImporter';
+import { ObjectPage } from '../../apps/object';
+import { TemplatePage, TemplateSchema } from '../../apps/template';
+import { ContentExporter, ContentImporter } from '../../apps/sync';
 import Migrator from '../../apps/migrator';
-import Play from '../../apps/play';
+import PlayPage from '../../apps/playPage';
 import Builder from '../../apps/builder';
 import Profile from '../../apps/profile';
 import ApiLogs from '../../apps/apiLogs';
-import TemplateSchema from '../../apps/templateSchema';
 import BrickEditor from '../../apps/brickEditor';
 
 export default function Sage() {
@@ -40,7 +38,7 @@ export default function Sage() {
 											<Route exact path="" element={<TemplatePage />} />
 										</Route>
 									</Route>
-									<Route path="play" element={<Play />} />
+									<Route path="play" element={<PlayPage />} />
 									<Route path="apiLogs" element={<ApiLogs />} />
 									<Route path="builder" element={<Builder />} />
 									<Route path="migrator" element={<Migrator />} />

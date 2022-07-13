@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import { Button, Select, Card } from 'antd';
-import { useUser } from '../contexts/user';
-import { useProject } from '../contexts/project';
-import { build, validate } from '../content';
+import { useUser } from '../../contexts/user';
+import { useProject } from '../../contexts/project';
+import { build, validate } from '../../content';
 import { Link } from 'react-router-dom';
-import { Session } from '../game';
+import { Session } from '../../game';
 import { DownloadOutlined } from '@ant-design/icons';
 const { Option } = Select;
 

@@ -1,6 +1,6 @@
 import { Button, Input } from 'antd';
 import { useState } from 'react';
-import { useProject } from '../contexts/project';
+import { useProject } from '../../contexts/project';
 import { migrator } from './migrators/09.07.22_newBricks';
 
 const { TextArea } = Input;
