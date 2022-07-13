@@ -12,13 +12,13 @@ export const ValueRender = (props) => {
 
 	if (!props.onChange) {
 		return <>{props.defaultValue}</>;
-	};
+	}
 
 	return props.type.textArea ? (
 		<Input.TextArea
 			style={props.type.width && { width: `${props.type.width}px` }}
 			type="text"
-			ref = { valueRenderRef }
+			ref={valueRenderRef}
 			rows={props.type.textArea.rows ?? 5}
 			defaultValue={props.defaultValue}
 			onPressEnter={props.onPressEnter}
@@ -30,7 +30,7 @@ export const ValueRender = (props) => {
 		<Input
 			style={props.type.width && { width: `${props.type.width}px` }}
 			type="text"
-			ref = { valueRenderRef }
+			ref={valueRenderRef}
 			defaultValue={props.defaultValue}
 			onPressEnter={props.onPressEnter}
 			onChange={(event) => {

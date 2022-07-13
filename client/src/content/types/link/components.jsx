@@ -22,12 +22,14 @@ export const ValueRender = (props) => {
 		sageApi.template.getAllObjects({ template: props.type.templateCode }).then((res) => {
 			if (!mountedRef.current) return null;
 			setObjects(
-				res.filter(object => object.fields.name !== undefined).map((object) => {
-					return {
-						id: object._id,
-						title: object.fields.name,
-					};
-				})
+				res
+					.filter((object) => object.fields.name !== undefined)
+					.map((object) => {
+						return {
+							id: object._id,
+							title: object.fields.name,
+						};
+					})
 			);
 		});
 	}, [props.type, sageApi]);

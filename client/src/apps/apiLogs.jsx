@@ -10,34 +10,33 @@ export default function ApiLogs() {
 	const [logs, setLogs] = useState();
 
 	useEffect(() => {
-		sageApi.project.getLogs().then(setLogs)
-	}, [ sageApi.project ]);
+		sageApi.project.getLogs().then(setLogs);
+	}, [sageApi.project]);
 
 	useEffect(() => {
-		console.log(logs)
-	}, [ logs ])
+		console.log(logs);
+	}, [logs]);
 
 	if (!logs) return <></>;
-	let tableData = logs
-		.map(entry => ({
-			_id: entry._id,
-			key: entry._id,
-			success: JSON.stringify(entry.response.status),
-			userId: entry.userId,
-			params: JSON.stringify(entry.params, undefined, 2),
-			command: entry.command,
-			response: JSON.stringify(entry.response, undefined, 2),
-			module: entry.module,
-		}));
+	let tableData = logs.map((entry) => ({
+		_id: entry._id,
+		key: entry._id,
+		success: JSON.stringify(entry.response.status),
+		userId: entry.userId,
+		params: JSON.stringify(entry.params, undefined, 2),
+		command: entry.command,
+		response: JSON.stringify(entry.response, undefined, 2),
+		module: entry.module,
+	}));
 
 	return (
 		<>
 			<Table dataSource={tableData}>
-				<Column title="Command" dataIndex='command' />
-				<Column title="Module" dataIndex='module' />
-				<Column title="User" dataIndex='userId' />
-				<Column title="Params" dataIndex='params' />
-				<Column title="Response" dataIndex='response' />
+				<Column title="Command" dataIndex="command" />
+				<Column title="Module" dataIndex="module" />
+				<Column title="User" dataIndex="userId" />
+				<Column title="Params" dataIndex="params" />
+				<Column title="Response" dataIndex="response" />
 			</Table>
 		</>
 	);

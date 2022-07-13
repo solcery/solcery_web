@@ -22,10 +22,13 @@ export const BrickEditor = (props) => {
 	const [brickTree, setBrickTree] = useState(props.brickTree);
 	const { fitView } = useZoomPanHelper();
 
-	const onChangeBrickTree = useCallback((bt) => {
-		setBrickTree(bt)
-		props.onChange && props.onChange(bt)
-	}, [ props ]);
+	const onChangeBrickTree = useCallback(
+		(bt) => {
+			setBrickTree(bt);
+			props.onChange && props.onChange(bt);
+		},
+		[props]
+	);
 
 	const addBrick = useCallback(
 		(brickSignature, bt, parentBrick, paramID) => {
@@ -156,7 +159,16 @@ export const BrickEditor = (props) => {
 				},
 			};
 		},
-		[props.fullscreen, props.onChange, brickTree, props.brickLibrary, props.brickClass, removeBrick, onPaste, onChangeBrickTree]
+		[
+			props.fullscreen,
+			props.onChange,
+			brickTree,
+			props.brickLibrary,
+			props.brickClass,
+			removeBrick,
+			onPaste,
+			onChangeBrickTree,
+		]
 	);
 
 	const makeBrickWithEdgeElements = useCallback(
@@ -220,7 +232,6 @@ export const BrickEditor = (props) => {
 			elements: makeLayoutedElements(state.elements, nodeSizesByID, rootNodePos, isNode),
 			isLayouted: true,
 		});
-		
 	};
 
 	useEffect(() => {
@@ -238,37 +249,36 @@ export const BrickEditor = (props) => {
 
 	useEffect(() => {
 		if (state.isLayouted && editorRef.current) {
-			fitView()
+			fitView();
 			editorRef.current.style.visibility = 'visible';
 		}
-	}, [state.isLayouted, fitView ]);
-	
+	}, [state.isLayouted, fitView]);
+
 	const editorRef = useRef(null);
 	return (
-		
-			<div
-				ref={editorRef}
-				className="brick-editor"
-				style={{
-					width,
-					height
-				}}
+		<div
+			ref={editorRef}
+			className="brick-editor"
+			style={{
+				width,
+				height,
+			}}
+		>
+			<ReactFlow
+				nodeTypes={nodeTypes}
+				elements={state.elements}
+				nodesDraggable={false}
+				nodesConnectable={false}
+				zoomOnDoubleClick={false}
+				paneMoveable={props.fullscreen ? true : false}
+				zoomOnScroll={props.fullscreen ? true : false}
+				zoomOnPinch={props.fullscreen ? true : false}
+				minZoom={props.edit ? 0.4 : 0.001}
+				maxZoom={1}
 			>
-				<ReactFlow
-					nodeTypes={nodeTypes}
-					elements={state.elements}
-					nodesDraggable={false}
-					nodesConnectable={false}
-					zoomOnDoubleClick={false}
-					paneMoveable={props.fullscreen ? true : false}
-					zoomOnScroll={props.fullscreen ? true : false}
-					zoomOnPinch={props.fullscreen ? true : false}
-					minZoom={props.edit ? 0.4 : 0.001}
-					maxZoom={1}
-				>
-					<LayoutHelper onNodeSizesChange={onNodeSizesChange} />
-				</ReactFlow>
-			</div>
+				<LayoutHelper onNodeSizesChange={onNodeSizesChange} />
+			</ReactFlow>
+		</div>
 	);
 };
 

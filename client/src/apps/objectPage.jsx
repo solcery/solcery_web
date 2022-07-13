@@ -15,29 +15,31 @@ export default function ObjectPage() {
 	const navigate = useNavigate();
 
 	const goUp = () => {
-		navigate(`../../`); //Why do we go 2 levels upwards	
-	}
+		navigate(`../../`); //Why do we go 2 levels upwards
+	};
 
 	const onExit = () => {
 		goUp();
-	}
+	};
 
 	const onSave = (payload) => {
-		sageApi.template.updateObjectById({ 
-			template: template.code,
-			objectId,
-			fields: payload
-		}).then(res => {
-			if (res.modifiedCount === 1) {
-				notify({
-					message: 'Object updated',
-					description: `${objectId}`,
-					color: '#DDFFDD',
-				});
-				load();
-				goUp();
-			}
-		})
+		sageApi.template
+			.updateObjectById({
+				template: template.code,
+				objectId,
+				fields: payload,
+			})
+			.then((res) => {
+				if (res.modifiedCount === 1) {
+					notify({
+						message: 'Object updated',
+						description: `${objectId}`,
+						color: '#DDFFDD',
+					});
+					load();
+					goUp();
+				}
+			});
 	};
-	return <DocumentEditor doc={doc} onSave={onSave} onExit={onExit}/>;
+	return <DocumentEditor doc={doc} onSave={onSave} onExit={onExit} />;
 }

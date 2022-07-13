@@ -5,7 +5,7 @@ export const DefaultFilterRender = (props) => {
 			defaultValue={props.defaultValue}
 			onChange={props.onChange}
 			onPressEnter={props.onPressEnter}
-			isFilter = { true }
+			isFilter={true}
 		/>
 	);
 };

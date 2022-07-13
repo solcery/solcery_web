@@ -45,10 +45,13 @@ class SMap {
 		}
 		return true;
 	};
-	clone = (value) => value ? value.map(val => ({
-		key: this.keyType.clone(val.key),
-		value: this.valueType.clone(val.value)
-	})) : undefined;
+	clone = (value) =>
+		value
+			? value.map((val) => ({
+					key: this.keyType.clone(val.key),
+					value: this.valueType.clone(val.value),
+			  }))
+			: undefined;
 }
 
 SType.register('SMap', SMap);

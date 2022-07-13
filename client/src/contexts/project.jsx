@@ -10,9 +10,12 @@ export function ProjectProvider(props) {
 	let { projectName } = useParams();
 	let [sageApi, setSageApi] = useState();
 
-	const setUserSession = useCallback((session) => {
-		sageApi.session = session;
-	}, [ sageApi ])
+	const setUserSession = useCallback(
+		(session) => {
+			sageApi.session = session;
+		},
+		[sageApi]
+	);
 
 	useEffect(() => {
 		if (!projectName) return;

@@ -1,60 +1,62 @@
 import React, { useContext, useEffect, useState, useCallback } from 'react';
 
-export const hotkeys = [
-	'ctrl+c',
-	'ctrl+s',
-	'escape'
-];
+export const hotkeys = ['ctrl+c', 'ctrl+s', 'escape'];
 
 const HotkeyContext = React.createContext(undefined);
 
 export function HotkeyProvider(props) {
-	const [ listeners, setListeners ] = useState();
+	const [listeners, setListeners] = useState();
 
 	useEffect(() => {
-		let l = {}
+		let l = {};
 		for (let hotkey of hotkeys) {
 			l[hotkey] = {
 				subscriptions: 0,
 				callbacks: [],
-			}
+			};
 		}
-		setListeners(l)
-	}, [ ])
+		setListeners(l);
+	}, []);
 
 	const handle = (hotkey, e) => {
 		if (!listeners) return;
 		if (hotkeys.indexOf(hotkey) < 0) return;
-		let callbacks = listeners[hotkey].callbacks
-		if (callbacks.length === 0) return; 
-		let subscription = callbacks[callbacks.length - 1]
+		let callbacks = listeners[hotkey].callbacks;
+		if (callbacks.length === 0) return;
+		let subscription = callbacks[callbacks.length - 1];
 		if (subscription.noDefault) {
 			e.preventDefault();
 		}
 		subscription.callback();
-	}
-	
-	const addHotkey = useCallback((data) => {
-		if (!listeners) return;
-		let id = listeners[data.key].subscriptions++;
-		listeners[data.key].callbacks.push(Object.assign({ id }, data));
-		return id;
-	}, [ listeners ]);
+	};
 
-	const removeHotkey = useCallback((hotkey, id) => {
-		if (!listeners) return;
-		let list = listeners[hotkey].callbacks;
-		let index = list.findIndex(sub => sub.id === id);
-		if (index >= 0) {
-			list.splice(index, 1)
-		}
-	}, [ listeners ]);
+	const addHotkey = useCallback(
+		(data) => {
+			if (!listeners) return;
+			let id = listeners[data.key].subscriptions++;
+			listeners[data.key].callbacks.push(Object.assign({ id }, data));
+			return id;
+		},
+		[listeners]
+	);
+
+	const removeHotkey = useCallback(
+		(hotkey, id) => {
+			if (!listeners) return;
+			let list = listeners[hotkey].callbacks;
+			let index = list.findIndex((sub) => sub.id === id);
+			if (index >= 0) {
+				list.splice(index, 1);
+			}
+		},
+		[listeners]
+	);
 
 	useEffect(() => {
 		const onKeyDown = (e) => {
 			let key = e.key.toLowerCase();
 			if (e.ctrlKey) key = 'ctrl+' + key;
-			handle(key, e)
+			handle(key, e);
 		};
 		window.addEventListener('keydown', onKeyDown);
 		return () => {
@@ -63,21 +65,19 @@ export function HotkeyProvider(props) {
 	});
 
 	return (
-		<HotkeyContext.Provider value={{ useHotkey, addHotkey, removeHotkey }}>
-			{props.children}
-		</HotkeyContext.Provider>
+		<HotkeyContext.Provider value={{ useHotkey, addHotkey, removeHotkey }}>{props.children}</HotkeyContext.Provider>
 	);
 }
 
 export const useHotkey = (data, callback) => {
-	const { addHotkey, removeHotkey } = useContext(HotkeyContext)
+	const { addHotkey, removeHotkey } = useContext(HotkeyContext);
 	useEffect(() => {
 		let hotkey = typeof data === 'string' ? { key: data } : data;
-		hotkey.callback = callback
-		let id = addHotkey(hotkey)
+		hotkey.callback = callback;
+		let id = addHotkey(hotkey);
 		return () => {
-			removeHotkey(hotkey.key, id)
+			removeHotkey(hotkey.key, id);
 		};
-	}, [ data, callback, addHotkey, removeHotkey ])
+	}, [data, callback, addHotkey, removeHotkey]);
 	return callback;
 };

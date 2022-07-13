@@ -17,21 +17,24 @@ export function UserProvider(props) {
 	const [password, setPassword] = useState(undefined);
 	const [error, setError] = useState(undefined);
 
-	const loadUser = useCallback((userData) => {
-		if (!userData) return;
-	    if (!userData.session) return;
-	    if (!setUserSession) return;
-		setUser(
-			Object.assign(
-				{
-					id: userData._id,
-					nick: userData.login,
-				},
-				userData.fields
-			)
-		);
-	    setUserSession(userData.session)
-	}, [ setUserSession ]);
+	const loadUser = useCallback(
+		(userData) => {
+			if (!userData) return;
+			if (!userData.session) return;
+			if (!setUserSession) return;
+			setUser(
+				Object.assign(
+					{
+						id: userData._id,
+						nick: userData.login,
+					},
+					userData.fields
+				)
+			);
+			setUserSession(userData.session);
+		},
+		[setUserSession]
+	);
 
 	const reload = () => {
 		sageApi.user.getById({ id: user.id }).then((res) => loadUser(res));
@@ -41,7 +44,7 @@ export function UserProvider(props) {
 		if (user) return;
 		if (!sageApi) return;
 		if (!cookies[`session.${projectName}`]) return;
-		sageApi.user.getSession({ session: cookies[`session.${projectName}`] }).then(res => loadUser(res));
+		sageApi.user.getSession({ session: cookies[`session.${projectName}`] }).then((res) => loadUser(res));
 	}, [loadUser, user, projectName, sageApi, cookies]);
 
 	const auth = useCallback(() => {
@@ -73,7 +76,7 @@ export function UserProvider(props) {
 	if (!user)
 		return (
 			<>
-				<h1> Project name: { projectName } </h1>
+				<h1> Project name: {projectName} </h1>
 				<Input
 					placeholder="Login"
 					onChange={(e) => {
@@ -96,6 +99,7 @@ export function UserProvider(props) {
 }
 
 export function useUser() {
-	const { id, doubleClickToOpenObject, fastCopy, nick, css, layoutPresets, reload, readonlyBricks } = useContext(UserContext);
+	const { id, doubleClickToOpenObject, fastCopy, nick, css, layoutPresets, reload, readonlyBricks } =
+		useContext(UserContext);
 	return { id, doubleClickToOpenObject, fastCopy, nick, css, layoutPresets, reload, readonlyBricks };
 }

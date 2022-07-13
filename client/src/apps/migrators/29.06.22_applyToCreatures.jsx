@@ -1,43 +1,43 @@
 import { execute } from '../../content';
 import moment from 'moment';
 
-const applyToNonDisabled = 'custom.6292959419189affcfc0069a'
-const applyToAll = 'custom.62b9ac4fe15013cbc1459bd2'
-const newApply = 'custom.62bc47775d6c8123e730605a'
+const applyToNonDisabled = 'custom.6292959419189affcfc0069a';
+const applyToAll = 'custom.62b9ac4fe15013cbc1459bd2';
+const newApply = 'custom.62bc47775d6c8123e730605a';
 
 const customTrue = {
 	lib: 'condition',
 	func: 'custom.6292959419189affcfc006cb',
-	params: {}
-}
+	params: {},
+};
 
 const customFalse = {
 	lib: 'condition',
 	func: 'custom.6292959419189affcfc006cc',
-	params: {}
-}
+	params: {},
+};
 
 const migrateBrick = (bt) => {
-	let changed = false
+	let changed = false;
 	for (let param of Object.values(bt.params)) {
 		if (param && param.lib) {
-			changed = changed || migrateBrick(param)
+			changed = changed || migrateBrick(param);
 		}
 	}
 	if (bt.func === applyToNonDisabled) {
-		console.log(bt)
-		bt.func = newApply
-		bt.params['Affect Disabled'] = customFalse
-		changed = true
+		console.log(bt);
+		bt.func = newApply;
+		bt.params['Affect Disabled'] = customFalse;
+		changed = true;
 	}
 	if (bt.func === applyToAll) {
-		console.log(bt)
-		bt.func = newApply
-		bt.params['Affect Disabled'] = customTrue
-		changed = true
+		console.log(bt);
+		bt.func = newApply;
+		bt.params['Affect Disabled'] = customTrue;
+		changed = true;
 	}
-	return changed
-}
+	return changed;
+};
 
 export const migrator = (content) => {
 	let objects = [];
@@ -46,10 +46,9 @@ export const migrator = (content) => {
 			if (!value) continue;
 			if (value.brickTree) {
 				if (migrateBrick(value.brickTree)) {
-					objects.push(object)
+					objects.push(object);
 				}
 			}
-
 		}
 	}
 	return { objects };

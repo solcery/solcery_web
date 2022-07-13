@@ -11,7 +11,7 @@ const validateBrick = (v) => {
 		}
 	}
 	return true;
-}
+};
 
 // const argFromParam = (param) => {
 // 	return {
@@ -59,22 +59,24 @@ class SBrick {
 		}
 		for (let paramSig of brickSignature.params) {
 			let param = v.params[paramSig.code];
-			if (param === undefined || param === null) { // TODO: undefined only
+			if (param === undefined || param === null) {
+				// TODO: undefined only
 				meta.error(`No param '${paramSig.code}' found for brick '${v.lib}.${v.func}'!`);
 			} else if (paramSig.type instanceof SBrick) {
 				this.validate(param, meta);
 			} else if (paramSig.type.validate) {
-				paramSig.type.validate(param, meta)
+				paramSig.type.validate(param, meta);
 			}
 		}
 	};
 
-	validateField = (value) => { // client validation before saving
+	validateField = (value) => {
+		// client validation before saving
 		if (value === undefined) return true;
 		let v = value.brickTree;
 		if (!v) return true;
 		return validateBrick(v);
-	}
+	};
 
 	construct = (value, meta) => {
 		if (value === undefined) return; //TODO: Общий обходчик бриков на констракт и validate
@@ -134,7 +136,7 @@ class SBrick {
 	eq = (a, b) => JSON.stringify(a) === JSON.stringify(b);
 	clone = (a) => {
 		if (!a) return a;
-		return JSON.parse(JSON.stringify(a))
+		return JSON.parse(JSON.stringify(a));
 	};
 }
 

@@ -3,7 +3,7 @@ import { SType } from './types';
 export class Template {
 	constructor(data) {
 		Object.assign(this, data);
-		this.fields = {}
+		this.fields = {};
 		for (let field of Object.values(data.fields)) {
 			let newField = Object.assign({}, field);
 			newField.type = SType.from(newField.type);

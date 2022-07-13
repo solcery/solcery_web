@@ -3,7 +3,6 @@ import { Handle, Position } from 'react-flow-renderer';
 import { notify } from '../../../../components/notification';
 import { useProject } from '../../../../contexts/project';
 
-
 export default function Brick(props) {
 	let { projectName } = useProject();
 	const brick = props.data.brick;

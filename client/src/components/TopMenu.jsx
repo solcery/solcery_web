@@ -16,32 +16,22 @@ export const TopMenu = () => {
 
 	return (
 		<>
-			<Menu mode="horizontal" >
+			<Menu mode="horizontal">
 				<Menu.SubMenu style={{ fontWeight: 'bold' }} title={projectName} key="project" icon=<DeploymentUnitOutlined />>
-					<Menu.Item key='builder' >
-						<Link to="builder">
-							Builder
-						</Link>
+					<Menu.Item key="builder">
+						<Link to="builder">Builder</Link>
 					</Menu.Item>
-					<Menu.Item key='export' >
-						<Link to="export">
-							Export content
-						</Link>
+					<Menu.Item key="export">
+						<Link to="export">Export content</Link>
 					</Menu.Item>
-					<Menu.Item key='import' >
-						<Link to="import">
-							Import content
-						</Link>
+					<Menu.Item key="import">
+						<Link to="import">Import content</Link>
 					</Menu.Item>
-					<Menu.Item key='migrator' >
-						<Link to="migrator">
-							Migrations
-						</Link>
+					<Menu.Item key="migrator">
+						<Link to="migrator">Migrations</Link>
 					</Menu.Item>
-					<Menu.Item key='apiLogs' >
-						<Link to="apiLogs">
-							API logs
-						</Link>
+					<Menu.Item key="apiLogs">
+						<Link to="apiLogs">API logs</Link>
 					</Menu.Item>
 				</Menu.SubMenu>
 				<Menu.Item key="play" icon=<CaretRightOutlined />>
@@ -57,7 +47,7 @@ export const TopMenu = () => {
 							<Link to={`template/${template.code}`}>{template.name}</Link>
 						</Menu.Item>
 					))}
-				<Menu.Item key="profile" icon=<UserOutlined /> >
+				<Menu.Item key="profile" icon=<UserOutlined />>
 					<Link to="profile" style={{ fontWeight: 'bold' }}>
 						{nick}
 					</Link>

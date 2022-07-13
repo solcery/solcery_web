@@ -8,15 +8,15 @@ const TemplateContext = React.createContext(undefined);
 export function TemplateProvider(props) {
 	let { templateCode } = useParams();
 	let { sageApi } = useProject();
-	let [ template, setTemplate ] = useState()
+	let [template, setTemplate] = useState();
 
 	useEffect(() => {
-		sageApi.template.getSchema({ template: templateCode }).then(data => setTemplate(new Template(data)));
-	}, [ templateCode, sageApi ]);
+		sageApi.template.getSchema({ template: templateCode }).then((data) => setTemplate(new Template(data)));
+	}, [templateCode, sageApi]);
 
 	return (
 		<TemplateContext.Provider value={{ template }}>
-			<Outlet/>
+			<Outlet />
 		</TemplateContext.Provider>
 	);
 }

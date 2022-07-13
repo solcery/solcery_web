@@ -18,8 +18,8 @@ class SArray {
 			if (!this.valueType.eq(a[i], b[i])) return false;
 		}
 		return true;
-	}
-	clone = (value) => value ? value.map(val => this.valueType.clone(val)) : undefined;
+	};
+	clone = (value) => (value ? value.map((val) => this.valueType.clone(val)) : undefined);
 }
 
 SType.register('SArray', SArray);

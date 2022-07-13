@@ -69,12 +69,15 @@ export default function Play() {
 		}
 	}, []);
 
-	const sendDiffLog = useCallback(states => {
-		for (let index in states) {
-			states[index].id = index;
-		}
-		clientCommand('UpdateGameState', { states });
-	}, [clientCommand]);
+	const sendDiffLog = useCallback(
+		(states) => {
+			for (let index in states) {
+				states[index].id = index;
+			}
+			clientCommand('UpdateGameState', { states });
+		},
+		[clientCommand]
+	);
 
 	useEffect(() => {
 		if (!gameSession) return;

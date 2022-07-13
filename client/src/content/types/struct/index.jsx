@@ -3,22 +3,22 @@ import { ValueRender } from './components';
 
 class SStruct {
 	constructor(data) {
-		this.fields = []
+		this.fields = [];
 		for (let field of data.fields) {
-			let fld = { ...field }
-			fld.type = SType.from(field.type)
+			let fld = { ...field };
+			fld.type = SType.from(field.type);
 			this.fields.push(fld);
 		}
 	}
 	construct = (value, meta) => {
-		let res = {}
+		let res = {};
 		for (let field of this.fields) {
 			if (value[field.code]) {
-				res[field.code] = field.type.construct(value[field.code], meta)
+				res[field.code] = field.type.construct(value[field.code], meta);
 			}
 		}
-		return res
-	}
+		return res;
+	};
 	valueRender = ValueRender;
 	default = () => {
 		let res = {};
@@ -35,18 +35,18 @@ class SStruct {
 			if (!field.type.eq(a[field.code], b[field.code])) return false;
 		}
 		return true;
-	}
+	};
 	clone = (value) => {
 		if (!value) return {};
-		let res = {}
+		let res = {};
 		for (let field of this.fields) {
-			console.log(field)
+			console.log(field);
 			if (value[field.code]) {
-				res[field.code] = field.type.clone(value[field.code])
+				res[field.code] = field.type.clone(value[field.code]);
 			}
 		}
 		return res;
-	}
+	};
 }
 
 SType.register('SStruct', SStruct);

@@ -44,45 +44,51 @@ const argFromParam = (param) => {
 
 export const ValueRender = (props) => {
 	const { objectId } = useParams();
-	let brickTree = useRef(props.defaultValue ? props.defaultValue.brickTree : undefined)
-	const [ brickParams, setBrickParams ] = useState(props.defaultValue ? props.defaultValue.brickParams : [])
+	let brickTree = useRef(props.defaultValue ? props.defaultValue.brickTree : undefined);
+	const [brickParams, setBrickParams] = useState(props.defaultValue ? props.defaultValue.brickParams : []);
 	const { readonlyBricks } = useUser();
 	const navigate = useNavigate();
 
 	const onChangeBrickParams = (bp) => {
 		props.onChange({ brickParams: bp, brickTree });
-		setBrickParams(paramMapType.clone(bp))
-	}
-	let path = props.path.fieldPath.join('.'); 
+		setBrickParams(paramMapType.clone(bp));
+	};
+	let path = props.path.fieldPath.join('.');
 	if (!objectId) {
-		path = props.path.objectId + '/' + path
+		path = props.path.objectId + '/' + path;
 	}
 
-	let brickTreeEditor = (<BrickTreeEditor
-		brickParams={brickParams} 
-		brickType={props.type.brickType ?? 'any'}
-		brickTree={brickTree.current}
-	/>);
+	let brickTreeEditor = (
+		<BrickTreeEditor
+			brickParams={brickParams}
+			brickType={props.type.brickType ?? 'any'}
+			brickTree={brickTree.current}
+		/>
+	);
 
 	return (
 		<>
-			{props.type.params && <paramMapType.valueRender 
-				defaultValue={brickParams} 
-				type ={paramMapType}
-				onChange={props.onChange && onChangeBrickParams}
-				path = {{ ...props.path, fieldPath: [ ...props.path.fieldPath, 'brickParams' ] }}
-			/>}
-			{props.onChange || readonlyBricks ?
-			<div onClick={() => { navigate(path) }}> 
-				{ brickTreeEditor }
-			</div>
-			:
-			<Popover content={brickTreeEditor}>
-    			<Link to={path}>
-    				{ brickTree ? `Brick. ${ props.type.brickType ?? 'any' }` : 'EMPTY' }
-				</Link>
-  			</Popover>
-			}
+			{props.type.params && (
+				<paramMapType.valueRender
+					defaultValue={brickParams}
+					type={paramMapType}
+					onChange={props.onChange && onChangeBrickParams}
+					path={{ ...props.path, fieldPath: [...props.path.fieldPath, 'brickParams'] }}
+				/>
+			)}
+			{props.onChange || readonlyBricks ? (
+				<div
+					onClick={() => {
+						navigate(path);
+					}}
+				>
+					{brickTreeEditor}
+				</div>
+			) : (
+				<Popover content={brickTreeEditor}>
+					<Link to={path}>{brickTree ? `Brick. ${props.type.brickType ?? 'any'}` : 'EMPTY'}</Link>
+				</Popover>
+			)}
 		</>
 	);
 };
@@ -125,7 +131,7 @@ export const BrickTreeEditor = (props) => {
 	return (
 		<ReactFlowProvider>
 			<BrickEditor
-				fullscreen = {props.fullscreen}
+				fullscreen={props.fullscreen}
 				brickLibrary={ownBrickLibrary}
 				brickTree={props.brickTree}
 				brickType={props.brickType}
@@ -136,24 +142,18 @@ export const BrickTreeEditor = (props) => {
 };
 
 export const FilterRender = (props) => {
-	let defaultValue = props.defaultValue ?? 'action'
+	let defaultValue = props.defaultValue ?? 'action';
 	const titles = {
 		action: 'Action',
 		condition: 'Condition',
 		value: 'Value',
-	}
+	};
 	if (!props.onChange) return <>{titles[defaultValue]}</>;
 	return (
-		<Select style = {{ minWidth: '100px' }} onChange={props.onChange} defaultValue={ props.defaultValue }>
-			<Option value='action'>
-				{ titles.action }
-			</Option>
-			<Option value="condition">
-				{ titles.condition }
-			</Option>
-			<Option value="value">
-				{ titles.value }
-			</Option>
+		<Select style={{ minWidth: '100px' }} onChange={props.onChange} defaultValue={props.defaultValue}>
+			<Option value="action">{titles.action}</Option>
+			<Option value="condition">{titles.condition}</Option>
+			<Option value="value">{titles.value}</Option>
 		</Select>
 	);
-};;
+};

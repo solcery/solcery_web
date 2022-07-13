@@ -5,11 +5,7 @@ const DocumentContext = React.createContext(undefined);
 export function DocumentProvider(props) {
 	const doc = useRef(props.doc);
 
-	return (
-		<DocumentContext.Provider value={{ doc: doc.current }}>
-			{ props.children }
-		</DocumentContext.Provider>
-	);
+	return <DocumentContext.Provider value={{ doc: doc.current }}>{props.children}</DocumentContext.Provider>;
 }
 
 export function useDocument() {
