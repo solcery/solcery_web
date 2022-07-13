@@ -49,11 +49,9 @@ export const TopMenu = () => {
 						Play
 					</Link>
 				</Menu.Item>
-				<Menu.Item key="brickLibrary">
-					<Link to="template/customBricks">Brick library</Link>
-				</Menu.Item>
 				{templates
-					.filter((template) => !template.hidden)
+					.filter((template) => template.menuOrder)
+					.sort((a, b) => a.menuOrder - b.menuOrder)
 					.map((template) => (
 						<Menu.Item key={template.code}>
 							<Link to={`template/${template.code}`}>{template.name}</Link>
