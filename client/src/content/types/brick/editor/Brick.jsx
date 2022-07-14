@@ -191,7 +191,7 @@ export default function Brick(props) {
 							bottom: '-1.5rem',
 						}}
 					>
-						<div className="handle-label">{param.name}</div>
+						<div className={'handle-label' + (props.data.readonly ? ' readonly' : '')}>{param.name}</div>
 					</Handle>
 				))}
 			</div>

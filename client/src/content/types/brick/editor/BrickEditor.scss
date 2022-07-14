@@ -200,6 +200,23 @@
 			background-color: #261f1c;
 			border: solid 1px #40342c;
 		}
+
+		.handle-label {
+			position: absolute;
+			width: 5rem;
+			left: -2.5rem;
+			bottom: 50%;
+			z-index: -1;
+			background-color: red;
+			font-size: 0.8rem;
+			border-radius: 0 0 0.3rem 0.3rem;
+			background-color: #261f1c;
+			border: solid 1px #40342c;
+		}
+
+		.handle-label.readonly {
+			background-color: #202020;
+		}
 	}
 
 	.add-brick-button.active {

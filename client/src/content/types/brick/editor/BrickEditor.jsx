@@ -18,6 +18,7 @@ export const BrickEditor = (props) => {
 	let width = props.fullscreen ? window.innerWidth : 300;
 	let height = props.fullscreen ? window.innerHeight : 200;
 
+	const initialFit = useRef(false)
 	const [state, setState] = useState({ elements: [], isLayouted: false });
 	const [brickTree, setBrickTree] = useState(props.brickTree);
 	const { fitView } = useZoomPanHelper();
@@ -249,10 +250,13 @@ export const BrickEditor = (props) => {
 
 	useEffect(() => {
 		if (state.isLayouted && editorRef.current) {
-			fitView();
+			if (!initialFit.current) {
+				initialFit.current = true;
+				fitView();
+			}
 			editorRef.current.style.visibility = 'visible';
 		}
-	}, [state.isLayouted, fitView]);
+	}, [initialFit, state.isLayouted, fitView]);
 
 	const editorRef = useRef(null);
 	return (
