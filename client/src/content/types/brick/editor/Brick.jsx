@@ -29,9 +29,8 @@ function Comment(props) {
 }
 
 function BrickName(props) {
-	let isCustom = props.name.includes('custom');
-	if (isCustom) return <Tooltip title='Double click to open'>
-		<div onDoubleClick={props.onDoubleClick} className="brick-name">
+	if (props.onDoubleClick) return <Tooltip title='Double click to open'>
+		<div onDoubleClick={props.onDoubleClick} className="brick-name custom">
 			{props.name}
 		</div>
 	</Tooltip>;
@@ -148,7 +147,7 @@ export default function Brick(props) {
 				ref={brickRef}
 			>
 				<div className='brick-header'>
-					<BrickName name={brickSignature.name} onDoubleClick={onDoubleClick}/>
+					<BrickName name={brickSignature.name} onDoubleClick={brickSignature.func.includes('custom') && onDoubleClick}/>
 					{!props.data.readonly && props.data.fullscreen && (
 						<Button size='small' className='remove-button' onClick={onRemoveButtonClicked}>
 							<CloseOutlined/>

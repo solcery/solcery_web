@@ -133,7 +133,7 @@ export const basicActions = [
 		func: 'set_attr',
 		name: 'Set attribute',
 		params: [
-			{ code: 'attr_name', name: 'Attr', type: 'SString' },
+			{ code: 'attr_name', name: 'Attr', type: 'SLink<attributes|code>' },
 			{ code: 'value', name: 'Value', type: 'SBrick<value>' },
 		],
 		exec: (runtime, params, ctx) => {
@@ -164,7 +164,7 @@ export const basicActions = [
 		func: 'set_game_attr',
 		name: 'Set game attribute',
 		params: [
-			{ code: 'attr_name', name: 'Attr', type: 'SString' },
+			{ code: 'attr_name', name: 'Attr', type: 'SLink<gameAttributes|code>' },
 			{ code: 'value', name: 'Value', type: 'SBrick<value>' },
 		],
 		exec: (runtime, params, ctx) => {
