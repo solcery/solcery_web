@@ -1,7 +1,7 @@
 import { Button, Input } from 'antd';
 import { useState } from 'react';
 import { useProject } from '../../contexts/project';
-import { migrator } from './migrators/14.07.22_attrLinks';
+import { migrator } from './migrators/14.07.22_placesInCards';
 
 const { TextArea } = Input;
 

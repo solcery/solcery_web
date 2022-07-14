@@ -258,7 +258,6 @@ export default function StorageViewer({ templateCode, moduleName }) {
 		onChange: onPaginationChange,
 		showSizeChanger: true,
 	};
-
 	return (
 		<>
 			<Table
@@ -266,10 +265,10 @@ export default function StorageViewer({ templateCode, moduleName }) {
 				dataSource={tableData}
 				pagination={pagination}
 				onRow={
-					doubleClickToOpenObject &&
+					doubleClickToOpenObject ?
 					function (record, rowIndex) {
 						return { onDoubleClick: (event) => navigate(`${record._id}`) };
-					}
+					} : undefined
 				}
 			>
 				{Object.values(template.fields)
