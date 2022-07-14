@@ -29,17 +29,17 @@ export const basicValues = [
 		func: 'place',
 		name: 'Place',
 		params: [
-			{ 
-				code: 'value', 
-				name: 'Value', 
-				type: { 
+			{
+				code: 'value',
+				name: 'Value',
+				type: {
 					name: 'SLink',
 					data: {
 						templateCode: 'places',
 						field: 'placeId',
-					}
-				}
-			}
+					},
+				},
+			},
 		],
 		exec: (runtime, params, ctx) => {
 			return params.value;

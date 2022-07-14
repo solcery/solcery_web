@@ -1,10 +1,8 @@
-import { useState, useEffect, useRef } from 'react';
-import { Input, Button } from 'antd';
-import { Link, useLocation } from 'react-router-dom';
+import { useEffect, useRef } from 'react';
+import { Input } from 'antd';
 
 export const ValueRender = (props) => {
 	let valueRenderRef = useRef();
-	const { pathname } = useLocation(); //TODO
 
 	useEffect(() => {
 		if (props.isFilter) {
@@ -13,18 +11,14 @@ export const ValueRender = (props) => {
 	});
 
 	if (!props.onChange) {
-		if (props.type.isPrimaryTitle && props.object) {
-			return <Link to={`${pathname}.${props.object._id}`}>{props.defaultValue}</Link>;
-		} else {
-			return <>{props.defaultValue}</>;
-		}
-	};
+		return <>{props.defaultValue}</>;
+	}
 
 	return props.type.textArea ? (
 		<Input.TextArea
 			style={props.type.width && { width: `${props.type.width}px` }}
 			type="text"
-			ref = { valueRenderRef }
+			ref={valueRenderRef}
 			rows={props.type.textArea.rows ?? 5}
 			defaultValue={props.defaultValue}
 			onPressEnter={props.onPressEnter}
@@ -36,7 +30,7 @@ export const ValueRender = (props) => {
 		<Input
 			style={props.type.width && { width: `${props.type.width}px` }}
 			type="text"
-			ref = { valueRenderRef }
+			ref={valueRenderRef}
 			defaultValue={props.defaultValue}
 			onPressEnter={props.onPressEnter}
 			onChange={(event) => {

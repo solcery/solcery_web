@@ -1,9 +1,27 @@
-import { Button, Input, Select } from 'antd';
+import { Button, Select, Input } from 'antd';
 import { useState } from 'react';
-import { useProject } from '../contexts/project';
+import { useProject } from '../../contexts/project';
+const { TextArea } = Input;
 const { Option } = Select;
 
-export default function ContentExporter() {
+export function ContentImporter() {
+	const [contentDump, setContentDump] = useState();
+	const { sageApi } = useProject();
+
+	const importContent = () => {
+		sageApi.project.restore({ src: JSON.parse(contentDump) });
+	};
+
+	return (
+		<>
+			<h1>Import content</h1>
+			<TextArea placeholder="Paste content dump here" rows={10} onChange={(e) => setContentDump(e.target.value)} />
+			<Button onClick={importContent}> Import </Button>
+		</>
+	);
+}
+
+export function ContentExporter() {
 	const [exportType, setExportType] = useState('full');
 	const { sageApi } = useProject();
 
@@ -11,7 +29,7 @@ export default function ContentExporter() {
 		let params = {
 			objects: exportType === 'full' || exportType === 'objects',
 			templates: exportType === 'full' || exportType === 'templates',
-		}
+		};
 		let content = await sageApi.project.getContent(params);
 		let projectName = sageApi.projectName;
 
@@ -25,17 +43,17 @@ export default function ContentExporter() {
 		element.click();
 	};
 
-
 	return (
 		<>
 			<h1>Export content</h1>
-			<Select onChange={setExportType} defaultValue='full'>
-				<Option value = 'full'>Full</Option>
-				<Option value = 'templates'>Templates</Option>
-				<Option value = 'objects'>Objects</Option>
+			<Select onChange={setExportType} defaultValue="full">
+				<Option value="full">Full</Option>
+				<Option value="templates">Templates</Option>
+				<Option value="objects">Objects</Option>
 			</Select>
 			<p> EXPORT CONTENT: </p>
 			<Button onClick={exportContent}> Export </Button>
 		</>
 	);
 }
+

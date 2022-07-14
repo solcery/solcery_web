@@ -22,12 +22,14 @@ export const ValueRender = (props) => {
 		sageApi.template.getAllObjects({ template: props.type.templateCode }).then((res) => {
 			if (!mountedRef.current) return null;
 			setObjects(
-				res.filter(object => object.fields.name !== undefined).map((object) => {
-					return {
-						id: object._id,
-						title: object.fields.name,
-					};
-				})
+				res
+					.filter((object) => object.fields.name !== undefined)
+					.map((object) => {
+						return {
+							id: object._id,
+							title: object.fields.name,
+						};
+					})
 			);
 		});
 	}, [props.type, sageApi]);
@@ -36,7 +38,7 @@ export const ValueRender = (props) => {
 		if (!objects) return <>Loading ...</>;
 		let obj = objects.find((obj) => obj.id === props.defaultValue);
 		if (obj) {
-			return <a href={`template.${props.type.templateCode}.${props.defaultValue}`}>{obj.title}</a>;
+			return <a href={`/${projectName}/template/${props.type.templateCode}/${props.defaultValue}`}>{obj.title}</a>; //TODO
 		} else {
 			return <>{`Missing object ${props.defaultValue}`}</>;
 		}

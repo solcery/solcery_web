@@ -1,8 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import ReactFlow, { ReactFlowProvider, isNode, useZoomPanHelper } from 'react-flow-renderer';
+import ReactFlow, { isNode, useZoomPanHelper } from 'react-flow-renderer';
 import AddBrickButton from './AddBrickButton';
 import Brick from './Brick';
-import { Button } from 'antd';
 import LayoutHelper from './LayoutHelper';
 import makeLayoutedElements from './dagreLayout';
 import { notify } from '../../../../components/notification';
@@ -16,23 +15,21 @@ const nodeTypes = {
 };
 
 export const BrickEditor = (props) => {
-	let width = props.fullscreen ? window.innerWidth : props.width;
-	let height = props.fullscreen ? window.innerHeight : props.height;
+	let width = props.fullscreen ? window.innerWidth : 300;
+	let height = props.fullscreen ? window.innerHeight : 200;
 
+	const initialFit = useRef(false)
 	const [state, setState] = useState({ elements: [], isLayouted: false });
 	const [brickTree, setBrickTree] = useState(props.brickTree);
 	const { fitView } = useZoomPanHelper();
 
-	const sleepAndFit = useCallback(() => {
-		new Promise((resolve) => setTimeout(resolve, 50)).then(() => {
-			fitView();
-		});
-	}, [ fitView ]);
-
-	useEffect(() => {
-		setBrickTree(props.brickTree)
-		sleepAndFit()
-	}, [ props.brickTree ])
+	const onChangeBrickTree = useCallback(
+		(bt) => {
+			setBrickTree(bt);
+			props.onChange && props.onChange(bt);
+		},
+		[props]
+	);
 
 	const addBrick = useCallback(
 		(brickSignature, bt, parentBrick, paramID) => {
@@ -47,12 +44,12 @@ export const BrickEditor = (props) => {
 			});
 			if (parentBrick) {
 				parentBrick.params[paramID] = brick;
-				setBrickTree(JSON.parse(JSON.stringify(bt)));
+				onChangeBrickTree(JSON.parse(JSON.stringify(bt)));
 			} else {
-				setBrickTree(brick);
+				onChangeBrickTree(brick);
 			}
 		},
-		[props.fullscreen, props]
+		[props, onChangeBrickTree]
 	);
 
 	const removeBrick = useCallback(
@@ -61,13 +58,12 @@ export const BrickEditor = (props) => {
 
 			if (parentBrick) {
 				parentBrick.params[paramCode] = null;
-				setBrickTree(JSON.parse(JSON.stringify(bt)));
+				onChangeBrickTree(JSON.parse(JSON.stringify(bt)));
 			} else {
-				sleepAndFit();
-				setBrickTree(null);
+				onChangeBrickTree(null);
 			}
 		},
-		[props, props.fullscreen, sleepAndFit]
+		[props, onChangeBrickTree]
 	);
 
 	const onPaste = useCallback(
@@ -78,7 +74,7 @@ export const BrickEditor = (props) => {
 				const param = brickSignature.params.find((param) => param.code === paramCode);
 				if (param.type.brickType === pastedBrickTree.lib) {
 					parentBrick.params[paramCode] = pastedBrickTree;
-					setBrickTree(JSON.parse(JSON.stringify(bt)));
+					onChangeBrickTree(JSON.parse(JSON.stringify(bt)));
 					notify({ message: 'Pasted successfully', color: '#DDFFDD' });
 				} else {
 					notify({
@@ -87,9 +83,8 @@ export const BrickEditor = (props) => {
 					});
 				}
 			} else {
-				if (pastedBrickTree.lib === props.brickType) {
-					sleepAndFit();
-					setBrickTree(pastedBrickTree);
+				if (pastedBrickTree.lib === props.brickType || props.brickType === 'any') {
+					onChangeBrickTree(pastedBrickTree);
 					notify({ message: 'Pasted successfully', color: '#DDFFDD' });
 				} else {
 					notify({
@@ -99,14 +94,11 @@ export const BrickEditor = (props) => {
 				}
 			}
 		},
-		[props, props.fullscreen, sleepAndFit]
+		[props, onChangeBrickTree]
 	);
 
 	const makeAddButtonElement = useCallback(
 		(brickID, brickType, brickTree, parentBrick, paramCode) => {
-			if (!brickType) {
-				throw new Error('NO BRICK');
-			}
 			return {
 				id: brickID,
 				type: 'add',
@@ -121,6 +113,7 @@ export const BrickEditor = (props) => {
 					onBrickSubtypeSelected: addBrick,
 					onPaste: onPaste,
 					readonly: !props.onChange,
+					fullscreen: props.fullscreen,
 				},
 			};
 		},
@@ -159,15 +152,24 @@ export const BrickEditor = (props) => {
 					onPaste: onPaste,
 					onChange: props.onChange
 						? () => {
-								setBrickTree(bt);
+								onChangeBrickTree(bt);
 						  }
 						: null,
 					readonly: !props.onChange,
-					small: !props.fullscreen,
+					fullscreen: props.fullscreen,
 				},
 			};
 		},
-		[props.fullscreen, props.onChange, brickTree, props.brickLibrary, props.brickClass, removeBrick, onPaste]
+		[
+			props.fullscreen,
+			props.onChange,
+			brickTree,
+			props.brickLibrary,
+			props.brickClass,
+			removeBrick,
+			onPaste,
+			onChangeBrickTree,
+		]
 	);
 
 	const makeBrickWithEdgeElements = useCallback(
@@ -248,64 +250,40 @@ export const BrickEditor = (props) => {
 
 	useEffect(() => {
 		if (state.isLayouted && editorRef.current) {
+			if (!initialFit.current) {
+				initialFit.current = true;
+				fitView();
+			}
 			editorRef.current.style.visibility = 'visible';
 		}
-	}, [state.isLayouted]);
+	}, [initialFit, state.isLayouted, fitView]);
 
 	const editorRef = useRef(null);
-
-	const onLoad = (reactFlowInstance) => {
-		sleepAndFit();
-	};
-
-	const save = () => {
-		if (!props.onChange) return;
-		props.onChange(brickTree);
-	};
-
-	let style = {
-		backgroundColor: props.fullscreen ? 'black' : 'transparent',
-		pointerEvents: props.fullscreen ? 'auto' : 'none',
-		position: props.fullscreen ? 'fixed' : 'relative',
-		left: 0,
-		top: 0,
-		bottom: 0,
-		right: 0,
-		display: props.fullscreen ? 'inline' : 'block',
-	};
-
 	return (
-		
-		<>
-			<div style={style}>
-				{props.fullscreen && props.onChange && <Button onClick={save}>SAVE</Button>}
-				{props.fullscreen && <Button onClick={window.close}>CLOSE</Button>}
-				<div
-					ref={editorRef}
-					className="brick-editor"
-					style={{
-						width: width,
-						height: height,
-					}}
-				>
-					<ReactFlow
-						nodeTypes={nodeTypes}
-						elements={state.elements}
-						nodesDraggable={false}
-						nodesConnectable={false}
-						zoomOnDoubleClick={false}
-						paneMoveable={props.fullscreen}
-						zoomOnScroll={props.fullscreen}
-						zoomOnPinch={props.fullscreen}
-						onLoad={onLoad}
-						minZoom={props.fullscreen ? 0.4 : 0.001}
-						maxZoom={1}
-					>
-						<LayoutHelper onNodeSizesChange={onNodeSizesChange} />
-					</ReactFlow>
-				</div>
-			</div>
-		</>
+		<div
+			ref={editorRef}
+			className="brick-editor"
+			style={{
+				width,
+				height,
+			}}
+		>
+			<ReactFlow
+				nodeTypes={nodeTypes}
+				elements={state.elements}
+				nodesDraggable={false}
+				nodesConnectable={false}
+				selectNodesOnDrag={false}
+				zoomOnDoubleClick={false}
+				paneMoveable={props.fullscreen ? true : false}
+				zoomOnScroll={props.fullscreen ? true : false}
+				zoomOnPinch={props.fullscreen ? true : false}
+				minZoom={props.edit ? 0.4 : 0.001}
+				maxZoom={1}
+			>
+				<LayoutHelper onNodeSizesChange={onNodeSizesChange} />
+			</ReactFlow>
+		</div>
 	);
 };
 

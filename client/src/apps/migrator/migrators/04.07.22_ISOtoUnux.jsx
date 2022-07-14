@@ -6,8 +6,8 @@ export const migrator = (content) => {
 	for (let object of content.objects) {
 		if (object.fields.creationTime) {
 			if (typeof object.fields.creationTime === 'string') {
-				object.fields.creationTime = moment(object.fields.creationTime).unix()
-				objects.push(object)
+				object.fields.creationTime = moment(object.fields.creationTime).unix();
+				objects.push(object);
 			}
 		}
 	}

@@ -1,3 +1,29 @@
+.brick-editor-frame {
+	left: 0px;
+	top: 0px;
+	bottom: 0px;
+	right: 0px;
+}
+
+.brick-editor-fullscreen {
+	background-color: black;
+	position: fixed;
+	display: inline;
+}
+
+.brick-editor-frame.small {
+	width: 300;
+	height: 200;
+}
+
+.brick-editor-frame.small * {
+	pointer-events: none;
+}
+
+.brick-editor-frame.small:hover {
+	background-color: rgba(255, 255, 255, 0.05);
+}
+
 .brick-editor {
 	font-family: sans-serif;
 	color: #fff;
@@ -98,28 +124,55 @@
 
 	.brick {
 		width: 15rem;
-		padding: 1.5rem;
+		padding: 1rem;
+		padding-top: 1.6rem;
+		padding-bottom: 1.5rem;
 		border: solid 1px #40342c;
-		border-radius: 0.5rem;
+		border-radius: 0.3rem;
 		background-color: #261f1c;
 		text-align: center;
 
+		.brick-header {
+			position: absolute;
+			background-color: rgba(0, 0, 0, 0.2);
+			border-radius: 0.3rem 0.3rem 0 0;
+			width: 100%;
+			top: 0;
+			left: 0;
+			right: 0;
+		}
+
 		.brick-name {
-			font-size: 1.1rem;
+			font-size: 0.9rem;
+		}
+
+		.brick-name.custom:hover {
+			color: rgba(190, 210, 230, 255);
 		}
 
 		.remove-button {
 			position: absolute;
-			right: 0.5rem;
-			top: 0.5rem;
-			width: 1.3rem;
-			height: 1.3rem;
-			line-height: 1.12rem;
-			font-weight: bold;
-			border: solid 1px #88674b;
-			border-radius: 1.3rem;
-			background-color: #604e3f;
+			right: 0rem;
+			top: 0rem;
+			border-radius: 0.3rem;
+		}
+
+		.comment {
+			margin-bottom: 2rem;
+			margin-bottom: 0.2rem;
+		}
+
+		.comment-button {
+			position: absolute;
+			left: 0rem;
+			top: 0rem;
+			border-radius: 0.3rem;
 			cursor: pointer;
+		}
+
+		.comment-input {
+			margin: 0px;
+			background-color: rgba(0, 0, 0, 0.2);
 		}
 
 		.field-container {
@@ -132,18 +185,37 @@
 			input[type='number'] {
 				width: 3rem;
 				margin-left: 0.3rem;
-			}
-
-			input[type='text'] {
-				width: 100%;
-			}
+			}	
 		}
 
 		.handle-label {
-			width: 6rem;
-			margin-left: -2.8rem;
-			margin-top: -1.2rem;
+			position: absolute;
+			width: 5rem;
+			left: -2.5rem;
+			bottom: 50%;
+			z-index: -1;
+			background-color: red;
 			font-size: 0.8rem;
+			border-radius: 0 0 0.3rem 0.3rem;
+			background-color: #261f1c;
+			border: solid 1px #40342c;
+		}
+
+		.handle-label {
+			position: absolute;
+			width: 5rem;
+			left: -2.5rem;
+			bottom: 50%;
+			z-index: -1;
+			background-color: red;
+			font-size: 0.8rem;
+			border-radius: 0 0 0.3rem 0.3rem;
+			background-color: #261f1c;
+			border: solid 1px #40342c;
+		}
+
+		.handle-label.readonly {
+			background-color: #202020;
 		}
 	}
 

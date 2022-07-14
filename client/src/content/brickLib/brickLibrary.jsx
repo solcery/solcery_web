@@ -37,16 +37,16 @@ export class BrickLibrary {
 		basicValues.forEach((brick) => this.addBrick(brick));
 		if (!content || !content.objects) return;
 		let customBricks = content.objects
-			.filter(obj => obj.template === 'customBricks')
-			.filter(obj => obj.fields.enabled)
-			.filter(obj => obj.fields.brick && obj.fields.brick.brickTree)
+			.filter((obj) => obj.template === 'customBricks')
+			.filter((obj) => obj.fields.enabled)
+			.filter((obj) => obj.fields.brick && obj.fields.brick.brickTree)
 			.map((obj) => {
 				let params = [];
 				if (obj.fields.brick.brickParams) {
 					params = obj.fields.brick.brickParams.map((entry) => paramFromMapEntry(entry));
 				}
 				return {
-					lib: obj.fields.brick.brickType,
+					lib: obj.fields.brick.brickTree.lib,
 					func: `custom.${obj._id}`,
 					name: obj.fields.name,
 					hidden: obj.fields.hidden,

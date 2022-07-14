@@ -14,10 +14,10 @@ const makeRequest = (data) => {
 		},
 		body: JSON.stringify(data),
 	};
-	return fetch(url, request).then(response => {
-		return response.json().then(res => {
-			return res.data
-		})
+	return fetch(url, request).then((response) => {
+		return response.json().then((res) => {
+			return res.data;
+		});
 	});
 };
 
@@ -39,8 +39,11 @@ export class SageAPIConnection {
 						params: {},
 					};
 					if (command.params) {
-						for (let param of Object.keys(command.params)) {
-							requestData.params[param] = data[param];
+						for (let [paramName, param] of Object.entries(command.params)) {
+							if (param.required && data[paramName] === undefined) {
+								throw new Error(`SageAPI error: Missing param '${paramName}' for command '${commandName}'!`);
+							}
+							requestData.params[paramName] = data[paramName];
 						}
 					}
 					if (command.private) {

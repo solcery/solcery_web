@@ -4,7 +4,14 @@ import Select from 'react-select';
 
 export default function AddBrickButton(props) {
 	const brickType = props.data.brickType; // TODO: type
-	const brickSignaturesOfType = props.data.brickLibrary[brickType];
+	const brickLibrary = props.data.brickLibrary;
+	const brickSignatures = [];
+	if (brickType === 'any') {
+		Object.values(brickLibrary).forEach((lib) => Object.values(lib).forEach((brick) => brickSignatures.push(brick)));
+	} else {
+		let lib = brickLibrary[brickType];
+		Object.values(lib).forEach((brick) => brickSignatures.push(brick));
+	}
 	const [isNodeTypeSelectorVisible, setNodeTypeSelectorVisible] = useState(false);
 
 	const onAddButtonPointerUp = (event) => {
@@ -17,8 +24,7 @@ export default function AddBrickButton(props) {
 	};
 
 	const onBrickSubtypeSelected = (option) => {
-		const func = option.value;
-		const brickSignature = brickSignaturesOfType[func];
+		const brickSignature = option.value;
 		props.data.onBrickSubtypeSelected(
 			brickSignature,
 			props.data.brickTree,
@@ -72,11 +78,10 @@ export default function AddBrickButton(props) {
 			window.removeEventListener('keyup', onKeyUp);
 		};
 	});
-
-	const selectorOptions = Object.entries(brickSignaturesOfType)
-		.filter(([name, sig]) => !sig.hidden)
-		.map(([name, sig]) => {
-			return { value: name, label: sig.name };
+	const selectorOptions = brickSignatures
+		.filter((sig) => !sig.hidden)
+		.map((sig) => {
+			return { value: sig, label: sig.name };
 		});
 	return (
 		<>

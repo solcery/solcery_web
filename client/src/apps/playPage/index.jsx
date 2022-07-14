@@ -1,10 +1,10 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Session } from '../game';
+import { Session } from '../../game';
 import Unity, { UnityContext } from 'react-unity-webgl';
-import { useBrickLibrary } from '../contexts/brickLibrary';
-import { build } from '../content';
-import { useUser } from '../contexts/user';
-import { useProject } from '../contexts/project';
+import { useBrickLibrary } from '../../contexts/brickLibrary';
+import { build } from '../../content';
+import { useUser } from '../../contexts/user';
+import { useProject } from '../../contexts/project';
 
 const unityPlayContext = new UnityContext({
 	loaderUrl: '/Build/WebGl.loader.js',
@@ -26,7 +26,7 @@ function* stringChunk(s, maxBytes) {
 	}
 }
 
-export default function Play() {
+export default function PlayPage() {
 	const [gameSession, setGameSession] = useState();
 	const { brickLibrary } = useBrickLibrary();
 	const { layoutPresets } = useUser();
@@ -69,12 +69,15 @@ export default function Play() {
 		}
 	}, []);
 
-	const sendDiffLog = useCallback(states => {
-		for (let index in states) {
-			states[index].id = index;
-		}
-		clientCommand('UpdateGameState', { states });
-	}, [clientCommand]);
+	const sendDiffLog = useCallback(
+		(states) => {
+			for (let index in states) {
+				states[index].id = index;
+			}
+			clientCommand('UpdateGameState', { states });
+		},
+		[clientCommand]
+	);
 
 	useEffect(() => {
 		if (!gameSession) return;

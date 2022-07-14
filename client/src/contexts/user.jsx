@@ -17,10 +17,11 @@ export function UserProvider(props) {
 	const [password, setPassword] = useState(undefined);
 	const [error, setError] = useState(undefined);
 
-	const loadUser = useCallback((userData) => {
-		if (!userData) return;
-	    if (!userData.session) return;
-	    if (!setUserSession) return;
+	const loadUser = useCallback(
+		(userData) => {
+			if (!userData) return;
+			if (!userData.session) return;
+			if (!setUserSession) return;
 			setUser(
 				Object.assign(
 					{
@@ -30,8 +31,10 @@ export function UserProvider(props) {
 					userData.fields
 				)
 			);
-	    setUserSession(userData.session)
-	}, [ setUserSession ]);
+			setUserSession(userData.session);
+		},
+		[setUserSession]
+	);
 
 	const reload = () => {
 		sageApi.user.getById({ id: user.id }).then((res) => loadUser(res));
@@ -42,7 +45,7 @@ export function UserProvider(props) {
 		if (!sageApi) return;
 		if (!cookies[`session.${projectName}`]) return;
 		sageApi.user.getSession({ session: cookies[`session.${projectName}`] }).then((res) => loadUser(res));
-	}, [user, projectName, sageApi, cookies]);
+	}, [loadUser, user, projectName, sageApi, cookies]);
 
 	const auth = useCallback(() => {
 		if (!login || !password) {
@@ -53,10 +56,11 @@ export function UserProvider(props) {
 			const SESSION_LENGTH = 86400 * 30 * 1000;
 			setCookie(`session.${projectName}`, res.session, {
 				expires: new Date(new Date().getTime() + SESSION_LENGTH),
+				path: '/',
 			});
 			loadUser(res);
 		});
-	}, [login, password, projectName, setCookie, sageApi]);
+	}, [loadUser, login, password, projectName, setCookie, sageApi]);
 
 	useEffect(() => {
 		if (user && user.css) {
@@ -72,7 +76,7 @@ export function UserProvider(props) {
 	if (!user)
 		return (
 			<>
-				<h1> Project name: { projectName } </h1>
+				<h1> Project name: {projectName} </h1>
 				<Input
 					placeholder="Login"
 					onChange={(e) => {
@@ -95,6 +99,7 @@ export function UserProvider(props) {
 }
 
 export function useUser() {
-	const { id, doubleClickToOpenObject, fastCopy, nick, css, layoutPresets, reload, readonlyBricks } = useContext(UserContext);
+	const { id, doubleClickToOpenObject, fastCopy, nick, css, layoutPresets, reload, readonlyBricks } =
+		useContext(UserContext);
 	return { id, doubleClickToOpenObject, fastCopy, nick, css, layoutPresets, reload, readonlyBricks };
 }

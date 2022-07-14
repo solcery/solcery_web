@@ -1,12 +1,18 @@
 import { Button, Input } from 'antd';
-import { useProject } from '../contexts/project';
+import { useProject } from '../../contexts/project';
 import { useParams } from 'react-router-dom';
 import { useState, useEffect } from 'react';
-import { notify } from '../components/notification';
+import { notify } from '../../components/notification';
+import StorageViewer from '../storage';
 
 const { TextArea } = Input;
 
-export default function TemplateSchema() {
+export function TemplatePage() {
+	let { templateCode } = useParams();
+	return <StorageViewer templateCode={templateCode} moduleName={`template.${templateCode}`} />;
+}
+
+export function TemplateSchema() {
 	const { templateCode } = useParams();
 	const [jsonSchema, setJsonSchema] = useState();
 	const { sageApi } = useProject();
@@ -22,14 +28,14 @@ export default function TemplateSchema() {
 	const save = () => {
 		let schema;
 		try {
-			schema = JSON.parse(jsonSchema)
+			schema = JSON.parse(jsonSchema);
 		} catch {
 			notify({ message: 'JSON parsing error', color: '#FFDDDD' });
 			return;
 		}
-		console.log(schema)
+		console.log(schema);
 		if (schema) {
-			sageApi.template.setSchema({ template: templateCode, schema }).then(res => {
+			sageApi.template.setSchema({ template: templateCode, schema }).then((res) => {
 				if (res.acknowledged) {
 					notify({ message: 'Schema applied!', color: '#DDFFDD' });
 				}

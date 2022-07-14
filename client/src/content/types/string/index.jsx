@@ -47,14 +47,14 @@ class SString {
 		if (!a) a = '';
 		if (!b) b = '';
 		return a.localeCompare(b);
-	}
+	};
 
 	eq = (a, b) => {
 		if (!a) a = '';
 		if (!b) b = '';
-		return a === b
+		return a === b;
 	};
-	
+
 	clone = (a) => a;
 }
 

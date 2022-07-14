@@ -1,12 +1,52 @@
-import { useEffect } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { Handle, Position } from 'react-flow-renderer';
-import { useNavigate } from 'react-router-dom';
 import { notify } from '../../../../components/notification';
+import { useProject } from '../../../../contexts/project';
+import { Tooltip, Button, Input } from 'antd';
+import { CommentOutlined, DashOutlined, CloseOutlined} from '@ant-design/icons';
+const { TextArea } = Input;
+
+function Comment(props) {
+	let Icon = props.comment ? CommentOutlined : DashOutlined;
+	let iconStyle;
+	if (props.visible) iconStyle = { color: 'yellow' };
+	return <>
+		<Button size='small' shape='round' className='comment-button' onClick={props.toggle}>
+			<Icon style={iconStyle}/>
+		</Button>
+		{props.visible && <div className='comment'>
+			<div>Comment</div>
+			<TextArea 
+				autoSize
+				autoFocus
+				className='comment-input' 
+				placeholder='Enter comment' 
+				defaultValue={props.comment}
+				onChange={(event) => props.onChange(event.target.value)}
+			/>
+		</div>}
+	</>
+}
+
+function BrickName(props) {
+	let isCustom = props.name.includes('custom');
+	if (isCustom) return <Tooltip title='Double click to open'>
+		<div onDoubleClick={props.onDoubleClick} className="brick-name">
+			{props.name}
+		</div>
+	</Tooltip>;
+	return <div className="brick-name">
+		{props.name}
+	</div>;
+}
+
 
 export default function Brick(props) {
-	const navigate = useNavigate();
+	let { projectName } = useProject();
 	const brick = props.data.brick;
 	const brickLibrary = props.data.brickLibrary;
+	const [ commentVisible, setCommentVisible ] = useState(false);
+	let brickRef = useRef();
 
 	// validation
 	let errorBrick = false;
@@ -34,12 +74,19 @@ export default function Brick(props) {
 		props.data.onRemoveButtonClicked(props.data.brickTree, props.data.parentBrick, props.data.paramCode);
 	};
 
+	const onChangeComment = (comment) => {
+		brick.comment = comment ?? undefined;
+		props.data.onChange()
+	}
+
 	const onDoubleClick = () => {
-		let isCustomBrick = brick.func.includes('custom'); // TODO: add 'custom' key to brick itself
-		if (!isCustomBrick) return;
 		let objId = brick.func.split('.')[1];
-		window.open(`brickEditor.customBricks.${objId}.brick`, '_blank', 'noopener');
+		window.open(`/${projectName}/template/customBricks/${objId}/brick`, '_blank', 'noopener');
 	};
+
+	const toggleCommentVisibility = () => {
+		setCommentVisible(!commentVisible);
+	}
 
 	let isHovered = false;
 
@@ -87,54 +134,67 @@ export default function Brick(props) {
 		};
 	});
 
-	let width = brickSignature.width ?? Math.max(15, 4 + nestedParams.length * 5);
+	let width = brickSignature.width ?? Math.max(15, brickSignature.name.length * 0.7, 4 + nestedParams.length * 6);
+	
 	return (
-		<div
-			className={`brick ${brickSignature.lib} ${brickSignature.func} ${props.data.small ? 'small' : ''} ${
-				props.data.readonly ? 'readonly' : ''
-			} ${errorBrick ? 'error' : ''}`}
-			onPointerEnter={() => (isHovered = true)}
-			onPointerLeave={() => (isHovered = false)}
-			style={{ width: `${width}rem` }}
-			onDoubleClick={onDoubleClick}
-		>
-			{!props.data.readonly && !props.data.small && (
-				<div className={'remove-button'} onClick={onRemoveButtonClicked}>
-					x
+		<>
+			<div
+				className={`brick ${brickSignature.lib} ${brickSignature.func} ${props.data.fullscreen ? '' : 'small'} ${
+					props.data.readonly ? 'readonly' : ''
+				} ${errorBrick ? 'error' : ''}`}
+				onPointerEnter={() => (isHovered = true)}
+				onPointerLeave={() => (isHovered = false)}
+				style={{ width: `${width}rem` }}
+				ref={brickRef}
+			>
+				<div className='brick-header'>
+					<BrickName name={brickSignature.name} onDoubleClick={onDoubleClick}/>
+					{!props.data.readonly && props.data.fullscreen && (
+						<Button size='small' className='remove-button' onClick={onRemoveButtonClicked}>
+							<CloseOutlined/>
+						</Button>
+					)}
 				</div>
-			)}
-			<div className="brick-name">{brickSignature.name}</div>
-			{inlineParams.map((param) => (
-				<div className="field-container" key={param.code}>
-					<div>{param.name}</div>
-					<param.type.valueRender
-						type={param.type}
-						defaultValue={brick.params[param.code]}
-						onChange={
-							!param.readonly && !props.data.readonly
-								? (value) => {
-										brick.params[param.code] = value;
-										props.data.onChange();
-								  }
-								: null
-						}
-					/>
-				</div>
-			))}
-			{props.data.parentBrick && <Handle type="target" position={Position.Top} />}
-			{nestedParams.map((param, index) => (
-				<Handle
-					id={`h${props.id}-${param.code}`}
-					key={param.code}
-					type="source"
-					position={Position.Bottom}
-					style={{
-						left: Math.round((100 / (nestedParams.length + 1)) * (index + 1)) + '%',
-					}}
-				>
-					<div className="handle-label">{param.name}</div>
-				</Handle>
-			))}
-		</div>
+				<Comment 
+					visible={commentVisible} 
+					toggle={toggleCommentVisibility}
+					onChange={onChangeComment}
+					comment={brick.comment}
+					brick={brickRef}
+				/>
+				{inlineParams.map((param) => (
+					<div className="field-container" key={param.code}>
+						<div>{param.name}</div>
+						<param.type.valueRender id={param.code}
+							type={param.type}
+							defaultValue={brick.params[param.code]}
+							onChange={
+								!param.readonly && !props.data.readonly
+									? (value) => {
+											brick.params[param.code] = value;
+											props.data.onChange();
+									  }
+									: null
+							}
+						/>
+					</div>
+				))}
+				{props.data.parentBrick && <Handle type="target" position={Position.Top} />}
+				{nestedParams.map((param, index) => (
+					<Handle
+						id={`h${props.id}-${param.code}`}
+						key={param.code}
+						type="source"
+						position={Position.Bottom}
+						style={{
+							left: Math.round((100 / (nestedParams.length + 1)) * (index + 1)) + '%',
+							bottom: '-1.5rem',
+						}}
+					>
+						<div className={'handle-label' + (props.data.readonly ? ' readonly' : '')}>{param.name}</div>
+					</Handle>
+				))}
+			</div>
+		</>
 	);
 }

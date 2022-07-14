@@ -1,4 +1,4 @@
-import { Menu, Avatar } from 'antd';
+import { Menu } from 'antd';
 import { Link, Outlet } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
 import { useProject } from '../contexts/project';
@@ -16,32 +16,22 @@ export const TopMenu = () => {
 
 	return (
 		<>
-			<Menu mode="horizontal" >
+			<Menu mode="horizontal">
 				<Menu.SubMenu style={{ fontWeight: 'bold' }} title={projectName} key="project" icon=<DeploymentUnitOutlined />>
-					<Menu.Item key='builder' >
-						<Link to="builder">
-							Builder
-						</Link>
+					<Menu.Item key="builder">
+						<Link to="builder">Builder</Link>
 					</Menu.Item>
-					<Menu.Item key='export' >
-						<Link to="export">
-							Export content
-						</Link>
+					<Menu.Item key="export">
+						<Link to="export">Export content</Link>
 					</Menu.Item>
-					<Menu.Item key='import' >
-						<Link to="import">
-							Import content
-						</Link>
+					<Menu.Item key="import">
+						<Link to="import">Import content</Link>
 					</Menu.Item>
-					<Menu.Item key='migrator' >
-						<Link to="migrator">
-							Migrations
-						</Link>
+					<Menu.Item key="migrator">
+						<Link to="migrator">Migrations</Link>
 					</Menu.Item>
-					<Menu.Item key='apiLogs' >
-						<Link to="apiLogs">
-							API logs
-						</Link>
+					<Menu.Item key="apiLogs">
+						<Link to="apiLogs">API logs</Link>
 					</Menu.Item>
 				</Menu.SubMenu>
 				<Menu.Item key="play" icon=<CaretRightOutlined />>
@@ -49,17 +39,15 @@ export const TopMenu = () => {
 						Play
 					</Link>
 				</Menu.Item>
-				<Menu.Item key="brickLibrary">
-					<Link to="brickLibrary">Brick library</Link>
-				</Menu.Item>
 				{templates
-					.filter((template) => !template.hidden)
+					.filter((template) => template.menuOrder)
+					.sort((a, b) => a.menuOrder - b.menuOrder)
 					.map((template) => (
 						<Menu.Item key={template.code}>
-							<Link to={`template.${template.code}`}>{template.name}</Link>
+							<Link to={`template/${template.code}`}>{template.name}</Link>
 						</Menu.Item>
 					))}
-				<Menu.Item key="profile" icon=<UserOutlined /> >
+				<Menu.Item key="profile" icon=<UserOutlined />>
 					<Link to="profile" style={{ fontWeight: 'bold' }}>
 						{nick}
 					</Link>

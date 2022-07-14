@@ -1,6 +1,5 @@
-import { SType, defaultFilter } from '../base';
+import { SType } from '../base';
 import { ValueRender } from './components';
-import moment from 'moment';
 
 class SDate {
 	static fromString = (data) => new SDate({ time: data });
@@ -13,15 +12,15 @@ class SDate {
 	default = () => {
 		let res = Date.now();
 		if (this.excludeTime) {
-			res.setHours(0, 0, 0, 0)
+			res.setHours(0, 0, 0, 0);
 		}
 		return res;
-	}
+	};
 	forceSortOrder = 'ascend'; //TODO remove
-	sorter = (a, b) => { 
+	sorter = (a, b) => {
 		if (!a) return -1;
 		if (!b) return 1;
-		return a - b;  
+		return a - b;
 	};
 	eq = (a, b) => a === b;
 	clone = (a) => a;

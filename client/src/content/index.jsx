@@ -32,10 +32,10 @@ export const validate = ({ content }) => {
 		brickLibrary: new BrickLibrary(content).bricks,
 		content,
 	};
-	let templates = content.templates.map(template => new Template(template));
+	let templates = content.templates.map((template) => new Template(template));
 	for (let template of templates) {
 		let fields = Object.values(template.fields).filter((field) => field.type.validate);
-		let objects = content.objects.filter(obj => obj.template === template.code);
+		let objects = content.objects.filter((obj) => obj.template === template.code);
 		for (let object of objects) {
 			meta.object = object;
 			for (let field of fields) {
@@ -59,7 +59,6 @@ export const validate = ({ content }) => {
 };
 
 export const build = ({ targets, content }) => {
-
 	let validationResult = validate({ content });
 	if (!validationResult.status) {
 		return validationResult;
@@ -87,9 +86,9 @@ export const build = ({ targets, content }) => {
 			return this.objectCodes[code];
 		},
 	};
-	let templates = content.templates.map(template => new Template(template));
-	let tpl = templates.map(template => {
-		let objects = content.objects.filter(obj => obj.template === template.code);
+	let templates = content.templates.map((template) => new Template(template));
+	let tpl = templates.map((template) => {
+		let objects = content.objects.filter((obj) => obj.template === template.code);
 		for (let obj of objects) {
 			meta.addIntId(obj._id);
 			if (obj.fields.code) {
@@ -117,10 +116,12 @@ export const build = ({ targets, content }) => {
 			if (template.buildTargets) {
 				let buildCode = template.buildTargets[target];
 				if (buildCode) {
-					constructed[buildCode] = meta.rawContent[template.code].objects.filter(obj => obj.fields.enabled).map(obj => {
-						meta.object = obj;
-						return template.build(obj, meta);
-					});
+					constructed[buildCode] = meta.rawContent[template.code].objects
+						.filter((obj) => obj.fields.enabled)
+						.map((obj) => {
+							meta.object = obj;
+							return template.build(obj, meta);
+						});
 				}
 			}
 		}

@@ -4,7 +4,7 @@ import moment from 'moment';
 const cardTypeTplBrickGroupId = '62b25dec3be00cf7d6a930c0';
 const placeIdBrickGroupId = '62b25de371cafe482c936633';
 
-// Все вызовы бриков из группы CardTypeTplIds поменять на содержимое соответствующих кастомных бриков. 
+// Все вызовы бриков из группы CardTypeTplIds поменять на содержимое соответствующих кастомных бриков.
 // Отключить все кастомные брики из группы CardTypeTplIds брики. Дописать [ DELETE ] в их название
 
 // Добавить новый кирпич value.place, с аргументом Link<place.placeId>
@@ -17,9 +17,9 @@ const placeIdBrickGroupId = '62b25de371cafe482c936633';
 // Все кастомные брики из группы PlaceIds - отключить и дописать в их название [ DELETE ].
 
 const migrateBrick = (bt, migrationList) => {
-	let changed = false
+	let changed = false;
 	if (migrationList[bt.func]) {
-		let newBrick = migrationList[bt.func]
+		let newBrick = migrationList[bt.func];
 		bt.func = newBrick.func;
 		bt.params = Object.assign({}, newBrick.params);
 		return true;
@@ -32,30 +32,33 @@ const migrateBrick = (bt, migrationList) => {
 		}
 		// if (params.debug) console.log(bt.params)
 	}
-	return changed
-}
-
+	return changed;
+};
 
 export const migrator = (content) => {
 	let objects = [];
-	let migrationList = {}
+	let migrationList = {};
 
-	let placeIdCustomBricks = content.objects.filter(obj => obj.template === 'customBricks' && obj.fields.brick_group === placeIdBrickGroupId)
+	let placeIdCustomBricks = content.objects.filter(
+		(obj) => obj.template === 'customBricks' && obj.fields.brick_group === placeIdBrickGroupId
+	);
 	for (let placeIdCustomBrick of placeIdCustomBricks) {
 		let customBrickFunc = `custom.${placeIdCustomBrick._id}`;
 		let placeId = placeIdCustomBrick.fields.brick.brickTree.params.value;
-		let placeObj = content.objects.find(obj => obj.template === 'places' && obj.fields.placeId === placeId);
-		if (placeObj === undefined) throw new Error('Err')
+		let placeObj = content.objects.find((obj) => obj.template === 'places' && obj.fields.placeId === placeId);
+		if (placeObj === undefined) throw new Error('Err');
 		migrationList[customBrickFunc] = {
 			lib: 'value',
 			func: 'place',
 			params: {
-				value: placeObj._id
-			}
+				value: placeObj._id,
+			},
 		};
 	}
 
-	let cardTypeTplCustomBricks = content.objects.filter(obj => obj.template === 'customBricks' && obj.fields.brick_group === cardTypeTplBrickGroupId)
+	let cardTypeTplCustomBricks = content.objects.filter(
+		(obj) => obj.template === 'customBricks' && obj.fields.brick_group === cardTypeTplBrickGroupId
+	);
 	for (let cardTypeTplCustomBrick of cardTypeTplCustomBricks) {
 		let customBrickFunc = `custom.${cardTypeTplCustomBrick._id}`;
 		let cardTypeTplCall = cardTypeTplCustomBrick.fields.brick.brickTree;
@@ -71,14 +74,15 @@ export const migrator = (content) => {
 					changed = true;
 				}
 			}
-
 		}
 		if (changed) objects.push(object);
 	}
-	for (let object of content.objects.filter(obj => obj.template === 'customBricks' && migrationList[`custom.${obj._id}`])) {
+	for (let object of content.objects.filter(
+		(obj) => obj.template === 'customBricks' && migrationList[`custom.${obj._id}`]
+	)) {
 		object.fields.enabled = false;
 		object.fields.name = object.fields.name + ` [ DELETED ]`;
-		objects.push(object)
+		objects.push(object);
 	}
 
 	return { objects };
