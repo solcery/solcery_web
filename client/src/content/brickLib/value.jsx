@@ -74,7 +74,7 @@ export const basicValues = [
 		lib: 'value',
 		func: 'attr',
 		name: 'Attribute',
-		params: [{ code: 'attr_name', name: 'Attribute name', type: 'SString' }],
+		params: [{ code: 'attr_name', name: 'Attribute name', type: 'SLink<attributes|code>' }],
 		exec: (runtime, params, ctx) => {
 			return ctx.object.attrs[params.attr_name];
 		},
@@ -228,7 +228,7 @@ export const basicValues = [
 		lib: 'value',
 		func: 'game_attr',
 		name: 'Game Attribute',
-		params: [{ code: 'attr_name', name: 'Attribute name', type: 'SString' }],
+		params: [{ code: 'attr_name', name: 'Attribute name', type: 'SLink<gameAttributes|code>' }],
 		exec: (runtime, params, ctx) => {
 			return ctx.game.attrs[params.attr_name];
 		},

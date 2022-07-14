@@ -2,7 +2,10 @@ import { SType, defaultFilter } from '../base';
 import { ValueRender } from './components';
 
 class SLink {
-	static fromString = (data) => new SLink({ templateCode: data });
+	static fromString = (data) => {
+		let [ templateCode, field ] = data.split('|');
+		return new SLink({ templateCode, field });
+	}
 
 	constructor(data) {
 		this.templateCode = data.templateCode;
@@ -11,7 +14,7 @@ class SLink {
 
 	validate = (value, meta) => {
 		if (value === undefined) return;
-		let obj = meta.content.objects.find((obj) => obj._id === value);
+		let obj = meta.content.objects.find(obj => obj._id === value);
 		if (!obj) {
 			meta.error(`Broken link [${value}]!`);
 			return;
