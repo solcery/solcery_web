@@ -45,7 +45,6 @@ export default function Brick(props) {
 	const brick = props.data.brick;
 	const brickLibrary = props.data.brickLibrary;
 	const [ commentVisible, setCommentVisible ] = useState(false);
-	let brickRef = useRef();
 
 	// validation
 	let errorBrick = false;
@@ -144,10 +143,9 @@ export default function Brick(props) {
 				onPointerEnter={() => (isHovered = true)}
 				onPointerLeave={() => (isHovered = false)}
 				style={{ width: `${width}rem` }}
-				ref={brickRef}
 			>
 				<div className='brick-header'>
-					<BrickName name={brickSignature.name} onDoubleClick={brickSignature.func.includes('custom') && onDoubleClick}/>
+					<BrickName name={brickSignature.name} onDoubleClick={onDoubleClick}/>
 					{!props.data.readonly && props.data.fullscreen && (
 						<Button size='small' className='remove-button' onClick={onRemoveButtonClicked}>
 							<CloseOutlined/>
@@ -159,7 +157,6 @@ export default function Brick(props) {
 					toggle={toggleCommentVisibility}
 					onChange={onChangeComment}
 					comment={brick.comment}
-					brick={brickRef}
 				/>
 				{inlineParams.map((param) => (
 					<div className="field-container" key={param.code}>

@@ -50,7 +50,7 @@ export const ValueRender = (props) => {
 	const navigate = useNavigate();
 
 	const onChangeBrickParams = (bp) => {
-		props.onChange({ brickParams: bp, brickTree });
+		props.onChange({ brickParams: bp, brickTree: brickTree.current });
 		setBrickParams(paramMapType.clone(bp));
 	};
 	let path = props.path.fieldPath.join('.');
