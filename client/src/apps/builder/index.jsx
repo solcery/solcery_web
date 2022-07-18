@@ -103,7 +103,7 @@ export default function Builder() {
 			{errors.length > 0 && (
 				<Card title="Errors">
 					{errors.map((err, index) => (
-						<Link key={`error.${index}`} to={`../template.${err.template}.${err.object}`}>
+						<Link key={`error.${index}`} to={`../template/${err.template}/${err.object}`}>
 							{err.message}
 						</Link>
 					))}
