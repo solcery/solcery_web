@@ -13,6 +13,7 @@ export default function BrickEditor() {
 	let { templateCode, objectId, brickPath } = useParams();
 	const [value, setValue] = useState();
 	const [splittedPath, setSplittedPath] = useState();
+	const [ showAllComments, setShowAllComments ] = useState(false);
 	const changed = useRef(false);
 
 	const goUp = useCallback(() => {
@@ -55,6 +56,10 @@ export default function BrickEditor() {
 		goUp();
 	});
 
+	const toggleComments = () => {
+		setShowAllComments(!showAllComments)
+	}
+
 	if (!doc || !splittedPath) return <>NO DOC</>;
 	let path = [templateCode, objectId, ...splittedPath].join(' > ');
 	let fieldType = doc.schema[splittedPath[0]].type;
@@ -63,6 +68,7 @@ export default function BrickEditor() {
 			<p>{path}</p>
 			<Button onClick={save}>SAVE</Button>
 			<Button onClick={cancel}>CANCEL</Button>
+			<Button onClick={toggleComments}>{showAllComments ? 'Hide comments' : 'Show comments' }</Button>
 			{value && (
 				<BrickTreeEditor
 					fullscreen
@@ -70,6 +76,7 @@ export default function BrickEditor() {
 					brickTree={value.brickTree}
 					brickType={fieldType.brickType ?? 'any'}
 					onChange={onChangeBrickTree}
+					showAllComments={showAllComments}
 				/>
 			)}
 		</div>
