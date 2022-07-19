@@ -7,25 +7,13 @@ import { CommentOutlined, DashOutlined, CloseOutlined} from '@ant-design/icons';
 const { TextArea } = Input;
 
 function Comment(props) {
-	const [ visible, setVisible ] = useState(props.showAllComments)
-	const [ showAllComments, setShowAllComments ] = useState(props.showAllComments)
+	const [ visible, setVisible ] = useState(props.showAllComments && props.comment)
 	let Icon = props.comment ? CommentOutlined : DashOutlined;
 	let iconStyle = visible ? { color: 'yellow' } : undefined;
 
 	const toggleVisibility = () => {
 		setVisible(!visible);
 	}
-
-	useEffect(() => {
-		console.log('props.showAllComments:', props.showAllComments, showAllComments)
-		if (showAllComments !== props.showAllComments) {
-			console.log('values: ', props.showAllComments, props.comment)
-			if (!props.showAllComments || (props.showAllComments && props.comment)) {
-				setVisible(props.showAllComments);
-			}
-			// setShowAllComments(props.showAllComments);
-		}
-	}, [ props.showAllComments ])
 
 	return <>
 		<Button size='small' shape='round' className='comment-button' onClick={toggleVisibility}>
@@ -58,10 +46,6 @@ function BrickName(props) {
 
 
 export default function Brick(props) {
-	useEffect(() => {
-		console.log('brick mount')
-	}, [])
-
 	let { projectName } = useProject();
 	const brick = props.data.brick;
 	const brickLibrary = props.data.brickLibrary;
@@ -148,8 +132,7 @@ export default function Brick(props) {
 		};
 	});
 
-	let minWidth = Math.min(12, 4 + nestedParams.length * 6);
-	let maxWidth = Math.max(12, 4 + nestedParams.length * 6);
+	let width = Math.max(12, 1 + nestedParams.length * 5);
 	
 	return (
 		<>
@@ -160,11 +143,11 @@ export default function Brick(props) {
 				onPointerEnter={() => (isHovered = true)}
 				onPointerLeave={() => (isHovered = false)}
 				style={{ 
-					minWidth: `${minWidth}rem`,	
+					minWidth: `${width}rem`,	
 				}}
 			>
 				<div className='brick-header'>
-					<BrickName name={brickSignature.name} onDoubleClick={onDoubleClick} titleStyle={{ maxWidth: `${maxWidth}rem` }}/>
+					<BrickName name={brickSignature.name} onDoubleClick={onDoubleClick} titleStyle={{ maxWidth: `${width}rem` }}/>
 					{!props.data.readonly && props.data.fullscreen && (
 						<Button size='small' className='remove-button' onClick={onRemoveButtonClicked}>
 							<CloseOutlined/>
@@ -202,7 +185,7 @@ export default function Brick(props) {
 							type="source"
 							position={Position.Bottom}
 							style={{
-								left: Math.round((100 / (nestedParams.length + 1)) * (index + 1)) + '%',
+								left: Math.round(100 / nestedParams.length) * (index + 0.5) + '%',
 								bottom: '-1.5rem',
 							}}
 						>
