@@ -275,7 +275,7 @@ export default function StorageViewer({ templateCode, moduleName }) {
 					.filter((field) => !field.hidden)
 					.map((field, fieldIndex) => (
 						<Column
-							key={`${moduleName}.${field.code}`}
+							key={`${template.code}.${field.code}`}
 							dataIndex={field.code}
 							title={
 								<HeaderCell
