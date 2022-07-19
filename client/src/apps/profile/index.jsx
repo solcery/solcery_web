@@ -1,9 +1,9 @@
 import { useEffect, useState, useCallback } from 'react';
-import { useProject } from '../contexts/project';
-import { useUser } from '../contexts/user';
-import DocumentEditor from './documentEditor';
-import Document from '../content/document';
-import { notify } from '../components/notification';
+import { useProject } from '../../contexts/project';
+import { useUser } from '../../contexts/user';
+import DocumentEditor from '../document';
+import Document from '../../content/document';
+import { notify } from '../../components/notification';
 
 const schema = {
 	code: 'users',

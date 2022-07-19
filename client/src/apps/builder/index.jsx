@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import { Button, Select, Card } from 'antd';
-import { useUser } from '../contexts/user';
-import { useProject } from '../contexts/project';
-import { build, validate } from '../content';
+import { useUser } from '../../contexts/user';
+import { useProject } from '../../contexts/project';
+import { build, validate } from '../../content';
 import { Link } from 'react-router-dom';
-import { Session } from '../game';
+import { Session } from '../../game';
 import { DownloadOutlined } from '@ant-design/icons';
 const { Option } = Select;
 
@@ -103,7 +103,7 @@ export default function Builder() {
 			{errors.length > 0 && (
 				<Card title="Errors">
 					{errors.map((err, index) => (
-						<Link key={`error.${index}`} to={`../template.${err.template}.${err.object}`}>
+						<Link key={`error.${index}`} to={`../template/${err.template}/${err.object}`}>
 							{err.message}
 						</Link>
 					))}

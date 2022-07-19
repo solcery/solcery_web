@@ -3,7 +3,7 @@ import dagre from 'dagre';
 export default function makeLayoutedElements(elements, nodeSizesByID, rootNodePos, isNode) {
 	const dagreGraph = new dagre.graphlib.Graph();
 	dagreGraph.setDefaultEdgeLabel(() => ({}));
-	dagreGraph.setGraph({ rankdir: 'TB' });
+	dagreGraph.setGraph({ rankdir: 'TB', nodestep: 10, rankstep: 60 });
 
 	elements.forEach((elem) => {
 		if (isNode(elem)) {

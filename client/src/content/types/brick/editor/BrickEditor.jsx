@@ -18,6 +18,7 @@ export const BrickEditor = (props) => {
 	let width = props.fullscreen ? window.innerWidth : 300;
 	let height = props.fullscreen ? window.innerHeight : 200;
 
+	const initialFit = useRef(false)
 	const [state, setState] = useState({ elements: [], isLayouted: false });
 	const [brickTree, setBrickTree] = useState(props.brickTree);
 	const { fitView } = useZoomPanHelper();
@@ -127,7 +128,7 @@ export const BrickEditor = (props) => {
 				source: parentBrickID,
 				sourceHandle: `h${parentBrickID}-${paramCode}`,
 				target: brickID,
-				type: 'smoothstep',
+				type: 'default',
 			});
 			return elements;
 		},
@@ -140,9 +141,8 @@ export const BrickEditor = (props) => {
 				id: brickID,
 				type: 'brick',
 				position: { x: 0, y: 0 },
-				data: {
-					brickLibrary: props.brickLibrary,
-					brickClass: props.brickClass,
+				data: { 
+					...props, //??
 					brick,
 					parentBrick,
 					brickTree,
@@ -155,7 +155,6 @@ export const BrickEditor = (props) => {
 						  }
 						: null,
 					readonly: !props.onChange,
-					fullscreen: props.fullscreen,
 				},
 			};
 		},
@@ -180,7 +179,7 @@ export const BrickEditor = (props) => {
 					source: parentBrickID,
 					sourceHandle: `h${parentBrickID}-${paramID}`,
 					target: brickID,
-					type: 'smoothstep',
+					type: 'default',
 				});
 			}
 			return elements;
@@ -249,10 +248,13 @@ export const BrickEditor = (props) => {
 
 	useEffect(() => {
 		if (state.isLayouted && editorRef.current) {
-			fitView();
+			if (!initialFit.current) {
+				initialFit.current = true;
+				fitView();
+			}
 			editorRef.current.style.visibility = 'visible';
 		}
-	}, [state.isLayouted, fitView]);
+	}, [initialFit, state.isLayouted, fitView]);
 
 	const editorRef = useRef(null);
 	return (
@@ -269,6 +271,7 @@ export const BrickEditor = (props) => {
 				elements={state.elements}
 				nodesDraggable={false}
 				nodesConnectable={false}
+				selectNodesOnDrag={false}
 				zoomOnDoubleClick={false}
 				paneMoveable={props.fullscreen ? true : false}
 				zoomOnScroll={props.fullscreen ? true : false}

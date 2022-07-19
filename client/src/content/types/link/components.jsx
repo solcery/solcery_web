@@ -6,7 +6,7 @@ const { Option } = Select;
 export const ValueRender = (props) => {
 	const [objects, setObjects] = useState(undefined);
 	const mountedRef = useRef(true);
-	const { sageApi } = useProject();
+	const { sageApi, projectName } = useProject();
 
 	useEffect(() => {
 		return () => {
@@ -38,7 +38,7 @@ export const ValueRender = (props) => {
 		if (!objects) return <>Loading ...</>;
 		let obj = objects.find((obj) => obj.id === props.defaultValue);
 		if (obj) {
-			return <a href={`template.${props.type.templateCode}.${props.defaultValue}`}>{obj.title}</a>;
+			return <a href={`/${projectName}/template/${props.type.templateCode}/${props.defaultValue}`}>{obj.title}</a>; //TODO
 		} else {
 			return <>{`Missing object ${props.defaultValue}`}</>;
 		}

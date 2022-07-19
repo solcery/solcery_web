@@ -1,10 +1,10 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Table, Button } from 'antd';
-import { Template } from '../content/template';
-import { useProject } from '../contexts/project';
-import { useUser } from '../contexts/user';
-import { notify } from '../components/notification';
+import { Template } from '../../content/template';
+import { useProject } from '../../contexts/project';
+import { useUser } from '../../contexts/user';
+import { notify } from '../../components/notification';
 import { useCookies } from 'react-cookie';
 import { FilterOutlined } from '@ant-design/icons';
 
@@ -149,7 +149,7 @@ const HeaderCell = (props) => {
 	);
 };
 
-export default function CollectionEditor({ templateCode, moduleName }) {
+export default function StorageViewer({ templateCode, moduleName }) {
 	const [cookies, setCookie, removeCookie] = useCookies();
 	const { sageApi } = useProject();
 	const navigate = useNavigate();
@@ -172,12 +172,12 @@ export default function CollectionEditor({ templateCode, moduleName }) {
 			filter[fieldCode] = filterValue;
 		}
 		if (Object.keys(filter).length > 0) {
-			setCookie(filterCookieName, filter);
+			setCookie(filterCookieName, filter, { path: '/' });
 		} else {
 			removeCookie(filterCookieName);
 		}
 		setCurrentPage(1);
-		setCookie(`${moduleName}.pagination.current`, 1);
+		setCookie(`${moduleName}.pagination.current`, 1, { path: '/' });
 		setFilter(Object.assign({}, filter));
 	};
 
@@ -204,15 +204,15 @@ export default function CollectionEditor({ templateCode, moduleName }) {
 
 	const setFieldSorter = (fieldCode, value) => {
 		sorter[fieldCode] = value;
-		setCookie(sorterCookieName, sorter);
+		setCookie(sorterCookieName, sorter, { path: '/' });
 		setSorter(JSON.parse(JSON.stringify(sorter)));
 	};
 
 	const onPaginationChange = (current, pageSize) => {
 		setCurrentPage(current);
-		setCookie(`${moduleName}.pagination.current`, current);
+		setCookie(`${moduleName}.pagination.current`, current, { path: '/' });
 		setPageSize(pageSize);
-		setCookie(`${moduleName}.pagination.pageSize`, pageSize);
+		setCookie(`${moduleName}.pagination.pageSize`, pageSize, { path: '/' });
 	};
 
 	if (!template || !objects || !filter) return <>NO DATA</>;
@@ -258,7 +258,6 @@ export default function CollectionEditor({ templateCode, moduleName }) {
 		onChange: onPaginationChange,
 		showSizeChanger: true,
 	};
-
 	return (
 		<>
 			<Table
@@ -266,17 +265,17 @@ export default function CollectionEditor({ templateCode, moduleName }) {
 				dataSource={tableData}
 				pagination={pagination}
 				onRow={
-					doubleClickToOpenObject &&
+					doubleClickToOpenObject ?
 					function (record, rowIndex) {
 						return { onDoubleClick: (event) => navigate(`${record._id}`) };
-					}
+					} : undefined
 				}
 			>
 				{Object.values(template.fields)
 					.filter((field) => !field.hidden)
 					.map((field, fieldIndex) => (
 						<Column
-							key={`${moduleName}.${field.code}`}
+							key={`${template.code}.${field.code}`}
 							dataIndex={field.code}
 							title={
 								<HeaderCell

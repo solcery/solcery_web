@@ -50,7 +50,7 @@ export const ValueRender = (props) => {
 	const navigate = useNavigate();
 
 	const onChangeBrickParams = (bp) => {
-		props.onChange({ brickParams: bp, brickTree });
+		props.onChange({ brickParams: bp, brickTree: brickTree.current });
 		setBrickParams(paramMapType.clone(bp));
 	};
 	let path = props.path.fieldPath.join('.');
@@ -130,12 +130,9 @@ export const BrickTreeEditor = (props) => {
 	if (!ownBrickLibrary) return <>Loading...</>;
 	return (
 		<ReactFlowProvider>
-			<BrickEditor
-				fullscreen={props.fullscreen}
+			<BrickEditor 
+				{...props}
 				brickLibrary={ownBrickLibrary}
-				brickTree={props.brickTree}
-				brickType={props.brickType}
-				onChange={props.onChange}
 			/>
 		</ReactFlowProvider>
 	);

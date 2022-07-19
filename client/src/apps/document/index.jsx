@@ -1,8 +1,8 @@
 import { Table, Button } from 'antd';
 import React, { useState } from 'react';
-import { useHotkey } from '../contexts/hotkey';
-import { notify } from '../components/notification';
-import './documentEditor.css';
+import { useHotkey } from '../../contexts/hotkey';
+import { notify } from '../../components/notification';
+import './style.css';
 
 const { Column } = Table;
 

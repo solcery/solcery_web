@@ -1,9 +1,27 @@
-import { Button, Select } from 'antd';
+import { Button, Select, Input } from 'antd';
 import { useState } from 'react';
-import { useProject } from '../contexts/project';
+import { useProject } from '../../contexts/project';
+const { TextArea } = Input;
 const { Option } = Select;
 
-export default function ContentExporter() {
+export function ContentImporter() {
+	const [contentDump, setContentDump] = useState();
+	const { sageApi } = useProject();
+
+	const importContent = () => {
+		sageApi.project.restore({ src: JSON.parse(contentDump) });
+	};
+
+	return (
+		<>
+			<h1>Import content</h1>
+			<TextArea placeholder="Paste content dump here" rows={10} onChange={(e) => setContentDump(e.target.value)} />
+			<Button onClick={importContent}> Import </Button>
+		</>
+	);
+}
+
+export function ContentExporter() {
 	const [exportType, setExportType] = useState('full');
 	const { sageApi } = useProject();
 
@@ -38,3 +56,4 @@ export default function ContentExporter() {
 		</>
 	);
 }
+
