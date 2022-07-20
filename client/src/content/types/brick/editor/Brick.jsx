@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Handle, Position } from 'react-flow-renderer';
 import { notify } from '../../../../components/notification';
 import { useProject } from '../../../../contexts/project';
+import { useHotkeyContext } from '../../../../contexts/hotkey';
 import { Tooltip, Button, Input } from 'antd';
 import { CommentOutlined, DashOutlined, CloseOutlined} from '@ant-design/icons';
 const { TextArea } = Input;
@@ -47,6 +48,8 @@ function BrickName(props) {
 
 export default function Brick(props) {
 	let { projectName } = useProject();
+	let { addHotkey, removeHotkey } = useHotkeyContext();
+
 	const brick = props.data.brick;
 	const brickLibrary = props.data.brickLibrary;
 
@@ -86,7 +89,6 @@ export default function Brick(props) {
 		window.open(`/${projectName}/template/customBricks/${objId}/brick`, '_blank', 'noopener');
 	};
 
-
 	const copy = () => {
 		let brickJson = JSON.stringify(props.data.brick);
 		notify({
@@ -96,6 +98,7 @@ export default function Brick(props) {
 		});
 		navigator.clipboard.writeText(brickJson);
 	};
+
 
 	const paste = () => {
 		navigator.clipboard.readText().then((clipboardContents) => {
@@ -116,21 +119,15 @@ export default function Brick(props) {
 		});
 	};
 
-	let isHovered = false;
-	useEffect(() => {
-		const onKeyDown = (e) => {
-			if (!isHovered) return;
-			if (!e.ctrlKey) return;
-			let charCode = String.fromCharCode(e.which).toLowerCase();
-			if (charCode === 'c') copy();
-			if (charCode === 'v') paste();
-		};
-
-		window.addEventListener('keydown', onKeyDown);
-		return () => {
-			window.removeEventListener('keydown', onKeyDown);
-		};
-	});
+	const hotkeyIds = {}
+	const onPointerEnter = () => {
+		hotkeyIds.copy = addHotkey({ key: 'ctrl+c', callback: copy })
+		hotkeyIds.paste = addHotkey({ key: 'ctrl+v', callback: paste })
+	}
+	const onPointerLeave = () => {
+		removeHotkey('ctrl+c', hotkeyIds.copy)
+		removeHotkey('ctrl+v', hotkeyIds.paste)
+	}
 
 	let width = Math.max(12, 1 + nestedParams.length * 5);
 	
@@ -140,8 +137,8 @@ export default function Brick(props) {
 				className={`brick ${brickSignature.lib} ${brickSignature.func} ${props.data.fullscreen ? '' : 'small'} ${
 					props.data.readonly ? 'readonly' : ''
 				} ${errorBrick ? 'error' : ''}`}
-				onPointerEnter={() => (isHovered = true)}
-				onPointerLeave={() => (isHovered = false)}
+				onPointerEnter={onPointerEnter}
+				onPointerLeave={onPointerLeave}
 				style={{ 
 					minWidth: `${width}rem`,	
 				}}
