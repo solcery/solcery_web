@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import { Handle, Position } from 'react-flow-renderer';
 import { notify } from '../../../../components/notification';
 import { useProject } from '../../../../contexts/project';

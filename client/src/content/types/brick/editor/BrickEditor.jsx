@@ -159,11 +159,8 @@ export const BrickEditor = (props) => {
 			};
 		},
 		[
-			props.fullscreen,
-			props.onChange,
+			props,
 			brickTree,
-			props.brickLibrary,
-			props.brickClass,
 			removeBrick,
 			onPaste,
 			onChangeBrickTree,

@@ -17,8 +17,12 @@ export default function BrickEditor() {
 	const changed = useRef(false);
 
 	const goUp = useCallback(() => {
-		navigate('../');
-	}, [navigate]);
+		navigate('../', { 
+			state: {
+				scrollToField: splittedPath[0],
+			}
+		});
+	}, [ navigate, splittedPath ])
 
 	useEffect(() => {
 		setSplittedPath(brickPath.split('.'));
