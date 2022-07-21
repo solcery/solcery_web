@@ -128,7 +128,7 @@ export const BrickEditor = (props) => {
 				source: parentBrickID,
 				sourceHandle: `h${parentBrickID}-${paramCode}`,
 				target: brickID,
-				type: 'smoothstep',
+				type: 'default',
 			});
 			return elements;
 		},
@@ -141,9 +141,8 @@ export const BrickEditor = (props) => {
 				id: brickID,
 				type: 'brick',
 				position: { x: 0, y: 0 },
-				data: {
-					brickLibrary: props.brickLibrary,
-					brickClass: props.brickClass,
+				data: { 
+					...props, //??
 					brick,
 					parentBrick,
 					brickTree,
@@ -156,16 +155,12 @@ export const BrickEditor = (props) => {
 						  }
 						: null,
 					readonly: !props.onChange,
-					fullscreen: props.fullscreen,
 				},
 			};
 		},
 		[
-			props.fullscreen,
-			props.onChange,
+			props,
 			brickTree,
-			props.brickLibrary,
-			props.brickClass,
 			removeBrick,
 			onPaste,
 			onChangeBrickTree,
@@ -181,7 +176,7 @@ export const BrickEditor = (props) => {
 					source: parentBrickID,
 					sourceHandle: `h${parentBrickID}-${paramID}`,
 					target: brickID,
-					type: 'smoothstep',
+					type: 'default',
 				});
 			}
 			return elements;

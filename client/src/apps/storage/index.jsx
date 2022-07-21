@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Table, Button } from 'antd';
 import { Template } from '../../content/template';
 import { useProject } from '../../contexts/project';
+import { useHotkey } from '../../contexts/hotkey';
 import { useUser } from '../../contexts/user';
 import { notify } from '../../components/notification';
 import { useCookies } from 'react-cookie';
@@ -71,19 +72,10 @@ const HeaderFilter = (props) => {
 		setOpened(false);
 	};
 
-	const onKeyDown = (event) => {
-		if (event.keyCode === 27) {
-			setOpened(false);
-			setInputValue(filterValue);
-		}
-	};
-
-	useEffect(() => {
-		document.addEventListener('keydown', onKeyDown);
-		return () => {
-			document.removeEventListener('keydown', onKeyDown);
-		};
-	});
+	useHotkey('escape', () => {
+		setOpened(false);
+		setInputValue(filterValue);
+	})
 
 	return (
 		<>
@@ -156,8 +148,8 @@ export default function StorageViewer({ templateCode, moduleName }) {
 
 	const [objects, setObjects] = useState();
 	const [template, setTemplate] = useState();
-	const [filter, setFilter] = useState({});
-	const [sorter, setSorter] = useState({});
+	const [filter, setFilter] = useState();
+	const [sorter, setSorter] = useState();
 	const [currentPage, setCurrentPage] = useState(1);
 	const [pageSize, setPageSize] = useState(10);
 	const { fastCopy, doubleClickToOpenObject } = useUser();
@@ -174,7 +166,7 @@ export default function StorageViewer({ templateCode, moduleName }) {
 		if (Object.keys(filter).length > 0) {
 			setCookie(filterCookieName, filter, { path: '/' });
 		} else {
-			removeCookie(filterCookieName);
+			removeCookie(filterCookieName, { path: '/' });
 		}
 		setCurrentPage(1);
 		setCookie(`${moduleName}.pagination.current`, 1, { path: '/' });
@@ -194,8 +186,8 @@ export default function StorageViewer({ templateCode, moduleName }) {
 	}, [moduleName, cookies]);
 
 	useEffect(() => {
-		setFilter(cookies[filterCookieName] ?? {});
-		setSorter(cookies[sorterCookieName] ?? {});
+		setFilter(Object.assign({}, cookies[filterCookieName]));
+		setSorter(Object.assign({}, cookies[sorterCookieName]));
 	}, [moduleName, cookies, filterCookieName, sorterCookieName]);
 
 	useEffect(() => {
@@ -275,7 +267,7 @@ export default function StorageViewer({ templateCode, moduleName }) {
 					.filter((field) => !field.hidden)
 					.map((field, fieldIndex) => (
 						<Column
-							key={`${moduleName}.${field.code}`}
+							key={`${template.code}.${field.code}`}
 							dataIndex={field.code}
 							title={
 								<HeaderCell

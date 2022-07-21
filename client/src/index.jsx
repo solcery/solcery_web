@@ -11,4 +11,3 @@ render(<Sage/>, rootElement);
 
 // const rootElement = document.getElementById('root');
 // render(<>EMPTY</>, rootElement);
-

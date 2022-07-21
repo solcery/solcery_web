@@ -1,8 +1,11 @@
 import { useState, useEffect } from 'react';
 import { Handle, Position } from 'react-flow-renderer';
 import Select from 'react-select';
+import { useHotkeyContext } from '../../../../contexts/hotkey';
 
 export default function AddBrickButton(props) {
+	let { addHotkey, removeHotkey } = useHotkeyContext();
+
 	const brickType = props.data.brickType; // TODO: type
 	const brickLibrary = props.data.brickLibrary;
 	const brickSignatures = [];
@@ -44,40 +47,26 @@ export default function AddBrickButton(props) {
 		};
 	}, []);
 
-	let isHovered = false;
+	const paste = async () => {
+		let clipboardContents = await navigator.clipboard.readText()
+		if (!clipboardContents) return;
 
-	useEffect(() => {
-		let isCtrlDown = false;
+		let pastedBrickTree: any = null;
+		try {
+			pastedBrickTree = JSON.parse(clipboardContents);
+		} catch {}
+		if (!pastedBrickTree) return;
+		props.data.onPaste(pastedBrickTree, props.data.brickTree, props.data.parentBrick, props.data.paramCode);
+	}
 
-		const onKeyDown = (e) => {
-			isCtrlDown = e.keyCode === 17 || e.keyCode === 91;
-		};
-		const onKeyUp = (e) => {
-			isCtrlDown = !(e.keyCode === 17 || e.keyCode === 91); // Ctrl or Cmd keys
+	let pasteHotkeyId;
+	const onPointerEnter = () => {
+		pasteHotkeyId = addHotkey({ key: 'ctrl+v', callback: paste })
+	}
+	const onPointerLeave = () => {
+		removeHotkey('ctrl+v', pasteHotkeyId)
+	}
 
-			if (isCtrlDown && e.keyCode === 86 /*'V' key*/ && isHovered) {
-				navigator.clipboard.readText().then((clipboardContents) => {
-					if (!clipboardContents) return;
-
-					let pastedBrickTree: any = null;
-					try {
-						pastedBrickTree = JSON.parse(clipboardContents);
-					} catch {}
-					if (!pastedBrickTree) return;
-
-					props.data.onPaste(pastedBrickTree, props.data.brickTree, props.data.parentBrick, props.data.paramCode);
-				});
-			}
-		};
-
-		window.addEventListener('keydown', onKeyDown);
-		window.addEventListener('keyup', onKeyUp);
-
-		return () => {
-			window.removeEventListener('keydown', onKeyDown);
-			window.removeEventListener('keyup', onKeyUp);
-		};
-	});
 	const selectorOptions = brickSignatures
 		.filter((sig) => !sig.hidden)
 		.map((sig) => {
@@ -88,8 +77,8 @@ export default function AddBrickButton(props) {
 			<div
 				className={`add-brick-button ${!props.data.readonly && !props.data.small ? 'active' : ''}`}
 				onPointerUp={onAddButtonPointerUp}
-				onPointerEnter={() => (isHovered = true)}
-				onPointerLeave={() => (isHovered = false)}
+				onPointerEnter={onPointerEnter}
+				onPointerLeave={onPointerLeave}
 			>
 				+
 			</div>

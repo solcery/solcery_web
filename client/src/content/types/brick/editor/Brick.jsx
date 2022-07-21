@@ -1,20 +1,26 @@
-import { useEffect, useState, useRef } from 'react';
+import { useState } from 'react';
 import { Handle, Position } from 'react-flow-renderer';
 import { notify } from '../../../../components/notification';
 import { useProject } from '../../../../contexts/project';
+import { useHotkeyContext } from '../../../../contexts/hotkey';
 import { Tooltip, Button, Input } from 'antd';
 import { CommentOutlined, DashOutlined, CloseOutlined} from '@ant-design/icons';
 const { TextArea } = Input;
 
 function Comment(props) {
+	const [ visible, setVisible ] = useState(props.showAllComments && props.comment)
 	let Icon = props.comment ? CommentOutlined : DashOutlined;
-	let iconStyle;
-	if (props.visible) iconStyle = { color: 'yellow' };
+	let iconStyle = visible ? { color: 'yellow' } : undefined;
+
+	const toggleVisibility = () => {
+		setVisible(!visible);
+	}
+
 	return <>
-		<Button size='small' shape='round' className='comment-button' onClick={props.toggle}>
+		<Button size='small' shape='round' className='comment-button' onClick={toggleVisibility}>
 			<Icon style={iconStyle}/>
 		</Button>
-		{props.visible && <div className='comment'>
+		{visible && <div className='comment'>
 			<div>Comment</div>
 			<TextArea 
 				autoSize
@@ -30,11 +36,11 @@ function Comment(props) {
 
 function BrickName(props) {
 	if (props.onDoubleClick) return <Tooltip title='Double click to open'>
-		<div onDoubleClick={props.onDoubleClick} className="brick-name custom">
+		<div onDoubleClick={props.onDoubleClick} className="brick-name custom" style={props.titleStyle}>
 			{props.name}
 		</div>
 	</Tooltip>;
-	return <div className="brick-name">
+	return <div className="brick-name" style={props.titleStyle}>
 		{props.name}
 	</div>;
 }
@@ -42,9 +48,10 @@ function BrickName(props) {
 
 export default function Brick(props) {
 	let { projectName } = useProject();
+	let { addHotkey, removeHotkey } = useHotkeyContext();
+
 	const brick = props.data.brick;
 	const brickLibrary = props.data.brickLibrary;
-	const [ commentVisible, setCommentVisible ] = useState(false);
 
 	// validation
 	let errorBrick = false;
@@ -82,12 +89,6 @@ export default function Brick(props) {
 		window.open(`/${projectName}/template/customBricks/${objId}/brick`, '_blank', 'noopener');
 	};
 
-	const toggleCommentVisibility = () => {
-		setCommentVisible(!commentVisible);
-	}
-
-	let isHovered = false;
-
 	const copy = () => {
 		let brickJson = JSON.stringify(props.data.brick);
 		notify({
@@ -97,6 +98,7 @@ export default function Brick(props) {
 		});
 		navigator.clipboard.writeText(brickJson);
 	};
+
 
 	const paste = () => {
 		navigator.clipboard.readText().then((clipboardContents) => {
@@ -117,22 +119,17 @@ export default function Brick(props) {
 		});
 	};
 
-	useEffect(() => {
-		const onKeyDown = (e) => {
-			if (!isHovered) return;
-			if (!e.ctrlKey) return;
-			let charCode = String.fromCharCode(e.which).toLowerCase();
-			if (charCode === 'c') copy();
-			if (charCode === 'v') paste();
-		};
+	const hotkeyIds = {}
+	const onPointerEnter = () => {
+		hotkeyIds.copy = addHotkey({ key: 'ctrl+c', callback: copy })
+		hotkeyIds.paste = addHotkey({ key: 'ctrl+v', callback: paste })
+	}
+	const onPointerLeave = () => {
+		removeHotkey('ctrl+c', hotkeyIds.copy)
+		removeHotkey('ctrl+v', hotkeyIds.paste)
+	}
 
-		window.addEventListener('keydown', onKeyDown);
-		return () => {
-			window.removeEventListener('keydown', onKeyDown);
-		};
-	});
-
-	let width = brickSignature.width ?? Math.max(15, brickSignature.name.length * 0.7, 4 + nestedParams.length * 6);
+	let width = Math.max(12, 1 + nestedParams.length * 5);
 	
 	return (
 		<>
@@ -140,56 +137,59 @@ export default function Brick(props) {
 				className={`brick ${brickSignature.lib} ${brickSignature.func} ${props.data.fullscreen ? '' : 'small'} ${
 					props.data.readonly ? 'readonly' : ''
 				} ${errorBrick ? 'error' : ''}`}
-				onPointerEnter={() => (isHovered = true)}
-				onPointerLeave={() => (isHovered = false)}
-				style={{ width: `${width}rem` }}
+				onPointerEnter={onPointerEnter}
+				onPointerLeave={onPointerLeave}
+				style={{ 
+					minWidth: `${width}rem`,	
+				}}
 			>
 				<div className='brick-header'>
-					<BrickName name={brickSignature.name} onDoubleClick={onDoubleClick}/>
+					<BrickName name={brickSignature.name} onDoubleClick={onDoubleClick} titleStyle={{ maxWidth: `${width}rem` }}/>
 					{!props.data.readonly && props.data.fullscreen && (
 						<Button size='small' className='remove-button' onClick={onRemoveButtonClicked}>
 							<CloseOutlined/>
 						</Button>
 					)}
 				</div>
-				<Comment 
-					visible={commentVisible} 
-					toggle={toggleCommentVisibility}
-					onChange={onChangeComment}
-					comment={brick.comment}
-				/>
-				{inlineParams.map((param) => (
-					<div className="field-container" key={param.code}>
-						<div>{param.name}</div>
-						<param.type.valueRender id={param.code}
-							type={param.type}
-							defaultValue={brick.params[param.code]}
-							onChange={
-								!param.readonly && !props.data.readonly
-									? (value) => {
-											brick.params[param.code] = value;
-											props.data.onChange();
-									  }
-									: null
-							}
-						/>
-					</div>
-				))}
-				{props.data.parentBrick && <Handle type="target" position={Position.Top} />}
-				{nestedParams.map((param, index) => (
-					<Handle
-						id={`h${props.id}-${param.code}`}
-						key={param.code}
-						type="source"
-						position={Position.Bottom}
-						style={{
-							left: Math.round((100 / (nestedParams.length + 1)) * (index + 1)) + '%',
-							bottom: '-1.5rem',
-						}}
-					>
-						<div className={'handle-label' + (props.data.readonly ? ' readonly' : '')}>{param.name}</div>
-					</Handle>
-				))}
+				<div className='brick-body'>
+					<Comment 
+						showAllComments={props.data.showAllComments}
+						onChange={onChangeComment}
+						comment={brick.comment}
+					/>
+					{inlineParams.map((param) => (
+						<div className="field-container" key={param.code}>
+							<div>{param.name}</div>
+							<param.type.valueRender id={param.code}
+								type={param.type}
+								defaultValue={brick.params[param.code]}
+								onChange={
+									!param.readonly && !props.data.readonly
+										? (value) => {
+												brick.params[param.code] = value;
+												props.data.onChange();
+										  }
+										: null
+								}
+							/>
+						</div>
+					))}
+					{props.data.parentBrick && <Handle type="target" position={Position.Top} />}
+					{nestedParams.map((param, index) => (
+						<Handle
+							id={`h${props.id}-${param.code}`}
+							key={param.code}
+							type="source"
+							position={Position.Bottom}
+							style={{
+								left: Math.round(100 / nestedParams.length) * (index + 0.5) + '%',
+								bottom: '-1.5rem',
+							}}
+						>
+							<div className={'handle-label' + (props.data.readonly ? ' readonly' : '')}>{param.name}</div>
+						</Handle>
+					))}
+				</div>
 			</div>
 		</>
 	);

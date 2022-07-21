@@ -48,6 +48,7 @@ export const ValueRender = (props) => {
 	const [brickParams, setBrickParams] = useState(props.defaultValue ? props.defaultValue.brickParams : []);
 	const { readonlyBricks } = useUser();
 	const navigate = useNavigate();
+	const element = useRef();
 
 	const onChangeBrickParams = (bp) => {
 		props.onChange({ brickParams: bp, brickTree: brickTree.current });
@@ -58,11 +59,19 @@ export const ValueRender = (props) => {
 		path = props.path.objectId + '/' + path;
 	}
 
+
+	const onLoad = () => {
+		if (props.autoScroll && element.current) {
+			element.current.scrollIntoView({ block: 'center' });
+		}
+	}
 	let brickTreeEditor = (
 		<BrickTreeEditor
 			brickParams={brickParams}
 			brickType={props.type.brickType ?? 'any'}
 			brickTree={brickTree.current}
+			autoScroll={props.autoScroll}
+			onLoad={onLoad}
 		/>
 	);
 
@@ -78,6 +87,7 @@ export const ValueRender = (props) => {
 			)}
 			{props.onChange || readonlyBricks ? (
 				<div
+					ref={element}
 					onClick={() => {
 						navigate(path);
 					}}
@@ -127,15 +137,18 @@ export const BrickTreeEditor = (props) => {
 		setOwnBrickLibrary(bricks);
 	}, [brickLibrary, props.brickParams]);
 
+	useEffect(() => {
+		if (ownBrickLibrary) {
+			props.onLoad && props.onLoad();
+		}
+	}, [ props, props.onLoad, ownBrickLibrary ])
+
 	if (!ownBrickLibrary) return <>Loading...</>;
 	return (
 		<ReactFlowProvider>
-			<BrickEditor
-				fullscreen={props.fullscreen}
+			<BrickEditor 
+				{...props}
 				brickLibrary={ownBrickLibrary}
-				brickTree={props.brickTree}
-				brickType={props.brickType}
-				onChange={props.onChange}
 			/>
 		</ReactFlowProvider>
 	);

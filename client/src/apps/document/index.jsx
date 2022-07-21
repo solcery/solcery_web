@@ -8,7 +8,6 @@ const { Column } = Table;
 
 export default function DocumentEditor(props) {
 	const [revision, setRevision] = useState(1);
-
 	const save = useHotkey(
 		{ key: 'ctrl+s', noDefault: true },
 		() => {
@@ -52,6 +51,7 @@ export default function DocumentEditor(props) {
 			value: props.doc.fields[field.code],
 			status: props.doc.fieldStatus[field.code],
 			onChange: !field.readonly ? (value) => editDoc(value, [field.code]) : undefined,
+			autoScroll: props.scrollToField === field.code,
 		};
 	});
 	return (
@@ -72,6 +72,7 @@ export default function DocumentEditor(props) {
 					dataIndex="value"
 					render={(text, record) => (
 						<record.field.type.valueRender
+							autoScroll = {record.autoScroll}
 							defaultValue={record.value}
 							onChange={record.onChange}
 							type={record.field.type}

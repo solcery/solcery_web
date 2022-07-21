@@ -1,4 +1,4 @@
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import { useProject } from '../../contexts/project';
 import { useBrickLibrary } from '../../contexts/brickLibrary';
 import { useTemplate } from '../../contexts/template';
@@ -12,6 +12,7 @@ export function ObjectPage() {
 	const { template } = useTemplate();
 	const { load } = useBrickLibrary();
 	const { doc } = useDocument();
+	const location = useLocation();
 	const navigate = useNavigate();
 
 	const goUp = () => {
@@ -41,5 +42,10 @@ export function ObjectPage() {
 				}
 			});
 	};
-	return <DocumentEditor doc={doc} onSave={onSave} onExit={onExit} />;
+	return <DocumentEditor 
+		scrollToField={location.state?.scrollToField}
+		doc={doc} 
+		onSave={onSave} 
+		onExit={onExit} 
+	/>;
 }

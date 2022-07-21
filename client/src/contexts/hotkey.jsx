@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState, useCallback } from 'react';
 
-export const hotkeys = ['ctrl+c', 'ctrl+s', 'escape'];
+export const hotkeys = ['ctrl+c', 'ctrl+s', 'escape', 'ctrl+c', 'ctrl+v'];
 
 const HotkeyContext = React.createContext(undefined);
 
@@ -65,8 +65,13 @@ export function HotkeyProvider(props) {
 	});
 
 	return (
-		<HotkeyContext.Provider value={{ useHotkey, addHotkey, removeHotkey }}>{props.children}</HotkeyContext.Provider>
+		<HotkeyContext.Provider value={{ addHotkey, removeHotkey }}>{props.children}</HotkeyContext.Provider>
 	);
+}
+
+export function useHotkeyContext() {
+	const { addHotkey, removeHotkey } = useContext(HotkeyContext);
+	return { addHotkey, removeHotkey };
 }
 
 export const useHotkey = (data, callback) => {
