@@ -315,7 +315,7 @@ export default function StorageViewer({ templateCode, moduleName }) {
 														message: 'Object created',
 														color: '#DDFFDD',
 														description: res.insertedId,
-														url: `${moduleName}.${res.insertedId}`,
+														url: `${templateCode}/${res.insertedId}`,
 													});
 													load();
 												}
