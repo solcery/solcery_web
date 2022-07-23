@@ -208,6 +208,7 @@ export default function StorageViewer({ templateCode, moduleName }) {
 	};
 
 	if (!template || !objects || !filter) return <>NO DATA</>;
+	if (template.code !== templateCode) return <>LOADING</>;
 	let tableData = objects
 		.filter((object) => {
 			for (let field of Object.values(template.fields)) {
