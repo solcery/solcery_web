@@ -85,9 +85,9 @@ export class Game {
 		if (this.content.collections) {
 			for (let nft of nfts) {
 				let collection = Object.values(this.content.collections)
-					.find(obj => obj.fields.collection === nft.collection);
+					.find(obj => obj.collection === nft.collection);
 				if (!collection) continue;
-				let obj = this.createEntity(collection.cardType, collection.place, collection.initAction);
+				this.createEntity(collection.cardType, collection.place, collection.initAction);
 			}
 		}
 		this.startDiff(true);
