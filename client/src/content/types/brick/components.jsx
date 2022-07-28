@@ -65,7 +65,7 @@ export const ValueRender = (props) => {
 			element.current.scrollIntoView({ block: 'center' });
 		}
 	}
-	let brickTreeEditor = (
+	let brickTreeEditor = ( //TODO: Optimize
 		<BrickTreeEditor
 			brickParams={brickParams}
 			brickType={props.type.brickType ?? 'any'}
@@ -74,7 +74,6 @@ export const ValueRender = (props) => {
 			onLoad={onLoad}
 		/>
 	);
-
 	return (
 		<>
 			{props.type.params && (
@@ -96,7 +95,7 @@ export const ValueRender = (props) => {
 				</div>
 			) : (
 				<Popover content={brickTreeEditor}>
-					<Link to={path}>{brickTree ? `Brick. ${props.type.brickType ?? 'any'}` : 'EMPTY'}</Link>
+					<Link to={path}>{brickTree.current ? `Brick. ${props.type.brickType ?? 'any'}` : 'Empty'}</Link>
 				</Popover>
 			)}
 		</>
