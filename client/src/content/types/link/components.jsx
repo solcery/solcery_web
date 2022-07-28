@@ -1,26 +1,29 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { useProject } from '../../../contexts/project';
+import { SageAPIConnection } from '../../../api';
 import { Select } from 'antd';
 const { Option } = Select;
 
 export const ValueRender = (props) => {
 	const [objects, setObjects] = useState(undefined);
-	const mountedRef = useRef(true);
+	const [ api, setApi ] = useState();
 	const { sageApi, projectName } = useProject();
 
 	useEffect(() => {
-		return () => {
-			mountedRef.current = false;
-		};
-	}, []);
+		if (props.type.project) {
+			setApi(new SageAPIConnection(props.type.project));
+			return;
+		}
+		setApi(sageApi)
+	}, [ sageApi, props.type ]);
 
 	const onChange = (newValue) => {
 		props.onChange && props.onChange(newValue);
 	};
 
 	useEffect(() => {
-		sageApi.template.getAllObjects({ template: props.type.templateCode }).then((res) => {
-			if (!mountedRef.current) return null;
+		if (!api) return;
+		api.template.getAllObjects({ template: props.type.templateCode }).then((res) => {
 			setObjects(
 				res
 					.filter((object) => object.fields.name !== undefined)
@@ -32,13 +35,14 @@ export const ValueRender = (props) => {
 					})
 			);
 		});
-	}, [props.type, sageApi]);
+	}, [props.type, api]);
+
 	if (!props.onChange) {
 		if (!props.defaultValue) return <>None</>;
 		if (!objects) return <>Loading ...</>;
 		let obj = objects.find((obj) => obj.id === props.defaultValue);
 		if (obj) {
-			return <a href={`/${projectName}/template/${props.type.templateCode}/${props.defaultValue}`}>{obj.title}</a>; //TODO
+			return <a href={`/${props.type.project ?? projectName}/template/${props.type.templateCode}/${props.defaultValue}`}>{obj.title}</a>; //TODO
 		} else {
 			return <>{`Missing object ${props.defaultValue}`}</>;
 		}

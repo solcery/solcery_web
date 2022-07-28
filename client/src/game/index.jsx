@@ -13,27 +13,31 @@ const objectToArray = (obj) => {
 };
 
 export class Session {
-	content = undefined;
-	game = undefined;
-	runtime = undefined;
-	seed = 1; // TODO
-	players = [];
-
-	start(layoutPresets) {
-		this.game.start(layoutPresets);
+	start() {
+		this.game.start(this.layoutPresets);
 	}
 
-	constructor(content, players, log = []) {
+	constructor({ 
+		content, 
+		players,
+		log,
+		seed,
+		mode,
+		layoutPresets
+	}) {
 		this.content = content;
-		this.log = log;
-		this.players = players;
 		this.runtime = new BrickRuntime(content.web);
-		this.seed = Math.floor(Math.random() * 1000);
-		this.game = new Game(this); //TODO
+		this.game = new Game(this);
+		this.players = players;
+		this.log = log ?? [];
+		this.seed = seed ?? 1;
+		this.step = 0;
+		this.mode = mode ?? 'local';
+		this.layoutPresets = layoutPresets ?? [];
 	}
 
-	handlePlayerCommand = (command) => {
-		this.log.push(command);
+
+	applyCommand = (command) => {
 		if (command.command_data_type === 0) {
 			return this.game.objectEvent(command.object_id, 'action_on_left_click');
 		}
@@ -43,6 +47,22 @@ export class Session {
 		if (command.command_data_type === 2) {
 			return this.game.dropCard(command.object_id, command.drag_drop_id, command.target_place_id);
 		}
+	}
+
+	updateLog = (log) => {
+		this.log = log; // TODO
+		while (this.step < log.length) {
+			this.applyCommand(log[this.step]);
+			this.step++;
+		}
+	}
+
+	onPlayerCommand = (command) => {
+		if (this.mode === 'local') {
+			this.log.push(command);
+			this.updateLog(this.log)
+		}
+		
 	};
 }
 
