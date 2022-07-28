@@ -1,4 +1,8 @@
-import React, { render } from 'react-dom';
-import Sage from './builds/Sage'
-const rootElement = document.getElementById('root');
-render(<Sage/>, rootElement);
+import { createRoot } from "react-dom/client";
+
+import Sage from './builds/Sage';
+
+let container = document.getElementById('root')
+const root = createRoot(container);
+root.render(<Sage/>);
+
