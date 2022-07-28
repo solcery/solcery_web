@@ -99,7 +99,16 @@ export function UserProvider(props) {
 }
 
 export function useUser() {
-	const { id, doubleClickToOpenObject, fastCopy, nick, css, layoutPresets, reload, readonlyBricks } =
-		useContext(UserContext);
-	return { id, doubleClickToOpenObject, fastCopy, nick, css, layoutPresets, reload, readonlyBricks };
+	const { 
+		id, 
+		doubleClickToOpenObject, 
+		fastCopy, 
+		nick, 
+		css, 
+		layoutPresets, 
+		reload, 
+		readonlyBricks, 
+		nfts 
+	} = useContext(UserContext);
+	return { id, doubleClickToOpenObject, fastCopy, nick, css, layoutPresets, reload, readonlyBricks, nfts };
 }
