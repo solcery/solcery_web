@@ -24,7 +24,6 @@ export const ValueRender = (props) => {
 		value.push(undefined);
 		setRevision(revision + 1);
 	};
-
 	if (!props.onChange)
 		return (
 			<>
@@ -47,6 +46,7 @@ export const ValueRender = (props) => {
 						{REMOVE_ELEMENT_BUTTON_LABEL}
 					</Button>
 					<props.type.valueType.valueRender
+						path={{ ...props.path, fieldPath: [...props.path.fieldPath, 'lol'] }}
 						defaultValue={val}
 						type={props.type.valueType}
 						onChange={(newValue) => {
