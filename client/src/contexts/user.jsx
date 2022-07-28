@@ -79,6 +79,7 @@ export function UserProvider(props) {
 				<h1> Project name: {projectName} </h1>
 				<Input
 					placeholder="Login"
+					autoFocus
 					onChange={(e) => {
 						setLogin(e.target.value);
 					}}
