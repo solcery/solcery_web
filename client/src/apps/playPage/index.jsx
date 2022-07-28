@@ -5,6 +5,7 @@ import { useBrickLibrary } from '../../contexts/brickLibrary';
 import { build } from '../../content';
 import { useUser } from '../../contexts/user';
 import { useProject } from '../../contexts/project';
+import GameClient from '../../components/gameClient';
 
 const unityPlayContext = new UnityContext({
 	loaderUrl: '/Build/WebGl.loader.js',
@@ -27,13 +28,11 @@ function* stringChunk(s, maxBytes) {
 }
 
 export default function PlayPage() {
-	const [gameSession, setGameSession] = useState();
-	const { brickLibrary } = useBrickLibrary();
+	const [ gameSession, setGameSession ] = useState();
 	const { layoutPresets } = useUser();
 	const { sageApi } = useProject();
 
 	useEffect(() => {
-		if (!brickLibrary) return;
 		async function buildContent() {
 			let content = await sageApi.project.getContent({ objects: true, templates: true });
 			let construction = build({
@@ -43,66 +42,20 @@ export default function PlayPage() {
 			if (construction.status) {
 				construction.constructed.unity = construction.constructed.unity_local;
 				let content = construction.constructed;
-				let session = new Session(content, [1]);
-				session.start(layoutPresets);
+				let session = new Session({
+					content,
+					layoutPresets
+				});
+				session.start();
 				setGameSession(session);
 			} else {
 				window.alert('Cannot construct content, validation unsucessful. Please content in project menu');
 			}
 		}
 		buildContent();
-	}, [brickLibrary, layoutPresets, sageApi.project]);
+	}, [layoutPresets, sageApi.project]);
 
-	const clientCommand = useCallback((funcName, param) => {
-		const USHORT_SIZE = 65536;
-		let data = typeof param === 'string' ? param : JSON.stringify(param);
-		const chunks = [...stringChunk(data, USHORT_SIZE)];
-		console.log(`Web - sending package to Unity client [${funcName}]: ${data}`);
-		for (let i = 0; i < chunks.length; i++) {
-			let chunk_package = {
-				count: chunks.length,
-				index: i,
-				value: chunks[i],
-			};
-			// console.log(`Web - sending package to Unity client [${funcName}]: ${JSON.stringify(chunk_package)}`);
-			unityPlayContext.send('ReactToUnity', funcName, JSON.stringify(chunk_package));
-		}
-	}, []);
+	if (!gameSession) return <>Loading</>;
 
-	const sendDiffLog = useCallback(
-		(states) => {
-			for (let index in states) {
-				states[index].id = index;
-			}
-			clientCommand('UpdateGameState', { states });
-		},
-		[clientCommand]
-	);
-
-	useEffect(() => {
-		if (!gameSession) return;
-		unityPlayContext.on('OnUnityLoaded', async () => {
-			let content = gameSession.content.unity;
-			clientCommand('UpdateGameContent', content);
-			sendDiffLog(gameSession.game.diffLog);
-		});
-
-		unityPlayContext.on('SendCommand', async (jsonData) => {
-			let command = JSON.parse(jsonData);
-			gameSession.handlePlayerCommand(command);
-			sendDiffLog(gameSession.game.diffLog);
-		});
-
-		return function () {
-			unityPlayContext.removeAllEventListeners();
-		};
-	}, [gameSession, clientCommand, sendDiffLog]);
-
-	return !gameSession ? (
-		<></>
-	) : (
-		<div style={{ width: '100%' }}>
-			<Unity style={{ width: '100%' }} unityContext={unityPlayContext} />
-		</div>
-	);
+	return <GameClient gameSession={gameSession}/>;
 }
