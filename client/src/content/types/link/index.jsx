@@ -17,6 +17,7 @@ class SLink {
 	}
 
 	validate = (value, meta) => {
+		if (this.project) return true; //TODO: validate external links
 		if (value === undefined) return;
 		let obj = meta.content.objects.find(obj => obj._id === value);
 		if (!obj) {

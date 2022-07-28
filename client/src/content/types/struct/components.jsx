@@ -13,21 +13,26 @@ export const ValueRender = (props) => {
 		return (
 			<>
 				{props.type.fields.map((field) => (
-					<div key={field.code}>
+					<div key={field.code} style={{ display: 'flex' }}>
 						{field.name} : <field.type.valueRender defaultValue={value[field.code]} type={field.type} />
 					</div>
 				))}
 			</>
 		);
 	}
-	console.log({ ...props.path, fieldPath: [...props.path.fieldPath, 'lol'] });
 	return (
 		<>
 			{props.type.fields.map((field) => (
 				<div key={field.code} style={{ display: 'flex' }}>
 					{field.name}:{' '}
 					<field.type.valueRender
-						path={{ ...props.path, fieldPath: [...props.path.fieldPath, field.code] }}
+						path={{ 
+							...props.path, 
+							fieldPath: [
+								...props.path.fieldPath, 
+								field.code
+							] 
+						}}
 						defaultValue={value[field.code]}
 						type={field.type}
 						onChange={

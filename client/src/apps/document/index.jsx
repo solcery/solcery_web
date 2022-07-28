@@ -76,10 +76,7 @@ export default function DocumentEditor(props) {
 							defaultValue={record.value}
 							onChange={record.onChange}
 							type={record.field.type}
-							path={{
-								moduleName: props.moduleName,
-								templateCode: props.doc.schema,
-								objectId: 'documentId',
+							path={{ //TODO: Doesn't work properly
 								fieldPath: [record.field.code],
 							}}
 						/>

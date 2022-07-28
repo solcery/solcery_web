@@ -17,6 +17,43 @@ const schema = {
 		},
 		{ code: 'fastCopy', name: 'Open copied objects immediately', type: 'SBool' },
 		{ code: 'doubleClickToOpenObject', name: 'Open objects with double click', type: 'SBool' },
+		{ 
+			code: 'nfts', 
+			name: 'NFTS', 
+			type: {
+				name: "SArray",
+				data: {
+					valueType: {
+						name: "SStruct",
+						data: {
+							fields: [
+								{
+									code: 'name',
+									name: 'Name',
+									type: 'SString',
+								},
+								{
+									code: 'collection',
+									name: 'Collection',
+									type: {
+										name: 'SLink',
+										data: {
+											project: 'nfts',
+											templateCode: 'collections'
+										}
+									},
+								},
+								{
+									code: 'image',
+									name: 'Image',
+									type: 'SImage',
+								},
+							]
+						}
+					}
+				}
+			} 
+		},
 	],
 };
 

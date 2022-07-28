@@ -29,7 +29,7 @@ function* stringChunk(s, maxBytes) {
 
 export default function PlayPage() {
 	const [ gameSession, setGameSession ] = useState();
-	const { layoutPresets } = useUser();
+	const { layoutPresets, nfts } = useUser();
 	const { sageApi } = useProject();
 
 	useEffect(() => {
@@ -44,7 +44,8 @@ export default function PlayPage() {
 				let content = construction.constructed;
 				let session = new Session({
 					content,
-					layoutPresets
+					layoutPresets,
+					nfts
 				});
 				session.start();
 				setGameSession(session);
