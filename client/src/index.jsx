@@ -1,16 +1,9 @@
-import React, { render } from 'react-dom';
+import { createRoot } from "react-dom/client";
 
-// Basic
-const rootElement = document.getElementById('root');
-render(<>EMPTY</>, rootElement);
+// import Sage from './builds/Sage';
+// import Game from './builds/Game';
+// const Empty = () => <>Empty</>;
 
-// Sage
-// import Sage from './builds/Sage'
-// const rootElement = document.getElementById('root');
-// render(<Sage/>, rootElement);
-
-// Game
-// import Game from './builds/Game'
-// const rootElement = document.getElementById('root');
-// render(<Game/>, rootElement);
-
+let container = document.getElementById('root')
+const root = createRoot(container);
+root.render(<>Empty</>);
