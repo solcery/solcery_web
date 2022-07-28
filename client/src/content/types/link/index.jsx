@@ -10,6 +10,10 @@ class SLink {
 	constructor(data) {
 		this.templateCode = data.templateCode;
 		this.field = data.field;
+		this.project = data.project
+		if (data.field && data.project) {
+			throw new Error('Error reading SLink type: Cannot have both [project] and [field] properties!')
+		}
 	}
 
 	validate = (value, meta) => {
@@ -22,6 +26,7 @@ class SLink {
 	};
 
 	construct = (value, meta) => {
+		if (this.project) return value;
 		if (this.field) {
 			let tpl = meta.rawContent[this.templateCode];
 			let obj = tpl.objects.find((obj) => obj._id === value);
