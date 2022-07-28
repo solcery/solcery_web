@@ -14,28 +14,21 @@ const objectToArray = (obj) => {
 
 export class Session {
 	start() {
-		this.game.start(this.layoutPresets);
+		this.game.start(this.layoutPresets, this.nfts);
 	}
 
-	constructor({ 
-		content, 
-		players,
-		log,
-		seed,
-		mode,
-		layoutPresets
-	}) {
-		this.content = content;
-		this.runtime = new BrickRuntime(content.web);
+	constructor(data) {
+		this.content = data.content;
+		this.runtime = new BrickRuntime(data.content.web);
 		this.game = new Game(this);
-		this.players = players;
-		this.log = log ?? [];
-		this.seed = seed ?? 1;
+		this.players = data.players;
+		this.nfts = data.nfts
+		this.log = data.log ?? [];
+		this.seed = data.seed ?? 1;
 		this.step = 0;
-		this.mode = mode ?? 'local';
-		this.layoutPresets = layoutPresets ?? [];
+		this.mode = data.mode ?? 'local';
+		this.layoutPresets = data.layoutPresets ?? [];
 	}
-
 
 	applyCommand = (command) => {
 		if (command.command_data_type === 0) {
@@ -81,25 +74,20 @@ export class Game {
 		}
 	}
 
-	start = (layoutPresets) => {
+	start = (layoutPresets, nfts) => {
 		if (!layoutPresets) throw new Error('Error: Trying to initLayout without preset scheme');
 		for (let cardPack of Object.values(this.content.cards)) {
 			if (!layoutPresets.includes(cardPack.preset)) continue;
 			for (let i = 0; i < cardPack.amount; i++) {
-				let obj = this.createEntity(cardPack.cardType);
-				obj.setAttr('place', cardPack.place);
-				if (cardPack.initializer) {
-					this.runtime.execBrick(
-						cardPack.initializer,
-						this.createContext(obj, {
-							vars: { cardNumber: i },
-						})
-					);
-				}
-				let cardType = this.content.cardTypes[cardPack.cardType];
-				if (cardType.action_on_create) {
-					this.runtime.execBrick(cardType.action_on_create, this.createContext(obj));
-				}
+				this.createEntity(cardPack.cardType, cardPack.place, cardPack.initializer);
+			}
+		}
+		if (this.content.collections) {
+			for (let nft of nfts) {
+				let collection = Object.values(this.content.collections)
+					.find(obj => obj.fields.collection === nft.collection);
+				if (!collection) continue;
+				let obj = this.createEntity(collection.cardType, collection.place, collection.initAction);
 			}
 		}
 		this.startDiff(true);
@@ -140,10 +128,20 @@ export class Game {
 		this.onGameAttrChanged(attr, value);
 	}
 
-	createEntity(tplId) {
+	createEntity(cardTypeId, place, initAction, ctx) {
 		let id = Object.values(this.objects).length + 1;
-		let entity = new Entity(id, tplId, this);
+		let entity = new Entity(id, cardTypeId, this);
 		this.objects[id] = entity;
+		if (!place) throw new Error('Game.createEntity error: No place given for created entity!');
+		entity.setAttr('place', place);
+		let cardType = this.content.cardTypes[cardTypeId];
+		if (!cardType) throw new Error('Game.createEntity error: Unknown cardType!');
+		if (cardType.action_on_create) {
+			this.runtime.execBrick(cardType.action_on_create, this.createContext(entity, ctx));
+		}
+		if (initAction) {
+			this.runtime.execBrick(initAction, this.createContext(entity, ctx));
+		}
 		return entity;
 	}
 
