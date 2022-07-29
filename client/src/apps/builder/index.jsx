@@ -13,7 +13,7 @@ export default function Builder() {
 	const [errors, setErrors] = useState([]);
 	const [unityData, setUnityData] = useState(undefined);
 	const { sageApi } = useProject();
-	const { layoutPresets } = useUser();
+	const { layoutPresets, nfts } = useUser();
 
 	const buildProject = async () => {
 		let content = await sageApi.project.getContent({ objects: true, templates: true });
@@ -53,23 +53,28 @@ export default function Builder() {
 	};
 
 	const buildForUnity = async () => {
-		let content = await sageApi.project.getContent({ objects: true, templates: true });
+		let rawContent = await sageApi.project.getContent({ objects: true, templates: true });
 		setUnityData(undefined);
 		setErrors([]);
-		let res = build({ targets: ['web', 'unity_local'], content });
+		let res = build({ targets: ['web', 'unity_local'], content: rawContent });
 		if (!res.status) {
 			setErrors(res.errors);
 			return;
 		}
-		let session = new Session({ web: res.constructed.web, unity: res.constructed.unity_local }, [1]);
-		session.start(layoutPresets);
-
+		let content = { web: res.constructed.web, unity: res.constructed.unity_local };
+		let session = new Session({
+			content,
+			layoutPresets,
+			nfts
+		});
+		session.start();
 		let states = session.game.diffLog;
 		for (let index in states) {
 			states[index].id = index;
 		}
 		setUnityData({
 			content: res.constructed.unity_local,
+			overrides: session.getContentOverrides(),
 			state: { states },
 		});
 	};
@@ -93,6 +98,11 @@ export default function Builder() {
 				{unityData && (
 					<Button icon=<DownloadOutlined /> onClick={() => downloadForUnityLocalSim('state')}>
 						State
+					</Button>
+				)}
+				{unityData && (
+					<Button icon=<DownloadOutlined /> onClick={() => downloadForUnityLocalSim('overrides')}>
+						Overrides
 					</Button>
 				)}
 				<Button onClick={buildForUnity}>Build for Unity simulation</Button>
