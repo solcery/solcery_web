@@ -109,7 +109,7 @@ export class Game {
 				this.createEntity(cardPack.cardType, cardPack.place, cardPack.initializer);
 			}
 		}
-		if (this.content.collections) {
+		if (nfts && this.content.collections) {
 			for (let nft of nfts) {
 				let collection = Object.values(this.content.collections)
 					.find(obj => obj.collection === nft.collection);
