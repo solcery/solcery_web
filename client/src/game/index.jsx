@@ -12,6 +12,8 @@ const objectToArray = (obj) => {
 	});
 };
 
+
+
 export class Session {
 	start() {
 		this.game.start(this.layoutPresets, this.nfts);
@@ -22,12 +24,37 @@ export class Session {
 		this.runtime = new BrickRuntime(data.content.web);
 		this.game = new Game(this);
 		this.players = data.players;
-		this.nfts = data.nfts
 		this.log = data.log ?? [];
 		this.seed = data.seed ?? 1;
 		this.step = 0;
 		this.mode = data.mode ?? 'local';
 		this.layoutPresets = data.layoutPresets ?? [];
+		this.nfts = data.nfts;
+	}
+
+	getUnityContent = () => this.content.unity;
+
+	getContentOverrides = () => {
+		let nfts = this.nfts.map(nft => ({
+			id: nft.entityId,
+			data: {
+				name: nft.name,
+				picture: nft.image,
+			},
+		}))
+		let card_types = Object.values(this.content.web.cardTypes)
+			.filter(cardType => cardType.nftOverrides)
+			.map(cardType => {
+				let fields = [];
+				let overrides = cardType.nftOverrides;
+				if (overrides.overrideName) fields.push('name');
+				if (overrides.overrideImage) fields.push('picture');
+				return {
+					id: cardType.id,
+					override_fields: fields,
+				}
+			})
+		return { nfts, card_types };
 	}
 
 	applyCommand = (command) => {
@@ -87,7 +114,8 @@ export class Game {
 				let collection = Object.values(this.content.collections)
 					.find(obj => obj.collection === nft.collection);
 				if (!collection) continue;
-				this.createEntity(collection.cardType, collection.place, collection.initAction);
+				let enitity = this.createEntity(collection.cardType, collection.place, collection.initAction);
+				nft.entityId = enitity.id;
 			}
 		}
 		this.startDiff(true);
