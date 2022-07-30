@@ -17,11 +17,13 @@ export const ValueRender = (props) => {
 
 	const removeElement = (index) => {
 		value.splice(index, 1);
+		props.onChange(value)
 		setRevision(revision + 1);
 	};
 
 	const addNewElement = () => {
 		value.push(undefined);
+		props.onChange(value);
 		setRevision(revision + 1);
 	};
 	if (!props.onChange)
