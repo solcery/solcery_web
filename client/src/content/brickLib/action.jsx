@@ -272,9 +272,10 @@ export const basicActions = [
 		lib: 'action',
 		func: 'transform',
 		name: 'Transform',
-		params: [{ code: 'tpl_id', name: 'Tpl Id', type: 'SLink<cardTypes>' }],
+		params: [{ code: 'tpl_id', name: 'Tpl Id', type: 'SBrick<value>' }],
 		exec: (runtime, params, ctx) => {
-			ctx.object.transform(params.tpl_id);
+			let tplId = runtime.execBrick(params.tpl_id, ctx);
+			ctx.object.transform(tplId);
 		},
 	},
 	{
