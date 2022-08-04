@@ -1,0 +1,202 @@
+{
+  "nfts": [
+    {
+      "id": 116,
+      "data": {
+        "name": "Degen Ape 1",
+        "picture": "https://img-cdn.magiceden.dev/rs:fill:640:640:0:0/plain/https://arweave.net/AOdEP6TAawJJ8_Tj7olx7CFOElIgCQoOgg-STL8EwAU"
+      }
+    },
+    {
+      "id": 117,
+      "data": {
+        "name": "SMB 1",
+        "picture": "https://img-cdn.magiceden.dev/rs:fill:640:640:0:0/plain/https://cdn.solanamonkey.business/gen2/3708.png"
+      }
+    },
+    {
+      "id": 118,
+      "data": {
+        "name": "Degen Dojo 1",
+        "picture": "https://img-cdn.magiceden.dev/rs:fill:640:640:0:0/plain/https://www.arweave.net/GZAuiMRByzailDArFqX0B721NWw-tqr5iplEu3e60iI?ext=png"
+      }
+    },
+    {
+      "id": 119,
+      "data": {
+        "name": "Blocksmith 1",
+        "picture": "https://img-cdn.magiceden.dev/rs:fill:640:640:0:0/plain/https://bafybeiaesm5l6z2q6w4xuvdfu74fgk7ko45le3ubrdwm5ei5x6gpbl4wbq.ipfs.dweb.link/750.png?ext=png"
+      }
+    },
+    {
+      "id": 120,
+      "data": {
+        "name": "Boryoku Dragon 1",
+        "picture": "https://arweave.net/kjXxDfx1TiuHO4bKijizEY7dmVySbivgD_f7C_E-fJI?ext=png"
+      }
+    },
+    {
+      "id": 121,
+      "data": {
+        "name": "Boryoku Baby Dragon 1",
+        "picture": "https://arweave.net/jaTDe3CUlGB5z9gww75KgPC1ZdG5ta1XiAB6fbNwKa8?ext=png"
+      }
+    },
+    {
+      "id": 122,
+      "data": {
+        "name": "SOLGod 1",
+        "picture": "https://www.arweave.net/jphLiZeVDzYx8jsS0wJ3RKOOAWEv_HxQMn6j82RkVQk?ext=png"
+      }
+    },
+    {
+      "id": 123,
+      "data": {
+        "name": "DeGod 1",
+        "picture": "https://img-cdn.magiceden.dev/rs:fill:640:640:0:0/plain/https://metadata.degods.com/g/2103-dead.png"
+      }
+    },
+    {
+      "id": 124,
+      "data": {
+        "name": "Okay Bear 1",
+        "picture": "https://img-cdn.magiceden.dev/rs:fill:640:640:0:0/plain/https://bafybeie6ym6thyv6rjx3xxoezqdr4jf2sgqqfwsilfyvzke7ddlmkabyve.ipfs.dweb.link/4877.png?ext=png"
+      }
+    },
+    {
+      "id": 125,
+      "data": {
+        "name": "Orc 1",
+        "picture": "https://img-cdn.magiceden.dev/rs:fill:640:640:0:0/plain/https://arweave.net/uIPT0SZBOChNOM7UJLd3fMTiesGCzZiBd1tKj87Py-8"
+      }
+    },
+    {
+      "id": 126,
+      "data": {
+        "name": "Catalina Whale 1",
+        "picture": "https://img-cdn.magiceden.dev/rs:fill:640:640:0:0/plain/https://www.arweave.net/KKnOmS1fJdIDic3hFkH6Alq5mgRBcthyXkVU4EFOeAo?ext=png"
+      }
+    },
+    {
+      "id": 127,
+      "data": {
+        "name": "Grim 1",
+        "picture": "https://img-cdn.magiceden.dev/rs:fill:640:640:0:0/plain/https://www.arweave.net/kxe608LwVJq_0pOtgmAForsP2kzkneCd_Z8meVeupC4?ext=png"
+      }
+    }
+  ],
+  "card_types": [
+    {
+      "id": 315,
+      "override_fields": [
+        "name",
+        "picture"
+      ]
+    },
+    {
+      "id": 329,
+      "override_fields": [
+        "name",
+        "picture"
+      ]
+    },
+    {
+      "id": 339,
+      "override_fields": [
+        "name",
+        "picture"
+      ]
+    },
+    {
+      "id": 341,
+      "override_fields": [
+        "name",
+        "picture"
+      ]
+    },
+    {
+      "id": 343,
+      "override_fields": [
+        "name",
+        "picture"
+      ]
+    },
+    {
+      "id": 354,
+      "override_fields": [
+        "name",
+        "picture"
+      ]
+    },
+    {
+      "id": 359,
+      "override_fields": [
+        "name",
+        "picture"
+      ]
+    },
+    {
+      "id": 363,
+      "override_fields": [
+        "name",
+        "picture"
+      ]
+    },
+    {
+      "id": 389,
+      "override_fields": [
+        "name",
+        "picture"
+      ]
+    },
+    {
+      "id": 406,
+      "override_fields": [
+        "name",
+        "picture"
+      ]
+    },
+    {
+      "id": 420,
+      "override_fields": [
+        "name",
+        "picture"
+      ]
+    },
+    {
+      "id": 428,
+      "override_fields": [
+        "name",
+        "picture"
+      ]
+    },
+    {
+      "id": 469,
+      "override_fields": [
+        "name",
+        "picture"
+      ]
+    },
+    {
+      "id": 472,
+      "override_fields": [
+        "name",
+        "picture"
+      ]
+    },
+    {
+      "id": 488,
+      "override_fields": [
+        "name",
+        "picture"
+      ]
+    },
+    {
+      "id": 489,
+      "override_fields": [
+        "name",
+        "picture"
+      ]
+    }
+  ]
+}

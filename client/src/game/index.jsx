@@ -29,12 +29,13 @@ export class Session {
 		this.step = 0;
 		this.mode = data.mode ?? 'local';
 		this.layoutPresets = data.layoutPresets ?? [];
-		this.nfts = data.nfts;
+		this.nfts = data.nfts ?? [];
 	}
 
 	getUnityContent = () => this.content.unity;
 
 	getContentOverrides = () => {
+		// TODO: do not override without nfts
 		let nfts = this.nfts.map(nft => ({
 			id: nft.entityId,
 			data: {
