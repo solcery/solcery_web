@@ -6,6 +6,8 @@ const funcs = {};
 
 funcs.getAllObjects = async function (data) {
   let query = Object.assign({ template: data.params.template }, data.params.query);
+  console.log(query)
+  console.log(data.project)
   return await db
     .getDb(data.project)
     .collection(OBJECT_COLLECTION)

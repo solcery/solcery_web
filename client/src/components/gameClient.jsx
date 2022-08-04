@@ -58,8 +58,10 @@ export default function GameClient(props) {
 	useEffect(() => {
 		if (!gameSession) return;
 		unityPlayContext.on('OnUnityLoaded', async () => {
-			let content = gameSession.content.unity;
+			let content = gameSession.getUnityContent();
 			clientCommand('UpdateGameContent', content);
+			// let overrides = gameSession.getContentOverrides();
+			// clientCommand('UpdateGameContentOverrides', overrides);
 			sendDiffLog(gameSession.game.diffLog);
 		});
 
