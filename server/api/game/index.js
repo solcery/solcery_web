@@ -1,22 +1,40 @@
 const db = require("../../db/connection");
 const { ObjectId } = require("mongodb");
-const { TEMPLATE_COLLECTION, OBJECT_COLLECTION, LOGS_COLLECTION } = require("../../db/names");
+const { VERSIONS_COLLECTION } = require("../../db/names");
 
 const funcs = {};
 
-funcs.getContent = async function (data) {
-  let result = {}
-  if (data.params.objects) result.objects = await db
+funcs.start = async function (data) {
+  let version = data.params.version ?? await db.
     .getDb(data.project)
-    .collection(OBJECT_COLLECTION)
-    .find({})
-    .toArray();
-  if (data.params.templates) result.templates = await db
+    .collection(VERSIONS_COLLECTION)
+    .count();
+  let query = { version }
+  let content = await db.
     .getDb(data.project)
-    .collection(TEMPLATE_COLLECTION)
-    .find({})
-    .toArray();
-  return result;
+    .collection(VERSIONS_COLLECTION)
+    .find({ version });
+  if (!content) {
+    throw new Error(`No content found with version ${version}!`)
+  }
+  let game = await db
+    .getDb(data.project)
+    .collection(GAMES_COLLECTION)
+    .find({ status: 'ongoing', players: data.userId });
+  if (game) {
+    throw new Error(`Cannot create game. There already is an ongoing game [${game._id}] for player ${data.userId}!`);
+  }
+  game = {
+    id: new ObjectId(),
+    players: [ data.userId ],
+    status: 'ongoing',
+    nfts: [ data.params.nfts ], // TODO: check
+    log: [],
+  }
+  return await db
+    .getDb(data.project)
+    .collection(GAMES_COLLECTION)
+    .insertOne(game);
 };
 
 const commands = require('./commands');

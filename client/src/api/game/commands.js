@@ -1,4 +1,4 @@
-const commands = {};
+const commands = {}
 
 commands.start = {
 	private: true,

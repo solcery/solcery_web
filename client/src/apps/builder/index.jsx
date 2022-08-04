@@ -79,6 +79,26 @@ export default function Builder() {
 		});
 	};
 
+	const releaseProject = async () => {
+		let content = await sageApi.project.getContent({ objects: true, templates: true });
+		setErrors([]);
+		let res = await build({ targets: ['web', 'unity_local'], content });
+		console.log(res)
+		if (!res.status) {
+			setErrors(res.errors);
+			return;
+		}
+		let result = await sageApi.project.release({
+			contentWeb: res.constructed.web,
+			contentUnity: res.constructed.unity_local,
+		})
+		if (result.insertedId) {
+			alert("Success!");
+		} else {
+			alert("Server error");
+		}
+	}
+
 	return (
 		<>
 			<h1>Builder</h1>
@@ -109,6 +129,9 @@ export default function Builder() {
 			</Card>
 			<Card title="Validation">
 				<Button onClick={validateProject}>Check content</Button>
+			</Card>
+			<Card title="Release">
+				<Button onClick={releaseProject}>RELEASE!</Button>
 			</Card>
 			{errors.length > 0 && (
 				<Card title="Errors">

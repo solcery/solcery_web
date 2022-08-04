@@ -87,7 +87,4 @@ commands.removeObjectById = {
 	},
 };
 
-export const templateAPI = {
-	name: 'template',
-	commands,
-};
+module.exports = commands;

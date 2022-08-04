@@ -28,7 +28,6 @@ commands.getById = {
 	},
 };
 
-
 commands.create = {
 	log: true,
 	private: true,

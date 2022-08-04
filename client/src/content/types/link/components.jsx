@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useProject } from '../../../contexts/project';
-import { SageAPIConnection } from '../../../api';
+import { SolceryAPIConnection } from '../../../api';
 import { Select } from 'antd';
 const { Option } = Select;
 
@@ -11,7 +11,7 @@ export const ValueRender = (props) => {
 
 	useEffect(() => {
 		if (props.type.project) {
-			setApi(new SageAPIConnection(props.type.project));
+			setApi(new SolceryAPIConnection(props.type.project, { modules: [ 'template' ]}));
 			return;
 		}
 		setApi(sageApi)

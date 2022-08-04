@@ -45,6 +45,8 @@ const argFromParam = (param) => {
 export const ValueRender = (props) => {
 	const { objectId } = useParams();
 	let brickTree = useRef(props.defaultValue ? props.defaultValue.brickTree : undefined);
+	console.log(props.path)
+	console.log(brickTree.current)
 	const [brickParams, setBrickParams] = useState(props.defaultValue ? props.defaultValue.brickParams : []);
 	const { readonlyBricks } = useUser();
 	const navigate = useNavigate();
