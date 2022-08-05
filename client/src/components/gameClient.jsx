@@ -61,7 +61,7 @@ export default function GameClient(props) {
 			let content = gameSession.getUnityContent();
 			clientCommand('UpdateGameContent', content);
 			let overrides = gameSession.getContentOverrides();
-			clientCommand('UpdateGameContentOverrides', { nfts: [], card_types: [] });
+			clientCommand('UpdateGameContentOverrides', overrides);
 			sendDiffLog(gameSession.game.diffLog);
 		});
 
