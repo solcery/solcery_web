@@ -27,7 +27,7 @@ export class Session {
 		this.log = data.log ?? [];
 		this.seed = data.seed ?? 1;
 		this.step = 0;
-		this.mode = data.mode ?? 'local';
+		this.onCommand = data.onCommand;
 		this.layoutPresets = data.layoutPresets ?? [];
 		this.nfts = data.nfts ?? [];
 	}
@@ -71,19 +71,24 @@ export class Session {
 	}
 
 	updateLog = (log) => {
-		this.log = log; // TODO
+		this.log = [ ...log]; // TODO
 		while (this.step < log.length) {
 			this.applyCommand(log[this.step]);
 			this.step++;
 		}
+		console.log(this.log)
+		console.log(this.step)
 	}
 
 	onPlayerCommand = (command) => {
-		if (this.mode === 'local') {
+		if (this.onCommand) {
+			this.onCommand(command)
+			return;
+		} else {
 			this.log.push(command);
 			this.updateLog(this.log)
 		}
-		
+
 	};
 }
 
