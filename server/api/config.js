@@ -2,18 +2,22 @@ const apiConfig = {
 	modules: [
 		{
 			name: 'project',
-			path: './project'
+			path: './project',
 		},
 		{
 			name: 'user',
-			path: './user'
+			path: './user',
 		},
 		{
 			name: 'template',
-			path: './template'
-		}
+			path: './template',
+		},
+		{
+			name: 'game',
+			path: './game',
+		},
 	],
-	auth: './user/auth',
+	auth: './player/auth',
 }
 
 module.exports = apiConfig;

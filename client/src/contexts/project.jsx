@@ -5,7 +5,7 @@ import { BrickLibraryProvider } from './brickLibrary';
 import { UserProvider } from './user';
 
 const apiConfig = {
-		modules: [
+	modules: [
 		'project',
 		'template',
 		'user',

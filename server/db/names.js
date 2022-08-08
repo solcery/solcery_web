@@ -5,7 +5,6 @@ const LOGS_COLLECTION = "logs";
 
 const VERSIONS_COLLECTION = "versions";
 const GAMES_COLLECTION = "games";
-const PLAYERS_COLLECTION = "players";
 const GAME_PREFIX = "game_";
 
 module.exports = {
@@ -13,7 +12,9 @@ module.exports = {
 	OBJECT_COLLECTION,
 	USERS_COLLECTION,
 	LOGS_COLLECTION,
+
+
 	VERSIONS_COLLECTION,
-	GAME_PREFIX
+	GAMES_COLLECTION
 } 
 

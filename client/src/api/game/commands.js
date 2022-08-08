@@ -1,12 +1,24 @@
-const commands = {}
+const commands = {};
 
-commands.start = {
+
+commands.startNewGame = {
 	private: true,
 	params: {
-		project: {
+		nfts: true,
+		contentVersion: true,
+	},
+};
+
+commands.getPlayerOngoingGame = {
+	private: true,
+	params: {},
+};
+
+commands.getVersion = {
+	params: {
+		contentVersion: {
 			required: true
 		},
-		version : true,
 	},
 };
 

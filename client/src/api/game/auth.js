@@ -1,3 +1,5 @@
 module.exports = (session, requestData) => {
-	requestData.session = session;
+	console.log('game/auth')
+	console.log(session, requestData)
+	requestData.pubkey = session;
 }

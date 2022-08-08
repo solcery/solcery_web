@@ -76,13 +76,11 @@ export class Session {
 			this.applyCommand(log[this.step]);
 			this.step++;
 		}
-		console.log(this.log)
-		console.log(this.step)
 	}
 
 	onPlayerCommand = (command) => {
 		if (this.onCommand) {
-			this.onCommand(command)
+			this.onCommand(command, this)
 			return;
 		} else {
 			this.log.push(command);

@@ -51,11 +51,11 @@ const log = (data) => {
 }
 
 const apiCall = async (response, data) => {
+  console.log('API call: ', data);
   let error = undefined;
   let result = {
     status: true,
   }
-  console.log(data)
   let moduleApi = apiLibrary[data.module];
   let command = moduleApi[data.command];
   try {
@@ -76,6 +76,8 @@ const apiCall = async (response, data) => {
     }
     checkParams(command, data.params); 
     result.data = await command.func(data);
+    console.log('result')
+    console.log(result)
   }
   catch (err) {
     result.error = err;

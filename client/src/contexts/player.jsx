@@ -159,7 +159,7 @@ const PlayerProvider = (props) => {
         if (!connection || !publicKey) return;
         //fake nfts
         let fakeMints = fakeNfsMints.map(stringMintPubkey => new PublicKey(stringMintPubkey))
-        loadNfts(fakeMints);
+        // loadNfts(fakeMints);
     }, [ connected, publicKey, connection ])
 
     useEffect(() => {
@@ -173,14 +173,14 @@ const PlayerProvider = (props) => {
         </WalletModalProvider>
     </>);
 
-    return (<PlayerContext.Provider value ={{ publicKey, nfts }}>
+    return (<PlayerContext.Provider value ={{ publicKey, nfts, loadNfts }}>
         { props.children }
     </PlayerContext.Provider>);
 }
 
 export function usePlayer() {
-    const { publicKey, nfts } = useContext(PlayerContext);
-    return { publicKey, nfts };
+    const { publicKey, nfts, loadNfts } = useContext(PlayerContext);
+    return { publicKey, nfts, loadNfts };
 }
 
 
