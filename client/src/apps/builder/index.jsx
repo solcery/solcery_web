@@ -9,7 +9,7 @@ import { DownloadOutlined } from '@ant-design/icons';
 const { Option } = Select;
 
 export default function Builder() {
-	const [target, setTarget] = useState('web');
+	const [targets, setTargets] = useState([]);
 	const [errors, setErrors] = useState([]);
 	const [unityData, setUnityData] = useState(undefined);
 	const { sageApi } = useProject();
@@ -18,12 +18,15 @@ export default function Builder() {
 	const buildProject = async () => {
 		let content = await sageApi.project.getContent({ objects: true, templates: true });
 		setErrors([]);
-		let res = await build({ targets: [target], content });
+		let res = await build({ targets, content });
 		if (!res.status) {
 			setErrors(res.errors);
 			return;
 		}
-		console.log(JSON.stringify(res.constructed));
+		for (let [ target, result ] of Object.entries(res.constructed)) {
+			console.log(target);
+			console.log(JSON.stringify(result));
+		}
 	};
 
 	const validateProject = async () => {
@@ -79,13 +82,15 @@ export default function Builder() {
 		});
 	};
 
+
 	return (
 		<>
 			<h1>Builder</h1>
 			<Card title="Test targets">
-				<Select defaultValue="web" onChange={setTarget}>
+				<Select style={{width: 150}} onChange={setTargets} mode="multiple">
 					<Option value="web">Web</Option>
 					<Option value="unity">Unity</Option>
+					<Option value="unity_local">Unity local sim</Option>
 				</Select>
 				<Button onClick={buildProject}>BUILD</Button>
 			</Card>
