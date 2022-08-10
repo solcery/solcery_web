@@ -1,6 +1,3 @@
-import { projectAPI } from './project';
-import { userAPI } from './user';
-import { templateAPI } from './template';
 const API_PATH = '/api/';
 
 const makeRequest = (data) => {
@@ -16,25 +13,36 @@ const makeRequest = (data) => {
 	};
 	return fetch(url, request).then((response) => {
 		return response.json().then((res) => {
-			return res.data;
+			return res.data; // TODO: status, error
 		});
 	});
 };
 
-let apiModules = [projectAPI, templateAPI, userAPI];
+export class SolceryAPIConnection {
 
-export class SageAPIConnection {
-	session = undefined;
-	constructor(projectName) {
+	setSession(session) {
+		this.session = session;
+	}
+
+	constructor(projectName, config) {
 		this.projectName = projectName;
-		for (let apiModule of apiModules) {
-			if (this[apiModule.name]) throw new Error('Error building SageAPIConnection, name conflict!');
-			this[apiModule.name] = {};
-			for (let [commandName, command] of Object.entries(apiModule.commands)) {
-				this[apiModule.name][commandName] = (data = {}) => {
+		if (!config) {
+			throw new Error('Error building SageAPIConnection, no config provided!');
+		}
+		if (config.auth) {
+			this.auth = require(`${config.auth}`);
+		}
+		for (let moduleName of config.modules) {
+			let commands = require(`./${moduleName}/commands`);
+			if (this[moduleName]) {
+				throw new Error('Error building SageAPIConnection, name conflict!');
+			}
+			this[moduleName] = {};
+			for (let [commandName, command] of Object.entries(commands)) {
+				this[moduleName][commandName] = (data = {}) => {
 					let requestData = {
 						project: this.projectName,
-						module: apiModule.name,
+						module: moduleName,
 						command: commandName,
 						params: {},
 					};
@@ -47,7 +55,10 @@ export class SageAPIConnection {
 						}
 					}
 					if (command.private) {
-						requestData.session = this.session;
+						if (!this.auth) {
+							throw new Error(`SageAPI error: Attempt to execute private command without auth provided!`);
+						}
+						this.auth(this.session, requestData);
 					}
 					return makeRequest(requestData);
 				};

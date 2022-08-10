@@ -7,14 +7,6 @@ import { useUser } from '../../contexts/user';
 import { useProject } from '../../contexts/project';
 import GameClient from '../../components/gameClient';
 
-const unityPlayContext = new UnityContext({
-	loaderUrl: '/Build/WebGl.loader.js',
-	dataUrl: '/Build/WebGl.data',
-	frameworkUrl: '/Build/WebGl.framework.js',
-	codeUrl: '/Build/WebGl.wasm',
-	streamingAssetsUrl: '/StreamingAssets',
-});
-
 function* stringChunk(s, maxBytes) {
 	const SPACE_CODE = 32;
 	let buf = Buffer.from(s);

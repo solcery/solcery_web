@@ -3,14 +3,16 @@ const migrateBrick = (bt) => {
 	let changed = false;
 	if (bt.lib === 'action' && bt.func === 'transform') {
 		let tplIdLink = bt.params.tpl_id;
-		bt.params.tpl_id = {
-			lib: 'value',
-			func: 'cardType',
-			params: {
-				value: tplIdLink
+		if (typeof tplIdLink === 'string') {
+			bt.params.tpl_id = {
+				lib: 'value',
+				func: 'cardType',
+				params: {
+					value: tplIdLink
+				}
 			}
+			return true;
 		}
-		return true;
 	}
 	for (let param of Object.values(bt.params)) {
 		if (param && param.lib) {

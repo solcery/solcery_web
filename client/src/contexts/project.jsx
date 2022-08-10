@@ -1,8 +1,17 @@
 import React, { useContext, useEffect, useState, useCallback } from 'react';
 import { useParams, Outlet } from 'react-router-dom';
-import { SageAPIConnection } from '../api';
+import { SolceryAPIConnection } from '../api';
 import { BrickLibraryProvider } from './brickLibrary';
 import { UserProvider } from './user';
+
+const apiConfig = {
+	modules: [
+		'project',
+		'template',
+		'user',
+	],
+	auth: './user/auth',
+}
 
 const ProjectContext = React.createContext(undefined);
 
@@ -12,7 +21,7 @@ export function ProjectProvider(props) {
 
 	const setUserSession = useCallback(
 		(session) => {
-			sageApi.session = session;
+			sageApi.setSession(session);
 		},
 		[sageApi]
 	);
@@ -20,7 +29,7 @@ export function ProjectProvider(props) {
 	useEffect(() => {
 		if (!projectName) return;
 		document.title = `${projectName} - Sage`;
-		setSageApi(new SageAPIConnection(projectName));
+		setSageApi(new SolceryAPIConnection(projectName, apiConfig));
 	}, [projectName]);
 
 	return (
