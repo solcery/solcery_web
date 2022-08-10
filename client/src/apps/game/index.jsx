@@ -4,29 +4,9 @@ import { Session } from '../../game';
 import GameClient from '../../components/gameClient';
 import { SolceryAPIConnection } from '../../api';
 import BasicGameClient from '../../components/basicGameClient';
+import { Button } from 'antd';
 
-import contentWeb from './content_web.json';
-import contentUnity from './content_unity.json';
-// import { Button, Input, Card, Affix, Collapse } from 'antd';
-
-// const { Panel } = Collapse;
-
-
-class ServerEmulator {
-	constructor(data = {}) {
-		this.log = data.log ?? [];
-	}
-
-	async addLog(log) {
-		function delay(ms) {
-  			return new Promise(resolve => setTimeout(resolve, ms));
-		}
-
-		this.log = [ ...this.log, ...log];
-		await delay(600);
-		return this.log;
-	}
-}
+import './style.css';
 
 const apiConfig = {
 	modules: [
@@ -38,24 +18,39 @@ const apiConfig = {
 export const GameTest = () => {
 	const { publicKey, nfts, loadNfts } = usePlayer();
 	const [ log, setLog ] = useState([]);
-	const [ logSize, setLogSize ] = useState(0);
+	const [ step, setStep ] = useState(0);
 	const [ gameSession, setGameSession ] = useState();
 	const [ gameApi, setGameApi ] = useState();
+	const [ status, setStatus ] = useState();
 
-	const loadGame = (game) => {
-		console.log('load game')
-		console.log(game)
-
+	const loadGame = async (game) => {
+		let contentVersion = game.contentVersion;
+		let cnt = await gameApi.game.getContentVersion({ contentVersion })
+		if (!cnt) return;
+		let id = game._id;
+		let content = cnt.content;
+		let nfts = game.nfts;
+		let log = game.log;
+		let seed = game.seed;
+		let layoutPresets = [ 'core', 'tech demo', 'starting creatures' ];
+		let session = new Session({
+			id,
+			content,
+			layoutPresets,
+			nfts,
+			log,
+			gameApi,
+		});
+		session.start();
+		setGameSession(session);
+		setStatus('ingame');
 	}
 
-	const createGame = () => {
-		gameApi.game.startNewGame().then(game => {
-			if (game) {
-				console.log('startNewGame')
-				console.log(game)
-				loadGame(game)
-			}
-		})
+	const createGame = async () => {
+		let game = await gameApi.game.startNewGame()
+		if (game) {
+			loadGame(game)
+		}
 	}
 
 	useEffect(() => {
@@ -65,54 +60,31 @@ export const GameTest = () => {
 		setGameApi(api); // TODO: config
 	}, [ publicKey ]);
 
-
-
 	useEffect(() => {
 		if (!gameApi) return;
-		console.log('requestion')
 		gameApi.game.getPlayerOngoingGame().then(game => {
 			if (game === null) {
-				console.log('no game found, creating new');
-				createGame();
+				setStatus('idle');
 			} else { 
-				loadGame(game)
+				loadGame(game);
 			}
 		})
 	}, [ gameApi ])
 
-
-	const newGame = () => {
-		let content = {
-			web: contentWeb,
-			unity: contentUnity,
-		}
-		let layoutPresets = [ 'core', 'tech demo', 'starting creatures' ];
-		let session = new Session({
-			content,
-			layoutPresets,
-			nfts
-		});
-		session.start();
-		setGameSession(session);
-	}
-
-	const onCommand = (command, gs) => {
-		// serverEmulator
-		// 	.addLog([command])
-		// 	.then(newLog => {
-		// 		console.log('New log from server: ', newLog);
-		// 		setLogSize(newLog.length);
-		// 		gs.updateLog(newLog);
-		// 	});
-	}
-
-	useEffect(() => {
-		if (gameSession && !gameSession.onCommand) {
-			gameSession.onCommand = onCommand;
-		}
+	const leaveGame = useCallback(() => {
+		if (!gameSession) return;
+		gameApi.game.leaveGame({ gameId: gameSession.id }).then(response => {
+			setGameSession(undefined);
+		})
 	}, [ gameSession ])
 
-	if (!gameSession) return <>Loading</>;
-	return <BasicGameClient gameSession={gameSession} logSize={logSize}/>;
-	// return (<GameClient gameSession={gameSession}/>);
+	if (!status) return <>Loading</>;
+
+	return (<>
+		{!gameSession && <Button onClick={createGame}>START GAME</Button>}
+		{gameSession && <a onClick={leaveGame} className="close-button"/>}
+		<div>
+			<GameClient gameSession={gameSession}/>
+		</div>
+	</>);
 }

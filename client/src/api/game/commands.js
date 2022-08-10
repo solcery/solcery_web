@@ -14,13 +14,34 @@ commands.getPlayerOngoingGame = {
 	params: {},
 };
 
-commands.getVersion = {
+commands.getContentVersion = {
 	params: {
 		contentVersion: {
 			required: true
 		},
 	},
 };
+
+commands.action = {
+	private: true,
+	params: {
+		gameId: {
+			required: true
+		},
+		action: {
+			required: true
+		},
+	},
+}
+
+commands.leaveGame = {
+	private: true,
+	params: {
+		gameId: {
+			required: true
+		},
+	}
+}
 
 // commands.get = {
 // 	params: {
@@ -33,27 +54,5 @@ commands.getVersion = {
 // 	},
 // };
 
-// commands.leave = {
-// 	private: true,
-// 	params: {
-// 		project: {
-// 			required: true
-// 		},
-// 		game: {
-// 			required: true
-// 		},
-// 	}
-// }
-
-// commands.action = {
-// 	params: {
-// 		project: {
-// 			required: true
-// 		},
-// 		game: {
-// 			required: true
-// 		},
-// 	},
-// }
 
 module.exports = commands;

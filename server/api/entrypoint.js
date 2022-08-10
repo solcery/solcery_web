@@ -82,6 +82,7 @@ const apiCall = async (response, data) => {
   catch (err) {
     result.error = err;
     result.status = false;
+    console.log(err)
   }
   finally {
     if (result.error || (command && command.log)) {

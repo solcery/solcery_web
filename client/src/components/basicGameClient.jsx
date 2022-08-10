@@ -2,7 +2,7 @@ import { useEffect, useState, useCallback } from 'react';
 import { Button, Input, Card, Affix, Collapse } from 'antd';
 const { Panel } = Collapse;
 
-const EntityRender = ({ entity, gameSession }) => {
+const EntityRender = ({ entity, gameSession, onCommand }) => {
 
 	const onLeftClick = () => {
 		let command = {
@@ -10,6 +10,7 @@ const EntityRender = ({ entity, gameSession }) => {
 			object_id: entity.id,
 		}
 		gameSession.onPlayerCommand(command)
+		onCommand(command)
 	}
 
 	const onRightClick = () => {
@@ -18,6 +19,7 @@ const EntityRender = ({ entity, gameSession }) => {
 			object_id: entity.id,
 		}
 		gameSession.onPlayerCommand(command)
+		onCommand(command)
 	}
 
 	const onDragNDrop = () => {
@@ -34,7 +36,7 @@ const EntityRender = ({ entity, gameSession }) => {
 	</>
 }
 
-const PlaceRender = ({ place, gameSession }) => {
+const PlaceRender = ({ place, gameSession, onCommand }) => {
 	const [ filter, setFilter ] = useState();
 
 	const onFilterChange = (event) => {
@@ -52,7 +54,7 @@ const PlaceRender = ({ place, gameSession }) => {
 		<Collapse>
 		{entities.map(entity => 
 			<Panel header={entity.caption} key={entity.id}>
-				<EntityRender entity={entity} gameSession={gameSession} />
+				<EntityRender entity={entity} gameSession={gameSession} onCommand={onCommand} />
 			</Panel>
 		)}
 		</Collapse>
@@ -60,16 +62,13 @@ const PlaceRender = ({ place, gameSession }) => {
 }
 
 
-export default function BasicGameClient({ gameSession, logSize }) {
+export default function BasicGameClient({ gameSession, step }) {
 	const [ filter, setFilter ] = useState();
 	const [ stringLog, setStringLog ] = useState('[]');
-	useEffect(() => {
-		if (!gameSession) return;
-	}, [ logSize, gameSession, gameSession.step ])
 
 	useEffect(() => {
 		setStringLog(JSON.stringify(gameSession.log));
-	}, [logSize, gameSession.log])
+	}, [step, gameSession.log])
 
 	if (!gameSession) return <></>;
 
@@ -107,6 +106,10 @@ export default function BasicGameClient({ gameSession, logSize }) {
 		places = places.filter(place => place.caption.toLowerCase().includes(filter.toLowerCase()))
 	}
 
+	const onCommand = () => {
+		setStringLog(JSON.stringify(gameSession.log))
+	}
+
 
 	return <>
 		<Affix offsetTop={0}>
@@ -122,7 +125,7 @@ export default function BasicGameClient({ gameSession, logSize }) {
 		<Collapse>
 			{places.map(place => 
 				<Panel header={place.caption} key={place.id}>
-					<PlaceRender place={place} gameSession={gameSession} />
+					<PlaceRender place={place} gameSession={gameSession}  onCommand={onCommand} />
 				</Panel>
 			)}
 		</Collapse>

@@ -1,18 +1,10 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Session } from '../game';
-import Unity, { UnityContext } from 'react-unity-webgl';
+import { Unity, useUnityContext } from "react-unity-webgl";
 import { useBrickLibrary } from '../contexts/brickLibrary';
 import { build } from '../content';
 import { useUser } from '../contexts/user';
 import { useProject } from '../contexts/project';
-
-const unityPlayContext = new UnityContext({
-	loaderUrl: '/Build/WebGl.loader.js',
-	dataUrl: '/Build/WebGl.data',
-	frameworkUrl: '/Build/WebGl.framework.js',
-	codeUrl: '/Build/WebGl.wasm',
-	streamingAssetsUrl: '/StreamingAssets',
-});
 
 function* stringChunk(s, maxBytes) {
 	const SPACE_CODE = 32;
@@ -27,6 +19,14 @@ function* stringChunk(s, maxBytes) {
 }
 
 export default function GameClient(props) {
+	const { unityProvider, sendMessage, addEventListener, removeEventListener } = useUnityContext({
+		loaderUrl: '/Build/WebGl.loader.js',
+		dataUrl: '/Build/WebGl.data',
+		frameworkUrl: '/Build/WebGl.framework.js',
+		codeUrl: '/Build/WebGl.wasm',
+		streamingAssetsUrl: '/StreamingAssets',
+	});
+
 	let gameSession = props.gameSession;
 
 	const clientCommand = useCallback((funcName, param) => {
@@ -41,46 +41,41 @@ export default function GameClient(props) {
 				value: chunks[i],
 			};
 			// console.log(`Web - sending package to Unity client [${funcName}]: ${JSON.stringify(chunk_package)}`);
-			unityPlayContext.send('ReactToUnity', funcName, JSON.stringify(chunk_package));
+			sendMessage('ReactToUnity', funcName, JSON.stringify(chunk_package));
 		}
-	}, []);
+	}, [ sendMessage ]);
 
-	const sendDiffLog = useCallback(
-		(states) => {
-			for (let index in states) {
-				states[index].id = index;
-			}
-			clientCommand('UpdateGameState', { states });
-		},
-		[clientCommand]
-	);
+	const sendDiffLog = useCallback(states => {
+		for (let index in states) {
+			states[index].id = index;
+		}
+		clientCommand('UpdateGameState', { states });
+	}, [clientCommand]);
+
+	const onUnityLoaded = useCallback(() => {
+		let content = gameSession.getUnityContent();
+		clientCommand('UpdateGameContent', content);
+		let overrides = gameSession.getContentOverrides();
+		clientCommand('UpdateGameContentOverrides', overrides);
+		sendDiffLog(gameSession.game.diffLog);
+	}, [ clientCommand, sendDiffLog ])
+
+	const onPlayerCommand = useCallback(jsonData => {
+		let command = JSON.parse(jsonData);
+		gameSession.onPlayerCommand(command).then(sendDiffLog);
+	}, [ clientCommand, sendDiffLog ]);
 
 	useEffect(() => {
-		if (!gameSession) return;
-		unityPlayContext.on('OnUnityLoaded', async () => {
-			let content = gameSession.getUnityContent();
-			clientCommand('UpdateGameContent', content);
-			let overrides = gameSession.getContentOverrides();
-			clientCommand('UpdateGameContentOverrides', overrides);
-			sendDiffLog(gameSession.game.diffLog);
-		});
-
-		unityPlayContext.on('SendCommand', async (jsonData) => {
-			let command = JSON.parse(jsonData);
-			gameSession.onPlayerCommand(command);
-			sendDiffLog(gameSession.game.diffLog);
-		});
-
+		addEventListener('OnUnityLoaded', onUnityLoaded);
+		addEventListener('SendCommand', onPlayerCommand);
 		return function () {
-			unityPlayContext.removeAllEventListeners();
+			removeEventListener('OnUnityLoaded', onUnityLoaded);
+			removeEventListener('SendCommand', onPlayerCommand);
 		};
-	}, [gameSession, clientCommand, sendDiffLog]);
+	}, [clientCommand, sendDiffLog]);
 
-	return !gameSession ? (
-		<>ERROR: NO SESSION</>
-	) : (
-		<div style={{ width: '100%' }}>
-			<Unity style={{ width: '100%' }} unityContext={unityPlayContext} />
-		</div>
-	);
+	if (!gameSession) return <></>
+	return <div style={{ width: '100%' }}>
+		<Unity style={{ width: '100%' }} unityProvider={unityProvider} />
+	</div>;
 }

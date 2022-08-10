@@ -136,7 +136,7 @@ export const basicConditions = [
 			let objs = [];
 			let oldObj = ctx.object;
 			let objects = [...ctx.game.objects.values()];
-			generic.shuffle(objects);
+			runtime.shuffle(objects);
 			while (limit > 0 && objects.length > 0) {
 				ctx.object = objects.pop();
 				if (runtime.execBrick(params.iter_condition, ctx)) {
@@ -173,7 +173,7 @@ export const basicConditions = [
 			let objs = [];
 			let oldObj = ctx.object;
 			let objects = [...ctx.game.objects.values()];
-			generic.shuffle(objects);
+			runtime.shuffle(objects);
 			while (limit > 0 && objects.length > 0) {
 				ctx.object = objects.pop();
 				if (runtime.execBrick(params.iter_condition, ctx)) {

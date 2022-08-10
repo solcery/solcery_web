@@ -12,24 +12,30 @@ const objectToArray = (obj) => {
 	});
 };
 
-
-
 export class Session {
+	
 	start() {
 		this.game.start(this.layoutPresets, this.nfts);
+		for (let command of this.log) {
+			this.applyCommand(command)
+		}
+		this.game.diffLog = [];
+		this.game.startDiff(true);
+		this.game.closeDiff();
 	}
 
 	constructor(data) {
+		this.id = data.id;
 		this.content = data.content;
-		this.runtime = new BrickRuntime(data.content.web);
 		this.game = new Game(this);
 		this.players = data.players;
 		this.log = data.log ?? [];
-		this.seed = data.seed ?? 1;
-		this.step = 0;
+		this.seed = data.seed ?? 0;
+		this.runtime = new BrickRuntime(data.content.web, this.seed);
 		this.onCommand = data.onCommand;
 		this.layoutPresets = data.layoutPresets ?? [];
 		this.nfts = data.nfts ?? [];
+		this.gameApi = data.gameApi;
 	}
 
 	getUnityContent = () => this.content.unity;
@@ -58,35 +64,29 @@ export class Session {
 		return { nfts, card_types };
 	}
 
+	// applying command to log
 	applyCommand = (command) => {
+		this.game.diffLog = [];
+		this.game.startDiff(true);
 		if (command.command_data_type === 0) {
-			return this.game.objectEvent(command.object_id, 'action_on_left_click');
+			this.game.objectEvent(command.object_id, 'action_on_left_click');
 		}
 		if (command.command_data_type === 1) {
-			return this.game.objectEvent(command.object_id, 'action_on_right_click');
+			this.game.objectEvent(command.object_id, 'action_on_right_click');
 		}
 		if (command.command_data_type === 2) {
-			return this.game.dropCard(command.object_id, command.drag_drop_id, command.target_place_id);
+			this.game.dropCard(command.object_id, command.drag_drop_id, command.target_place_id);
 		}
+		this.game.closeDiff();
+		return this.game.diffLog;
 	}
 
-	updateLog = (log) => {
-		this.log = [ ...log]; // TODO
-		while (this.step < log.length) {
-			this.applyCommand(log[this.step]);
-			this.step++;
+	onPlayerCommand = async (command) => {
+		if (this.gameApi) { // server-based game
+			await this.gameApi.game.action({ gameId: this.id, action: command });
 		}
-	}
-
-	onPlayerCommand = (command) => {
-		if (this.onCommand) {
-			this.onCommand(command, this)
-			return;
-		} else {
-			this.log.push(command);
-			this.updateLog(this.log)
-		}
-
+		this.log.push(command);
+		return this.applyCommand(command);
 	};
 }
 
@@ -122,13 +122,9 @@ export class Game {
 				nft.entityId = enitity.id;
 			}
 		}
-		this.startDiff(true);
-		this.closeDiff();
 	};
 
 	objectEvent = (objectId, event) => {
-		this.diffLog = [];
-		this.startDiff(true);
 		let object = this.objects[objectId];
 		if (!object) throw new Error('Attempt to use unexistent object!');
 		let ctx = this.createContext(object);
@@ -136,12 +132,9 @@ export class Game {
 		if (cardType[event]) {
 			this.runtime.execBrick(cardType[event], ctx);
 		}
-		this.closeDiff();
 	};
 
 	dropCard = (objectId, dragAndDropId, targetPlace) => {
-		this.diffLog = [];
-		this.startDiff(true);
 		let object = this.objects[objectId];
 		if (!object) throw new Error('Attempt to use unexistent object!');
 		let ctx = this.createContext(object, {
@@ -151,7 +144,6 @@ export class Game {
 		if (dragndrop.actionOnDrop) {
 			this.runtime.execBrick(dragndrop.actionOnDrop, ctx);
 		}
-		this.closeDiff();
 	};
 
 	setAttr(attr, value) {
@@ -242,6 +234,7 @@ export class Game {
 		};
 		if (!this.diffLog) this.diffLog = [];
 		this.diffLog.push({
+			id: this.diffLog.length,
 			state_type: STATE_TYPES.state,
 			value,
 		});

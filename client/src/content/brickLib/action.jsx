@@ -95,7 +95,7 @@ export const basicActions = [
 			let objs = [];
 			let oldObj = ctx.object;
 			let objects = [...Object.values(ctx.game.objects)];
-			generic.shuffle(objects);
+			runtime.shuffle(objects);
 			while (limit > 0 && objects.length > 0) {
 				ctx.object = objects.pop();
 				if (runtime.execBrick(params.condition, ctx)) {
