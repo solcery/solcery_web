@@ -1,27 +1,58 @@
 const commands = {};
 
-commands.start = {
+
+commands.startNewGame = {
 	private: true,
 	params: {
-		game: {
-			required: true
-		},
+		nfts: true,
+		contentVersion: true,
 	},
 };
 
-commands.get = {
+commands.getPlayerOngoingGame = {
 	private: true,
 	params: {},
 };
 
+commands.getContentVersion = {
+	params: {
+		contentVersion: {
+			required: true
+		},
+	},
+};
 
 commands.action = {
 	private: true,
 	params: {
-		game: {
+		gameId: {
+			required: true
+		},
+		action: {
 			required: true
 		},
 	},
 }
+
+commands.leaveGame = {
+	private: true,
+	params: {
+		gameId: {
+			required: true
+		},
+	}
+}
+
+// commands.get = {
+// 	params: {
+// 		project: {
+// 			required: true
+// 		},
+// 		game: {
+// 			required: true
+// 		},
+// 	},
+// };
+
 
 module.exports = commands;

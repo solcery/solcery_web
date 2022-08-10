@@ -9,21 +9,24 @@ export const generic = {
 		var result = runtime.execBrick(args[params.name], ctx);
 		ctx.args.push(args);
 		return result;
-	},
-
-	shuffle: (array) => {
-		for (var i = array.length - 1; i > 0; i--) {
-			var j = Math.floor(Math.random() * (i + 1));
-			var temp = array[i];
-			array[i] = array[j];
-			array[j] = temp;
-		}
-	},
+	}
 };
+
+class Random {
+	constructor(seed) {
+		this._seed = seed % 2147483647;
+		if (this._seed <= 0) this._seed += 2147483646;
+	}
+
+	range(min, max) {
+		this._seed = this._seed * 16807 % 2147483647;
+		return min + this._seed % (max - min);
+	}
+}
 
 export class BrickRuntime {
 	bricks = {};
-	constructor(content) {
+	constructor(content, seed = 0) {
 		basicActions.forEach((brick) => insertTable(this.bricks, brick, brick.lib, brick.func));
 		basicConditions.forEach((brick) => insertTable(this.bricks, brick, brick.lib, brick.func));
 		basicValues.forEach((brick) => insertTable(this.bricks, brick, brick.lib, brick.func));
@@ -43,6 +46,16 @@ export class BrickRuntime {
 				},
 			};
 			insertTable(this.bricks, brick, lib, func);
+		}
+		this.random = new Random(seed)
+	}
+
+	shuffle(array) {
+		for (var i = array.length - 1; i > 0; i--) {
+			var j = this.random.range(0, i);
+			var temp = array[i];
+			array[i] = array[j];
+			array[j] = temp;
 		}
 	}
 

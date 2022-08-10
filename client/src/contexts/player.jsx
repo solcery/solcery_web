@@ -12,7 +12,7 @@ import {
 import { clusterApiUrl, PublicKey } from '@solana/web3.js';
 
 import { Metaplex, keypairIdentity, bundlrStorage } from "@metaplex-foundation/js";
-import { SageAPIConnection } from '../api';
+import { SolceryAPIConnection } from '../api';
 
 // Default styles that can be overridden by your app
 require('@solana/wallet-adapter-react-ui/styles.css');
@@ -121,7 +121,7 @@ const PlayerProvider = (props) => {
     const [ nfts, setNfts ] = useState();
     const { connection } = useConnection();
 
-    const sageApi = new SageAPIConnection('nfts');
+    const sageApi = new SolceryAPIConnection('nfts', { modules: [ 'template' ]});
 
     const loadNfts = async(mints) => {
         const metaplex = Metaplex.make(connection)
@@ -133,8 +133,8 @@ const PlayerProvider = (props) => {
             .findAllByMintList(mints)
             .run();
 
-        let collections = await sageApi.project.getContent({ objects: true })
-        collections = collections.objects
+        let collections = await sageApi.template.getAllObjects({ template: 'collections' })
+        console.log(collections)
 
         let res = []
         for (let nft of nftDatas) {
@@ -142,14 +142,24 @@ const PlayerProvider = (props) => {
             if (!collection) return undefined;
             res.push({ nft, collection });
         }
-        setNfts(res);
+        res = await Promise.all(res.map(async ({ nft, collection }) => ({
+            collection,
+            nft: await metaplex.nfts().loadNft(nft).run(),
+        })));
+        let nftList = res.map(({ nft, collection }) => ({
+            collection: collection._id,
+            name: nft.name,
+            image: nft.json.image,
+        }));
+        console.log(nftList)
+        setNfts(nftList);
     }
 
     useEffect(() => {
         if (!connection || !publicKey) return;
         //fake nfts
         let fakeMints = fakeNfsMints.map(stringMintPubkey => new PublicKey(stringMintPubkey))
-        loadNfts(fakeMints);
+        // loadNfts(fakeMints);
     }, [ connected, publicKey, connection ])
 
     useEffect(() => {
@@ -163,14 +173,14 @@ const PlayerProvider = (props) => {
         </WalletModalProvider>
     </>);
 
-    return (<PlayerContext.Provider value ={{ publicKey }}>
+    return (<PlayerContext.Provider value ={{ publicKey, nfts, loadNfts }}>
         { props.children }
     </PlayerContext.Provider>);
 }
 
 export function usePlayer() {
-    const { publicKey, nfts } = useContext(PlayerContext);
-    return { publicKey, nfts };
+    const { publicKey, nfts, loadNfts } = useContext(PlayerContext);
+    return { publicKey, nfts, loadNfts };
 }
 
 

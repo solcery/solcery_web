@@ -191,6 +191,7 @@ export const BrickEditor = (props) => {
 			const processBrick = (brick, parentBrickID = null, parentBrick = null, paramCode = '') => {
 				const brickID = Number(++brickUniqueID).toString();
 				elements.push(...makeBrickWithEdgeElements(brickID, brick, brickTree, parentBrick, parentBrickID, paramCode));
+				console.log(brick)
 				let brickSignature = props.brickLibrary[brick.lib][brick.func];
 				if (!brickSignature) {
 					return elements;

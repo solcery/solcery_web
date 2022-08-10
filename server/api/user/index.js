@@ -59,7 +59,7 @@ funcs.update = async function (data) {
 };
 
 funcs.create = async function (data) {
-  // TODO: validate
+  // TODO
   object = {
     _id: new ObjectId(),
     fields: {

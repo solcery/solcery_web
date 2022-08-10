@@ -196,8 +196,8 @@ export const basicValues = [
 		],
 		exec: (runtime, params, ctx) => {
 			let min = runtime.execBrick(params.from, ctx);
-			let max = runtime.execBrick(params.to, ctx) + 1;
-			return min + Math.floor(Math.random() * (max - min));
+			let max = runtime.execBrick(params.to, ctx);
+			return runtime.random.range(min, max);
 		},
 	},
 	{
@@ -253,7 +253,7 @@ export const basicValues = [
 			let objs = [];
 			let oldObj = ctx.object;
 			let objects = [...Object.values(ctx.game.objects)];
-			generic.shuffle(objects);
+			runtime.shuffle(objects);
 			while (limit > 0 && objects.length > 0) {
 				ctx.object = objects.pop();
 				if (runtime.execBrick(params.iter_condition, ctx)) {
@@ -305,7 +305,7 @@ export const basicValues = [
 		exec: (runtime, params, ctx) => {
 			let old_object = ctx.object;
 			let objects = [...Object.values(ctx.game.objects)];
-			generic.shuffle(objects);
+			runtime.shuffle(objects);
 			let result = Number.NEGATIVE_INFINITY;
 			for (let obj of objects) {
 				ctx.object = obj;
@@ -338,7 +338,7 @@ export const basicValues = [
 		exec: (runtime, params, ctx) => {
 			let old_object = ctx.object;
 			let objects = [...Object.values(ctx.game.objects)];
-			generic.shuffle(objects);
+			runtime.shuffle(objects);
 			let result = Number.POSITIVE_INFINITY;
 			for (let obj of objects) {
 				ctx.object = obj;

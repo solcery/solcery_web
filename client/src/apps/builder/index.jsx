@@ -9,7 +9,7 @@ import { DownloadOutlined } from '@ant-design/icons';
 const { Option } = Select;
 
 export default function Builder() {
-	const [targets, setTargets] = useState([]);
+	const [target, setTarget] = useState('web');
 	const [errors, setErrors] = useState([]);
 	const [unityData, setUnityData] = useState(undefined);
 	const { sageApi } = useProject();
@@ -18,15 +18,12 @@ export default function Builder() {
 	const buildProject = async () => {
 		let content = await sageApi.project.getContent({ objects: true, templates: true });
 		setErrors([]);
-		let res = await build({ targets, content });
+		let res = await build({ targets: [target], content });
 		if (!res.status) {
 			setErrors(res.errors);
 			return;
 		}
-		for (let [ target, result ] of Object.entries(res.constructed)) {
-			console.log(target);
-			console.log(JSON.stringify(result));
-		}
+		console.log(JSON.stringify(res.constructed));
 	};
 
 	const validateProject = async () => {
@@ -82,15 +79,33 @@ export default function Builder() {
 		});
 	};
 
+	const releaseProject = async () => {
+		let content = await sageApi.project.getContent({ objects: true, templates: true });
+		setErrors([]);
+		let res = await build({ targets: ['web', 'unity_local'], content });
+		console.log(res)
+		if (!res.status) {
+			setErrors(res.errors);
+			return;
+		}
+		let result = await sageApi.project.release({
+			contentWeb: res.constructed.web,
+			contentUnity: res.constructed.unity_local,
+		})
+		if (result.insertedId) {
+			alert("Success!");
+		} else {
+			alert("Server error");
+		}
+	}
 
 	return (
 		<>
 			<h1>Builder</h1>
 			<Card title="Test targets">
-				<Select style={{width: 150}} onChange={setTargets} mode="multiple">
+				<Select defaultValue="web" onChange={setTarget}>
 					<Option value="web">Web</Option>
 					<Option value="unity">Unity</Option>
-					<Option value="unity_local">Unity local sim</Option>
 				</Select>
 				<Button onClick={buildProject}>BUILD</Button>
 			</Card>
@@ -114,6 +129,9 @@ export default function Builder() {
 			</Card>
 			<Card title="Validation">
 				<Button onClick={validateProject}>Check content</Button>
+			</Card>
+			<Card title="Release">
+				<Button onClick={releaseProject}>RELEASE!</Button>
 			</Card>
 			{errors.length > 0 && (
 				<Card title="Errors">

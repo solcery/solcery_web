@@ -33,4 +33,12 @@ commands.migrate = {
 	},
 };
 
+commands.release = {
+	private: true,
+	params: {
+		contentWeb: { required: true },
+		contentUnity: { required: true }
+	}
+}
+
 module.exports = commands;

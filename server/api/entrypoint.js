@@ -1,20 +1,30 @@
 const db = require("../db/connection");
 const { LOGS_COLLECTION, USERS_COLLECTION } = require("../db/names");
-const apiLibrary = {}; 
 
-const addApiModule = (moduleName, { commands, funcs }) => {
-  apiLibrary[moduleName] = {};
-  for (let [ commandName, commandData ] of Object.entries(commands)) {
-    let func = funcs[commandName];
-    if (func) {
-      apiLibrary[moduleName][commandName] = Object.assign({ func, name: commandName }, commandData)
+const buildApi = (config) => {
+  let api = {}
+  if (!config.modules) {
+    throw new Error('Trying to build API without given modules!');
+  }
+  for (let mod of config.modules) {
+    let moduleName = mod.name;
+    let { commands, funcs } = require(mod.path);
+    api[moduleName] = {};
+    for (let [ commandName, commandData ] of Object.entries(commands)) {
+      let func = funcs[commandName];
+      if (func) {
+        api[moduleName][commandName] = Object.assign({ func, name: commandName }, commandData)
+      }
     }
   }
+  if (config.auth) {
+    api.auth = require(config.auth);
+  }
+  return api;
 }
 
-addApiModule('project', require('./project'))
-addApiModule('template', require('./template'))
-addApiModule('user', require('./user'))
+const config = require('./config');
+const apiLibrary = buildApi(config);
 
 const checkParams = (command, params) => {
   if (!command.params) return true;
@@ -40,21 +50,12 @@ const log = (data) => {
     .insertOne(entry)
 }
 
-const getUserSession = async (session, project) => {
-  let query = { session };
-  let result = await db
-    .getDb(project)
-    .collection(USERS_COLLECTION)
-    .findOne(query);
-  return result;
-}
-
 const apiCall = async (response, data) => {
+  console.log('API call: ', data);
   let error = undefined;
   let result = {
     status: true,
   }
-  let user = undefined;
   let moduleApi = apiLibrary[data.module];
   let command = moduleApi[data.command];
   try {
@@ -64,26 +65,29 @@ const apiCall = async (response, data) => {
     if (!command) {
       throw `API error: unknown API command '${data.command}'!`;
     }
-    if (!command.system && !data.project) {
+    if (!command.system && !data.project) { // TODO: remove this
       throw `API error: project not set for project-specific command!`;
     }
-    if (data.session) {
-      user = await getUserSession(data.session, data.project);
-    }
-    if (command.private && !user) {
-      throw `API error: Unauthorized access!`
+    if (command.private) {
+      let auth = await apiLibrary.auth(data);
+      if (!auth) {
+        throw `API error: Unauthorized access!`
+      }
     }
     checkParams(command, data.params); 
     result.data = await command.func(data);
+    console.log('result')
+    console.log(result)
   }
   catch (err) {
     result.error = err;
     result.status = false;
+    console.log(err)
   }
   finally {
-    if (result.error || (command && command.log)) 
-      log({ 
-        userId: user && user._id,
+    if (result.error || (command && command.log)) {
+      log({ // TODO
+        userId: data.userId,
         module: data.module,
         command: data.command,
         params: data.params,
@@ -91,6 +95,7 @@ const apiCall = async (response, data) => {
         response: result,
         level: result.error ? 'error' : 'log',
       })
+    }
     response.json(result)
   }
 }

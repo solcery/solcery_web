@@ -1,6 +1,12 @@
 const db = require("../../db/connection");
 const { ObjectId } = require("mongodb");
-const { TEMPLATE_COLLECTION, OBJECT_COLLECTION, LOGS_COLLECTION } = require("../../db/names");
+const { 
+  TEMPLATE_COLLECTION, 
+  OBJECT_COLLECTION, 
+  LOGS_COLLECTION, 
+  VERSIONS_COLLECTION, 
+  GAME_PREFIX 
+} = require("../../db/names");
 
 const funcs = {};
 
@@ -81,6 +87,26 @@ funcs.migrate = async function (data) {
       if (err) throw err;
       return res;
     });
+};
+
+funcs.release = async function (data) {
+  let gameDbName = GAME_PREFIX + data.project;
+  let count = await db
+    .getDb(gameDbName)
+    .collection(VERSIONS_COLLECTION)
+    .count();
+  let dist = {
+    _id: new ObjectId(),
+    version: count + 1,
+    content: {
+      web: data.params.contentWeb,
+      unity: data.params.contentUnity
+    }
+  }
+  return await db
+    .getDb(gameDbName)
+    .collection(VERSIONS_COLLECTION)
+    .insertOne(dist);
 };
 
 const commands = require('./commands');

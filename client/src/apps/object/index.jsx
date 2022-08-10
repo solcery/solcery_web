@@ -30,7 +30,8 @@ export function ObjectPage() {
 				objectId,
 				fields: payload,
 			})
-			.then((res) => {
+			.then(res => {
+				console.log(res);
 				if (res.modifiedCount === 1) {
 					notify({
 						message: 'Object updated',
