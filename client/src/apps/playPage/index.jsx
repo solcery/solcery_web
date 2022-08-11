@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { Session } from '../../game';
 import Unity, { UnityContext } from 'react-unity-webgl';
 import { useBrickLibrary } from '../../contexts/brickLibrary';
@@ -7,22 +7,11 @@ import { useUser } from '../../contexts/user';
 import { useProject } from '../../contexts/project';
 import GameClient from '../../components/gameClient';
 
-function* stringChunk(s, maxBytes) {
-	const SPACE_CODE = 32;
-	let buf = Buffer.from(s);
-	while (buf.length) {
-		let i = buf.lastIndexOf(SPACE_CODE, maxBytes + 1);
-		if (i < 0) i = buf.indexOf(SPACE_CODE, maxBytes);
-		if (i < 0) i = buf.length;
-		yield buf.slice(0, i).toString();
-		buf = buf.slice(i + 1);
-	}
-}
-
 export default function PlayPage() {
 	const [ gameSession, setGameSession ] = useState();
 	const { layoutPresets, nfts } = useUser();
 	const { sageApi } = useProject();
+	const ref = useRef();
 
 	useEffect(() => {
 		async function buildContent() {
@@ -49,6 +38,7 @@ export default function PlayPage() {
 	}, [layoutPresets, sageApi.project]);
 
 	if (!gameSession) return <>Loading</>;
-
-	return <GameClient gameSession={gameSession}/>;
+	return <div>
+		<GameClient gameSession={gameSession}/>
+	</div>;
 }

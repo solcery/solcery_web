@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { Handle, Position } from 'react-flow-renderer';
 import { notify } from '../../../../components/notification';
 import { useProject } from '../../../../contexts/project';
@@ -49,6 +49,7 @@ function BrickName(props) {
 export default function Brick(props) {
 	let { projectName } = useProject();
 	let { addHotkey, removeHotkey } = useHotkeyContext();
+	const hotkeyIds = useRef({})
 
 	const brick = props.data.brick;
 	const brickLibrary = props.data.brickLibrary;
@@ -119,15 +120,29 @@ export default function Brick(props) {
 		});
 	};
 
-	const hotkeyIds = {}
-	const onPointerEnter = () => {
-		hotkeyIds.copy = addHotkey({ key: 'ctrl+c', callback: copy })
-		hotkeyIds.paste = addHotkey({ key: 'ctrl+v', callback: paste })
-	}
+	const onPointerEnter = useCallback(() => {
+		if (props.data.onChange) {
+			hotkeyIds.current.copy = addHotkey({ key: 'Ctrl+KeyC', callback: copy })
+			hotkeyIds.current.paste = addHotkey({ key: 'Ctrl+KeyV', callback: paste })
+		}
+	}, [ props.data.onChange ]);
+
 	const onPointerLeave = () => {
-		removeHotkey('ctrl+c', hotkeyIds.copy)
-		removeHotkey('ctrl+v', hotkeyIds.paste)
+		removeHotkey('Ctrl+KeyC', hotkeyIds.current.copy)
+		delete(hotkeyIds.copy)
+		removeHotkey('Ctrl+KeyV', hotkeyIds.current.paste)
+		delete(hotkeyIds.paste)
 	}
+
+	useEffect(() => {
+		return () => {			
+			removeHotkey('Ctrl+KeyC', hotkeyIds.current.copy)
+			delete(hotkeyIds.copy)
+			removeHotkey('Ctrl+KeyV', hotkeyIds.current.paste)
+			delete(hotkeyIds.paste)
+			
+		}
+	}, [])
 
 	let width = Math.max(12, 1 + nestedParams.length * 5);
 	

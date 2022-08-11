@@ -21,7 +21,11 @@ class SLink {
 		if (value === undefined) return;
 		let obj = meta.content.objects.find(obj => obj._id === value);
 		if (!obj) {
-			meta.error(`Broken link [${value}]!`);
+			meta.error(`Link to a deleted object [${value}]!`);
+			return;
+		}
+		if (!obj.fields.enabled) {
+			meta.error(`Link to a disabled object [${value}] ${obj.fields.name}!`);
 			return;
 		}
 	};

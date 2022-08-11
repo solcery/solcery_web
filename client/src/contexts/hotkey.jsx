@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState, useCallback } from 'react';
 
-export const hotkeys = ['ctrl+c', 'ctrl+s', 'escape', 'ctrl+c', 'ctrl+v'];
+export const hotkeys = ['Ctrl+KeyC', 'Ctrl+KeyS', 'Escape', 'Ctrl+KeyV'];
 
 const HotkeyContext = React.createContext(undefined);
 
@@ -42,6 +42,7 @@ export function HotkeyProvider(props) {
 
 	const removeHotkey = useCallback(
 		(hotkey, id) => {
+			if (id === undefined) return;
 			if (!listeners) return;
 			let list = listeners[hotkey].callbacks;
 			let index = list.findIndex((sub) => sub.id === id);
@@ -54,8 +55,8 @@ export function HotkeyProvider(props) {
 
 	useEffect(() => {
 		const onKeyDown = (e) => {
-			let key = e.key.toLowerCase();
-			if (e.ctrlKey) key = 'ctrl+' + key;
+			let key = e.code;
+			if (e.ctrlKey) key = 'Ctrl+' + key;
 			handle(key, e);
 		};
 		window.addEventListener('keydown', onKeyDown);

@@ -53,9 +53,9 @@ export default function BrickEditor() {
 		doc.setField(value, splittedPath);
 		goUp();
 	}, [value, doc, goUp, splittedPath]);
-	useHotkey({ key: 'ctrl+s', noDefault: true }, save);
+	useHotkey({ key: 'Ctrl+KeyS', noDefault: true }, save);
 
-	const cancel = useHotkey('escape', () => {
+	const cancel = useHotkey('Escape', () => {
 		if (changed.current && !window.confirm('You have unsaved changed. Still leave?')) return;
 		goUp();
 	});

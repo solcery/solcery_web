@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Unity WebGL Player | solcery_client_unity</title>
+  </head>
+  <body style="text-align: center">
+    <canvas id="unity-canvas" width=1920 height=900 style="width: 100%; height: 100%; background: #231F20"></canvas>
+    <script src="Build/WebGl.loader.js"></script>
+    <script>    
+
+      function resizeCanvas()
+      {
+        const width = 1920;
+        const height = 900;
+        
+        let canvas = document.getElementsByTagName("unity-canvas");
+        let innerWidth = window.innerWidth;
+        let innerHeight = window.innerHeight;
+        
+        let coef = innerWidth / width;
+        canvas.width = width * coef;
+        canvas.height = height * coef;
+      }
+
+      window.addEventListener('resize', resizeCanvas, false);
+      resizeCanvas();
+
+      window.dispatchReactUnityEvent = (event, param) => {
+        window.top.onMessageFromUnity(event, param); 
+      } 
+
+      function chunkSubstr(str, size = 65536) {
+        const numChunks = Math.ceil(str.length / size)
+        const chunks = new Array(numChunks)
+
+        for (let i = 0, o = 0; i < numChunks; ++i, o += size) {
+          chunks[i] = str.substr(o, size)
+        }
+
+        return chunks
+      }
+
+      const sendPackage = (funcName, param) => {
+       const USHORT_SIZE = 65536;
+       let data = typeof param === 'string' ? param : JSON.stringify(param);
+       const chunks = chunkSubstr(data)
+       console.log(`Web - sending package to Unity client [${funcName}]: ${data}`);
+       for (let i = 0; i < chunks.length; i++) {
+         let chunk_package = {
+           count: chunks.length,
+           index: i,
+           value: chunks[i],
+         };
+         // console.log(`Web - sending package to Unity client [${funcName}]: ${JSON.stringify(chunk_package)}`);
+         unityInstance.SendMessage('ReactToUnity', funcName, JSON.stringify(chunk_package));
+       }
+      }
+
+      window.sendToUnity = (jsonData) => {
+        let data = JSON.parse(jsonData)
+        try {
+          sendPackage(data.funcName, data.param)
+        }
+        catch (e) {
+          // TODO: error handling
+        }
+      }
+      var unityInstance;
+      var unityInstance = createUnityInstance(document.querySelector("#unity-canvas"), {
+        dataUrl: "Build/WebGl.data",
+        frameworkUrl: "Build/WebGl.framework.js",
+        codeUrl: "Build/WebGl.wasm",
+        streamingAssetsUrl: "StreamingAssets",
+        companyName: "Solcery",
+        productName: "solcery_client_unity",
+        productVersion: "0.1",
+        // matchWebGLToCanvasSize: true, // Uncomment this to separately control WebGL canvas render size and DOM element size.
+        // devicePixelRatio: 1, // Uncomment this to override low DPI rendering on high DPI displays.
+      }).then(instance => unityInstance = instance);
+    </script>
+  </body>
+</html>

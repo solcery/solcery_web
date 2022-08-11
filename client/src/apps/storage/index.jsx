@@ -72,7 +72,7 @@ const HeaderFilter = (props) => {
 		setOpened(false);
 	};
 
-	useHotkey('escape', () => {
+	useHotkey('Escape', () => {
 		setOpened(false);
 		setInputValue(filterValue);
 	})
