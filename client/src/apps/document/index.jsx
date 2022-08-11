@@ -9,7 +9,7 @@ const { Column } = Table;
 export default function DocumentEditor(props) {
 	const [revision, setRevision] = useState(1);
 	const save = useHotkey(
-		{ key: 'ctrl+s', noDefault: true },
+		{ key: 'Ctrl+KeyS', noDefault: true },
 		() => {
 			// TODO: move to object context
 			let res = props.doc.getChanges();
@@ -31,7 +31,7 @@ export default function DocumentEditor(props) {
 		setRevision(revision + 1);
 	};
 
-	useHotkey('escape', () => {
+	useHotkey('Escape', () => {
 		let changed = false;
 		for (let status of Object.values(props.doc.fieldStatus)) {
 			if (status === 'changed') {

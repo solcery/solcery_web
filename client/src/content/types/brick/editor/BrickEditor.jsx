@@ -153,7 +153,7 @@ export const BrickEditor = (props) => {
 						? () => {
 								onChangeBrickTree(bt);
 						  }
-						: null,
+						: undefined,
 					readonly: !props.onChange,
 				},
 			};

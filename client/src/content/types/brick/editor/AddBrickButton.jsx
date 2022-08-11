@@ -1,10 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Handle, Position } from 'react-flow-renderer';
 import Select from 'react-select';
 import { useHotkeyContext } from '../../../../contexts/hotkey';
 
 export default function AddBrickButton(props) {
 	let { addHotkey, removeHotkey } = useHotkeyContext();
+	let pasteHotkeyId = useRef(undefined);
 
 	const brickType = props.data.brickType; // TODO: type
 	const brickLibrary = props.data.brickLibrary;
@@ -59,12 +60,11 @@ export default function AddBrickButton(props) {
 		props.data.onPaste(pastedBrickTree, props.data.brickTree, props.data.parentBrick, props.data.paramCode);
 	}
 
-	let pasteHotkeyId;
 	const onPointerEnter = () => {
-		pasteHotkeyId = addHotkey({ key: 'ctrl+v', callback: paste })
+		pasteHotkeyId.current = addHotkey({ key: 'Ctrl+KeyV', callback: paste })
 	}
 	const onPointerLeave = () => {
-		removeHotkey('ctrl+v', pasteHotkeyId)
+		removeHotkey('Ctrl+KeyV', pasteHotkeyId.current)
 	}
 
 	const selectorOptions = brickSignatures
