@@ -1,4 +1,4 @@
-import React, { FC, useMemo, useContext, useEffect, useState } from 'react';
+import React, { FC, useMemo, useContext, useEffect, useCallback, useState } from 'react';
 import { ConnectionProvider, WalletProvider, useWallet, useConnection } from '@solana/wallet-adapter-react/lib/cjs';
 import { WalletAdapterNetwork } from '@solana/wallet-adapter-base';
 import {
@@ -40,47 +40,6 @@ export const Player: FC = (props) => {
     );
 };
 
-const collections = [
-    {
-        name: 'SolGods',
-        creators: [ 'ALNcW6QDNf7H4iNiTM3FD16LZ4zMGyEeCYQiE1AbCoXk' ],
-        symbol: 'SOLGods'
-    },
-    {
-        name: 'DegenApes',
-        creators: [ 'DC2mkgwhy56w3viNtHDjJQmc7SGu2QX785bS4aexojwX' ],
-        symbol: 'DAPE',
-        vc: 'DSwfRF1jhhu6HpSuzaig1G19kzP73PfLZBPLofkw6fLD',
-    },
-    {
-        name: 'Boryoku Dragonz',
-        creators: [ 'DRGNjvBvnXNiQz9dTppGk1tAsVxtJsvhEmojEfBU3ezf' ],
-        symbol: 'BORYOKU',
-    },
-    {
-        name: 'Boryoku Baby Dragonz',
-        creators: [ 'NAJ1KA8tTUssP7HcVkUqS7sTaKEpgqhTDxW8GCjkVCe' ],
-        symbol: 'BORYOKU',
-    },
-    {
-        name: 'SMB',
-        creators: [ '9uBX3ASjxWvNBAD1xjbVaKA74mWGZys3RGSF7DdeDD3F' ],
-        symbol: 'SMB',
-        vc: 'SMBH3wF6baUj6JWtzYvqcKuj2XCKWDqQxzspY12xPND',
-    },
-    {
-        name: 'Okay Bears',
-        creators: [ '3xVDoLaecZwXXtN59o6T3Gfxwjcgf8Hc9RfoqBn995P9' ],
-        symbol: 'okay_bears',
-    },
-    {
-        name: 'DeGods',
-        creators: [ '9MynErYQ5Qi6obp4YwwdoDmXkZ1hYVtPUqYmJJ3rZ9Kn', 'AxFuniPo7RaDgPH6Gizf4GZmLQFc4M5ipckeeZfkrPNn' ],
-        symbol: 'DGOD',
-        vc: '6XxjKYFbcndh2gDcsUrmZgVEsoDxXMnfsaGY6fpTJzNr',
-    },
-]
-
 const fakeNfsMints = [
     '4TenYQgk45RcLPy4E2uYoJS4rJ3EsBqaqb4vVsDPzUmW', // DeGod
     '8yy7YwVY6Gz4RxokbJMbZEEDRCkxGTrToanMZRV3VjrK', // DegenApe
@@ -119,11 +78,15 @@ const PlayerContext = React.createContext(undefined);
 const PlayerProvider = (props) => {
     const { connected, publicKey, wallet } = useWallet();
     const [ nfts, setNfts ] = useState();
+    const [ nftMints, setNftMints ] = useState();
     const { connection } = useConnection();
 
     const sageApi = new SolceryAPIConnection('nfts', { modules: [ 'template' ]});
 
-    const loadNfts = async(mints) => {
+    const loadNfts = async () => {
+        if (!wallet) return;
+        let mints = fakeNfsMints.map(stringMintPubkey => new PublicKey(stringMintPubkey))
+
         const metaplex = Metaplex.make(connection)
             .use(keypairIdentity(wallet))
             .use(bundlrStorage());
@@ -134,37 +97,30 @@ const PlayerProvider = (props) => {
             .run();
 
         let collections = await sageApi.template.getAllObjects({ template: 'collections' })
-        console.log(collections)
 
-        let res = []
+        let res = [];
         for (let nft of nftDatas) {
             let collection = checkNftForAllCollections(nft, collections);
             if (!collection) return undefined;
             res.push({ nft, collection });
         }
-        res = await Promise.all(res.map(async ({ nft, collection }) => ({
+        let loadedNfts = await Promise.all(res.map(async ({ nft, collection }) => ({
             collection,
             nft: await metaplex.nfts().loadNft(nft).run(),
         })));
-        let nftList = res.map(({ nft, collection }) => ({
+        loadedNfts = loadedNfts.map(({ nft, collection }) => ({
             collection: collection._id,
             name: nft.name,
-            image: nft.json.image,
+            image: nft.json.image, 
+            mint: nft.mint.address.toBase58(),
         }));
-        console.log(nftList)
-        setNfts(nftList);
+        setNfts(loadedNfts);
     }
 
     useEffect(() => {
         if (!connection || !publicKey) return;
         //fake nfts
-        let fakeMints = fakeNfsMints.map(stringMintPubkey => new PublicKey(stringMintPubkey))
-        // loadNfts(fakeMints);
     }, [ connected, publicKey, connection ])
-
-    useEffect(() => {
-        console.log(nfts)
-    }, [ nfts ])
 
     if (!connected) return (<>
         <WalletModalProvider>

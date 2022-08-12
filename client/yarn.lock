@@ -3241,6 +3241,18 @@
     eventemitter3 "^4.0.7"
     uuid "^8.3.2"
 
+"@splidejs/react-splide@^0.7.8":
+  version "0.7.8"
+  resolved "https://registry.yarnpkg.com/@splidejs/react-splide/-/react-splide-0.7.8.tgz#f74484a6906da427c1c73397cd4d56b7a40d489c"
+  integrity sha512-zXBIsa8v3h9iv8KKxEdbN+RveJKQU/VE7Iev9GoXiFxnCzN/luyySsF1FZz/lYw9B+eWiLXehOBcWLzLo+05ng==
+  dependencies:
+    "@splidejs/splide" "^4.0.7"
+
+"@splidejs/splide@^4.0.7":
+  version "4.0.7"
+  resolved "https://registry.yarnpkg.com/@splidejs/splide/-/splide-4.0.7.tgz#f442b7c5fc99df472c6f989787e1fb331cf177c6"
+  integrity sha512-aJAOGJN2lwjwou3mxQofc3uhe+RXpw9in0WfysFX7AMT/mj7wSqoetfm41s7J8jU6FJ3ZWaLYgSJIpBAQ5wyqw==
+
 "@supercharge/promise-pool@^2.1.0":
   version "2.3.0"
   resolved "https://registry.yarnpkg.com/@supercharge/promise-pool/-/promise-pool-2.3.0.tgz#9528b11d69a63ff2a342d404afb13cd011c9651a"
