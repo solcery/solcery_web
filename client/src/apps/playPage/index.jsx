@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Session } from '../../game';
 import Unity, { UnityContext } from 'react-unity-webgl';
 import { useBrickLibrary } from '../../contexts/brickLibrary';
@@ -6,12 +7,13 @@ import { build } from '../../content';
 import { useUser } from '../../contexts/user';
 import { useProject } from '../../contexts/project';
 import GameClient from '../../components/gameClient';
+import { notify } from '../../components/notification';
 
 export default function PlayPage() {
 	const [ gameSession, setGameSession ] = useState();
 	const { layoutPresets, nfts } = useUser();
 	const { sageApi } = useProject();
-	const ref = useRef();
+	let navigate = useNavigate()
 
 	useEffect(() => {
 		async function buildContent() {
@@ -31,7 +33,13 @@ export default function PlayPage() {
 				session.start();
 				setGameSession(session);
 			} else {
-				window.alert('Cannot construct content, validation unsucessful. Please content in project menu');
+				notify({
+					message: 'Play mode error',
+					description: 'Content validation unsuccessfull',
+					type: 'error'
+
+				})
+				navigate('../validator');
 			}
 		}
 		buildContent();

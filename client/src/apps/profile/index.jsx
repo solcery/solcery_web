@@ -76,7 +76,7 @@ export default function Profile() {
 				notify({
 					message: 'User updated',
 					description: `${id}`,
-					color: '#DDFFDD',
+					type: 'success',
 				});
 				reload();
 				reloadDoc();

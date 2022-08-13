@@ -7,7 +7,7 @@ const { Option } = Select;
 export const ValueRender = (props) => {
 	const [objects, setObjects] = useState(undefined);
 	const [ api, setApi ] = useState();
-	const { sageApi, projectName } = useProject();
+	const { sageApi, projectId } = useProject();
 
 	useEffect(() => {
 		if (props.type.project) {
@@ -42,7 +42,7 @@ export const ValueRender = (props) => {
 		if (!objects) return <>Loading ...</>;
 		let obj = objects.find((obj) => obj.id === props.defaultValue);
 		if (obj) {
-			return <a href={`/${props.type.project ?? projectName}/template/${props.type.templateCode}/${props.defaultValue}`}>{obj.title}</a>; //TODO
+			return <a href={`/${props.type.project ?? projectId}/template/${props.type.templateCode}/${props.defaultValue}`}>{obj.title}</a>; //TODO
 		} else {
 			return <>{`Missing object ${props.defaultValue}`}</>;
 		}

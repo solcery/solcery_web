@@ -51,7 +51,6 @@ const log = (data) => {
 }
 
 const apiCall = async (response, data) => {
-  console.log('API call: ', data);
   let error = undefined;
   let result = {
     status: true,
@@ -76,12 +75,11 @@ const apiCall = async (response, data) => {
     }
     checkParams(command, data.params); 
     result.data = await command.func(data);
-    console.log('result')
-    console.log(result)
   }
   catch (err) {
-    result.error = err;
+    result.error = err.message;
     result.status = false;
+    console.log('Error handled: ');
     console.log(err)
   }
   finally {

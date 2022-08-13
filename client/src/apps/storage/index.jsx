@@ -77,50 +77,48 @@ const HeaderFilter = (props) => {
 		setInputValue(filterValue);
 	})
 
-	return (
-		<>
-			{!opened && (
-				<Button
-					style={{
-						color: filtered ? undefined : 'dimgray',
-						fontColor: filtered ? 'white' : 'dimgray',
-						backgroundColor: filtered ? '#104055' : undefined,
-					}}
-					onClick={() => setOpened(true)}
-				>
-					{filtered ? (
-						<div style={{ display: 'flex' }}>
-							<props.field.type.filter.render type={props.field.type} defaultValue={filterValue} />
-							<FilterOutlined style={{ marginLeft: '8px', marginTop: 'auto', marginBottom: 'auto' }} />
-						</div>
-					) : (
-						<div>
-							Filter
-							<FilterOutlined style={{ marginLeft: '8px', marginTop: '4px' }} />
-						</div>
-					)}
-				</Button>
-			)}
-			{opened && (
-				<div
-					style={{
-						width: '300px',
-						display: 'flex',
-					}}
-				>
-					<props.field.type.filter.render
-						key={props.field.code + props.value}
-						type={props.field.type}
-						defaultValue={props.value}
-						onChange={setInputValue}
-						onPressEnter={apply}
-					/>
-					<Button onClick={apply}>APPLY</Button>
-					<Button onClick={clear}>CLEAR</Button>
-				</div>
-			)}
-		</>
-	);
+	return (<>
+		{!opened && (
+			<Button
+				style={{
+					color: filtered ? undefined : 'dimgray',
+					fontColor: filtered ? 'white' : 'dimgray',
+					backgroundColor: filtered ? '#104055' : undefined,
+				}}
+				onClick={() => setOpened(true)}
+			>
+				{filtered ? (
+					<div style={{ display: 'flex' }}>
+						<props.field.type.filter.render type={props.field.type} defaultValue={filterValue} />
+						<FilterOutlined style={{ marginLeft: '8px', marginTop: 'auto', marginBottom: 'auto' }} />
+					</div>
+				) : (
+					<div>
+						Filter
+						<FilterOutlined style={{ marginLeft: '8px', marginTop: '4px' }} />
+					</div>
+				)}
+			</Button>
+		)}
+		{opened && (
+			<div
+				style={{
+					width: '300px',
+					display: 'flex',
+				}}
+			>
+				<props.field.type.filter.render
+					key={props.field.code + props.value}
+					type={props.field.type}
+					defaultValue={props.value}
+					onChange={setInputValue}
+					onPressEnter={apply}
+				/>
+				<Button onClick={apply}>APPLY</Button>
+				<Button onClick={clear}>CLEAR</Button>
+			</div>
+		)}
+	</>);
 };
 
 const HeaderCell = (props) => {
@@ -314,7 +312,7 @@ export default function StorageViewer({ templateCode, moduleName }) {
 												} else {
 													notify({
 														message: 'Object created',
-														color: '#DDFFDD',
+														type: 'success',
 														description: res.insertedId,
 														url: `${templateCode}/${res.insertedId}`,
 													});
@@ -337,11 +335,11 @@ export default function StorageViewer({ templateCode, moduleName }) {
 												template: templateCode,
 												objectId: object._id,
 											})
-											.then((res) => {
+											.then(res => {
 												if (res.deletedCount) {
 													notify({
 														message: 'Object deleted',
-														color: '#DDFFDD',
+														type: 'success',
 														description: object._id,
 													});
 													load();

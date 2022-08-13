@@ -30,14 +30,13 @@ export function TemplateSchema() {
 		try {
 			schema = JSON.parse(jsonSchema);
 		} catch {
-			notify({ message: 'JSON parsing error', color: '#FFDDDD' });
+			notify({ message: 'JSON parsing error', type: 'error' });
 			return;
 		}
-		console.log(schema);
 		if (schema) {
 			sageApi.template.setSchema({ template: templateCode, schema }).then((res) => {
 				if (res.acknowledged) {
-					notify({ message: 'Schema applied!', color: '#DDFFDD' });
+					notify({ message: 'Schema applied!', type: 'success' });
 				}
 			});
 		}
