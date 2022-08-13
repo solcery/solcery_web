@@ -7,6 +7,8 @@ import BasicGameClient from '../../components/basicGameClient';
 import { Button } from 'antd';
 
 import './style.css';
+import './style.scss';
+
 
 const apiConfig = {
 	modules: [
@@ -15,8 +17,60 @@ const apiConfig = {
 	auth: './game/auth',
 }
 
+const NftCard = (props) => {
+	console.log(props.image)
+	// return <div className='nft'>
+	// 	<img className='nft-image' src={props.image}/>
+	// 	<div className='nft-name'>{props.name}</div>
+	// </div>;
+	return <div className="nft">
+      <img className="nft-image" src={props.image} alt="" />
+        <div className="nft-name">
+          {props.name}
+        </div>
+    </div>;
+}
+
+const NftBar = (props) => {
+	return <>
+		<div className="collection">
+	    {props.nfts.map((nft, index) => <NftCard key={`nft_${index}`} image={nft.image} name={nft.name}/>)}	
+	    </div>
+    </>;
+}
+
+const Menu = (props) => {
+	const { nfts, loadNfts } = usePlayer();
+	const [ nftsRequested, setNftsRequested ] = useState(false)
+
+	useEffect(() => {
+		if (!loadNfts) return;
+		if (!nfts) {
+			if (nftsRequested) return;
+			setNftsRequested(true)
+			loadNfts();
+			return;
+		}
+		console.log(nfts)
+	}, [ nfts, loadNfts, nftsRequested ])
+
+
+
+
+	return <div className='menu-bg'>
+		{nfts && <NftBar nfts={nfts}/>}
+		<div className="start-button" onClick={props.onCreateGame}>
+			<span></span>
+			<span></span>
+			<span></span>
+			<span></span>
+			Start new game
+		</div>
+	</div>
+}
+
 export const GameTest = () => {
-	const { publicKey, nfts, loadNfts } = usePlayer();
+	const { publicKey, loadNfts } = usePlayer();
 	const [ log, setLog ] = useState([]);
 	const [ step, setStep ] = useState(0);
 	const [ gameSession, setGameSession ] = useState();
@@ -80,9 +134,10 @@ export const GameTest = () => {
 
 	if (!status) return <>Loading</>;
 
+	if (!gameSession) return <Menu onCreateGame={createGame}/>;
+
 	return (<>
-		{!gameSession && <Button onClick={createGame}>START GAME</Button>}
-		{gameSession && <a onClick={leaveGame} className="close-button"/>}
+		<a onClick={leaveGame} className="close-button"/>
 		<div>
 			<GameClient gameSession={gameSession}/>
 		</div>

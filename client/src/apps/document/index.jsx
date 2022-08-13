@@ -2,12 +2,15 @@ import { Table, Button } from 'antd';
 import React, { useState } from 'react';
 import { useHotkey } from '../../contexts/hotkey';
 import { notify } from '../../components/notification';
+import { useLocation } from 'react-router-dom';
 import './style.css';
 
 const { Column } = Table;
 
 export default function DocumentEditor(props) {
 	const [revision, setRevision] = useState(1);
+	const location = useLocation();
+
 	const save = useHotkey(
 		{ key: 'Ctrl+KeyS', noDefault: true },
 		() => {
@@ -19,7 +22,7 @@ export default function DocumentEditor(props) {
 				notify({
 					message: `Not saved`,
 					description: 'Cannot save data, no changes in fields',
-					color: '#FFFFDD',
+					type: 'warning',
 				});
 			}
 		},
@@ -43,17 +46,26 @@ export default function DocumentEditor(props) {
 		props.onExit && props.onExit();
 	});
 
+	const onElementLoad = (path, element) => {
+		let autoScroll = location.state?.scrollToField;
+		if (autoScroll && path.fieldPath[0] === autoScroll) {
+			let newLocationState = Object.assign({}, location.state);
+			delete newLocationState.scrollToField;
+			window.history.replaceState(newLocationState, document.title);
+			element.scrollIntoView({ block: 'center' });
+		}
+	}
+
 	if (!props.doc) return <>Loading</>;
-	let tableData = Object.values(props.doc.schema).map((field) => {
-		return {
-			key: field.code,
-			field: field,
-			value: props.doc.fields[field.code],
-			status: props.doc.fieldStatus[field.code],
-			onChange: !field.readonly ? (value) => editDoc(value, [field.code]) : undefined,
-			autoScroll: props.scrollToField === field.code,
-		};
-	});
+	let tableData = Object.values(props.doc.schema).map(field => ({
+		key: field.code,
+		field: field,
+		value: props.doc.fields[field.code],
+		status: props.doc.fieldStatus[field.code],
+		onChange: !field.readonly ? (value) => editDoc(value, [field.code]) : undefined,
+		onElementLoad,
+	}));
+
 	return (
 		<>
 			<Button style={{ width: '100%' }} onClick={save}>
@@ -72,7 +84,7 @@ export default function DocumentEditor(props) {
 					dataIndex="value"
 					render={(text, record) => (
 						<record.field.type.valueRender
-							autoScroll = {record.autoScroll}
+							onElementLoad={onElementLoad}
 							defaultValue={record.value}
 							onChange={record.onChange}
 							type={record.field.type}

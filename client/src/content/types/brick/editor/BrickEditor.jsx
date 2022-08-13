@@ -75,21 +75,21 @@ export const BrickEditor = (props) => {
 				if (param.type.brickType === pastedBrickTree.lib) {
 					parentBrick.params[paramCode] = pastedBrickTree;
 					onChangeBrickTree(JSON.parse(JSON.stringify(bt)));
-					notify({ message: 'Pasted successfully', color: '#DDFFDD' });
+					notify({ message: 'Pasted successfully', type: 'success' });
 				} else {
 					notify({
 						message: 'Unable to paste brick tree: incompatible brick types.',
-						color: '#FFDDDD',
+						type: 'error',
 					});
 				}
 			} else {
 				if (pastedBrickTree.lib === props.brickType || props.brickType === 'any') {
 					onChangeBrickTree(pastedBrickTree);
-					notify({ message: 'Pasted successfully', color: '#DDFFDD' });
+					notify({ message: 'Pasted successfully', type: 'success' });
 				} else {
 					notify({
 						message: 'Unable to paste brick tree: incompatible brick types.',
-						color: '#FFDDDD',
+						type: 'error',
 					});
 				}
 			}
@@ -248,6 +248,7 @@ export const BrickEditor = (props) => {
 			if (!initialFit.current) {
 				initialFit.current = true;
 				fitView();
+				props.onElementLoad && props.onElementLoad(editorRef.current);
 			}
 			editorRef.current.style.visibility = 'visible';
 		}

@@ -1,3 +1,4 @@
+import { notify } from '../components/notification';
 const API_PATH = '/api/';
 
 const makeRequest = (data) => {
@@ -13,7 +14,21 @@ const makeRequest = (data) => {
 	};
 	return fetch(url, request).then((response) => {
 		return response.json().then((res) => {
-			return res.data; // TODO: status, error
+			if (res.status) {
+				return res.data; // TODO: status, error
+			} else {
+				notify({
+					message: 'Server error',
+					description: res.error,
+					type: 'error',
+				});
+			}
+		}, (err) => {
+			notify({
+				message: 'Server error',
+				description: 'No response from server',
+				type: 'error',
+			});
 		});
 	});
 };
@@ -24,8 +39,8 @@ export class SolceryAPIConnection {
 		this.session = session;
 	}
 
-	constructor(projectName, config) {
-		this.projectName = projectName;
+	constructor(projectId, config) {
+		this.projectId = projectId;
 		if (!config) {
 			throw new Error('Error building SageAPIConnection, no config provided!');
 		}
@@ -41,7 +56,7 @@ export class SolceryAPIConnection {
 			for (let [commandName, command] of Object.entries(commands)) {
 				this[moduleName][commandName] = (data = {}) => {
 					let requestData = {
-						project: this.projectName,
+						project: this.projectId,
 						module: moduleName,
 						command: commandName,
 						params: {},

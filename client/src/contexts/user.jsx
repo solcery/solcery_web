@@ -10,7 +10,7 @@ const UserContext = React.createContext(undefined);
 export function UserProvider(props) {
 	const [cookies, setCookie] = useCookies();
 	const [user, setUser] = useState(undefined);
-	const { projectName } = useParams();
+	const { projectId } = useParams();
 	const { sageApi, setUserSession } = useProject();
 
 	const [login, setLogin] = useState(undefined);
@@ -43,9 +43,9 @@ export function UserProvider(props) {
 	useEffect(() => {
 		if (user) return;
 		if (!sageApi) return;
-		if (!cookies[`session.${projectName}`]) return;
-		sageApi.user.getSession({ session: cookies[`session.${projectName}`] }).then((res) => loadUser(res));
-	}, [loadUser, user, projectName, sageApi, cookies]);
+		if (!cookies[`session.${projectId}`]) return;
+		sageApi.user.getSession({ session: cookies[`session.${projectId}`] }).then((res) => loadUser(res));
+	}, [loadUser, user, projectId, sageApi, cookies]);
 
 	const auth = useCallback(() => {
 		if (!login || !password) {
@@ -54,13 +54,13 @@ export function UserProvider(props) {
 		}
 		sageApi.user.login({ login, password }).then((res) => {
 			const SESSION_LENGTH = 86400 * 30 * 1000;
-			setCookie(`session.${projectName}`, res.session, {
+			setCookie(`session.${projectId}`, res.session, {
 				expires: new Date(new Date().getTime() + SESSION_LENGTH),
 				path: '/',
 			});
 			loadUser(res);
 		});
-	}, [loadUser, login, password, projectName, setCookie, sageApi]);
+	}, [loadUser, login, password, projectId, setCookie, sageApi]);
 
 	useEffect(() => {
 		if (user && user.css) {
@@ -76,7 +76,7 @@ export function UserProvider(props) {
 	if (!user)
 		return (
 			<>
-				<h1> Project name: {projectName} </h1>
+				<h1> Project name: {projectId} </h1>
 				<Input
 					placeholder="Login"
 					autoFocus

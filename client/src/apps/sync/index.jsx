@@ -31,14 +31,14 @@ export function ContentExporter() {
 			templates: exportType === 'full' || exportType === 'templates',
 		};
 		let content = await sageApi.project.getContent(params);
-		let projectName = sageApi.projectName;
+		let projectId = sageApi.projectId;
 
 		let date = Date.now();
 		let data = JSON.stringify(content, undefined, 2);
 		const element = document.createElement('a');
 		const file = new Blob([data], { type: 'text/plain' });
 		element.href = URL.createObjectURL(file);
-		element.download = `content_dump_${projectName}_${date}.json`; // TODO: add_date and project
+		element.download = `content_dump_${projectId}_${date}.json`; // TODO: add_date and project
 		document.body.appendChild(element); // Required for this to work in FireFox
 		element.click();
 	};

@@ -1,7 +1,7 @@
 import { Button, Input } from 'antd';
 import { useState } from 'react';
 import { useProject } from '../../contexts/project';
-import { migrator } from './migrators/11.08.22_removeNulls';
+import { migrator } from './migrators/13.08.22_templateRevisions';
 
 const { TextArea } = Input;
 
@@ -11,9 +11,9 @@ export default function Migrator() {
 
 	const applyMigrator = async () => {
 		let content = await sageApi.project.getContent({ objects: true, templates: true });
-		let { objects } = migrator(content);
-		setResult(JSON.stringify(objects, undefined, 2));
-		sageApi.project.migrate({ objects });
+		let migrated = migrator(content);
+		setResult(JSON.stringify(migrated, undefined, 2));
+		sageApi.project.migrate(migrated);
 	};
 
 	return (
