@@ -1,4 +1,6 @@
 import { useEffect, useState, useCallback } from 'react';
+import { useGameApi } from '../../contexts/gameApi';
+import { useForge } from '../../contexts/forge';
 import { usePlayer } from '../../contexts/player';
 import { Session } from '../../game';
 import GameClient from '../../components/gameClient';
@@ -9,20 +11,7 @@ import { Button } from 'antd';
 import './style.css';
 import './style.scss';
 
-
-const apiConfig = {
-	modules: [
-		'game',
-	],
-	auth: './game/auth',
-}
-
 const NftCard = (props) => {
-	console.log(props.image)
-	// return <div className='nft'>
-	// 	<img className='nft-image' src={props.image}/>
-	// 	<div className='nft-name'>{props.name}</div>
-	// </div>;
 	return <div className="nft">
       <img className="nft-image" src={props.image} alt="" />
         <div className="nft-name">
@@ -40,53 +29,61 @@ const NftBar = (props) => {
 }
 
 const Menu = (props) => {
-	const { nfts, loadNfts } = usePlayer();
-	const [ nftsRequested, setNftsRequested ] = useState(false)
+	const { gameApi } = useGameApi();
+	const { forge } = useForge();
+	const { nfts } = usePlayer();
+	const [ forgedNfts, setForgedNfts ] = useState();
+	const [ contentVersion, setContentVersion ] = useState();
 
 	useEffect(() => {
-		if (!loadNfts) return;
-		if (!nfts) {
-			if (nftsRequested) return;
-			setNftsRequested(true)
-			loadNfts();
-			return;
-		}
-		console.log(nfts)
-	}, [ nfts, loadNfts, nftsRequested ])
+		gameApi.game.getContentVersion().then(setContentVersion);
+	}, [ gameApi ])
+
+	useEffect(() => {
+		if (!nfts) return;
+		if (!contentVersion) return;
+		if (!forge) return;
+		forge.getNfts(nfts, contentVersion).then(setForgedNfts);
+	}, [ forge, nfts, contentVersion ]);
 
 
-
+	const createGame = useCallback(() => {
+		if (!forgedNfts) return;
+		let playerNfts = forgedNfts.map(nft => nft.mint);
+		gameApi.game.startNewGame({ nfts: playerNfts }).then(props.onCreateGame)
+	}, [ forgedNfts ])
 
 	return <div className='menu-bg'>
-		{nfts && <NftBar nfts={nfts}/>}
-		<div className="start-button" onClick={props.onCreateGame}>
+		{forgedNfts && <NftBar nfts={forgedNfts}/>}
+		{forgedNfts && <div className="start-button" onClick={createGame}>
 			<span></span>
 			<span></span>
 			<span></span>
 			<span></span>
 			Start new game
-		</div>
+		</div>}
 	</div>
 }
 
 export const GameTest = () => {
-	const { publicKey, loadNfts } = usePlayer();
+	const { gameApi } = useGameApi();
 	const [ log, setLog ] = useState([]);
 	const [ step, setStep ] = useState(0);
 	const [ gameSession, setGameSession ] = useState();
-	const [ gameApi, setGameApi ] = useState();
 	const [ status, setStatus ] = useState();
+	const { forge } = useForge();
 
 	const loadGame = async (game) => {
-		let contentVersion = game.contentVersion;
-		let cnt = await gameApi.game.getContentVersion({ contentVersion })
-		if (!cnt) return;
+		let contentVersionNumber = game.contentVersion;
+		let contentVersion = await gameApi.game.getContentVersion({ contentVersion: contentVersionNumber })
+		if (!contentVersion) return;
 		let id = game._id;
-		let content = cnt.content;
-		let nfts = game.nfts;
+		let nfts = game.nfts[0];
+		nfts = await forge.getNfts(nfts, contentVersion);
+		let content = contentVersion.content;
 		let log = game.log;
 		let seed = game.seed;
-		let layoutPresets = [ 'core', 'tech demo', 'starting creatures' ];
+		let layoutPresets = [ 'core', 'EA' ]; // TODO: get from content
 		let session = new Session({
 			id,
 			content,
@@ -100,22 +97,13 @@ export const GameTest = () => {
 		setStatus('ingame');
 	}
 
-	const createGame = async () => {
-		let game = await gameApi.game.startNewGame()
-		if (game) {
-			loadGame(game)
-		}
+	const onCreateGame = (game) => {
+		loadGame(game);
 	}
 
 	useEffect(() => {
-		if (!publicKey) return;
-		let api = new SolceryAPIConnection('game_eclipse', apiConfig);
-		api.setSession(publicKey.toBase58());
-		setGameApi(api); // TODO: config
-	}, [ publicKey ]);
-
-	useEffect(() => {
 		if (!gameApi) return;
+		if (!forge) return;
 		gameApi.game.getPlayerOngoingGame().then(game => {
 			if (game === null) {
 				setStatus('idle');
@@ -123,7 +111,7 @@ export const GameTest = () => {
 				loadGame(game);
 			}
 		})
-	}, [ gameApi ])
+	}, [ forge, gameApi ])
 
 	const leaveGame = useCallback(() => {
 		if (!gameSession) return;
@@ -134,7 +122,7 @@ export const GameTest = () => {
 
 	if (!status) return <>Loading</>;
 
-	if (!gameSession) return <Menu onCreateGame={createGame}/>;
+	if (!gameSession) return <Menu onCreateGame={onCreateGame}/>;
 
 	return (<>
 		<a onClick={leaveGame} className="close-button"/>

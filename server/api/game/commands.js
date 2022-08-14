@@ -14,11 +14,10 @@ commands.getPlayerOngoingGame = {
 	params: {},
 };
 
+// Returns content version. Latest if not specified.
 commands.getContentVersion = {
 	params: {
-		contentVersion: {
-			required: true
-		},
+		contentVersion: true,
 	},
 };
 
