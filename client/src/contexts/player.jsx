@@ -12,29 +12,26 @@ import {
 import { clusterApiUrl, PublicKey } from '@solana/web3.js';
 
 import { Metaplex, keypairIdentity, bundlrStorage } from "@metaplex-foundation/js";
-import { SolceryAPIConnection } from '../api';
+import { useGameApi } from './gameApi';
 
-// Default styles that can be overridden by your app
 require('@solana/wallet-adapter-react-ui/styles.css');
 
-export const Player: FC = (props) => {
+export const PlayerProvider: FC = (props) => {
     const network = WalletAdapterNetwork.Mainnet;
 
     const endpoint = useMemo(() => clusterApiUrl(network), [network]);
 
-    const wallets = useMemo(
-        () => [
-            new PhantomWalletAdapter(),
-        ],
-        [network]
-    );
+    const wallets = useMemo(() => [
+        new PhantomWalletAdapter(),
+    ],
+    [network]);
 
     return (
         <ConnectionProvider endpoint={endpoint}>
             <WalletProvider wallets={wallets}>
-                <PlayerProvider>
+                <PlayerProfileProvider>
                     {props.children}
-                </PlayerProvider>
+                </PlayerProfileProvider>
             </WalletProvider>
         </ConnectionProvider>
     );
@@ -50,93 +47,45 @@ const fakeNfsMints = [
     '8d8LPkDPd7E2smvTnVXaWmDMUJ15DCJuRXZNZaGEJV8o', // OkayBear
 ]
 
-const checkNftForAllCollections = (nft, collections) => {
-    for (let collection of collections) {
-        if (checkNftForCollection(nft, collection)) return collection;
-    }
-}
-
-
-const checkNftForCollection = (nft, collection) => {
-    let collectionFields = collection.fields
-    if (collectionFields.symbol !== nft.symbol) return false;
-    let verifiedCreators = nft.creators.filter(creator => creator.verified);
-    for (let creator of verifiedCreators) {
-        if (!collectionFields.creators.includes(creator.address.toBase58())) return false;
-    }
-    if (collectionFields.vc) {
-        if (!nft.collection) return false;
-        if (!nft.collection.verified) return false;
-        if (nft.collection.key.toBase58() !== collectionFields.vc) return false;
-    }
-    return true;
-}
-
 const PlayerContext = React.createContext(undefined);
 
-
-const PlayerProvider = (props) => {
+const PlayerProfileProvider = (props) => {
+    const { gameApi } = useGameApi();
     const { connected, publicKey, wallet } = useWallet();
-    const [ nfts, setNfts ] = useState();
-    const [ nftMints, setNftMints ] = useState();
     const { connection } = useConnection();
 
-    const sageApi = new SolceryAPIConnection('nfts', { modules: [ 'template' ]});
-
-    const loadNfts = async () => {
-        if (!wallet) return;
-        let mints = fakeNfsMints.map(stringMintPubkey => new PublicKey(stringMintPubkey))
-
-        const metaplex = Metaplex.make(connection)
-            .use(keypairIdentity(wallet))
-            .use(bundlrStorage());
-
-        const nftDatas = await metaplex
-            .nfts()
-            .findAllByMintList(mints)
-            .run();
-
-        let collections = await sageApi.template.getAllObjects({ template: 'collections' })
-
-        let res = [];
-        for (let nft of nftDatas) {
-            let collection = checkNftForAllCollections(nft, collections);
-            if (!collection) return undefined;
-            res.push({ nft, collection });
-        }
-        let loadedNfts = await Promise.all(res.map(async ({ nft, collection }) => ({
-            collection,
-            nft: await metaplex.nfts().loadNft(nft).run(),
-        })));
-        loadedNfts = loadedNfts.map(({ nft, collection }) => ({
-            collection: collection._id,
-            name: nft.name,
-            image: nft.json.image, 
-            mint: nft.mint.address.toBase58(),
-        }));
-        setNfts(loadedNfts);
-    }
+    const [ ready, setReady ] = useState(false);
+    const [ nfts, setNfts ] = useState();
 
     useEffect(() => {
-        if (!connection || !publicKey) return;
-        //fake nfts
+        if (!wallet) return;
+        // let mints = fakeNfsMints.map(stringMintPubkey => new PublicKey(stringMintPubkey));
+        setNfts(fakeNfsMints);
     }, [ connected, publicKey, connection ])
 
-    if (!connected) return (<>
+    useEffect(() => {
+        if (!gameApi) return;
+        if (!publicKey) return;
+        if (!nfts) return;
+        gameApi.setSession(publicKey.toBase58());
+        setReady(true);
+    }, [ nfts, gameApi, publicKey ])
+
+    if (!connected || !ready) return (<>
         <WalletModalProvider>
             <WalletMultiButton />
             <WalletDisconnectButton />
         </WalletModalProvider>
     </>);
 
-    return (<PlayerContext.Provider value ={{ publicKey, nfts, loadNfts }}>
+    return (<PlayerContext.Provider value ={{ publicKey, nfts }}>
         { props.children }
     </PlayerContext.Provider>);
 }
 
 export function usePlayer() {
-    const { publicKey, nfts, loadNfts } = useContext(PlayerContext);
-    return { publicKey, nfts, loadNfts };
+    const { publicKey, nfts } = useContext(PlayerContext);
+    return { publicKey, nfts };
 }
 
 
