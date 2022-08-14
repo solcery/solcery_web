@@ -1,6 +1,5 @@
 const commands = {};
 
-
 commands.startNewGame = {
 	private: true,
 	params: {

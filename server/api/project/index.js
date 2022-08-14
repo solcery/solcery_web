@@ -109,18 +109,20 @@ funcs.release = async function (data) {
     .getDb(gameDbName)
     .collection(VERSIONS_COLLECTION)
     .count();
+  let version = count + 1;
   let dist = {
     _id: new ObjectId(),
-    version: count + 1,
+    version,
     content: {
       web: data.params.contentWeb,
       unity: data.params.contentUnity
     }
   }
-  return await db
+  await db
     .getDb(gameDbName)
     .collection(VERSIONS_COLLECTION)
     .insertOne(dist);
+  return version;
 };
 
 funcs.getConfig = async function (data) {

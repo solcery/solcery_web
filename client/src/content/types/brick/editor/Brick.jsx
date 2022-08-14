@@ -47,7 +47,7 @@ function BrickName(props) {
 
 
 export default function Brick(props) {
-	let { projectName } = useProject();
+	let { projectId } = useProject();
 	let { addHotkey, removeHotkey } = useHotkeyContext();
 	const hotkeyIds = useRef({})
 
@@ -87,7 +87,7 @@ export default function Brick(props) {
 
 	const onDoubleClick = () => {
 		let objId = brick.func.split('.')[1];
-		window.open(`/${projectName}/template/customBricks/${objId}/brick`, '_blank', 'noopener');
+		window.open(`/${projectId}/template/customBricks/${objId}/brick`, '_blank', 'noopener');
 	};
 
 	const copy = () => {

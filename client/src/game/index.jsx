@@ -118,8 +118,8 @@ export class Game {
 				let collection = Object.values(this.content.collections)
 					.find(obj => obj.collection === nft.collection);
 				if (!collection) continue;
-				let enitity = this.createEntity(collection.cardType, collection.place, collection.initAction);
-				nft.entityId = enitity.id;
+				let entity = this.createEntity(collection.cardType, collection.place, collection.initAction);
+				nft.entityId = entity.id;
 			}
 		}
 	};

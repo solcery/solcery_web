@@ -40,7 +40,6 @@ class SStruct {
 		if (!value) return {};
 		let res = {};
 		for (let field of this.fields) {
-			console.log(field);
 			if (value[field.code]) {
 				res[field.code] = field.type.clone(value[field.code]);
 			}
