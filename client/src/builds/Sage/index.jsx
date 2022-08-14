@@ -16,7 +16,10 @@ import Migrator from '../../apps/migrator';
 import PlayPage from '../../apps/playPage';
 import Builder from '../../apps/builder';
 import Profile from '../../apps/profile';
+import Home from '../../apps/home';
+import Validator from '../../apps/validator';
 import ApiLogs from '../../apps/apiLogs';
+import ProjectConfig from '../../apps/projectConfig';
 import BrickEditor from '../../apps/brickEditor';
 
 export default function Sage() {
@@ -26,7 +29,7 @@ export default function Sage() {
 				<HotkeyProvider>
 					<BrowserRouter>
 						<Routes>
-							<Route path=":projectName" element={<ProjectProvider />}>
+							<Route path=":projectId" element={<ProjectProvider />}>
 								<Route path="" element={<TopMenu style={{ backgroundColor: 'black' }} />}>
 									<Route path="template">
 										<Route path=":templateCode" element={<TemplateProvider />}>
@@ -45,6 +48,9 @@ export default function Sage() {
 									<Route path="export" element={<ContentExporter />} />
 									<Route path="import" element={<ContentImporter />} />
 									<Route path="profile" element={<Profile />} />
+									<Route path="config" element={<ProjectConfig />} />
+									<Route path="validator" element={<Validator/>} />
+									<Route exact path="" element={<Home/>} />
 								</Route>
 							</Route>
 						</Routes>

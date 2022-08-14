@@ -16,8 +16,9 @@ const apiConfig = {
 const ProjectContext = React.createContext(undefined);
 
 export function ProjectProvider(props) {
-	let { projectName } = useParams();
+	let { projectId } = useParams();
 	let [sageApi, setSageApi] = useState();
+	let [ projectConfig, setProjectConfig ] = useState();
 
 	const setUserSession = useCallback(
 		(session) => {
@@ -27,13 +28,19 @@ export function ProjectProvider(props) {
 	);
 
 	useEffect(() => {
-		if (!projectName) return;
-		document.title = `${projectName} - Sage`;
-		setSageApi(new SolceryAPIConnection(projectName, apiConfig));
-	}, [projectName]);
+		if (!projectConfig) return;
+		document.title = `${projectConfig.projectName} - Sage`;
+	}, [ projectConfig ])
+
+	useEffect(() => {
+		if (!projectId) return;
+		let api = new SolceryAPIConnection(projectId, apiConfig)
+		setSageApi(api);
+		api.project.getConfig().then(res => setProjectConfig(res.fields))
+	}, [ projectId ]);
 
 	return (
-		<ProjectContext.Provider value={{ projectName, sageApi, setUserSession }}>
+		<ProjectContext.Provider value={{ projectId, sageApi, setUserSession, projectConfig }}>
 			<UserProvider>
 				<BrickLibraryProvider>
 					<Outlet />
@@ -44,6 +51,6 @@ export function ProjectProvider(props) {
 }
 
 export function useProject() {
-	const { projectName, sageApi, setUserSession } = useContext(ProjectContext);
-	return { projectName, sageApi, setUserSession };
+	const { projectId, sageApi, setUserSession, projectConfig } = useContext(ProjectContext);
+	return { projectId, sageApi, setUserSession, projectConfig };
 }

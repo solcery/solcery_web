@@ -95,7 +95,7 @@ export default function Brick(props) {
 		notify({
 			message: 'Brick copied',
 			description: brickJson.substring(0, 30) + '...',
-			color: '#DDFFDD',
+			type: 'success',
 		});
 		navigator.clipboard.writeText(brickJson);
 	};
@@ -112,7 +112,7 @@ export default function Brick(props) {
 				notify({
 					message: 'Invalid brickTree format in clipboard',
 					description: clipboardContents,
-					color: '#FFDDDD',
+					type: 'error',
 				});
 			}
 			if (!pastedBrickTree) return; // TODO: add validation

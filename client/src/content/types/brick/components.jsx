@@ -48,7 +48,6 @@ export const ValueRender = (props) => {
 	const [brickParams, setBrickParams] = useState(props.defaultValue ? props.defaultValue.brickParams : []);
 	const { readonlyBricks } = useUser();
 	const navigate = useNavigate();
-	const element = useRef();
 
 	const onChangeBrickParams = (bp) => {
 		props.onChange({ brickParams: bp, brickTree: brickTree.current });
@@ -59,47 +58,40 @@ export const ValueRender = (props) => {
 		path = props.path.objectId + '/' + path;
 	}
 
-
-	const onLoad = () => {
-		if (props.autoScroll && element.current) {
-			element.current.scrollIntoView({ block: 'center' });
-		}
+	let onElementLoad; 
+	if (props.onElementLoad) {
+		onElementLoad = (element) => props.onElementLoad(props.path, element);
 	}
+	
 	let brickTreeEditor = ( //TODO: Optimize
 		<BrickTreeEditor
 			brickParams={brickParams}
 			brickType={props.type.brickType ?? 'any'}
 			brickTree={brickTree.current}
-			autoScroll={props.autoScroll}
-			onLoad={onLoad}
+			onElementLoad={onElementLoad}
 		/>
 	);
-	return (
-		<>
-			{props.type.params && (
-				<paramMapType.valueRender
-					defaultValue={brickParams}
-					type={paramMapType}
-					onChange={props.onChange && onChangeBrickParams}
-					path={{ ...props.path, fieldPath: [...props.path.fieldPath, 'brickParams'] }}
-				/>
-			)}
-			{props.onChange || readonlyBricks ? (
-				<div
-					ref={element}
-					onClick={() => {
-						navigate(path);
-					}}
-				>
-					{brickTreeEditor}
-				</div>
-			) : (
-				<Popover content={brickTreeEditor}>
-					<Link to={path}>{brickTree.current ? `Brick. ${props.type.brickType ?? 'any'}` : 'Empty'}</Link>
-				</Popover>
-			)}
-		</>
-	);
+	return (<>
+		{props.type.params && (<paramMapType.valueRender
+			defaultValue={brickParams}
+			type={paramMapType}
+			onChange={props.onChange && onChangeBrickParams}
+			path={{ ...props.path, fieldPath: [...props.path.fieldPath, 'brickParams'] }}
+		/>)}
+		{props.onChange || readonlyBricks ? (
+			<div
+				onClick={() => {
+					navigate(path);
+				}}
+			>
+				{brickTreeEditor}
+			</div>
+		) : (
+			<Popover content={brickTreeEditor}>
+				<Link to={path}>{brickTree.current ? `Brick. ${props.type.brickType ?? 'any'}` : 'Empty'}</Link>
+			</Popover>
+		)}
+	</>);
 };
 
 export const BrickTreeEditor = (props) => {
@@ -135,12 +127,6 @@ export const BrickTreeEditor = (props) => {
 		}
 		setOwnBrickLibrary(bricks);
 	}, [brickLibrary, props.brickParams]);
-
-	useEffect(() => {
-		if (ownBrickLibrary) {
-			props.onLoad && props.onLoad();
-		}
-	}, [ props, props.onLoad, ownBrickLibrary ])
 
 	if (!ownBrickLibrary) return <>Loading...</>;
 	return (

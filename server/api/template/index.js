@@ -42,6 +42,7 @@ funcs.setSchema = async function (data) {
   schema._id = null;
   var values = {
     $set: {
+      revision: schema.revision + 1,
       name: schema.name,
       buildTargets: schema.buildTargets,
       fields: schema.fields,
