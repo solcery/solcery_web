@@ -5,9 +5,9 @@ const { GAMES_COLLECTION, VERSIONS_COLLECTION } = require("../../db/names");
 const funcs = {};
 
 funcs.startNewGame = async function (data) {
-  let contentVersion = data.params.contentVersion;
-  if (!contentVersion) {
-    contentVersion = await db
+  let version = data.params.contentVersion;
+  if (!version) {
+    version = await db
       .getDb(data.project)
       .collection(VERSIONS_COLLECTION)
       .count();
@@ -15,9 +15,9 @@ funcs.startNewGame = async function (data) {
   let content = await db
     .getDb(data.project)
     .collection(VERSIONS_COLLECTION)
-    .findOne({ contentVersion });
+    .findOne({ version });
   if (!content) {
-    throw new Error(`No content found with contentVersion ${contentVersion}!`)
+    throw new Error(`No content found with contentVersion ${version}!`)
   }
   let game = await db
     .getDb(data.project)
@@ -28,7 +28,7 @@ funcs.startNewGame = async function (data) {
   }
   let playerNfts =  data.params.nfts ? data.params.nfts : [];
   game = {
-    contentVersion,
+    contentVersion: version,
     players: [ data.userId ],
     nfts: [ playerNfts ],
     status: 'ongoing',
@@ -55,18 +55,17 @@ funcs.getPlayerOngoingGame = async function (data) {
 };
 
 funcs.getContentVersion = async function (data) {
-  let contentVersion = data.params.contentVersion;
-  if (!contentVersion) {
-    contentVersion = await db
+  let version = data.params.contentVersion;
+  if (!version) {
+    version = await db
       .getDb(data.project)
       .collection(VERSIONS_COLLECTION)
       .count();
   }
-  let query = { contentVersion }
   return await db
     .getDb(data.project)
     .collection(VERSIONS_COLLECTION)
-    .findOne({ contentVersion });
+    .findOne({ version });
 };
 
 funcs.action = async function (data) {

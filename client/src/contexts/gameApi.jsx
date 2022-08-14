@@ -16,24 +16,35 @@ const GameApiContext = React.createContext(undefined);
 export function GameApiProvider(props) {
 	let { projectId } = useParams();
 	let [gameApi, setGameApi] = useState();
-
+	let [ status, setStatus ] = useState();
 
 	useEffect(() => {
 		if (!projectId) return;
-		document.title = `${projectId} - Solcery`;
 		let projectCode = `game_${projectId}`;
-		setGameApi(new SolceryAPIConnection(projectCode, apiConfig));
+		let api = new SolceryAPIConnection(projectCode, apiConfig);
+		api.game.getContentVersion().then(res => { // TODO: game info
+			if (res) {
+				document.title = `${projectId} - Solcery`;
+				setStatus('ready');
+			}
+			else {
+				document.title = `404 - Solcery`;
+				setStatus('404');
+			}
+		});
+		setGameApi(api);
 	}, [ projectId ]);
 
-	return (
-		<GameApiContext.Provider value={{ gameApi }}>
-			<PlayerProvider>
-				<ForgeProvider>
-					<Outlet />
-				</ForgeProvider>
-			</PlayerProvider>
-		</GameApiContext.Provider>
-	);
+	if (!status) return <>Loading...</>;
+	if (status === '404') return <>No game found</>;
+
+	return (<GameApiContext.Provider value={{ gameApi }}>
+		<PlayerProvider>
+			<ForgeProvider>
+				<Outlet />
+			</ForgeProvider>
+		</PlayerProvider>
+	</GameApiContext.Provider>);
 }
 
 export function useGameApi() {
