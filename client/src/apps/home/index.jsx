@@ -34,11 +34,16 @@ export default function Home() {
 			contentWeb: res.constructed.web,
 			contentUnity: res.constructed.unity_local,
 		})
-		if (result.insertedId) {
+		if (result) {
 			notify({
 				message: 'Release successful!',
-				description: `Released version: 6`,
+				description: `Released version: ${result}`,
 				type: 'success'
+			})
+		} else {
+			notify({
+				message: 'Release failed!',
+				type: 'warning'
 			})
 		}
 	}
