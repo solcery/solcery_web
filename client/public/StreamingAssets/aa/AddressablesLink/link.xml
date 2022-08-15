@@ -13,10 +13,12 @@
     <type fullname="Solcery.Widgets_new.Eclipse.CardsContainer.PlaceWidgetEclipseLayout" preserve="all" />
     <type fullname="Solcery.Widgets_new.Eclipse.Effects.EclipseCardEffectLayout" preserve="all" />
     <type fullname="Solcery.Widgets_new.Eclipse.Nft.Card.EclipseCardNftInContainerWidgetLayout" preserve="all" />
+    <type fullname="Solcery.Widgets_new.Eclipse.Nft.CardFull.PlaceWidgetEclipseCardNftFullLayout" preserve="all" />
     <type fullname="Solcery.Widgets_new.Eclipse.Nft.Selector.PlaceWidgetEclipseNftSelectorLayout" preserve="all" />
     <type fullname="Solcery.Widgets_new.Eclipse.Tokens.ListTokensInContainerWidgetLayout" preserve="all" />
     <type fullname="Solcery.Widgets_new.Eclipse.Tokens.TokenInContainerWidgetLayout" preserve="all" />
     <type fullname="Solcery.Widgets_new.Eclipse.TokensStockpile.PlaceWidgetEclipseTokenStorageLayout" preserve="all" />
+    <type fullname="Solcery.Widgets_new.PlaceWidgetCaptionLayout" preserve="all" />
     <type fullname="Solcery.Widgets_new.Simple.Buttons.PlaceWidgetButtonLayout" preserve="all" />
     <type fullname="Solcery.Widgets_new.Simple.Pictures.PlaceWidgetPictureLayout" preserve="all" />
     <type fullname="Solcery.Widgets_new.Simple.Titles.PlaceWidgetTextLayout" preserve="all" />
