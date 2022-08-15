@@ -1,13 +1,14 @@
 const apiConfig = {
 	modules: [
 		{
-			name: 'project',
-			path: './project',
+			name: 'game',
+			path: './game',
 		},
 		{
 			name: 'template',
 			path: './template',
-		}
+		},
+
 	],
 	auth: './player/auth',
 }
