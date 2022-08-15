@@ -14,7 +14,7 @@ import { clusterApiUrl, PublicKey } from '@solana/web3.js';
 import { Metaplex, keypairIdentity, bundlrStorage } from "@metaplex-foundation/js";
 import { useGameApi } from './gameApi';
 
-require('@solana/wallet-adapter-react-ui/styles.css');
+// require('@solana/wallet-adapter-react-ui/styles.css');
 
 export const PlayerProvider: FC = (props) => {
     const network = WalletAdapterNetwork.Mainnet;
@@ -56,6 +56,10 @@ const PlayerProfileProvider = (props) => {
 
     const [ ready, setReady ] = useState(false);
     const [ nfts, setNfts ] = useState();
+    const [ ConnectionComponent, setConnectionComponent ] = useState(<WalletModalProvider>
+        <WalletMultiButton/>
+        <WalletDisconnectButton />
+    </WalletModalProvider>);
 
     useEffect(() => {
         if (!wallet) return;
@@ -71,21 +75,14 @@ const PlayerProfileProvider = (props) => {
         setReady(true);
     }, [ nfts, gameApi, publicKey ])
 
-    if (!connected || !ready) return (<>
-        <WalletModalProvider>
-            <WalletMultiButton />
-            <WalletDisconnectButton />
-        </WalletModalProvider>
-    </>);
-
-    return (<PlayerContext.Provider value ={{ publicKey, nfts }}>
+    return (<PlayerContext.Provider value ={{ publicKey: ready ? publicKey : undefined, nfts, ConnectionComponent }}>
         { props.children }
     </PlayerContext.Provider>);
 }
 
 export function usePlayer() {
-    const { publicKey, nfts } = useContext(PlayerContext);
-    return { publicKey, nfts };
+    const { publicKey, nfts, ConnectionComponent } = useContext(PlayerContext);
+    return { publicKey, nfts, ConnectionComponent };
 }
 
 

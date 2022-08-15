@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { useGameApi } from '../../contexts/gameApi';
 import { useForge } from '../../contexts/forge';
 import { usePlayer } from '../../contexts/player';
@@ -6,32 +6,120 @@ import { Session } from '../../game';
 import GameClient from '../../components/gameClient';
 import { SolceryAPIConnection } from '../../api';
 import BasicGameClient from '../../components/basicGameClient';
-import { Button } from 'antd';
+import { Button, Spin } from 'antd';
+import { CaretRightOutlined } from '@ant-design/icons';
 
-import './style.css';
+import './walletModal.css';
 import './style.scss';
 
-const NftCard = (props) => {
-	return <div className="nft">
-      <img className="nft-image" src={props.image} alt="" />
-        <div className="nft-name">
-          {props.name}
-        </div>
-    </div>;
+function delay(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+const AMPLITUDE = 7;
+const NEW_AMPLITUDE = 3;
+const NFT_PANEL_WIDTH = 1200;
+const NFT_WIDTH = 200;
+const MARGIN = 20;
+const DELAY = 40;
+
+const StartButton = (props) => {
+	const [ clicked, setClicked ] = useState(false);
+
+	const start = () => {
+    setClicked(true);
+		props.onClick && props.onClick();
+  }
+
+  let className = 'button-start';
+  if (clicked) {
+    className += ' success';
+  }
+
+	return <div onClick={start} className={className} href="#" role="button">
+    <span className='label'>PLAY</span>
+    <div className="icon">
+      <CaretRightOutlined size='big' className='play'/>
+      <Spin size='big' className='loading'/>
+    </div>
+  </div>;
+}
+
+const NftCard = (props) => {  
+
+  let offset = Math.min((NFT_PANEL_WIDTH - NFT_WIDTH) / (props.total - 1), NFT_WIDTH + MARGIN);
+  let globalOffset = 0;
+  if (offset === NFT_WIDTH + MARGIN) {
+    let requiredSpace = props.total * (NFT_WIDTH + MARGIN) - MARGIN;
+    let remainingSpace = NFT_PANEL_WIDTH - requiredSpace;
+    globalOffset = remainingSpace / 2;
+  }
+  
+  let middleIndex = Math.floor(props.total / 2);
+  let rotation = Math.floor((Math.random() * 2 - 1) * AMPLITUDE);
+  let newRotation = Math.floor((Math.random() * 2 - 1) * NEW_AMPLITUDE);
+  let animLength = DELAY * Math.abs(props.index - middleIndex);
+  let style = {
+    '--init-offset': (NFT_PANEL_WIDTH - NFT_WIDTH) / 2 + 'px',
+    '--rotation': rotation + 'deg',
+    '--offset': props.index * offset + globalOffset + 'px',
+    '--transition-delay': DELAY * Math.abs(props.index - middleIndex) + 'ms',
+    '--z-index': props.index + 10,
+    '--new-rotation': newRotation + 'deg',
+  }
+
+
+  return <div className={`card`} style={style}>
+    <div className={'card-face'} style = {{'--rotation': -newRotation + 'deg'}}>
+      <img src={props.image} className='nft-image' onLoad={props.onLoad}/>
+      <div className='nft-name'>
+        {props.name}
+      </div>
+    </div>
+  </div>;
 }
 
 const NftBar = (props) => {
-	return <>
-		<div className="collection">
-	    {props.nfts.map((nft, index) => <NftCard key={`nft_${index}`} image={nft.image} name={nft.name}/>)}	
-	    </div>
-    </>;
+  const [ open, setOpen ] = useState(false);
+  const ref = useRef();
+  const loaded = useRef(0);
+
+  const onLoad = () => {
+    loaded.current += 1;
+    if (loaded.current === props.nfts.length) {
+      delay(100).then(() => setOpen(true));
+    }
+  }
+
+  useEffect(() => {
+    if (!open) return;
+    if (!props.nfts) return;
+    delay(DELAY * props.nfts.length / 2).then(() => {
+      if (ref.current) {
+        ref.current.className += ' active';
+      }
+    });
+  }, [ open, props.nfts ])
+
+  let className = 'cards-split';
+  if (open) className = className + ' transition';
+
+  return <div ref={ref} className={className}>
+      {props.nfts.map((nft, index) => <NftCard 
+          total={props.nfts.length}
+          index={index}
+          key={`nft_${index}`} 
+          image={nft.image} 
+          name={nft.name}
+          onLoad={onLoad}
+      />)}  
+    </div>;
 }
 
 const Menu = (props) => {
 	const { gameApi } = useGameApi();
 	const { forge } = useForge();
-	const { nfts } = usePlayer();
+	const { nfts, publicKey, ConnectionComponent } = usePlayer();
 	const [ forgedNfts, setForgedNfts ] = useState();
 	const [ contentVersion, setContentVersion ] = useState();
 
@@ -53,16 +141,20 @@ const Menu = (props) => {
 		gameApi.game.startNewGame({ nfts: playerNfts }).then(props.onCreateGame)
 	}, [ forgedNfts ])
 
-	return <div className='menu-bg'>
+	return <div className='game-menu'>
+    <div className='bg'/>
+   	<div className='game-header'>
+      Eclipse
+    </div>
+    {!publicKey && <div className='auth'>
+    	<div className='auth-header'>
+    		Login
+    	</div>
+ 			{ConnectionComponent}
+    </div>}
 		{forgedNfts && <NftBar nfts={forgedNfts}/>}
-		{forgedNfts && <div className="start-button" onClick={createGame}>
-			<span></span>
-			<span></span>
-			<span></span>
-			<span></span>
-			Start new game
-		</div>}
-	</div>
+		{forgedNfts && <StartButton onClick={createGame}/>}
+	</div>;
 }
 
 export const GameTest = () => {
@@ -72,6 +164,7 @@ export const GameTest = () => {
 	const [ gameSession, setGameSession ] = useState();
 	const [ status, setStatus ] = useState();
 	const { forge } = useForge();
+	const { publicKey } = usePlayer();
 
 	const loadGame = async (game) => {
 		let contentVersionNumber = game.contentVersion;
@@ -103,6 +196,7 @@ export const GameTest = () => {
 
 	useEffect(() => {
 		if (!gameApi) return;
+		if (!publicKey) return;
 		if (!forge) return;
 		gameApi.game.getPlayerOngoingGame().then(game => {
 			if (game === null) {
@@ -111,23 +205,20 @@ export const GameTest = () => {
 				loadGame(game);
 			}
 		})
-	}, [ forge, gameApi ])
+	}, [ forge, gameApi, publicKey ])
 
 	const leaveGame = useCallback(() => {
 		if (!gameSession) return;
+		if (!window.confirm('Are you sure want to abandon current game?')) return;
 		gameApi.game.leaveGame({ gameId: gameSession.id }).then(response => {
 			setGameSession(undefined);
 		})
 	}, [ gameSession ])
 
-	if (!status) return <>Loading</>;
-
 	if (!gameSession) return <Menu onCreateGame={onCreateGame}/>;
 
 	return (<>
-		<a onClick={leaveGame} className="close-button"/>
-		<div>
-			<GameClient gameSession={gameSession}/>
-		</div>
+		<a onClick={leaveGame} className="button-close"/>
+		<GameClient gameSession={gameSession}/>
 	</>);
 }
