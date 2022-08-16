@@ -105,6 +105,9 @@ const NftBar = (props) => {
   if (open) className = className + ' transition';
 
   return <div ref={ref} className={className}>
+  	<div className={'cards-header'}>
+  		Your NFTs supported by Eclipse
+  	</div>
       {props.nfts.map((nft, index) => <NftCard 
           total={props.nfts.length}
           index={index}
@@ -145,6 +148,9 @@ const Menu = (props) => {
     <div className='bg'/>
    	<div className='game-header'>
       Eclipse
+   		<div className='game-subheader'>
+   			Early access: v0.12
+   		</div>
     </div>
     {!publicKey && <div className='auth'>
     	<div className='auth-header'>
