@@ -1,198 +1,190 @@
 {
   "nfts": [
     {
-      "id": 124,
+      "id": 100,
       "data": {
         "name": "Degen Ape 1",
-        "picture": "https://img-cdn.magiceden.dev/rs:fill:640:640:0:0/plain/https://arweave.net/AOdEP6TAawJJ8_Tj7olx7CFOElIgCQoOgg-STL8EwAU"
+        "picture": "https://i.ibb.co/HYhjQpR/degen-Apes.jpg"
       }
     },
     {
-      "id": 125,
+      "id": 101,
       "data": {
         "name": "SMB 1",
-        "picture": "https://img-cdn.magiceden.dev/rs:fill:640:640:0:0/plain/https://cdn.solanamonkey.business/gen2/3708.png"
+        "picture": "https://i.ibb.co/f2pnxKj/SMB.jpg"
       }
     },
     {
-      "id": 126,
+      "id": 102,
       "data": {
         "name": "Degen Dojo 1",
-        "picture": "https://img-cdn.magiceden.dev/rs:fill:640:640:0:0/plain/https://www.arweave.net/GZAuiMRByzailDArFqX0B721NWw-tqr5iplEu3e60iI?ext=png"
+        "picture": "https://i.ibb.co/Hq4P2vV/degen-Dojo.jpg"
       }
     },
     {
-      "id": 127,
+      "id": 103,
       "data": {
         "name": "Blocksmith 1",
-        "picture": "https://img-cdn.magiceden.dev/rs:fill:640:640:0:0/plain/https://bafybeiaesm5l6z2q6w4xuvdfu74fgk7ko45le3ubrdwm5ei5x6gpbl4wbq.ipfs.dweb.link/750.png?ext=png"
+        "picture": "https://i.ibb.co/VNdrMr2/blocksmiths.jpg"
       }
     },
     {
-      "id": 128,
+      "id": 104,
       "data": {
         "name": "Boryoku Dragon 1",
-        "picture": "https://arweave.net/kjXxDfx1TiuHO4bKijizEY7dmVySbivgD_f7C_E-fJI?ext=png"
+        "picture": "https://i.ibb.co/Q6RFRy0/boryoku-Dragonz.jpg"
       }
     },
     {
-      "id": 129,
+      "id": 105,
       "data": {
         "name": "Boryoku Baby Dragon 1",
-        "picture": "https://arweave.net/jaTDe3CUlGB5z9gww75KgPC1ZdG5ta1XiAB6fbNwKa8?ext=png"
+        "picture": "https://i.ibb.co/ySRv4y2/boryoku-Baby-Dragonz.jpg"
       }
     },
     {
-      "id": 130,
+      "id": 106,
       "data": {
         "name": "SOLGod 1",
-        "picture": "https://www.arweave.net/jphLiZeVDzYx8jsS0wJ3RKOOAWEv_HxQMn6j82RkVQk?ext=png"
+        "picture": "https://i.ibb.co/27VWMzD/solGods.jpg"
       }
     },
     {
-      "id": 131,
+      "id": 107,
       "data": {
         "name": "DeGod 1",
-        "picture": "https://img-cdn.magiceden.dev/rs:fill:640:640:0:0/plain/https://metadata.degods.com/g/2103-dead.png"
+        "picture": "https://i.ibb.co/KKD1tKR/deGods.jpg"
       }
     },
     {
-      "id": 132,
+      "id": 108,
       "data": {
         "name": "Okay Bear 1",
-        "picture": "https://img-cdn.magiceden.dev/rs:fill:640:640:0:0/plain/https://bafybeie6ym6thyv6rjx3xxoezqdr4jf2sgqqfwsilfyvzke7ddlmkabyve.ipfs.dweb.link/4877.png?ext=png"
+        "picture": "https://i.ibb.co/y55sR4L/okay-Bears.jpg"
       }
     },
     {
-      "id": 133,
       "data": {
         "name": "Orc 1",
-        "picture": "https://img-cdn.magiceden.dev/rs:fill:640:640:0:0/plain/https://arweave.net/uIPT0SZBOChNOM7UJLd3fMTiesGCzZiBd1tKj87Py-8"
+        "picture": "https://i.ibb.co/n6p6Ctk/orks.jpg"
       }
     },
     {
-      "id": 134,
+      "id": 109,
       "data": {
         "name": "Catalina Whale 1",
-        "picture": "https://img-cdn.magiceden.dev/rs:fill:640:640:0:0/plain/https://www.arweave.net/KKnOmS1fJdIDic3hFkH6Alq5mgRBcthyXkVU4EFOeAo?ext=png"
+        "picture": "https://i.ibb.co/9ytdCWC/catalina-Whales.jpg"
       }
     },
     {
-      "id": 135,
+      "id": 110,
       "data": {
         "name": "Grim 1",
-        "picture": "https://img-cdn.magiceden.dev/rs:fill:640:640:0:0/plain/https://www.arweave.net/kxe608LwVJq_0pOtgmAForsP2kzkneCd_Z8meVeupC4?ext=png"
+        "picture": "https://i.ibb.co/PF3vDwd/grims.jpg"
       }
     }
   ],
   "card_types": [
     {
-      "id": 617,
+      "id": 344,
       "override_fields": [
         "name",
         "picture"
       ]
     },
     {
-      "id": 621,
+      "id": 357,
       "override_fields": [
         "name",
         "picture"
       ]
     },
     {
-      "id": 624,
+      "id": 367,
       "override_fields": [
         "name",
         "picture"
       ]
     },
     {
-      "id": 626,
+      "id": 369,
       "override_fields": [
         "name",
         "picture"
       ]
     },
     {
-      "id": 630,
+      "id": 371,
       "override_fields": [
         "name",
         "picture"
       ]
     },
     {
-      "id": 660,
+      "id": 382,
       "override_fields": [
         "name",
         "picture"
       ]
     },
     {
-      "id": 668,
+      "id": 387,
       "override_fields": [
         "name",
         "picture"
       ]
     },
     {
-      "id": 678,
+      "id": 391,
       "override_fields": [
         "name",
         "picture"
       ]
     },
     {
-      "id": 693,
+      "id": 417,
       "override_fields": [
         "name",
         "picture"
       ]
     },
     {
-      "id": 696,
+      "id": 434,
       "override_fields": [
         "name",
         "picture"
       ]
     },
     {
-      "id": 699,
+      "id": 447,
       "override_fields": [
         "name",
         "picture"
       ]
     },
     {
-      "id": 708,
+      "id": 455,
       "override_fields": [
         "name",
         "picture"
       ]
     },
     {
-      "id": 762,
+      "id": 496,
       "override_fields": [
         "name",
         "picture"
       ]
     },
     {
-      "id": 765,
+      "id": 515,
       "override_fields": [
         "name",
         "picture"
       ]
     },
     {
-      "id": 781,
-      "override_fields": [
-        "name",
-        "picture"
-      ]
-    },
-    {
-      "id": 782,
+      "id": 516,
       "override_fields": [
         "name",
         "picture"
