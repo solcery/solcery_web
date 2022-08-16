@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { GameApiProvider } from '../../contexts/gameApi';
 import { GameTest } from '../../apps/game';
 
@@ -11,6 +11,7 @@ export default function Game() {
 				<Route path=":projectId" element={<GameApiProvider />}>
 					<Route path="" element={<GameTest/>}/>
 				</Route>
+				<Route exact path="" element={<Navigate to="/eclipse" />}/>
 			</Routes>
 		</BrowserRouter>
 	);
