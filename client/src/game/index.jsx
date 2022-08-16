@@ -1,4 +1,5 @@
 import { BrickRuntime } from '../content/brickLib';
+import { notify } from '../components/notification';
 
 const STATE_TYPES = {
 	state: 0,
@@ -15,6 +16,10 @@ const objectToArray = (obj) => {
 export class Session {
 	
 	start() {
+		if (this.game) {
+			delete this.game;
+			this.game = new Game(this);
+		}
 		this.game.start(this.layoutPresets, this.nfts);
 		for (let command of this.log) {
 			this.applyCommand(command)
@@ -81,9 +86,18 @@ export class Session {
 		return this.game.diffLog;
 	}
 
+	onServerCommandFail = (oldLog) => {
+		this.log = oldLog;
+		this.start();
+	}
+
 	onPlayerCommand = async (command) => {
 		if (this.gameApi) { // server-based game
-			await this.gameApi.game.action({ gameId: this.id, action: command });
+			let oldLog = [ ...this.log ];
+			this.gameApi.game.action({ gameId: this.id, action: command }).then(
+				(res) => { console.log(res) }, 
+				() => this.onServerCommandFail(oldLog)
+			);	
 		}
 		this.log.push(command);
 		return this.applyCommand(command);

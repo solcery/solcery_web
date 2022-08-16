@@ -33,10 +33,21 @@
     font-size: 50px;
     text-align: center;
     vertical-align: middle;
-    line-height: 100px;
+    line-height: 90px;
     border-bottom: 1px solid #aaa;
     border-top: 1px solid #aaa;
     font-family: "Montserrat", sans-serif;
+
+    .game-subheader {
+      position: relative;
+      height: 20px;
+      line-height: 20px;
+      font-size: 15px;
+      bottom: 20px;
+      left: 0px;
+      text-align: center;
+      vertical-align: top;
+    }
   }
 
   .auth {
@@ -217,8 +228,17 @@ $transition: #{$speed} cubic-bezier(0.310, -0.105, 0.430, 1.400) transform;
   position: absolute;
   padding-bottom: 20px;
 
-  .title {
-    font-weight: 700;
+
+
+  .cards-header {
+    width: 100%;
+    top: -50px;
+    height: 50px;
+    position: absolute;
+    font-size: 30px;
+    text-align: center;
+    font-family: "Montserrat", sans-serif;
+    background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(0,0,0,0.4) 30%, rgba(0,0,0,0.4) 70%, rgba(255,255,255,0) 100%);
   }
 
   .card { 
