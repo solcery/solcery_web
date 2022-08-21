@@ -6,9 +6,8 @@
     "react-error-overlay": "6.0.9"
   },
   "dependencies": {
-    "@metaplex-foundation/js": "^0.13.2",
+    "@metaplex-foundation/js": "^0.15.0",
     "@metaplex-foundation/mpl-token-metadata": "^2.2.2",
-    "@metaplex/js": "^4.12.0",
     "@solana-mobile/wallet-adapter-mobile": "^0.0.1-alpha.7",
     "@solana/spl-token": "^0.2.0",
     "@solana/wallet-adapter-base": "^0.9.9",
