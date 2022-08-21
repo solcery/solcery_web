@@ -49,7 +49,8 @@ commands.release = {
 	params: {
 		gameProjectId: { required: true },
 		contentWeb: { required: true },
-		contentUnity: { required: true }
+		contentUnity: { required: true },
+		contentMeta: { required: true }
 	}
 }
 

@@ -25,9 +25,13 @@ export default function PlayPage() {
 			if (construction.status) {
 				construction.constructed.unity = construction.constructed.unity_local;
 				let content = construction.constructed;
+				let layout = layoutPresets;
+				if (!layout || layout.length === 0) {
+					layout = content.web.gameSettings.layout;
+				}
 				let session = new Session({
 					content,
-					layoutPresets,
+					layout,
 					nfts
 				});
 				session.start();

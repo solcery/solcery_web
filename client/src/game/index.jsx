@@ -20,7 +20,7 @@ export class Session {
 			delete this.game;
 			this.game = new Game(this);
 		}
-		this.game.start(this.layoutPresets, this.nfts);
+		this.game.start(this.layout, this.nfts);
 		for (let command of this.log) {
 			this.applyCommand(command)
 		}
@@ -38,7 +38,7 @@ export class Session {
 		this.seed = data.seed ?? 0;
 		this.runtime = new BrickRuntime(data.content.web, this.seed);
 		this.onCommand = data.onCommand;
-		this.layoutPresets = data.layoutPresets ?? [];
+		this.layout = data.layout ?? [];
 		this.nfts = data.nfts ?? [];
 		this.gameApi = data.gameApi;
 	}
@@ -119,10 +119,10 @@ export class Game {
 		}
 	}
 
-	start = (layoutPresets, nfts) => {
-		if (!layoutPresets) throw new Error('Error: Trying to initLayout without preset scheme');
+	start = (layout, nfts) => {
+		if (!layout) throw new Error('Error: Trying to initLayout without preset scheme');
 		for (let cardPack of Object.values(this.content.cards)) {
-			if (!layoutPresets.includes(cardPack.preset)) continue;
+			if (!layout.includes(cardPack.preset)) continue;
 			for (let i = 0; i < cardPack.amount; i++) {
 				this.createEntity(cardPack.cardType, cardPack.place, cardPack.initializer);
 			}

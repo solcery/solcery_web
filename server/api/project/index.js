@@ -6,7 +6,8 @@ const {
   LOGS_COLLECTION, 
   VERSIONS_COLLECTION, 
   GAME_PREFIX,
-  CONFIG_COLLECTION
+  CONFIG_COLLECTION,
+  GAME_INFO_COLLECTION
 } = require("../../db/names");
 
 const funcs = {};
@@ -114,10 +115,17 @@ funcs.release = async function (data) {
     _id: new ObjectId(),
     version,
     content: {
+      meta: data.params.contentMeta,
       web: data.params.contentWeb,
       unity: data.params.contentUnity
     }
   }
+  let gameSettings = data.params.contentMeta.gameSettings;
+  var update = { $set: gameSettings };
+  console.log(update)
+  await db.getDb(gameDbName)
+    .collection(GAME_INFO_COLLECTION)
+    .updateOne({}, update)
   await db
     .getDb(gameDbName)
     .collection(VERSIONS_COLLECTION)
