@@ -47,6 +47,7 @@ funcs.setSchema = async function (data) {
       buildTargets: schema.buildTargets,
       fields: schema.fields,
       menuOrder: schema.menuOrder,
+      singleton: schema.singleton,
     },
   };
   return await db.getDb(data.project)

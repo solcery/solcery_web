@@ -1,5 +1,6 @@
 import { SType, defaultFilter } from '../base';
 import { ValueRender } from './components';
+import { Template } from '../../template';
 
 class SLink {
 	static fromString = (data) => {
@@ -33,10 +34,12 @@ class SLink {
 	construct = (value, meta) => {
 		if (this.project) return value;
 		if (this.field) {
-			let tpl = meta.rawContent[this.templateCode];
-			let obj = tpl.objects.find((obj) => obj._id === value);
-			if (!obj) throw new Error('Error constructing link, no object!');
-			return tpl.template.fields[this.field].type.construct(obj.fields[this.field], meta); //TODO
+			let object = meta.content.objects.find(object => object._id === value && object.template === this.templateCode);
+			if (!object) throw new Error('Error constructing link, no object');
+			let schema = meta.content.templates.find(schema => schema.code === this.templateCode)
+			if (!schema) throw new Error('Error constructing link, no schema');
+			let template = new Template(schema)
+			return template.fields[this.field].type.construct(object.fields[this.field], meta); //TODO
 		}
 		return meta.getIntId(value);
 	};

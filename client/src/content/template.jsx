@@ -11,9 +11,11 @@ export class Template {
 		}
 	}
 
-	build = (object, meta) => {
-		let result = {};
-		result.id = meta.getIntId(object._id);
+	buildObject = (object, meta) => {
+		meta.object = object;
+		let result = {
+			id: meta.getIntId(object._id),
+		};
 		for (let field of Object.values(this.fields)) {
 			if (field.buildTargets && field.buildTargets[meta.target]) {
 				let buildCode = field.buildTargets[meta.target];
@@ -23,7 +25,44 @@ export class Template {
 			}
 		}
 		return result;
+		meta.object = undefined;
 	};
+
+	build = (content, meta) => {
+		if (!this.buildTargets) return;
+		let key = this.buildTargets[meta.target];
+		if (!key) return;
+		let objects;
+		objects = content.objects
+			.filter(object => object.template === this.code)
+			.filter(object => !this.singleton || object._id === this.singleton)
+			.map(object => this.buildObject(object, meta));
+		if (meta.target.includes('unity')) {
+			if (this.singleton) {
+				throw Error(`Error building template '${this.name}' - attempt to build singleton for Unity-related target`);
+			}
+			return {
+				key,
+				value: {
+					name: key,
+					objects,
+				}
+			}
+		}
+		if (meta.target.includes('web')) {
+			let value;
+			if (this.singleton) {
+				value = objects[0];
+			} else {
+				value = Object.fromEntries(objects.map(object => [ object.id, object ]));
+			}
+			return {
+				key,
+				value,
+			}
+		}
+		throw Error(`Error building template '${this.name}' - build target '${meta.target}' is not supported`);
+	}
 
 	validate = (object, meta) => {
 		Object.values(this.fields)

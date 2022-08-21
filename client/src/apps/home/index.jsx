@@ -19,7 +19,7 @@ export default function Home() {
 
 	const releaseProject = async () => {
 		let content = await sageApi.project.getContent({ objects: true, templates: true });
-		let res = await build({ targets: ['web', 'unity_local'], content });
+		let res = await build({ targets: ['web', 'web_meta', 'unity_local'], content });
 		if (!res.status) {
 			notify({
 				message: 'Release error',
@@ -33,6 +33,7 @@ export default function Home() {
 			gameProjectId: projectConfig.releaseProjectId,
 			contentWeb: res.constructed.web,
 			contentUnity: res.constructed.unity_local,
+			contentMeta: res.constructed.web_meta,
 		})
 		if (result) {
 			notify({
@@ -85,7 +86,7 @@ export default function Home() {
 					<p>Reason: {projectConfig.sync.reason}</p>
 				</>}
 				{!projectConfig.sync.isLocked &&
-					<Button onClick={syncContent}>Sync from {`[${projectConfig.parentProjectId}]`}</Button>
+					<Button onClick={syncContent}>Sync from {`[${projectConfig.sync.sourceProjectId}]`}</Button>
 				}		
 			</Card>}
 		</>

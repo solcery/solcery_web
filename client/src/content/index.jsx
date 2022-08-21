@@ -1,3 +1,4 @@
+import { getTable } from 'utils';
 import { BrickLibrary } from './brickLib';
 import { Template } from '../content/template';
 
@@ -63,7 +64,6 @@ export const build = ({ targets, content }) => {
 	if (!validationResult.status) {
 		return validationResult;
 	}
-	let result = Object.fromEntries(targets.map((target) => [target, {}]));
 	let meta = {
 		intIds: {},
 		objectCodes: {},
@@ -86,58 +86,40 @@ export const build = ({ targets, content }) => {
 			return this.objectCodes[code];
 		},
 	};
-	let templates = content.templates.map((template) => new Template(template));
-	let tpl = templates.map((template) => {
-		let objects = content.objects.filter((obj) => obj.template === template.code);
-		for (let obj of objects) {
-			meta.addIntId(obj._id);
-			if (obj.fields.code) {
-				meta.addObjectCode(obj._id, obj.fields.code);
-			}
-		}
-		return [template.code, { template, objects }];
-	});
-	meta.rawContent = Object.fromEntries(tpl);
 
-	meta.stringMacros = meta.rawContent.stringReplaceRules.objects
-		.filter((object) => object.fields.source && object.fields.result)
-		.map((object) => {
-			return {
-				source: object.fields.source,
-				result: object.fields.result,
-			};
-		});
+	// Preparing string object codes for macros
+	for (let obj of content.objects) {
+		meta.addIntId(obj._id);
+		if (obj.fields.code) {
+			meta.addObjectCode(obj._id, obj.fields.code);
+		}
+	}
+
+	// Preparing custom string macros
+	meta.stringMacros = content.objects
+		.filter(object => object.template === 'stringReplaceRules')
+		.filter(object => object.fields.source && object.fields.result)
+		.map(object => ({
+			source: object.fields.source,
+			result: object.fields.result,
+		}));
+
+	meta.content = content;
 
 	//Building target
+	let constructed = {}
 	for (let target of targets) {
-		let constructed = {};
+		constructed[target] = {};
 		meta.target = target;
-		for (let template of templates) {
-			if (template.buildTargets) {
-				let buildCode = template.buildTargets[target];
-				if (buildCode) {
-					constructed[buildCode] = meta.rawContent[template.code].objects
-						.filter((obj) => obj.fields.enabled)
-						.map((obj) => {
-							meta.object = obj;
-							return template.build(obj, meta);
-						});
-				}
-			}
-		}
-		if (target.includes('unity')) {
-			Object.entries(constructed).forEach(([name, objects]) => {
-				result[target][name] = { name, objects };
-			});
-		}
-		if (target === 'web') {
-			for (let [code, objects] of Object.entries(constructed)) {
-				result[target][code] = Object.fromEntries(objects.map((obj) => [obj.id, obj]));
-			}
+		for (let schema of content.templates) {
+			let template = new Template(schema);
+			let res = template.build(content, meta);
+			if (!res) continue;
+			constructed[target][res.key] = res.value;
 		}
 	}
 	return {
 		status: true,
-		constructed: result,
+		constructed,
 	};
 };
