@@ -120,7 +120,7 @@ const NftBar = (props) => {
 }
 
 const Menu = (props) => {
-	const { gameApi } = useGameApi();
+	const { gameApi, gameInfo } = useGameApi();
 	const { forge } = useForge();
 	const { nfts, publicKey, ConnectionComponent } = usePlayer();
 	const [ forgedNfts, setForgedNfts ] = useState();
@@ -144,12 +144,14 @@ const Menu = (props) => {
 		gameApi.game.startNewGame({ nfts: playerNfts }).then(props.onCreateGame)
 	}, [ forgedNfts ])
 
+
+	if (!gameInfo) return <>Loading</>;
 	return <div className='game-menu'>
-    <div className='bg'/>
+    <div className='bg' style={{ 'backgroundImage': `url(${gameInfo.lobbyBackground})` }}/>
    	<div className='game-header'>
-      Eclipse
+      {gameInfo.gameName}
    		<div className='game-subheader'>
-   			Early access: v0.12
+   			 {gameInfo.gameVersion}
    		</div>
     </div>
     {!publicKey && <div className='auth'>
@@ -182,11 +184,9 @@ export const GameTest = () => {
 		let content = contentVersion.content;
 		let log = game.log;
 		let seed = game.seed;
-		let layoutPresets = [ 'core', 'EA' ]; // TODO: get from content
 		let session = new Session({
 			id,
 			content,
-			layoutPresets,
 			nfts,
 			log,
 			gameApi,

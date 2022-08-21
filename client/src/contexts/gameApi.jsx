@@ -17,28 +17,28 @@ export function GameApiProvider(props) {
 	let { projectId } = useParams();
 	let [gameApi, setGameApi] = useState();
 	let [ status, setStatus ] = useState();
+	let [ gameInfo, setGameInfo ] = useState();
 
 	useEffect(() => {
 		if (!projectId) return;
 		let projectCode = `game_${projectId}`;
 		let api = new SolceryAPIConnection(projectCode, apiConfig);
-		api.game.getContentVersion().then(res => { // TODO: game info
+		api.game.getGameInfo().then(res => { // TODO: game info
 			if (res) {
-				document.title = `${projectId} - Solcery`;
+				setGameInfo(res);
+				setGameApi(api);
 				setStatus('ready');
 			}
 			else {
-				document.title = `404 - Solcery`;
 				setStatus('404');
 			}
 		});
-		setGameApi(api);
 	}, [ projectId ]);
 
 	if (!status) return <>Loading...</>;
-	if (status === '404') return <>No game found</>;
+	if (status === '404') return <>No game found</>; //TODO: proper 404 redirect
 
-	return (<GameApiContext.Provider value={{ gameApi }}>
+	return (<GameApiContext.Provider value={{ gameApi, gameInfo }}>
 		<PlayerProvider>
 			<ForgeProvider>
 				<Outlet />
@@ -48,6 +48,6 @@ export function GameApiProvider(props) {
 }
 
 export function useGameApi() {
-	const { gameApi } = useContext(GameApiContext);
-	return { gameApi };
+	const { gameApi, gameInfo } = useContext(GameApiContext);
+	return { gameApi, gameInfo };
 }
