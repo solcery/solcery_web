@@ -27,7 +27,7 @@ export default function PlayPage() {
 				let content = construction.constructed;
 				let layout = layoutPresets;
 				if (!layout || layout.length === 0) {
-					layout = content.web.gameSettings.layout;
+					layout = undefined; // TODO: empty layoutPresets should be undefined
 				}
 				let session = new Session({
 					content,

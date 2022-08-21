@@ -38,7 +38,7 @@ export class Session {
 		this.seed = data.seed ?? 0;
 		this.runtime = new BrickRuntime(data.content.web, this.seed);
 		this.onCommand = data.onCommand;
-		this.layout = data.layout ?? [];
+		this.layout = data.layout;
 		this.nfts = data.nfts ?? [];
 		this.gameApi = data.gameApi;
 	}
@@ -95,7 +95,7 @@ export class Session {
 		if (this.gameApi) { // server-based game
 			let oldLog = [ ...this.log ];
 			this.gameApi.game.action({ gameId: this.id, action: command }).then(
-				(res) => { console.log(res) }, 
+				() => {}, 
 				() => this.onServerCommandFail(oldLog)
 			);	
 		}
@@ -119,7 +119,8 @@ export class Game {
 		}
 	}
 
-	start = (layout, nfts) => {
+	start = (layoutOverride, nfts) => {
+		let layout = layoutOverride ?? this.content.gameSettings.layout;
 		if (!layout) throw new Error('Error: Trying to initLayout without preset scheme');
 		for (let cardPack of Object.values(this.content.cards)) {
 			if (!layout.includes(cardPack.preset)) continue;
