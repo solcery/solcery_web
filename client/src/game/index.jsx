@@ -1,4 +1,5 @@
 import { BrickRuntime } from '../content/brickLib';
+import { notify } from '../components/notification';
 
 const STATE_TYPES = {
 	state: 0,
@@ -15,7 +16,11 @@ const objectToArray = (obj) => {
 export class Session {
 	
 	start() {
-		this.game.start(this.layoutPresets, this.nfts);
+		if (this.game) {
+			delete this.game;
+			this.game = new Game(this);
+		}
+		this.game.start(this.layout, this.nfts);
 		for (let command of this.log) {
 			this.applyCommand(command)
 		}
@@ -33,7 +38,7 @@ export class Session {
 		this.seed = data.seed ?? 0;
 		this.runtime = new BrickRuntime(data.content.web, this.seed);
 		this.onCommand = data.onCommand;
-		this.layoutPresets = data.layoutPresets ?? [];
+		this.layout = data.layout ?? [];
 		this.nfts = data.nfts ?? [];
 		this.gameApi = data.gameApi;
 	}
@@ -81,9 +86,18 @@ export class Session {
 		return this.game.diffLog;
 	}
 
+	onServerCommandFail = (oldLog) => {
+		this.log = oldLog;
+		this.start();
+	}
+
 	onPlayerCommand = async (command) => {
 		if (this.gameApi) { // server-based game
-			await this.gameApi.game.action({ gameId: this.id, action: command });
+			let oldLog = [ ...this.log ];
+			this.gameApi.game.action({ gameId: this.id, action: command }).then(
+				(res) => { console.log(res) }, 
+				() => this.onServerCommandFail(oldLog)
+			);	
 		}
 		this.log.push(command);
 		return this.applyCommand(command);
@@ -105,10 +119,10 @@ export class Game {
 		}
 	}
 
-	start = (layoutPresets, nfts) => {
-		if (!layoutPresets) throw new Error('Error: Trying to initLayout without preset scheme');
+	start = (layout, nfts) => {
+		if (!layout) throw new Error('Error: Trying to initLayout without preset scheme');
 		for (let cardPack of Object.values(this.content.cards)) {
-			if (!layoutPresets.includes(cardPack.preset)) continue;
+			if (!layout.includes(cardPack.preset)) continue;
 			for (let i = 0; i < cardPack.amount; i++) {
 				this.createEntity(cardPack.cardType, cardPack.place, cardPack.initializer);
 			}

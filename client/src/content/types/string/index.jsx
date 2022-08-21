@@ -17,9 +17,8 @@ class SString {
 
 		// Applying macros
 		function applyLinkMacro(match, template, code) {
-			let templateObjects = meta.rawContent[template];
-			if (!templateObjects) return match;
-			let obj = templateObjects.objects.find((obj) => obj.fields.code === code);
+			let obj = meta.content.objects.find(obj => obj.fields.code === code && obj.template === template);
+			if (!obj) return match;
 			let intId = meta.getIntId(obj._id);
 			return `<link="${intId}">`;
 		}

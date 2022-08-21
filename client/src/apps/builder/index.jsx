@@ -36,8 +36,9 @@ export default function Builder() {
 		<Card title="Build settings">
 			<Select style={{ minWidth: '200px' }} mode="multiple" onChange={setTargets}>
 				<Option value="web">Web</Option>
+				<Option value="web_meta">Web-Meta</Option>
 				<Option value="unity">Unity</Option>
-				<Option value="unity_local">Unity local</Option>
+				<Option value="unity_local">Unity-Local</Option>
 			</Select>
 			<Button onClick={buildProject}>BUILD</Button>
 		</Card>
