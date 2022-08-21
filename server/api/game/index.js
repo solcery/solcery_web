@@ -1,8 +1,15 @@
 const db = require("../../db/connection");
 const { ObjectId } = require("mongodb");
-const { GAMES_COLLECTION, VERSIONS_COLLECTION } = require("../../db/names");
+const { GAMES_COLLECTION, VERSIONS_COLLECTION, GAME_INFO_COLLECTION } = require("../../db/names");
 
 const funcs = {};
+
+funcs.getGameInfo = async function (data) {
+  return await db
+    .getDb(data.project)
+    .collection(GAME_INFO_COLLECTION)
+    .findOne({});
+};
 
 funcs.startNewGame = async function (data) {
   let version = data.params.contentVersion;

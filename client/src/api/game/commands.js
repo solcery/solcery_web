@@ -1,5 +1,7 @@
 const commands = {};
 
+// Returns basic game info (Name, string version, supported NFTs etc)
+commands.getGameInfo = {};
 
 commands.startNewGame = {
 	private: true,
