@@ -83,6 +83,7 @@ const NftBar = (props) => {
   const [ open, setOpen ] = useState(false);
   const ref = useRef();
   const loaded = useRef(0);
+  const { gameInfo } = useGameApi();
 
   const onLoad = () => {
     loaded.current += 1;
@@ -104,19 +105,25 @@ const NftBar = (props) => {
   let className = 'cards-split';
   if (open) className = className + ' transition';
 
+  let text = `Your NFTs supported by ${gameInfo.gameName}`;
+  if (props.nfts.length === 0) {
+  	text = `You have no NFTs supported by ${gameInfo.gameName}`
+  }
+
   return <div ref={ref} className={className}>
   	<div className={'cards-header'}>
-  		Your NFTs supported by Eclipse
+  		{text}
   	</div>
-      {props.nfts.map((nft, index) => <NftCard 
-          total={props.nfts.length}
-          index={index}
-          key={`nft_${index}`} 
-          image={nft.image} 
-          name={nft.name}
-          onLoad={onLoad}
-      />)}  
-    </div>;
+    {props.nfts.length > 0 && props.nfts.map((nft, index) => <NftCard 
+        total={props.nfts.length}
+        index={index}
+        key={`nft_${index}`} 
+        image={nft.image} 
+        name={nft.name}
+        onLoad={onLoad}
+    />)}  
+    {props.nfts.length === 0 && <div></div>}
+   </div>;
 }
 
 const Menu = (props) => {
