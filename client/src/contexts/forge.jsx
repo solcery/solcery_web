@@ -49,7 +49,7 @@ export const ForgeProvider = (props) => {
             mints = mints.map(stringMintPubkey => new PublicKey(stringMintPubkey));
             const nftDatas = await metaplex
                 .nfts()
-                .findAllByMintList(mints)
+                .findAllByMintList({ mints })
                 .run();
             let res = [];
             let collections = await forgeApi.template.getAllObjects({ template: 'collections' })
@@ -65,7 +65,7 @@ export const ForgeProvider = (props) => {
             }
             let loadedNfts = await Promise.all(res.map(async ({ nft, collection }) => ({
                 collection,
-                nft: await metaplex.nfts().loadNft(nft).run(),
+                nft: await metaplex.nfts().load({ metadata: nft }).run(),
             })));
             loadedNfts = loadedNfts.map(({ nft, collection }) => ({
                 collection: collection._id,

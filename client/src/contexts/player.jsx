@@ -13,6 +13,8 @@ import { clusterApiUrl, PublicKey } from '@solana/web3.js';
 
 import { Metaplex, keypairIdentity, bundlrStorage } from "@metaplex-foundation/js";
 import { useGameApi } from './gameApi';
+import { useCookies } from 'react-cookie';
+import { TOKEN_PROGRAM_ID } from "@solana/spl-token";
 
 // require('@solana/wallet-adapter-react-ui/styles.css');
 
@@ -37,19 +39,10 @@ export const PlayerProvider: FC = (props) => {
     );
 };
 
-const fakeNfsMints = [
-    '4TenYQgk45RcLPy4E2uYoJS4rJ3EsBqaqb4vVsDPzUmW', // DeGod
-    '8yy7YwVY6Gz4RxokbJMbZEEDRCkxGTrToanMZRV3VjrK', // DegenApe
-    '9rFm8jpyyGETFhmdMVSRr4fRMhLx54jihzSzSd2J5zUm', // Boryouku Dragon
-    '5WEZMkjR8Bc9nYHqegHYTWC7d7RE863LEyqmvgwJ2AfQ', // Boryouku Baby Dragon
-    '4DgQBQ5csjCMrkwCSh7ULmCJwuKTAPE6V49x37i9hPNV', // SMB
-    '933VGb2fXiTK3Wa2L5eHe4ty92LRYdiazrebk7Cd6oor', // SolGod
-    '8d8LPkDPd7E2smvTnVXaWmDMUJ15DCJuRXZNZaGEJV8o', // OkayBear
-]
-
 const PlayerContext = React.createContext(undefined);
 
 const PlayerProfileProvider = (props) => {
+    const [ cookies ] = useCookies('veryrealnfts');
     const { gameApi } = useGameApi();
     const { connected, publicKey, wallet } = useWallet();
     const { connection } = useConnection();
@@ -61,11 +54,32 @@ const PlayerProfileProvider = (props) => {
         <WalletDisconnectButton />
     </WalletModalProvider>);
 
+    const getWalletNfts = async (connection, publicKey) => {
+        let mints = await connection.getTokenAccountsByOwner(publicKey, { programId: TOKEN_PROGRAM_ID })
+        const metaplex = new Metaplex(connection);
+        let nftDatas = await metaplex
+            .nfts()
+            .findAllByMintList({ mints })
+            .run();
+        let res = [];
+        for (let nftData of nftDatas) {
+            if (nftData) {
+                res.push(nftData.mintAddress.toBase58())
+            }
+        }
+        return res;
+    }
+
     useEffect(() => {
         if (!wallet) return;
-        // let mints = fakeNfsMints.map(stringMintPubkey => new PublicKey(stringMintPubkey));
-        setNfts(fakeNfsMints);
-    }, [ connected, publicKey, connection ])
+        if (!publicKey) return;
+        if (cookies.veryrealnfts) {
+            let mints = cookies.veryrealnfts.split(',');
+            setNfts(mints);
+            return;
+        }
+        getWalletNfts(connection, publicKey).then(setNfts)
+    }, [ cookies, connected, publicKey, connection ])
 
     useEffect(() => {
         if (!gameApi) return;
