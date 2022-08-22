@@ -9,6 +9,7 @@ const { Column } = Table;
 
 export default function DocumentEditor(props) {
 	const [revision, setRevision] = useState(1);
+	const [ changed, setChanged ] = useState(false);
 	const location = useLocation();
 
 	const save = useHotkey(
@@ -29,19 +30,32 @@ export default function DocumentEditor(props) {
 		{ preventDefault: true }
 	);
 
-	const editDoc = (value, path) => {
-		props.doc.setField(value, path);
-		setRevision(revision + 1);
-	};
-
-	useHotkey('Escape', () => {
-		let changed = false;
+	const updateChangedStatus = () => {
+		let currentStatus = false
 		for (let status of Object.values(props.doc.fieldStatus)) {
 			if (status === 'changed') {
-				changed = true;
+				currentStatus = true;
 				break;
 			}
 		}
+		if (currentStatus !== changed) {
+			setChanged(currentStatus);
+		}
+	}
+
+	const editDoc = (value, path) => {
+		props.doc.setField(value, path);
+		for (let status of Object.values(props.doc.fieldStatus)) {
+			if (status === 'changed') {
+				setChanged(true);
+				break;
+			}
+		}
+		updateChangedStatus();
+		setRevision(revision + 1);
+	};
+
+	const exit = useHotkey('Escape', () => {
 		if (changed && !window.confirm('You have unsaved changed. Still leave?')) return;
 		props.onExit && props.onExit();
 	});
@@ -68,8 +82,8 @@ export default function DocumentEditor(props) {
 
 	return (
 		<>
-			<Button style={{ width: '100%' }} onClick={save}>
-				SAVE
+			<Button style={{ width: '100%' }} onClick={changed ? save : exit}>
+				{changed ? 'SAVE' : 'EXIT'}
 			</Button>
 			<Table pagination={false} dataSource={tableData}>
 				<Column
@@ -95,8 +109,8 @@ export default function DocumentEditor(props) {
 					)}
 				/>
 			</Table>
-			<Button style={{ width: '100%' }} onClick={save}>
-				SAVE
+			<Button style={{ width: '100%' }} onClick={changed ? save : exit}>
+				{changed ? 'SAVE' : 'EXIT'}
 			</Button>
 		</>
 	);
