@@ -9,11 +9,11 @@ export function TemplateProvider(props) {
 	let { templateCode } = useParams();
 	let { sageApi } = useProject();
 	let [template, setTemplate] = useState();
-
 	useEffect(() => {
 		sageApi.template.getSchema({ template: templateCode }).then((data) => setTemplate(new Template(data)));
 	}, [templateCode, sageApi]);
 
+	if (template && template.code !== templateCode) return <></>;
 	return (
 		<TemplateContext.Provider value={{ template }}>
 			<Outlet />

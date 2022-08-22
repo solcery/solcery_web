@@ -1,6 +1,7 @@
 import { Button, Input } from 'antd';
 import { useProject } from '../../contexts/project';
-import { useParams } from 'react-router-dom';
+import { useParams, Navigate } from 'react-router-dom';
+import { useTemplate } from '../../contexts/template';
 import { useState, useEffect } from 'react';
 import { notify } from '../../components/notification';
 import StorageViewer from '../storage';
@@ -8,8 +9,10 @@ import StorageViewer from '../storage';
 const { TextArea } = Input;
 
 export function TemplatePage() {
-	let { templateCode } = useParams();
-	return <StorageViewer templateCode={templateCode} moduleName={`template.${templateCode}`} />;
+	let { template } = useTemplate();
+	if (!template) return;
+	if (template.singleton) return <Navigate to={template.singleton}/>;
+	return <StorageViewer templateCode={template.code} moduleName={`template.${template.code}`} />;
 }
 
 export function TemplateSchema() {
