@@ -126,14 +126,3 @@ export default function AddBrickButton(props) {
 		</>
 	);
 }
-
-					// <Select
-					// 	classNamePrefix="react-select"
-					// 	options={selectorOptions}
-					// 	placeholder="Search..."
-					// 	autoFocus={true}
-					// 	defaultMenuIsOpen={true}
-					// 	onChange={onBrickSubtypeSelected}
-					// />
-
-					// filterSort={(optionA, optionB) => optionA.children.toLowerCase().localeCompare(optionB.children.toLowerCase())}
