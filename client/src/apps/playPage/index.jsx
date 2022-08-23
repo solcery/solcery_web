@@ -29,10 +29,12 @@ export default function PlayPage() {
 				if (!layout || layout.length === 0) {
 					layout = undefined; // TODO: empty layoutPresets should be undefined
 				}
+				let seed = Math.floor(Math.random() * 255);
 				let session = new Session({
 					content,
 					layout,
-					nfts
+					nfts,
+					seed
 				});
 				session.start();
 				setGameSession(session);
