@@ -34,8 +34,8 @@ export class Template {
 		if (!key) return;
 		let objects;
 		objects = content.objects
-			.filter(object => object.template === this.code && object.fields.enabled)
-			.filter(object => !this.singleton || object._id === this.singleton)
+			.filter(object => object.template === this.code)
+			.filter(object => (!this.singleton && object.fields.enabled) || object._id === this.singleton)
 			.map(object => this.buildObject(object, meta));
 		if (meta.target.includes('unity')) {
 			if (this.singleton) {
