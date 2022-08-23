@@ -28,11 +28,15 @@ export function UnityBuilder() {
 			navigate('validator');
 			return;
 		}
+		let layout = layoutPresets;
+		if (!layout || layout.length === 0) {
+			layout = undefined; // TODO: empty layoutPresets should be undefined
+		}
 		content = res.constructed;
 		content.unity = content.unity_local;
 		let session = new Session({
 			content,
-			layoutPresets,
+			layout,
 			nfts
 		});
 		session.start();
