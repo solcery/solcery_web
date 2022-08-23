@@ -55,7 +55,9 @@ const PlayerProfileProvider = (props) => {
     </WalletModalProvider>);
 
     const getWalletNfts = async (connection, publicKey) => {
-        let mints = await connection.getTokenAccountsByOwner(publicKey, { programId: TOKEN_PROGRAM_ID })
+        let mintRequest = await connection.getTokenAccountsByOwner(publicKey, { programId: TOKEN_PROGRAM_ID })
+
+        let mints = mintRequest.value.map(accountData => accountData.pubkey);
         const metaplex = new Metaplex(connection);
         let nftDatas = await metaplex
             .nfts()
