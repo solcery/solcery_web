@@ -188,6 +188,7 @@ export default function Brick(props) {
 							key={param.code}
 							type="source"
 							position={Position.Bottom}
+							isConnectable={false}
 							style={{
 								left: Math.round(100 / nestedParams.length) * (index + 0.5) + '%',
 								bottom: '-1.5rem',
