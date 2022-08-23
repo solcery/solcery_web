@@ -2,6 +2,7 @@ import { useEffect, useState, useCallback, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useHotkey } from '../../contexts/hotkey';
 import { useDocument } from '../../contexts/document';
+import { useUser } from '../../contexts/user';
 import { Button } from 'antd';
 import { BrickTreeEditor } from '../../content/types/brick/components';
 import { getTable } from '../../utils';
@@ -10,12 +11,17 @@ import './style.css';
 export default function BrickEditor() {
 	const navigate = useNavigate();
 	const { doc } = useDocument();
+	const { showBrickComments } = useUser();
 	let { templateCode, objectId, brickPath } = useParams();
 	const [value, setValue] = useState();
 	const [splittedPath, setSplittedPath] = useState();
 	const [ showAllComments, setShowAllComments ] = useState(false);
 	const changed = useRef(false);
 
+	useEffect(() => {
+		setShowAllComments(showBrickComments)
+	}, [ showBrickComments ]);
+	
 	const goUp = useCallback(() => {
 		navigate('../', { 
 			state: {

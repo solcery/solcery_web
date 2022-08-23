@@ -208,8 +208,9 @@ export default function StorageViewer({ templateCode, moduleName }) {
 	if (!template || !objects || !filter) return <>NO DATA</>;
 	if (template.code !== templateCode) return <>LOADING</>;
 	let tableData = objects
-		.filter((object) => {
+		.filter(object => {
 			for (let field of Object.values(template.fields)) {
+				if (field.hidden) continue;
 				let filterValue = filter[field.code];
 				if (filterValue === undefined) continue;
 				let fieldFilter = field.type.filter;
@@ -218,7 +219,7 @@ export default function StorageViewer({ templateCode, moduleName }) {
 			}
 			return true;
 		})
-		.map((object) => {
+		.map(object => {
 			return {
 				_id: object._id,
 				key: object._id,
@@ -263,7 +264,7 @@ export default function StorageViewer({ templateCode, moduleName }) {
 				}
 			>
 				{Object.values(template.fields)
-					.filter((field) => !field.hidden)
+					.filter(field => !field.hidden)
 					.map((field, fieldIndex) => (
 						<Column
 							key={`${template.code}.${field.code}`}

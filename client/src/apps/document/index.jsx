@@ -12,6 +12,11 @@ export default function DocumentEditor(props) {
 	const [ changed, setChanged ] = useState(false);
 	const location = useLocation();
 
+	const exit = useHotkey('Escape', () => {
+		if (changed && !window.confirm('You have unsaved changed. Still leave?')) return;
+		props.onExit && props.onExit();
+	});
+
 	const save = useHotkey(
 		{ key: 'Ctrl+KeyS', noDefault: true },
 		() => {
@@ -22,9 +27,10 @@ export default function DocumentEditor(props) {
 			} else {
 				notify({
 					message: `Not saved`,
-					description: 'Cannot save data, no changes in fields',
+					description: 'No changes, exiting',
 					type: 'warning',
 				});
+				exit();
 			}
 		},
 		{ preventDefault: true }
@@ -54,11 +60,6 @@ export default function DocumentEditor(props) {
 		updateChangedStatus();
 		setRevision(revision + 1);
 	};
-
-	const exit = useHotkey('Escape', () => {
-		if (changed && !window.confirm('You have unsaved changed. Still leave?')) return;
-		props.onExit && props.onExit();
-	});
 
 	const onElementLoad = (path, element) => {
 		let autoScroll = location.state?.scrollToField;

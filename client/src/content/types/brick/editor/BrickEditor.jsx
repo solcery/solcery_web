@@ -271,7 +271,6 @@ export const BrickEditor = (props) => {
 				nodesConnectable={false}
 				selectNodesOnDrag={false}
 				zoomOnDoubleClick={false}
-				connectOnClick={false}
 				paneMoveable={props.fullscreen ? true : false}
 				elementsSelectable={props.fullscreen ? true : false}
 				zoomOnScroll={props.fullscreen ? true : false}
