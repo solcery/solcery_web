@@ -56,7 +56,7 @@ export function HotkeyProvider(props) {
 	useEffect(() => {
 		const onKeyDown = (e) => {
 			let key = e.code;
-			if (e.ctrlKey) key = 'Ctrl+' + key;
+			if (e.ctrlKey || e.metaKey) key = 'Ctrl+' + key;
 			handle(key, e);
 		};
 		window.addEventListener('keydown', onKeyDown);
