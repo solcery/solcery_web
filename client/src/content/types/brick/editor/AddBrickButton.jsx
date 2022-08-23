@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { Handle, Position } from 'react-flow-renderer';
-import Select from 'react-select';
+import { Select } from 'antd';
 
 export default function AddBrickButton(props) {
 	const hovered = useRef(false);
@@ -9,10 +9,18 @@ export default function AddBrickButton(props) {
 	const brickLibrary = props.data.brickLibrary;
 	const brickSignatures = [];
 	if (brickType === 'any') {
-		Object.values(brickLibrary).forEach((lib) => Object.values(lib).forEach((brick) => brickSignatures.push(brick)));
+		Object.values(brickLibrary).forEach((lib) => Object.values(lib).forEach(brick => {
+			if (!brick.hidden) {
+				brickSignatures.push(brick)
+			}
+		}));
 	} else {
 		let lib = brickLibrary[brickType];
-		Object.values(lib).forEach((brick) => brickSignatures.push(brick));
+		Object.values(lib).forEach(brick => {
+			if (!brick.hidden) {
+				brickSignatures.push(brick)
+			}
+		});
 	}
 	const [isNodeTypeSelectorVisible, setNodeTypeSelectorVisible] = useState(false);
 
@@ -25,8 +33,9 @@ export default function AddBrickButton(props) {
 		event.stopPropagation();
 	};
 
-	const onBrickSubtypeSelected = (option) => {
-		const brickSignature = option.value;
+	const onBrickSubtypeSelected = (index) => {
+		const brickSignature = brickSignatures[index];
+		console.log(brickSignature)
 		props.data.onBrickSubtypeSelected(
 			brickSignature,
 			props.data.brickTree,
@@ -75,10 +84,14 @@ export default function AddBrickButton(props) {
 	}, [])
 
 	const selectorOptions = brickSignatures
-		.filter((sig) => !sig.hidden)
-		.map((sig) => {
-			return { value: sig, label: sig.name };
-		});
+		.map((sig, index) => ({
+			value: index, 
+			label: sig.name ,
+		}));
+
+	const filterOption = (input, option) => {
+		return option.label.toLowerCase().includes(input.toLowerCase());
+	}
 	return (
 		<>
 			<div
@@ -91,17 +104,36 @@ export default function AddBrickButton(props) {
 			</div>
 			{props.data.parentBrick && <Handle type="target" position={Position.Top} />}
 			{isNodeTypeSelectorVisible && (
-				<div className="brick-subtype-selector nowheel" onPointerUp={onSelectorPointerUp}>
+				<div 
+					className={`brick-selector ${brickType}`} 
+					onPointerUp={onSelectorPointerUp}
+				>
 					<Select
-						classNamePrefix="react-select"
-						options={selectorOptions}
+						showSearch
+						style={{
+							width: 400,
+						}}
+						autoFocus
+						defaultOpen
 						placeholder="Search..."
-						autoFocus={true}
-						defaultMenuIsOpen={true}
+						options={selectorOptions}
+						dropdownMatchSelectWidth={false}
 						onChange={onBrickSubtypeSelected}
+						filterOption={filterOption}			
 					/>
 				</div>
 			)}
 		</>
 	);
 }
+
+					// <Select
+					// 	classNamePrefix="react-select"
+					// 	options={selectorOptions}
+					// 	placeholder="Search..."
+					// 	autoFocus={true}
+					// 	defaultMenuIsOpen={true}
+					// 	onChange={onBrickSubtypeSelected}
+					// />
+
+					// filterSort={(optionA, optionB) => optionA.children.toLowerCase().localeCompare(optionB.children.toLowerCase())}
