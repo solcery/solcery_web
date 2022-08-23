@@ -46,9 +46,9 @@ export default function AddBrickButton(props) {
 		};
 	}, []);
 
-	const paste = async () => {
+	const paste = async (event) => {
 		if (!hovered.current) return;
-		let clipboardContents = await navigator.clipboard.readText()
+		let clipboardContents = event.clipboardData.getData('text');
 		if (!clipboardContents) return;
 
 		let pastedBrickTree: any = null;
