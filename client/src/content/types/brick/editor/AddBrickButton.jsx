@@ -1,11 +1,9 @@
 import { useState, useEffect, useRef } from 'react';
 import { Handle, Position } from 'react-flow-renderer';
 import Select from 'react-select';
-import { useHotkeyContext } from '../../../../contexts/hotkey';
 
 export default function AddBrickButton(props) {
-	let { addHotkey, removeHotkey } = useHotkeyContext();
-	let pasteHotkeyId = useRef(undefined);
+	const hovered = useRef(false);
 
 	const brickType = props.data.brickType; // TODO: type
 	const brickLibrary = props.data.brickLibrary;
@@ -49,6 +47,7 @@ export default function AddBrickButton(props) {
 	}, []);
 
 	const paste = async () => {
+		if (!hovered.current) return;
 		let clipboardContents = await navigator.clipboard.readText()
 		if (!clipboardContents) return;
 
@@ -61,11 +60,19 @@ export default function AddBrickButton(props) {
 	}
 
 	const onPointerEnter = () => {
-		pasteHotkeyId.current = addHotkey({ key: 'Ctrl+KeyV', callback: paste })
+		hovered.current = true;
 	}
+
 	const onPointerLeave = () => {
-		removeHotkey('Ctrl+KeyV', pasteHotkeyId.current)
+		hovered.current = false;
 	}
+
+	useEffect(() => {
+		document.addEventListener('paste', paste)
+		return () => {
+			document.removeEventListener('paste', paste)
+		}
+	}, [])
 
 	const selectorOptions = brickSignatures
 		.filter((sig) => !sig.hidden)

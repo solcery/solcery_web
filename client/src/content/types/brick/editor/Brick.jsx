@@ -2,7 +2,6 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { Handle, Position } from 'react-flow-renderer';
 import { notify } from '../../../../components/notification';
 import { useProject } from '../../../../contexts/project';
-import { useHotkeyContext } from '../../../../contexts/hotkey';
 import { Tooltip, Button, Input } from 'antd';
 import { CommentOutlined, DashOutlined, CloseOutlined} from '@ant-design/icons';
 const { TextArea } = Input;
@@ -48,8 +47,7 @@ function BrickName(props) {
 
 export default function Brick(props) {
 	let { projectId } = useProject();
-	let { addHotkey, removeHotkey } = useHotkeyContext();
-	const hotkeyIds = useRef({})
+	const hovered = useRef(false);
 
 	const brick = props.data.brick;
 	const brickLibrary = props.data.brickLibrary;
@@ -91,6 +89,7 @@ export default function Brick(props) {
 	};
 
 	const copy = () => {
+		if (!hovered.current) return;
 		let brickJson = JSON.stringify(props.data.brick);
 		notify({
 			message: 'Brick copied',
@@ -101,46 +100,39 @@ export default function Brick(props) {
 	};
 
 
-	const paste = () => {
-		navigator.clipboard.readText().then((clipboardContents) => {
-			if (!clipboardContents) return;
+	const paste = (event) => {
+		if (!hovered.current) return;
+		let clipboardContents = event.clipboardData.getData('text');
+		if (!clipboardContents) return;
 
-			let pastedBrickTree = null;
-			try {
-				pastedBrickTree = JSON.parse(clipboardContents);
-			} catch {
-				notify({
-					message: 'Invalid brickTree format in clipboard',
-					description: clipboardContents,
-					type: 'error',
-				});
-			}
-			if (!pastedBrickTree) return; // TODO: add validation
-			props.data.onPaste(pastedBrickTree, props.data.brickTree, props.data.parentBrick, props.data.paramCode);
-		});
+		let pastedBrickTree = null;
+		try {
+			pastedBrickTree = JSON.parse(clipboardContents);
+		} catch {
+			notify({
+				message: 'Invalid brickTree format in clipboard',
+				description: clipboardContents,
+				type: 'error',
+			});
+		}
+		if (!pastedBrickTree) return; // TODO: add validation
+		props.data.onPaste(pastedBrickTree, props.data.brickTree, props.data.parentBrick, props.data.paramCode);
 	};
 
-	const onPointerEnter = useCallback(() => {
-		if (props.data.onChange) {
-			hotkeyIds.current.copy = addHotkey({ key: 'Ctrl+KeyC', callback: copy })
-			hotkeyIds.current.paste = addHotkey({ key: 'Ctrl+KeyV', callback: paste })
-		}
-	}, [ props.data.onChange ]);
+	const onPointerEnter = () => {
+		hovered.current = true;
+	}
 
 	const onPointerLeave = () => {
-		removeHotkey('Ctrl+KeyC', hotkeyIds.current.copy)
-		delete(hotkeyIds.copy)
-		removeHotkey('Ctrl+KeyV', hotkeyIds.current.paste)
-		delete(hotkeyIds.paste)
+		hovered.current = false;
 	}
 
 	useEffect(() => {
-		return () => {			
-			removeHotkey('Ctrl+KeyC', hotkeyIds.current.copy)
-			delete(hotkeyIds.copy)
-			removeHotkey('Ctrl+KeyV', hotkeyIds.current.paste)
-			delete(hotkeyIds.paste)
-			
+		document.addEventListener('paste', paste)
+		document.addEventListener('copy', copy)
+		return () => {
+			document.removeEventListener('paste', paste)
+			document.removeEventListener('copy', copy)
 		}
 	}, [])
 
