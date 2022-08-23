@@ -4,6 +4,10 @@ import { SolceryAPIConnection } from '../../../api';
 import { Select } from 'antd';
 const { Option } = Select;
 
+const filterOption = (inputValue, option) => {
+	return option.toLowerCase().includes(inputValue.toLowerCase());
+}
+
 export const ValueRender = (props) => {
 	const [objects, setObjects] = useState(undefined);
 	const [ api, setApi ] = useState();
@@ -42,6 +46,9 @@ export const ValueRender = (props) => {
 		if (!objects) return <>Loading ...</>;
 		let obj = objects.find((obj) => obj.id === props.defaultValue);
 		if (obj) {
+			if (props.isFilter) {
+				return <>{obj.title}</>;
+			}
 			return <a href={`/${props.type.project ?? projectId}/template/${props.type.templateCode}/${props.defaultValue}`}>{obj.title}</a>; //TODO
 		} else {
 			return <>{`Missing object ${props.defaultValue}`}</>;
@@ -55,13 +62,14 @@ export const ValueRender = (props) => {
 			style={{
 				width: 200,
 			}}
+			dropdownMatchSelectWidth={false}
 			onChange={onChange}
 			defaultValue={props.defaultValue}
-			filterOption={(input, option) => option.children.includes(input)}
+			filterOption={(input, option) => option.children.toLowerCase().includes(input.toLowerCase())}
 			filterSort={(optionA, optionB) => optionA.children.toLowerCase().localeCompare(optionB.children.toLowerCase())}
 		>
 			<Option value={undefined}>None</Option>
-			{objects.map((obj) => (
+			{objects.map(obj => (
 				<Option key={obj.id} value={obj.id}>
 					{obj.title}
 				</Option>
