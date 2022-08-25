@@ -32,10 +32,10 @@ export class Session {
 	constructor(data) {
 		this.id = data.id;
 		this.content = data.content;
+		this.seed = data.seed ?? 0;
 		this.game = new Game(this);
 		this.players = data.players;
 		this.log = data.log ?? [];
-		this.seed = data.seed ?? 0;
 		this.runtime = new BrickRuntime(data.content.web, this.seed);
 		this.onCommand = data.onCommand;
 		this.layout = data.layout;
@@ -110,10 +110,10 @@ export class Game {
 	diff = undefined;
 	diffLog = undefined;
 
-	constructor(game) {
-		this.game = game;
-		this.content = game.content.web;
-		this.runtime = new BrickRuntime(this.content);
+	constructor(session) {
+		this.session = session;
+		this.content = session.content.web;
+		this.runtime = new BrickRuntime(this.content, session.seed);
 		for (let attr of Object.values(this.content.gameAttributes)) {
 			this.attrs[attr.code] = 0;
 		}
