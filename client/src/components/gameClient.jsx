@@ -1,8 +1,12 @@
 import { useState, useEffect, useRef } from 'react';
 const md5 = require('js-md5');
 
-export default function GameClient(props) {
+function delay(ms) {
+   return new Promise(resolve => setTimeout(resolve, ms));
+}
 
+export default function GameClient(props) {
+	const [ loadingProgress, setLoadingProgress ] = useState(0);
 	const getAspect = () => {
 		return {
 			width: window.innerWidth,
@@ -22,13 +26,13 @@ export default function GameClient(props) {
 
 	const handleResize = () => {
 		let aspect = getAspect();
+		if (!iframeRef.current) return;
 		iframeRef.current.width = aspect.width;
 		iframeRef.current.height = aspect.height;
 	}
 
 	useEffect(() => {
 		window.onMessageFromUnity = (message, param) => {
-
 			const sendDiffLog = (states) => {
 				for (let index in states) {
 					states[index].id = index;
@@ -36,10 +40,20 @@ export default function GameClient(props) {
 				sendToUnity('UpdateGameState', { predict: true, states });
 			}
 
+			if (message === 'OnUnityLoadProgress') {
+				let { progress } = JSON.parse(param)
+				setLoadingProgress(progress)
+				props.onLoadingProgress && props.onLoadingProgress(progress);
+			} 
+
 			if (message === 'OnUnityLoaded') {
+
 				// TODO: add metadata parsing
 				let content = gameSession.getUnityContent();
 				let contentHash = md5(JSON.stringify(content));
+				if (!content.metadata) {
+					content.metadata = {}
+				}
 				content.metadata.hash = contentHash;
 				sendToUnity('UpdateGameContent', content);
 
@@ -57,7 +71,7 @@ export default function GameClient(props) {
 				gameSession.onPlayerCommand(command).then(sendDiffLog)
 			}
 		}
-	}, [])
+	}, [ gameSession ])
 
 	useEffect(() => {
 		window.addEventListener('resize', handleResize)
@@ -71,7 +85,7 @@ export default function GameClient(props) {
 	return <iframe 
 		key='unity'
 		ref={iframeRef} 
-		style={{ borderStyle: 'none', margin: '0'}}
+		style={{ borderStyle: 'none', margin: '0', visibility: loadingProgress < 100 ? 'hidden' : 'unset' }}
 		src='/unity.html'
 		scrolling='no'
 		width={aspect.width}
