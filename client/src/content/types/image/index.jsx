@@ -13,7 +13,7 @@ class SImage {
 	}
 	construct = (value, meta) => value;
 	valueRender = ValueRender;
-	default = '';
+	default = () => undefined;
 	eq = (a, b) => a === b;
 	clone = (a) => a;
 }
