@@ -1179,26 +1179,26 @@ var tempDouble;
 var tempI64;
 
 var ASM_CONSTS = {
- 5629544: function() {
+ 5628504: function() {
   Module["emscripten_get_now_backup"] = performance.now;
  },
- 5629599: function($0) {
+ 5628559: function($0) {
   performance.now = function() {
    return $0;
   };
  },
- 5629647: function($0) {
+ 5628607: function($0) {
   performance.now = function() {
    return $0;
   };
  },
- 5629695: function() {
+ 5628655: function() {
   performance.now = Module["emscripten_get_now_backup"];
  },
- 5629750: function() {
+ 5628710: function() {
   return Module.webglContextAttributes.premultipliedAlpha;
  },
- 5629811: function() {
+ 5628771: function() {
   return Module.webglContextAttributes.preserveDrawingBuffer;
  }
 };
@@ -3086,7 +3086,15 @@ function _OnGameOverPopupButtonClicked() {
  try {
   window.dispatchReactUnityEvent("OnGameOverPopupButtonClicked");
  } catch (e) {
-  console.warn("Failed to dispatch event");
+  console.warn("Failed to dispatch event OnGameOverPopupButtonClicked");
+ }
+}
+
+function _OnUnityLoadProgress(progress) {
+ try {
+  window.dispatchReactUnityEvent("OnUnityLoadProgress", Pointer_stringify(progress));
+ } catch (e) {
+  console.warn("Failed to dispatch event OnUnityLoadProgress");
  }
 }
 
@@ -3094,7 +3102,7 @@ function _OnUnityLoaded(metadata) {
  try {
   window.dispatchReactUnityEvent("OnUnityLoaded", Pointer_stringify(metadata));
  } catch (e) {
-  console.warn("Failed to dispatch event");
+  console.warn("Failed to dispatch event OnUnityLoaded");
  }
 }
 
@@ -3102,7 +3110,7 @@ function _OpenLinkInNewTab(link) {
  try {
   window.dispatchReactUnityEvent("OpenLinkInNewTab", Pointer_stringify(link));
  } catch (e) {
-  console.warn("Failed to dispatch event");
+  console.warn("Failed to dispatch event OpenLinkInNewTab");
  }
 }
 
@@ -3110,7 +3118,7 @@ function _SendCommand(command) {
  try {
   window.dispatchReactUnityEvent("SendCommand", Pointer_stringify(command));
  } catch (e) {
-  console.warn("Failed to dispatch event");
+  console.warn("Failed to dispatch event SendCommand");
  }
 }
 
@@ -14210,6 +14218,7 @@ var asmLibraryArg = {
  "JS_WebRequest_SetRequestHeader": _JS_WebRequest_SetRequestHeader,
  "JS_WebRequest_SetTimeout": _JS_WebRequest_SetTimeout,
  "OnGameOverPopupButtonClicked": _OnGameOverPopupButtonClicked,
+ "OnUnityLoadProgress": _OnUnityLoadProgress,
  "OnUnityLoaded": _OnUnityLoaded,
  "OpenLinkInNewTab": _OpenLinkInNewTab,
  "SendCommand": _SendCommand,

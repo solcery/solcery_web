@@ -15,6 +15,7 @@
     <type fullname="Solcery.Widgets_new.Eclipse.Nft.Card.EclipseCardNftInContainerWidgetLayout" preserve="all" />
     <type fullname="Solcery.Widgets_new.Eclipse.Nft.CardFull.PlaceWidgetEclipseCardNftFullLayout" preserve="all" />
     <type fullname="Solcery.Widgets_new.Eclipse.Nft.Selector.PlaceWidgetEclipseNftSelectorLayout" preserve="all" />
+    <type fullname="Solcery.Widgets_new.Eclipse.RaycastCatcher" preserve="all" />
     <type fullname="Solcery.Widgets_new.Eclipse.Tokens.ListTokensInContainerWidgetLayout" preserve="all" />
     <type fullname="Solcery.Widgets_new.Eclipse.Tokens.TokenInContainerWidgetLayout" preserve="all" />
     <type fullname="Solcery.Widgets_new.Eclipse.TokensStockpile.PlaceWidgetEclipseTokenStorageLayout" preserve="all" />

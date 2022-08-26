@@ -159,12 +159,27 @@ $transition: #{$speed} cubic-bezier(0.310, -0.105, 0.430, 1.400) transform;
       transform: scale(2);
       transition: $transition;
     }
+  }
 
-    .loading {
-      // transform: scale(2);
-      display: none;
-    }
-   
+  .loading {
+    position: absolute;
+    height: 100%;
+    background-color: rgba(40, 60, 20, .8);
+    display: none;
+    z-index: 9;
+  }
+
+  .loading-text {
+    position: absolute;
+    z-index: 10;
+    top: 0px;
+    bottom: 0px;
+    width: 100%;
+    height: 100%;
+    line-height: 100px;
+    font-size: 22px;
+    text-align: center;
+    display: none;
   }
     
   &.success, &:hover { 
@@ -184,12 +199,12 @@ $transition: #{$speed} cubic-bezier(0.310, -0.105, 0.430, 1.400) transform;
   }
   
   &.success {
-    background-color: #406020;
+    background-color: rgba(40, 60, 20, .3);
     cursor: auto;
-    opacity: .4;
+    opacity: .8;
 
     &:hover {
-      opacity: .4;
+      opacity: .8;
     }
     
     .icon {
@@ -197,10 +212,16 @@ $transition: #{$speed} cubic-bezier(0.310, -0.105, 0.430, 1.400) transform;
         display: none;
       }
       
-      .loading {
-        display: inline-block;
-      }
     }
+
+    .loading {
+      display: inline-block;
+    }
+
+    .loading-text {
+      display: inline-block;
+    }
+
 
     &:after {
       animation: fade 250ms ease-out forwards;
