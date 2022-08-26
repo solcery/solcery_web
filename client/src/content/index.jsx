@@ -106,17 +106,24 @@ export const build = ({ targets, content }) => {
 
 	meta.content = content;
 
+	let revision = 0;
+	for (let schema of content.templates) {
+		revision = revision + schema.revision;
+	}
+
 	//Building target
 	let constructed = {}
 	for (let target of targets) {
-		constructed[target] = {};
+		let result = {}
 		meta.target = target;
 		for (let schema of content.templates) {
 			let template = new Template(schema);
 			let res = template.build(content, meta);
 			if (!res) continue;
-			constructed[target][res.key] = res.value;
+			result[res.key] = res.value;
 		}
+		result.metadata = { revision };
+		constructed[target] = result;
 	}
 	return {
 		status: true,

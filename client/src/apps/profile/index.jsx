@@ -10,6 +10,7 @@ const schema = {
 	fields: [
 		{ code: 'css', name: 'CSS', type: 'SString' },
 		{ code: 'readonlyBricks', name: 'Show readonly bricks', type: 'SBool' },
+		{ code: 'showBrickComments', name: 'Show brick comments', type: 'SBool' },
 		{
 			code: 'layoutPresets',
 			name: 'Layout presets',

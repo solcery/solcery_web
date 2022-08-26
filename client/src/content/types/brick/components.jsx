@@ -131,10 +131,16 @@ export const BrickTreeEditor = (props) => {
 	if (!ownBrickLibrary) return <>Loading...</>;
 	return (
 		<ReactFlowProvider>
-			<BrickEditor 
+			{!props.fullscreen && <div style={{ width: '100%', height: '100%', pointerEvents: 'none' }}>
+				<BrickEditor 
+					{...props}
+					brickLibrary={ownBrickLibrary}
+				/>
+			</div>}
+			{props.fullscreen && <BrickEditor 
 				{...props}
 				brickLibrary={ownBrickLibrary}
-			/>
+			/>}
 		</ReactFlowProvider>
 	);
 };
