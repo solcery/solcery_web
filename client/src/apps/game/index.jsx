@@ -36,12 +36,15 @@ const StartButton = (props) => {
     className += ' success';
   }
 
+  const caption = props.status === 'continue' ? 'Continue' : 'New game';
+
 	return <div onClick={start} className={className} href="#" role="button">
-    <span className='label'>PLAY</span>
+    <span className='label'>{caption}</span>
     <div className="icon">
       <CaretRightOutlined size='big' className='play'/>
-      <Spin size='big' className='loading'/>
     </div>
+    <div ref={props.progressBarRef} className='loading'></div>
+    <div ref={props.progressNumberRef} className='loading-text'>Loading: 0%</div>
   </div>;
 }
 
@@ -128,31 +131,72 @@ const NftBar = (props) => {
 
 const Menu = (props) => {
 	const { gameApi, gameInfo } = useGameApi();
-	const { forge } = useForge();
 	const { nfts, publicKey, ConnectionComponent } = usePlayer();
+	const { forge } = useForge();
 	const [ forgedNfts, setForgedNfts ] = useState();
-	const [ contentVersion, setContentVersion ] = useState();
+	const [ isNewGame, setIsNewGame ] = useState(true);
+	const [ gameSession, setGameSession ] = useState();
+	const [ status, setStatus ] = useState('idle')
 
-	useEffect(() => {
-		gameApi.game.getContentVersion().then(setContentVersion);
-	}, [ gameApi ])
-
-	useEffect(() => {
-		if (!nfts) return;
+	const loadGame = async (game) => {
+		if (!game) return;
+		let contentVersionNumber = game.contentVersion;
+		let contentVersion = await gameApi.game.getContentVersion({ contentVersion: contentVersionNumber })
 		if (!contentVersion) return;
+		let id = game._id;
+		let nfts = game.nfts[0];
+		nfts = await forge.getNfts(nfts, contentVersion);
+		setForgedNfts(nfts);
+		let content = contentVersion.content;
+		let log = game.log;
+		let seed = game.seed;
+		let session = new Session({
+			id,
+			content,
+			nfts,
+			log,
+			gameApi,
+		});
+		session.start();
+		setGameSession(session);
+		if (status === 'newgame') {
+			props.onGameSession(session);
+		}
+	}
+
+	const continueGame = () => {
+		props.onGameSession(gameSession);
+	}
+
+	const getPlayerForgedNfts = async () => {
+		let contentVersion = await gameApi.game.getContentVersion();
+		let playerNfts = await forge.getNfts(nfts, contentVersion);
+		setForgedNfts(playerNfts)
+	}
+
+	useEffect(() => {
+		if (!gameApi) return;
+		if (!publicKey) return;
+		gameApi.game.getPlayerOngoingGame().then(game => {
+			if (game) {
+				setStatus('continue');
+				loadGame(game)
+			} else {
+				getPlayerForgedNfts();
+				setStatus('newgame')
+			}
+		})
+	}, [ gameApi, publicKey ])
+
+	const createGame = useCallback(async () => {
 		if (!forge) return;
-		forge.getNfts(nfts, contentVersion).then(setForgedNfts);
-	}, [ forge, nfts, contentVersion ]);
-
-
-	const createGame = useCallback(() => {
 		if (!forgedNfts) return;
 		let playerNfts = forgedNfts.map(nft => nft.mint);
-		gameApi.game.startNewGame({ nfts: playerNfts }).then(props.onCreateGame)
-	}, [ forgedNfts ])
-
+		gameApi.game.startNewGame({ nfts: playerNfts }).then(loadGame)
+	}, [ forgedNfts ]);
 
 	if (!gameInfo) return <>Loading</>;
+
 	return <div className='game-menu'>
     <div className='bg' style={{ 'backgroundImage': `url(${gameInfo.lobbyBackground})` }}/>
    	<div className='game-header'>
@@ -168,70 +212,48 @@ const Menu = (props) => {
  			{ConnectionComponent}
     </div>}
 		{forgedNfts && <NftBar nfts={forgedNfts}/>}
-		{forgedNfts && <StartButton onClick={createGame}/>}
+		{forgedNfts && <StartButton
+			status={status} 
+			onClick={status === 'newgame' ? createGame : continueGame} 
+			progressBarRef={props.progressBarRef}
+			progressNumberRef={props.progressNumberRef}
+		/>}
 	</div>;
 }
 
 export const GameTest = () => {
 	const { gameApi } = useGameApi();
-	const [ log, setLog ] = useState([]);
-	const [ step, setStep ] = useState(0);
 	const [ gameSession, setGameSession ] = useState();
-	const [ status, setStatus ] = useState();
-	const { forge } = useForge();
-	const { publicKey } = usePlayer();
+	const [ gameReady, setGameReady ] = useState(false);
+	const [ loadingProgress, setLoadingProgress ] = useState(0);
+	const progressBarRef = useRef();
+	const progressNumberRef = useRef();
 
-	const loadGame = async (game) => {
-		let contentVersionNumber = game.contentVersion;
-		let contentVersion = await gameApi.game.getContentVersion({ contentVersion: contentVersionNumber })
-		if (!contentVersion) return;
-		let id = game._id;
-		let nfts = game.nfts[0];
-		nfts = await forge.getNfts(nfts, contentVersion);
-		let content = contentVersion.content;
-		let log = game.log;
-		let seed = game.seed;
-		let session = new Session({
-			id,
-			content,
-			nfts,
-			log,
-			gameApi,
-		});
-		session.start();
-		setGameSession(session);
-		setStatus('ingame');
+	const onLoadingProgress = (progress) => {
+
+		if (progressBarRef.current) {
+			progressBarRef.current.style.width = `${progress}%`;
+		}
+		if (progressNumberRef.current) {
+			progressNumberRef.current.innerHTML = `Loading: ${progress}%`;
+		}
+		setGameReady(progress >= 100);
 	}
 
-	const onCreateGame = (game) => {
-		loadGame(game);
+	const reset = () => {
+		setGameSession(undefined);
+		setGameReady(false);
 	}
-
-	useEffect(() => {
-		if (!gameApi) return;
-		if (!publicKey) return;
-		if (!forge) return;
-		gameApi.game.getPlayerOngoingGame().then(game => {
-			if (game === null) {
-				setStatus('idle');
-			} else { 
-				loadGame(game);
-			}
-		})
-	}, [ forge, gameApi, publicKey ])
 
 	const leaveGame = useCallback(() => {
 		if (!gameSession) return;
 		if (!window.confirm('Are you sure want to abandon current game?')) return;
-		gameApi.game.leaveGame({ gameId: gameSession.id }).then(response => {
-			setGameSession(undefined);
-		})
+		gameApi.game.leaveGame({ gameId: gameSession.id }).then(reset)
 	}, [ gameSession ])
 
-	if (!gameSession) return <Menu onCreateGame={onCreateGame}/>;
-
 	return (<>
-		<a onClick={leaveGame} className="button-close"/>
-		<GameClient gameSession={gameSession}/>
+		{!gameReady && <Menu progressBarRef={progressBarRef} progressNumberRef={progressNumberRef} onGameSession={setGameSession}/>}
+		<GameClient gameSession={gameSession} onLoadingProgress={onLoadingProgress}/>
+		{gameReady && <a onClick={leaveGame} className="button-close"/>}
 	</>);
 }
