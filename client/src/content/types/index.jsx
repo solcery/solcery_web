@@ -10,3 +10,4 @@ export * from './link';
 export * from './brick';
 export * from './date';
 export * from './struct';
+export * from './sound';
