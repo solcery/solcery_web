@@ -1179,26 +1179,26 @@ var tempDouble;
 var tempI64;
 
 var ASM_CONSTS = {
- 5629160: function() {
+ 5629544: function() {
   Module["emscripten_get_now_backup"] = performance.now;
  },
- 5629215: function($0) {
+ 5629599: function($0) {
   performance.now = function() {
    return $0;
   };
  },
- 5629263: function($0) {
+ 5629647: function($0) {
   performance.now = function() {
    return $0;
   };
  },
- 5629311: function() {
+ 5629695: function() {
   performance.now = Module["emscripten_get_now_backup"];
  },
- 5629366: function() {
+ 5629750: function() {
   return Module.webglContextAttributes.premultipliedAlpha;
  },
- 5629427: function() {
+ 5629811: function() {
   return Module.webglContextAttributes.preserveDrawingBuffer;
  }
 };
@@ -3090,9 +3090,9 @@ function _OnGameOverPopupButtonClicked() {
  }
 }
 
-function _OnUnityLoaded() {
+function _OnUnityLoaded(metadata) {
  try {
-  window.dispatchReactUnityEvent("OnUnityLoaded");
+  window.dispatchReactUnityEvent("OnUnityLoaded", Pointer_stringify(metadata));
  } catch (e) {
   console.warn("Failed to dispatch event");
  }
