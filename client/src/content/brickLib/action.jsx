@@ -280,6 +280,17 @@ export const basicActions = [
 	},
 	{
 		type: 0,
+		subtype: 18,
+		lib: 'action',
+		func: 'play_sound',
+		name: 'Play sound',
+		params: [{ code: 'sound_id', name: 'Sound', type: 'SLink<sounds|sound>' }],
+		exec: (runtime, params, ctx) => {
+			ctx.game.playSound(params.sound_id);
+		},
+	},
+	{
+		type: 0,
 		subtype: 0,
 		lib: 'action',
 		func: 'console_log',

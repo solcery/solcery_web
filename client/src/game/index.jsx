@@ -5,6 +5,7 @@ const STATE_TYPES = {
 	state: 0,
 	delay: 1,
 	timer: 2,
+	sound: 3,
 };
 
 const objectToArray = (obj) => {
@@ -285,6 +286,16 @@ export class Game {
 				start: false,
 			},
 		});
+	}
+	
+	playSound(soundId, volume) {
+		this.diffLog.push({
+			state_type: STATE_TYPES.sound,
+			value: {
+				sound_id: soundId,
+				volume,
+			},
+		})
 	}
 }
 
