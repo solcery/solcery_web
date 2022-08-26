@@ -1,5 +1,5 @@
 import { Table, Button } from 'antd';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useHotkey } from '../../contexts/hotkey';
 import { notify } from '../../components/notification';
 import { useLocation } from 'react-router-dom';
@@ -16,6 +16,10 @@ export default function DocumentEditor(props) {
 		if (changed && !window.confirm('You have unsaved changed. Still leave?')) return;
 		props.onExit && props.onExit();
 	});
+
+	useEffect(() => {
+		updateChangedStatus();
+	}, [ props.doc ])
 
 	const save = useHotkey(
 		{ key: 'Ctrl+KeyS', noDefault: true },
