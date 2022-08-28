@@ -353,4 +353,36 @@ export const basicValues = [
 			return result;
 		},
 	},
+	{
+		type: 2,
+		subtype: 18,
+		lib: 'value',
+		func: 'scope_var',
+		name: 'Scope variable',
+		params: [{ code: 'var_name', name: 'Variable name', type: 'SString' }],
+		exec: (runtime, params, ctx) => {
+			let scope = ctx.scopes[ctx.scopes.length - 1];
+			let varName = params.var_name;
+			let res = scope.vars[varName];
+			return res ?? 0;
+		},
+	},
+	{
+		type: 2,
+		subtype: 19,
+		lib: 'value',
+		func: 'set_scope_var',
+		name: 'Set scope variable',
+		params: [
+			{ code: 'var_name', name: 'Var name', type: 'SString' },
+			{ code: 'value', name: 'Value', type: 'SBrick<value>' },
+		],
+		exec: (runtime, params, ctx) => {
+			let scope = ctx.scopes[ctx.scopes.length - 1];
+			let varName = params.var_name;
+			let value = runtime.execBrick(params.value, ctx);
+			scope.vars[varName] = value
+			return scope.vars[varName];
+		},
+	},
 ];

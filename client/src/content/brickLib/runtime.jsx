@@ -5,9 +5,9 @@ import { basicConditions } from './index';
 
 export const generic = {
 	arg: (runtime, params, ctx) => {
-		var args = ctx.args.pop();
-		var result = runtime.execBrick(args[params.name], ctx);
-		ctx.args.push(args);
+		var scope = ctx.scopes.pop();
+		var result = runtime.execBrick(scope.args[params.name], ctx);
+		ctx.scopes.push(scope);
 		return result;
 	}
 };
@@ -39,15 +39,19 @@ export class BrickRuntime {
 				lib,
 				func,
 				exec: (runtime, params, ctx) => {
-					ctx.args.push(params);
+					ctx.scopes.push(this.newScope(params));
 					let result = this.execBrick(obj.brick, ctx);
-					ctx.args.pop();
+					ctx.scopes.pop();
 					return result;
 				},
 			};
 			insertTable(this.bricks, brick, lib, func);
 		}
 		this.random = new Random(seed)
+	}
+
+	newScope (args = {}) {
+		return { args, vars: {} }
 	}
 
 	shuffle(array) {
@@ -62,7 +66,7 @@ export class BrickRuntime {
 	context = (object, extra) => {
 		var ctx = Object.assign(
 			{
-				args: [],
+				scopes: [],
 				vars: {},
 			},
 			extra
