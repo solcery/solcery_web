@@ -289,12 +289,10 @@ export class Game {
 	}
 	
 	playSound(soundId, volume) {
-		this.closeDiff();
 		this.diffLog.push({
 			state_type: STATE_TYPES.sound,
 			value: {
 				sound_id: soundId,
-				volume,
 			},
 		})
 	}
