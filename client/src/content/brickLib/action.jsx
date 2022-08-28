@@ -198,7 +198,9 @@ export const basicActions = [
 			let cardType = ctx.game.content.cardTypes[tplId];
 			let fieldName = `action_on_${params.event_name}`;
 			if (cardType[fieldName]) {
+				ctx.scopes.push(runtime.newScope());
 				runtime.execBrick(cardType[fieldName], ctx);
+				ctx.scopes.pop();
 			}
 		},
 	},
@@ -287,6 +289,23 @@ export const basicActions = [
 		params: [{ code: 'sound_id', name: 'Sound', type: 'SLink<sounds|sound>' }],
 		exec: (runtime, params, ctx) => {
 			ctx.game.playSound(params.sound_id);
+		},
+	},
+	{
+		type: 0,
+		subtype: 19,
+		lib: 'action',
+		func: 'set_scope_var',
+		name: 'Set scope variable',
+		params: [
+			{ code: 'var_name', name: 'Var', type: 'SString' },
+			{ code: 'value', name: 'Value', type: 'SBrick<value>' },
+		],
+		exec: (runtime, params, ctx) => {
+			let varName = params.var_name;
+			let value = params.value;
+			let scope = ctx.scopes[ctx.scopes.length - 1]
+			scope.vars[varName] = runtime.execBrick(params.value, ctx);
 		},
 	},
 	{
