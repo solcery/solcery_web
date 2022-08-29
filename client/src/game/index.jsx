@@ -293,7 +293,6 @@ export class Game {
 			state_type: STATE_TYPES.sound,
 			value: {
 				sound_id: soundId,
-				volume,
 			},
 		})
 	}

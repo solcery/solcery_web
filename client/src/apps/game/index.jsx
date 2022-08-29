@@ -156,6 +156,7 @@ const Menu = (props) => {
 			nfts,
 			log,
 			gameApi,
+			seed,
 		});
 		session.start();
 		setGameSession(session);
