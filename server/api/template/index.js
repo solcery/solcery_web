@@ -61,7 +61,7 @@ funcs.createObject = async function (data) {
     _id: new ObjectId(),
     template: data.params.template,
     fields: {
-      creationTime: Date.now(),
+      creationTime: Math.floor(Date.now() / 1000),
     },
   };
   return await db.getDb(data.project)
@@ -99,7 +99,7 @@ funcs.cloneObject = async function (data) {
     throw new Error("Error cloning the object");
   }
   object._id = new ObjectId();
-  object.fields.creationTime = Date.now();
+  object.fields.creationTime = Math.floor(Date.now() / 1000);
   return await db.getDb(data.project)
     .collection(OBJECT_COLLECTION)
     .insertOne(object)
