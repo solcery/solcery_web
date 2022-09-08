@@ -5,7 +5,11 @@ const STATE_TYPES = {
 	state: 0,
 	delay: 1,
 	timer: 2,
-	sound: 3,
+};
+
+const ACTION_TYPES = {
+	NONE: 0,
+	SOUND: 1,
 };
 
 const objectToArray = (obj) => {
@@ -165,7 +169,7 @@ export class Game {
 	setAttr(attr, value) {
 		if (this.attrs[attr] === undefined) throw new Error('Error trying to set unknown game attr ' + attr);
 		this.attrs[attr] = value;
-		this.onGameAttrChanged(attr, value);
+		this.unityPackage.current.onGameAttrChanged(attr, value);
 	}
 
 	createEntity(cardTypeId, place, initAction, ctx) {
@@ -190,111 +194,20 @@ export class Game {
 		return this.runtime.context(object, extra);
 	}
 
-	onEntityTransform(entity) {
-		if (!this.diff) this.startDiff();
-		if (!this.diff.objects[entity.id]) {
-			this.diff.objects[entity.id] = {
-				id: entity.id,
-				attrs: {},
-			};
-		}
-		this.diff.objects[entity.id].tplId = entity.tplId;
-	}
-
-	onEntityAttrChanged(entity, attr, value) {
-		if (!this.diff) this.startDiff();
-		if (!this.diff.objects[entity.id]) {
-			this.diff.objects[entity.id] = {
-				id: entity.id,
-				tplId: entity.tplId,
-				attrs: {},
-			};
-		}
-		this.diff.objects[entity.id].attrs[attr] = value;
-	}
-
-	onGameAttrChanged(attr, value) {
-		if (!this.diff) this.startDiff();
-		this.diff.attrs[attr] = value;
-	}
-
-	startDiff(full = false) {
-		let diff = {
-			attrs: {},
-			objects: {},
-		};
-		if (full) {
-			Object.assign(diff.attrs, this.attrs);
-			for (let obj of Object.values(this.objects)) {
-				diff.objects[obj.id] = {
-					id: obj.id,
-					tplId: obj.tplId,
-					attrs: Object.assign({}, obj.attrs),
-				};
-			}
-		}
-		this.diff = diff;
-	}
-
-	closeDiff() {
-		if (!this.diff) return;
-		let value = {
-			attrs: objectToArray(this.diff.attrs),
-			objects: Object.values(this.diff.objects).map((object) => {
-				return {
-					id: object.id,
-					tplId: object.tplId,
-					attrs: objectToArray(object.attrs),
-				};
-			}),
-		};
-		if (!this.diffLog) this.diffLog = [];
-		this.diffLog.push({
-			id: this.diffLog.length,
-			state_type: STATE_TYPES.state,
-			value,
-		});
-		this.diff = undefined;
-	}
-
-	animate(duration) {
-		this.closeDiff();
-		this.diffLog.push({
-			state_type: STATE_TYPES.delay,
-			value: {
-				delay: duration,
-			},
-		});
+	pause(duration) {
+		this.unityPackage.onPause(duration);
 	}
 
 	startTimer(object, duration) {
-		this.diffLog.push({
-			state_type: STATE_TYPES.timer,
-			value: {
-				object_id: object.id,
-				start: true,
-				duration,
-			},
-		});
+		this.unityPackage.onStartTimer(object, duration);
 	}
 
 	stopTimer(object) {
-		this.diffLog.push({
-			state_type: STATE_TYPES.timer,
-			value: {
-				object_id: object.id,
-				start: false,
-			},
-		});
+		this.unityPackage.onStopTimer(object);
 	}
 	
 	playSound(soundId, volume) {
-		this.diffLog.push({
-			state_type: STATE_TYPES.sound,
-			value: {
-				sound_id: soundId,
-			},
-		})
+		this.unityPackage.onPlaySound(soundId);
 	}
 }
 
@@ -309,18 +222,155 @@ class Entity {
 		this.attrs = {};
 		this.game = game;
 		for (let attr of Object.values(game.content.attributes)) {
-			this.setAttr(attr.code, 0, true);
+			this.attrs[attr.code] = 0;
 		}
 	}
 
-	setAttr(attr, value, init = false) {
-		if (this.attrs[attr] === undefined && !init) throw new Error(`trying to set unknown entity attr [${attr}]`);
+	setAttr(attr, value) {
+		if (this.attrs[attr] === undefined) throw new Error(`trying to set unknown entity attr [${attr}]`);
 		this.attrs[attr] = value;
-		this.game.onEntityAttrChanged(this, attr, value);
+		this.game.unityPackage.current.onEntityAttrChanged(this, attr, value);
 	}
 
 	transform(tplId) {
 		this.tplId = tplId;
-		this.game.onEntityTransform(this);
+		this.game.unityPackage.current.onEntityTransform(this);
 	}
 }
+
+class UnityPackageState {
+	actions = [];
+
+	gameAttrs = {};
+	entities = {};
+
+	export() {
+		let attrs = objectToArray(this.gameAttrs);
+		let objects = Object.values(this.entities).map(entity => ({
+			id: entity.id,
+			tplId: entity.tplId,
+			attrs: objectToArray(entity.attrs),	
+		}));
+		let state = {
+			id,
+			state_type: STATE_TYPES.state,
+			value: {
+				attrs,
+				objects,
+			},
+		};
+		let actions = this.actions;
+		return { state, actions };
+	}
+
+	onEntityAttrChanged(entity, attr, value) {
+		if (!this.entities[entity.id]) {
+			this.entities[entity.id] = {
+				id: entity.id,
+				tplId: entity.tplId,
+				attrs: {},
+			};
+		}
+		this.entities[entity.id].attrs[attr] = value;
+	}
+
+	onEntityTransform(entity) {
+		if (!this.entities[entity.id]) {
+			this.entities[entity.id] = {
+				id: entity.id,
+				tplId: entity.tplId,
+				attrs: {},
+			};
+		}
+		this.entities[entity.id].tplId = entity.tplId;
+	}
+
+	onGameAttrChanged(attr, value) {
+		this.gameAttrs[attr] = value;
+	}
+
+	onPlaySound(soundId) {
+		this.actions.push({
+			action_type: ACTION_TYPES.SOUND, // Тип экшена
+			value: {
+				sound_id: soundId 
+			}
+		});
+	}
+}
+
+class UnityPackage { 
+	actions = [];
+	states = [];
+
+	constructor(game) {
+		let state = {
+			attrs: {},
+			objects: {},
+		};
+		Object.assign(state.attrs, game.attrs);
+		for (let obj of Object.values(game.objects)) {
+			diff.objects[obj.id] = {
+				id: obj.id,
+				tplId: obj.tplId,
+				attrs: Object.assign({}, obj.attrs),
+			};
+		};
+		this.addState(state);
+		this.current = new UnityPackageState();
+	}	
+
+	addState(state, actions) {
+		let id = this.states.length;
+		state.id = id;
+		this.states.push(state);
+		if (!actions) return;
+		for (let action of actions) {
+			action.state_id = id;
+			this.actions.push(action);
+		}
+	}
+
+	pushCurrent() {
+		let { state, actions } = this.current.export();
+		this.addState(state, actions);
+		this.current = new UnityPackageState();
+	}
+
+
+	onPause(duration) {
+		this.pushCurrent();
+		this.addState({
+			state_type: STATE_TYPES.delay,
+			value: {
+				delay: duration,
+			},
+		});
+	}
+
+	onPlaySound(soundId) {
+		this.current.playSound(soundId)
+	}
+
+	onStartTimer(object, duration) {
+		this.addState({
+			state_type: STATE_TYPES.timer,
+			value: {
+				object_id: object.id,
+				start: true,
+				duration,
+			},
+		});
+	}
+
+	onStopTimer(object) {
+		this.states.push({
+			state_type: STATE_TYPES.timer,
+			value: {
+				object_id: object.id,
+				start: false,
+			},
+		});
+	}
+}
+
