@@ -29,9 +29,6 @@ export class Session {
 		for (let command of this.log) {
 			this.applyCommand(command)
 		}
-		this.game.diffLog = [];
-		this.game.startDiff(true);
-		this.game.closeDiff();
 	}
 
 	constructor(data) {
@@ -76,8 +73,7 @@ export class Session {
 
 	// applying command to log
 	applyCommand = (command) => {
-		this.game.diffLog = [];
-		this.game.startDiff(true);
+		this.game.newPackage();
 		if (command.command_data_type === 0) {
 			this.game.objectEvent(command.object_id, 'action_on_left_click');
 		}
@@ -87,8 +83,7 @@ export class Session {
 		if (command.command_data_type === 2) {
 			this.game.dropCard(command.object_id, command.drag_drop_id, command.target_place_id);
 		}
-		this.game.closeDiff();
-		return this.game.diffLog;
+		return this.game.exportPackage();
 	}
 
 	onServerCommandFail = (oldLog) => {
@@ -124,6 +119,20 @@ export class Game {
 		}
 	}
 
+	newPackage() {
+		this.unityPackage = new UnityPackage(this);
+	}
+
+	exportPackage() {
+		if (!this.unityPackage) this.newPackage(this);
+		return this.unityPackage.export();
+	}
+
+	pushPackageEvent(event, ...args) {
+		if (!this.unityPackage) return;
+		this.unityPackage[event](...args);
+	}
+
 	start = (layoutOverride, nfts) => {
 		let layout = layoutOverride ?? this.content.gameSettings.layout;
 		if (!layout) throw new Error('Error: Trying to initLayout without preset scheme');
@@ -146,7 +155,7 @@ export class Game {
 
 	objectEvent = (objectId, event) => {
 		let object = this.objects[objectId];
-		if (!object) throw new Error('Attempt to use unexistent object!');
+		if (!object) throw new Error('Attempt to call event unkown object!');
 		let ctx = this.createContext(object);
 		let cardType = this.content.cardTypes[object.tplId];
 		if (cardType[event]) {
@@ -156,7 +165,7 @@ export class Game {
 
 	dropCard = (objectId, dragAndDropId, targetPlace) => {
 		let object = this.objects[objectId];
-		if (!object) throw new Error('Attempt to use unexistent object!');
+		if (!object) throw new Error('Attempt to call drop for unkown object!');
 		let ctx = this.createContext(object, {
 			vars: { target_place: targetPlace },
 		});
@@ -169,7 +178,7 @@ export class Game {
 	setAttr(attr, value) {
 		if (this.attrs[attr] === undefined) throw new Error('Error trying to set unknown game attr ' + attr);
 		this.attrs[attr] = value;
-		this.unityPackage.current.onGameAttrChanged(attr, value);
+		this.pushPackageEvent('onGameAttrChanged', attr, value);
 	}
 
 	createEntity(cardTypeId, place, initAction, ctx) {
@@ -177,7 +186,7 @@ export class Game {
 		let entity = new Entity(id, cardTypeId, this);
 		this.objects[id] = entity;
 		if (!place) throw new Error('Game.createEntity error: No place given for created entity!');
-		entity.setAttr('place', place);
+		entity.attrs.place = place;
 		let cardType = this.content.cardTypes[cardTypeId];
 		if (!cardType) throw new Error('Game.createEntity error: Unknown cardType!');
 		if (cardType.action_on_create) {
@@ -186,6 +195,7 @@ export class Game {
 		if (initAction) {
 			this.runtime.execBrick(initAction, this.createContext(entity, ctx));
 		}
+		this.pushPackageEvent('onEntityCreated', entity);
 		return entity;
 	}
 
@@ -195,19 +205,19 @@ export class Game {
 	}
 
 	pause(duration) {
-		this.unityPackage.onPause(duration);
+		this.pushPackageEvent('onPause', duration);
 	}
 
 	startTimer(object, duration) {
-		this.unityPackage.onStartTimer(object, duration);
+		this.pushPackageEvent('onStartTimer', object, duration);
 	}
 
 	stopTimer(object) {
-		this.unityPackage.onStopTimer(object);
+		this.pushPackageEvent('onStopTimer', object);
 	}
 	
 	playSound(soundId, volume) {
-		this.unityPackage.onPlaySound(soundId);
+		this.pushPackageEvent('onPlaySound', soundId);
 	}
 }
 
@@ -229,12 +239,12 @@ class Entity {
 	setAttr(attr, value) {
 		if (this.attrs[attr] === undefined) throw new Error(`trying to set unknown entity attr [${attr}]`);
 		this.attrs[attr] = value;
-		this.game.unityPackage.current.onEntityAttrChanged(this, attr, value);
+		this.game.pushPackageEvent('onEntityAttrChanged', this, attr, value);
 	}
 
 	transform(tplId) {
 		this.tplId = tplId;
-		this.game.unityPackage.current.onEntityTransform(this);
+		this.game.pushPackageEvent('onEntityTransform', this, tplId);
 	}
 }
 
@@ -252,7 +262,6 @@ class UnityPackageState {
 			attrs: objectToArray(entity.attrs),	
 		}));
 		let state = {
-			id,
 			state_type: STATE_TYPES.state,
 			value: {
 				attrs,
@@ -272,6 +281,14 @@ class UnityPackageState {
 			};
 		}
 		this.entities[entity.id].attrs[attr] = value;
+	}
+
+	onEntityCreated(entity) {
+		this.entities[entity.id] = {
+			id: entity.id,
+			tplId: entity.tplId,
+			attrs: Object.assign({}, entity.attrs),
+		};
 	}
 
 	onEntityTransform(entity) {
@@ -302,23 +319,32 @@ class UnityPackageState {
 class UnityPackage { 
 	actions = [];
 	states = [];
+	exported = false;
 
 	constructor(game) {
-		let state = {
-			attrs: {},
-			objects: {},
-		};
-		Object.assign(state.attrs, game.attrs);
-		for (let obj of Object.values(game.objects)) {
-			diff.objects[obj.id] = {
-				id: obj.id,
-				tplId: obj.tplId,
-				attrs: Object.assign({}, obj.attrs),
-			};
-		};
-		this.addState(state);
-		this.current = new UnityPackageState();
+		this.newCurrent()
+		if (!game) return;
+		for (let [ attr, value ] of Object.entries(game.attrs)) {
+			this.current.onGameAttrChanged(attr, value);
+		}
+		for (let object of Object.values(game.objects)) {
+			for (let [ attr, value ] of Object.entries(object.attrs)) {
+				this.current.onEntityAttrChanged(object, attr, value);
+			}
+		}
 	}	
+
+	newCurrent() {
+		this.current = new UnityPackageState();
+	}
+
+	export() {
+		if (this.current) this.pushCurrent();
+		return {
+			actions: this.actions,
+			states: this.states,
+		}
+	}
 
 	addState(state, actions) {
 		let id = this.states.length;
@@ -332,9 +358,10 @@ class UnityPackage {
 	}
 
 	pushCurrent() {
+		if (!this.current) return;
 		let { state, actions } = this.current.export();
 		this.addState(state, actions);
-		this.current = new UnityPackageState();
+		this.current = undefined;
 	}
 
 
@@ -346,10 +373,6 @@ class UnityPackage {
 				delay: duration,
 			},
 		});
-	}
-
-	onPlaySound(soundId) {
-		this.current.playSound(soundId)
 	}
 
 	onStartTimer(object, duration) {
@@ -372,5 +395,32 @@ class UnityPackage {
 			},
 		});
 	}
+
+
+	onEntityAttrChanged(entity, attr, value) {
+		if (!this.current) this.newCurrent();
+		this.current.onEntityAttrChanged(entity, attr, value);
+	}
+
+	onEntityCreated(entity) {
+		if (!this.current) this.newCurrent();
+		this.current.onEntityCreated(entity);
+	}
+
+	onEntityTransform(entity) {
+		if (!this.current) this.newCurrent();
+		this.current.onEntityTransform(entity);
+	}
+
+	onGameAttrChanged(attr, value) {
+		if (!this.current) this.newCurrent();
+		this.current.onGameAttrChanged(attr, value);
+	}
+
+	onPlaySound(soundId) {
+		if (!this.current) this.newCurrent();
+		this.current.onPlaySound(soundId);
+	}
+
 }
 
