@@ -1,5 +1,30 @@
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900');
 
+.game-rules {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  width: 100%;
+  height: 100%;  
+  z-index: 100;
+
+  .game-rules-iframe {
+    margin: 0 auto;
+    top: 5%;
+    position: relative;
+    display: block;
+    min-width: 800px;
+    height: 90%;
+    width: 80%;
+    border: none;
+    opacity: 0.9;
+  }
+
+}
+
 .game-menu {
   width: 100%;
   height: 100%;
@@ -349,37 +374,6 @@ $transition: #{$speed} cubic-bezier(0.310, -0.105, 0.430, 1.400) transform;
 
 }
 
-.button-close {
-  position: absolute;
-  right: 32px;
-  top: 32px;
-  width: 64px;
-  height: 64px;
-  opacity: 0.7;
-  z-index: 100;
-
-  &:hover {
-    opacity: 1;
-  }
-
-  &:before, &:after {
-    position: absolute;
-    left: 15px;
-    content: ' ';
-    height: 33px;
-    width: 2px;
-    background-color: #333;
-  }
-
-  &:before {
-    transform: rotate(45deg);
-  }
-
-  &:after {
-    transform: rotate(-45deg);
-  }
-}
-
 @keyframes fade {
   0% {
     opacity: 0.4;
@@ -388,5 +382,72 @@ $transition: #{$speed} cubic-bezier(0.310, -0.105, 0.430, 1.400) transform;
   100% {
     opacity: 0;
     transform: scale(1.1);
+  }
+}
+
+.game-toolbar {
+  position: absolute;
+  z-index: 100;
+  right: 0;
+  top: 5px;
+  right: 5px;
+
+
+  .btn-toolbar {
+    margin-left: 2px;
+    margin-right: 2px;
+    background-color: blue;
+    border-radius:50%;
+    display:inline-flex;
+    flex-direction:column;
+    justify-content:center;
+    height:3rem;
+    padding:0;
+    position:relative;
+    text-align:center;
+    transform-origin:center;
+    transition:all 0.25s;
+    width:3rem;
+    cursor: pointer;
+
+
+    .btn-text {
+      position: absolute;
+      opacity: 0;
+      top: 100%;
+    }
+
+    .icon {
+      width: 50%;
+      margin: auto;
+      transform: scale(2);
+    }
+
+    &:hover {
+      transform:scale(1.2);
+
+      .btn-text {
+        opacity: 1;
+      }
+    }
+    &.notinview {
+      opacity:0;
+    }
+    &.inview {
+      animation:pop 0.5s ease-in-out;
+    }
+  }
+}
+
+
+
+@keyframes pop {
+  0% {
+    clip-path:circle(5%);
+    transform:scale(0.5);
+  }
+  100% {
+    clip-path:circle(50%);
+    transform:scale(1);
   }
 }

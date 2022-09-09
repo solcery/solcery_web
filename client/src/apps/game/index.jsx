@@ -6,8 +6,8 @@ import { Session } from '../../game';
 import GameClient from '../../components/gameClient';
 import { SolceryAPIConnection } from '../../api';
 import BasicGameClient from '../../components/basicGameClient';
-import { Button, Spin } from 'antd';
-import { CaretRightOutlined } from '@ant-design/icons';
+import { Button, Spin, Tooltip } from 'antd';
+import { CloseOutlined, BugOutlined, CaretRightOutlined, QuestionOutlined } from '@ant-design/icons';
 
 import './walletModal.css';
 import './style.scss';
@@ -127,6 +127,33 @@ const NftBar = (props) => {
     />)}  
     {props.nfts.length === 0 && <div></div>}
    </div>;
+}
+
+const Rules = (props) => {
+	return <>
+		<div className='game-rules'>
+			<iframe className='game-rules-iframe' src='https://docs.solcery.xyz/'/>
+		</div>
+	</>;
+}
+
+const Toolbar = () => {
+	return <>
+		<div className='game-toolbar'>
+			<div className='btn-toolbar'>
+	    	<BugOutlined size='big' className='icon'/>
+	    	<p className='btn-text'>Report a bug</p>
+	    </div>
+	    <div className='btn-toolbar'>
+	    	<QuestionOutlined size='big' className='icon'/>
+	    	<p className='btn-text'>How to play</p>
+	    </div>
+	    <div className='btn-toolbar'>
+	    	<CloseOutlined size='big' className='icon'/>
+	    	<p className='btn-text'>Exit game</p>
+	    </div>
+    </div>
+	</>
 }
 
 const Menu = (props) => {
@@ -253,6 +280,8 @@ export const GameTest = () => {
 	}, [ gameSession ])
 
 	return (<>
+		<Toolbar/>
+		{/*<Rules/>*/}
 		{!gameReady && <Menu progressBarRef={progressBarRef} progressNumberRef={progressNumberRef} onGameSession={setGameSession}/>}
 		<GameClient gameSession={gameSession} onLoadingProgress={onLoadingProgress}/>
 		{gameReady && <a onClick={leaveGame} className="button-close"/>}
