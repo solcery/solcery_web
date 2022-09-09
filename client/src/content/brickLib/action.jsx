@@ -183,7 +183,7 @@ export const basicActions = [
 		params: [{ code: 'duration', name: 'Duration', type: 'SBrick<value>' }],
 		exec: (runtime, params, ctx) => {
 			let duration = runtime.execBrick(params.duration, ctx);
-			ctx.game.animate(duration);
+			ctx.game.pause(duration);
 		},
 	},
 	{
