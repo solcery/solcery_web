@@ -33,13 +33,6 @@ export default function GameClient(props) {
 
 	useEffect(() => {
 		window.onMessageFromUnity = (message, param) => {
-			const sendDiffLog = (states) => {
-				for (let index in states) {
-					states[index].id = index;
-				}
-				sendToUnity('UpdateGameState', { predict: true, states });
-			}
-
 			if (message === 'OnUnityLoadProgress') {
 				let { progress } = JSON.parse(param)
 				setLoadingProgress(progress)
@@ -63,12 +56,16 @@ export default function GameClient(props) {
 					content_hash: contentHash,
 				}
 				sendToUnity('UpdateGameContentOverrides', overrides);
-
-				sendDiffLog(gameSession.game.diffLog);
+				let unityPackage = gameSession.game.exportPackage();
+				unityPackage.predict = true;
+				sendToUnity('UpdateGameState', unityPackage)	
 			}
 			if (message === 'SendCommand') {
 				let command = JSON.parse(param);
-				gameSession.onPlayerCommand(command).then(sendDiffLog)
+				gameSession.onPlayerCommand(command).then(unityPackage => {
+					unityPackage.predict = true;
+					sendToUnity('UpdateGameState', unityPackage);
+				})
 			}
 		}
 	}, [ gameSession ])

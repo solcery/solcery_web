@@ -50,6 +50,10 @@ export class BrickRuntime {
 		this.random = new Random(seed)
 	}
 
+	newLog(game) {
+
+	}
+
 	newScope (args = {}) {
 		return { args, vars: {} }
 	}
