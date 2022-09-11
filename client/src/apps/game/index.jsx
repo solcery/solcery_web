@@ -223,7 +223,7 @@ const Menu = (props) => {
 }
 
 export const GameTest = () => {
-	const { gameApi } = useGameApi();
+	const { gameApi, gameInfo } = useGameApi();
 	const [ gameSession, setGameSession ] = useState();
 	const [ gameReady, setGameReady ] = useState(false);
 	const [ loadingProgress, setLoadingProgress ] = useState(0);
@@ -254,7 +254,7 @@ export const GameTest = () => {
 
 	return (<>
 		{!gameReady && <Menu progressBarRef={progressBarRef} progressNumberRef={progressNumberRef} onGameSession={setGameSession}/>}
-		<GameClient gameSession={gameSession} onLoadingProgress={onLoadingProgress}/>
+		<GameClient unityBuild={gameInfo.build} gameSession={gameSession} onLoadingProgress={onLoadingProgress}/>
 		{gameReady && <a onClick={leaveGame} className="button-close"/>}
 	</>);
 }
