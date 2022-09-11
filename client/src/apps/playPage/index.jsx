@@ -12,7 +12,7 @@ import { notify } from '../../components/notification';
 export default function PlayPage() {
 	const [ gameSession, setGameSession ] = useState();
 	const { layoutPresets, nfts } = useUser();
-	const { sageApi } = useProject();
+	const { sageApi, projectConfig } = useProject();
 	let navigate = useNavigate()
 
 	useEffect(() => {
@@ -53,6 +53,6 @@ export default function PlayPage() {
 
 	if (!gameSession) return <>Loading</>;
 	return <div>
-		<GameClient gameSession={gameSession}/>
+		<GameClient unityBuild={projectConfig.build} gameSession={gameSession}/>
 	</div>;
 }
