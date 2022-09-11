@@ -1,8 +1,9 @@
 import { useState, useEffect, useRef } from 'react';
+import { SolceryAPIConnection } from '../api'
 const md5 = require('js-md5');
 
 function delay(ms) {
-   return new Promise(resolve => setTimeout(resolve, ms));
+	return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 export default function GameClient(props) {
@@ -32,6 +33,29 @@ export default function GameClient(props) {
 	}
 
 	useEffect(() => {
+
+
+		window.getUnityConfig = async () => {
+			let api = new SolceryAPIConnection('solcery', { modules: [ 'template' ]});
+			let unityBuildId = props.unityBuild;
+			let unityBuildData = await api.template.getObjectById({ template: 'unityBuilds', objectId: unityBuildId });
+			let loaderUrl = unityBuildData.fields.loaderUrl;
+			let loader = await fetch(loaderUrl);
+			let script = await loader.text();
+
+			let config = {
+				loaderScript: script,
+				dataUrl: unityBuildData.fields.dataUrl,
+				frameworkUrl: unityBuildData.fields.frameworkUrl,
+				codeUrl: unityBuildData.fields.codeUrl,
+				streamingAssetsUrl: unityBuildData.fields.streamingAssetsUrl,
+				companyName: "Solcery",
+				productName: "solcery_client_unity",
+				productVersion: "0.1"
+			}
+			return config
+		}
+
 		window.onMessageFromUnity = (message, param) => {
 			if (message === 'OnUnityLoadProgress') {
 				let { progress } = JSON.parse(param)
@@ -68,13 +92,13 @@ export default function GameClient(props) {
 				})
 			}
 		}
-	}, [ gameSession ])
+	}, [ gameSession, props.unityBuild ])
 
 	useEffect(() => {
 		window.addEventListener('resize', handleResize)
 		return () => {
-      		window.removeEventListener('resize', handleResize)
-      	}
+				window.removeEventListener('resize', handleResize)
+			}
 	}, [])
 
 	if (!gameSession) return <>NO SESSION</>

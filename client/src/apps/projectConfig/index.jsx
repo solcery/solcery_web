@@ -22,7 +22,15 @@ const schema = {
 				}
 			},
 		},
-		{ code: 'releaseProjectId', name: 'Game project ID', type: 'SString' }
+		{ code: 'releaseProjectId', name: 'Game project ID', type: 'SString' },
+		{ code: 'build', name: 'Build', type: {
+				name: 'SLink',
+				data: {
+					project: 'solcery',
+					templateCode: 'unityBuilds',
+				}
+			}
+		}
 	],
 };
 
