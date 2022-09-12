@@ -21,7 +21,9 @@ import { TOKEN_PROGRAM_ID } from "@solana/spl-token";
 export const PlayerProvider: FC = (props) => {
     const network = WalletAdapterNetwork.Mainnet;
 
-    const endpoint = useMemo(() => clusterApiUrl(network), [network]);
+    // const endpoint = useMemo(() => clusterApiUrl(network), [network]);
+    // const endpoint = 'https://ssc-dao.genesysgo.net';
+    const endpoint = 'https://solana-api.projectserum.com';
 
     const wallets = useMemo(() => [
         new PhantomWalletAdapter(),
@@ -40,12 +42,14 @@ export const PlayerProvider: FC = (props) => {
 };
 
 const PlayerContext = React.createContext(undefined);
+// const publicKey = new PublicKey('');
 
 const PlayerProfileProvider = (props) => {
     const [ cookies ] = useCookies('veryrealnfts');
     const { gameApi } = useGameApi();
     const { connected, publicKey, wallet } = useWallet();
     const { connection } = useConnection();
+
 
     const [ ready, setReady ] = useState(false);
     const [ nfts, setNfts ] = useState();
@@ -55,14 +59,15 @@ const PlayerProfileProvider = (props) => {
     </WalletModalProvider>);
 
     const getWalletNfts = async (connection, publicKey) => {
-        let mintRequest = await connection.getTokenAccountsByOwner(publicKey, { programId: TOKEN_PROGRAM_ID })
+        let mintRequest = await connection.getParsedTokenAccountsByOwner(publicKey, { programId: TOKEN_PROGRAM_ID })
+        let mints = mintRequest.value.map(accountData => new PublicKey(accountData.account.data.parsed.info.mint));
 
-        let mints = mintRequest.value.map(accountData => accountData.pubkey);
         const metaplex = new Metaplex(connection);
         let nftDatas = await metaplex
             .nfts()
             .findAllByMintList({ mints })
             .run();
+        nftDatas = nftDatas.filter(data => data !== null);
         let res = [];
         for (let nftData of nftDatas) {
             if (nftData) {

@@ -67,6 +67,7 @@ export const ForgeProvider = (props) => {
                 collection,
                 nft: await metaplex.nfts().load({ metadata: nft }).run(),
             })));
+            loadedNfts = loadedNfts.filter(data => data.nft.json);
             loadedNfts = loadedNfts.map(({ nft, collection }) => ({
                 collection: collection._id,
                 name: nft.name,
