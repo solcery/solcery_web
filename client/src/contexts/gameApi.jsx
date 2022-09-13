@@ -2,11 +2,11 @@ import React, { useContext, useEffect, useState, useCallback } from 'react';
 import { useParams, Outlet } from 'react-router-dom';
 import { SolceryAPIConnection } from '../api';
 import { PlayerProvider } from './player';
-import { ForgeProvider } from './forge';
 
 const apiConfig = {
 	modules: [
 		'game',
+		'forge'
 	],
 	auth: './game/auth',
 }
@@ -40,9 +40,7 @@ export function GameApiProvider(props) {
 
 	return (<GameApiContext.Provider value={{ gameApi, gameInfo }}>
 		<PlayerProvider>
-			<ForgeProvider>
-				<Outlet />
-			</ForgeProvider>
+			<Outlet />
 		</PlayerProvider>
 	</GameApiContext.Provider>);
 }
