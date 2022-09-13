@@ -122,7 +122,6 @@ funcs.release = async function (data) {
   }
   let gameSettings = data.params.contentMeta.gameSettings;
   var update = { $set: gameSettings };
-  console.log(update)
   await db.getDb(gameDbName)
     .collection(GAME_INFO_COLLECTION)
     .updateOne({}, update)

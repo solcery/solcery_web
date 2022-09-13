@@ -5,8 +5,9 @@ import { Session } from '../../game';
 import GameClient from '../../components/gameClient';
 import { SolceryAPIConnection } from '../../api';
 import BasicGameClient from '../../components/basicGameClient';
-import { Button, Spin } from 'antd';
-import { HomeOutlined, CaretRightOutlined } from '@ant-design/icons';
+import { Button, Spin, Tooltip } from 'antd';
+import { HomeOutlined, CloseOutlined, BugOutlined, CaretRightOutlined, QuestionOutlined } from '@ant-design/icons';
+
 
 import './walletModal.css';
 import './style.scss';
@@ -128,6 +129,43 @@ const NftBar = (props) => {
     />)}  
     {props.nfts.length === 0 && <div></div>}
    </div>;
+}
+
+const RulesIframe = (props) => {
+	return <>
+		<div className='blackout' onClick={props.onClose}>
+			<div className='game-rules-body'>
+				<div className='game-rules-title'>
+					<CloseOutlined className='game-rules-close' size='big' onClick={props.onClose}/>
+					How to play
+				</div>
+				<iframe className='game-rules-iframe' src='https://solcery.xyz'/>
+			</div>
+		</div>
+	</>;
+}
+
+const Toolbar = (props) => {
+	const [ showRules, setShowRules ] = useState(false);
+	const { gameInfo } = useGameApi();
+
+	return <>
+		{showRules && <RulesIframe src={gameInfo.rulesURL} onClose={() => setShowRules(false)}/>}
+		<div className='game-toolbar'>
+			<div className='btn-toolbar'>
+	    	<BugOutlined size='big' className='icon'/>
+	    	<p className='btn-text'>Report a bug</p>
+	    </div>
+	    {gameInfo.rulesURL && <div className='btn-toolbar' onClick={() => setShowRules(true)}>
+	    	<QuestionOutlined size='big' className='icon'/>
+	    	<p className='btn-text'>How to play</p>
+	    </div>}
+	    {props.gameReady && <div className='btn-toolbar' onClick={props.onLeaveGame}>
+	    	<CloseOutlined size='big' className='icon'/>
+	    	<p className='btn-text'>Exit game</p>
+	    </div>}
+    </div>
+	</>
 }
 
 const Menu = (props) => {
@@ -253,6 +291,7 @@ export const GameTest = () => {
 	}, [ gameSession ])
 
 	return (<>
+		<Toolbar onLeaveGame={leaveGame} gameReady={gameReady} gameSession={gameSession}/>
 		{!gameReady && <Menu progressBarRef={progressBarRef} progressNumberRef={progressNumberRef} onGameSession={setGameSession}/>}
 		<GameClient 
 			unityBuild={gameInfo.build} 
@@ -260,7 +299,6 @@ export const GameTest = () => {
 			onLoadingProgress={onLoadingProgress} 
 			onFinished={() => setFinished(true)}
 		/>
-		{gameReady && <a onClick={leaveGame} className="button-close"/>}
 		{gameReady && gameSession.finished && <div className='blackout'>
 			<BigButton
 				icon={HomeOutlined}
