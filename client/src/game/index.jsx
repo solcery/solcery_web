@@ -1,5 +1,6 @@
 import { BrickRuntime } from '../content/brickLib';
 import { notify } from '../components/notification';
+import { getTable } from '../utils';
 
 const STATE_TYPES = {
 	state: 0,
@@ -21,6 +22,7 @@ const objectToArray = (obj) => {
 export class Session {
 	
 	start() {
+		if (this.started) return;
 		if (this.game) {
 			delete this.game;
 			this.game = new Game(this);
@@ -29,6 +31,7 @@ export class Session {
 		for (let command of this.log) {
 			this.applyCommand(command)
 		}
+		this.started = true;
 	}
 
 	constructor(data) {
@@ -39,7 +42,6 @@ export class Session {
 		this.players = data.players;
 		this.log = data.log ?? [];
 		this.runtime = new BrickRuntime(data.content.web, this.seed);
-		this.onCommand = data.onCommand;
 		this.layout = data.layout;
 		this.nfts = data.nfts ?? [];
 		this.gameApi = data.gameApi;
@@ -71,8 +73,17 @@ export class Session {
 		return { nfts, card_types };
 	}
 
+	checkOutcome = () => {
+		let outcome = this.game.checkOutcome();
+		if (outcome) {
+			this.outcome = outcome;
+			this.finished = true;
+		}
+	}
+
 	// applying command to log
 	applyCommand = (command) => {
+		if (this.finished) return;
 		this.game.newPackage();
 		if (command.command_data_type === 0) {
 			this.game.objectEvent(command.object_id, 'action_on_left_click');
@@ -83,6 +94,7 @@ export class Session {
 		if (command.command_data_type === 2) {
 			this.game.dropCard(command.object_id, command.drag_drop_id, command.target_place_id);
 		}
+		this.checkOutcome();
 		return this.game.exportPackage();
 	}
 
@@ -117,6 +129,17 @@ export class Game {
 		for (let attr of Object.values(this.content.gameAttributes)) {
 			this.attrs[attr.code] = 0;
 		}
+	}
+
+	checkOutcome() {
+		let outcomeValue = getTable(this.content, 'gameSettings', 'outcome');
+		if (!outcomeValue) return;
+		console.log('outcomeValue')
+		let ctx = this.createContext();
+		let outcome = this.runtime.execBrick(outcomeValue, ctx);
+		console.log(outcome);
+		if (outcome === 0) return;
+		return outcome;
 	}
 
 	newPackage() {

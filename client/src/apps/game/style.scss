@@ -86,9 +86,9 @@
 $color: #406050;
 $color-dark: #aaa;
 $speed: "0.25s";
-$transition: #{$speed} cubic-bezier(0.310, -0.105, 0.430, 1.400) transform;
+$transition: #{$speed} cubic-bezier(0.310, -0.105, 0.430, 1.400) all;
 
-.button-start {
+.button-big {
   display: block;
   background-color: $color;
   width: 300px;
