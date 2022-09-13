@@ -10,11 +10,8 @@ import {
     WalletMultiButton
 } from '@solana/wallet-adapter-react-ui';
 import { clusterApiUrl, PublicKey } from '@solana/web3.js';
-
-import { Metaplex, keypairIdentity, bundlrStorage } from "@metaplex-foundation/js";
 import { useGameApi } from './gameApi';
 import { useCookies } from 'react-cookie';
-import { TOKEN_PROGRAM_ID } from "@solana/spl-token";
 
 // require('@solana/wallet-adapter-react-ui/styles.css');
 
@@ -50,7 +47,6 @@ const PlayerProfileProvider = (props) => {
     const { connected, publicKey, wallet } = useWallet();
     const { connection } = useConnection();
 
-
     const [ ready, setReady ] = useState(false);
     const [ nfts, setNfts ] = useState();
     const [ ConnectionComponent, setConnectionComponent ] = useState(<WalletModalProvider>
@@ -58,43 +54,15 @@ const PlayerProfileProvider = (props) => {
         <WalletDisconnectButton />
     </WalletModalProvider>);
 
-    const getWalletNfts = async (connection, publicKey) => {
-        let mintRequest = await connection.getParsedTokenAccountsByOwner(publicKey, { programId: TOKEN_PROGRAM_ID })
-        let mints = mintRequest.value.map(accountData => new PublicKey(accountData.account.data.parsed.info.mint));
-
-        const metaplex = new Metaplex(connection);
-        let nftDatas = await metaplex
-            .nfts()
-            .findAllByMintList({ mints })
-            .run();
-        nftDatas = nftDatas.filter(data => data !== null);
-        let res = [];
-        for (let nftData of nftDatas) {
-            if (nftData) {
-                res.push(nftData.mintAddress.toBase58())
-            }
-        }
-        return res;
-    }
-
-    useEffect(() => {
-        if (!wallet) return;
-        if (!publicKey) return;
-        if (cookies.veryrealnfts) {
-            let mints = cookies.veryrealnfts.split(',');
-            setNfts(mints);
-            return;
-        }
-        getWalletNfts(connection, publicKey).then(setNfts)
-    }, [ cookies, connected, publicKey, connection ])
-
     useEffect(() => {
         if (!gameApi) return;
         if (!publicKey) return;
-        if (!nfts) return;
+        gameApi.forge.getPlayerNfts({ publicKey: publicKey.toBase58()}).then(res => {
+            setNfts(res)
+        });
         gameApi.setSession(publicKey.toBase58());
         setReady(true);
-    }, [ nfts, gameApi, publicKey ])
+    }, [ gameApi, publicKey ])
 
     return (<PlayerContext.Provider value ={{ publicKey: ready ? publicKey : undefined, nfts, ConnectionComponent }}>
         { props.children }

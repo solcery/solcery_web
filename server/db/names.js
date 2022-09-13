@@ -7,5 +7,7 @@ module.exports = {
 
 	VERSIONS_COLLECTION: "versions",
 	GAMES_COLLECTION: "games",
-	GAME_INFO_COLLECTION: "gameInfo"
+	GAME_INFO_COLLECTION: "gameInfo",
+
+	FORGE_DB: "nfts",
 } 

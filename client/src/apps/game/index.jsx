@@ -1,6 +1,5 @@
 import { useEffect, useState, useCallback, useRef } from 'react';
 import { useGameApi } from '../../contexts/gameApi';
-import { useForge } from '../../contexts/forge';
 import { usePlayer } from '../../contexts/player';
 import { Session } from '../../game';
 import GameClient from '../../components/gameClient';
@@ -105,6 +104,8 @@ const NftBar = (props) => {
     });
   }, [ open, props.nfts ])
 
+  if (!props.nfts) return <></>;
+
   let className = 'cards-split';
   if (open) className = className + ' transition';
 
@@ -132,11 +133,10 @@ const NftBar = (props) => {
 const Menu = (props) => {
 	const { gameApi, gameInfo } = useGameApi();
 	const { nfts, publicKey, ConnectionComponent } = usePlayer();
-	const { forge } = useForge();
-	const [ forgedNfts, setForgedNfts ] = useState();
 	const [ isNewGame, setIsNewGame ] = useState(true);
 	const [ gameSession, setGameSession ] = useState();
-	const [ status, setStatus ] = useState('idle')
+	const [ status, setStatus ] = useState('idle');
+	const [ playerNfts, setPlayerNfts ] = useState();
 
 	const loadGame = async (game) => {
 		if (!game) return;
@@ -144,9 +144,9 @@ const Menu = (props) => {
 		let contentVersion = await gameApi.game.getContentVersion({ contentVersion: contentVersionNumber })
 		if (!contentVersion) return;
 		let id = game._id;
-		let nfts = game.nfts[0];
-		nfts = await forge.getNfts(nfts, contentVersion);
-		setForgedNfts(nfts);
+		let mints = game.nfts[0];
+		let nfts = await gameApi.forge.getForgedNftsByMints({ mints });
+		setPlayerNfts(nfts);
 		let content = contentVersion.content;
 		let log = game.log;
 		let seed = game.seed;
@@ -169,32 +169,29 @@ const Menu = (props) => {
 		props.onGameSession(gameSession);
 	}
 
-	const getPlayerForgedNfts = async () => {
-		let contentVersion = await gameApi.game.getContentVersion();
-		let playerNfts = await forge.getNfts(nfts, contentVersion);
-		setForgedNfts(playerNfts)
-	}
-
 	useEffect(() => {
 		if (!gameApi) return;
 		if (!publicKey) return;
+		if (!nfts) return;
 		gameApi.game.getPlayerOngoingGame().then(game => {
 			if (game) {
 				setStatus('continue');
 				loadGame(game)
 			} else {
-				getPlayerForgedNfts();
+				gameApi.game.getContentVersion().then(contentVersion => {
+					let supportedCollections = contentVersion.content.web.collections
+      		let collectionFilter = Object.values(supportedCollections).map(col => col.collection);
+      		setPlayerNfts(nfts.filter(nft => collectionFilter.includes(nft.collection)));
+				})
 				setStatus('newgame')
 			}
 		})
-	}, [ gameApi, publicKey ])
+	}, [ nfts, gameApi, publicKey ])
 
 	const createGame = useCallback(async () => {
-		if (!forge) return;
-		if (!forgedNfts) return;
-		let playerNfts = forgedNfts.map(nft => nft.mint);
-		gameApi.game.startNewGame({ nfts: playerNfts }).then(loadGame)
-	}, [ forgedNfts ]);
+		let gameNfts = playerNfts.map(nft => nft.mint); //TODO: filter
+		gameApi.game.startNewGame({ nfts: gameNfts }).then(loadGame)
+	}, [ nfts, playerNfts ]);
 
 	if (!gameInfo) return <>Loading</>;
 
@@ -212,8 +209,8 @@ const Menu = (props) => {
     	</div>
  			{ConnectionComponent}
     </div>}
-		{forgedNfts && <NftBar nfts={forgedNfts}/>}
-		{forgedNfts && <StartButton
+		{playerNfts && <NftBar nfts={playerNfts}/>}
+		{playerNfts && <StartButton
 			status={status} 
 			onClick={status === 'newgame' ? createGame : continueGame} 
 			progressBarRef={props.progressBarRef}
