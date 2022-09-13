@@ -8,6 +8,10 @@ const apiConfig = {
 			name: 'template',
 			path: './template',
 		},
+		{
+			name: 'forge',
+			path: './forge',
+		},
 
 	],
 	auth: './player/auth',
