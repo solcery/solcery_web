@@ -134,10 +134,8 @@ export class Game {
 	checkOutcome() {
 		let outcomeValue = getTable(this.content, 'gameSettings', 'outcome');
 		if (!outcomeValue) return;
-		console.log('outcomeValue')
 		let ctx = this.createContext();
 		let outcome = this.runtime.execBrick(outcomeValue, ctx);
-		console.log(outcome);
 		if (outcome === 0) return;
 		return outcome;
 	}

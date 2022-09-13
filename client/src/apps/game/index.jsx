@@ -261,10 +261,12 @@ export const GameTest = () => {
 			onFinished={() => setFinished(true)}
 		/>
 		{gameReady && <a onClick={leaveGame} className="button-close"/>}
-		{gameReady && gameSession.finished && <BigButton
-			icon={HomeOutlined}
-			caption={'Back to menu'} 
-			onClick={leaveGame}
-		/>}
+		{gameReady && gameSession.finished && <div className='blackout'>
+			<BigButton
+				icon={HomeOutlined}
+				caption={'Back to menu'} 
+				onClick={leaveGame}
+			/>
+		</div>}
 	</>);
 }
