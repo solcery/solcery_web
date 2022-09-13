@@ -96,7 +96,7 @@ export default function GameClient(props) {
 				let contentHash = md5(JSON.stringify(content));
 				let cachedContentHash = getTable(data, 'content_metadata', 'game_content', 'hash');
 
-				if (contentHash === cachedContentHash) {
+				if (false && contentHash === cachedContentHash) {
 					sendToUnity('UpdateGameContent', null);
 
 				} else {
@@ -107,7 +107,7 @@ export default function GameClient(props) {
 				let overrides = gameSession.getContentOverrides();
 				let overridesHash = md5(JSON.stringify(overrides));
 				let cachedOverridesHash = getTable(data, 'content_metadata', 'game_content_overrides', 'hash');
-				if (overridesHash === cachedOverridesHash) {
+				if (false && overridesHash === cachedOverridesHash) {
 					sendToUnity('UpdateGameContentOverrides', null);
 				} else {
 					overrides.metadata = {

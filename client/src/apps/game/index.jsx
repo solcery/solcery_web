@@ -131,29 +131,39 @@ const NftBar = (props) => {
    </div>;
 }
 
-const Rules = (props) => {
+const RulesIframe = (props) => {
 	return <>
-		<div className='game-rules'>
-			<iframe className='game-rules-iframe' src='https://docs.solcery.xyz/'/>
+		<div className='blackout' onClick={props.onClose}>
+			<div className='game-rules-body'>
+				<div className='game-rules-title'>
+					<CloseOutlined className='game-rules-close' size='big' onClick={props.onClose}/>
+					How to play
+				</div>
+				<iframe className='game-rules-iframe' src='https://solcery.xyz'/>
+			</div>
 		</div>
 	</>;
 }
 
-const Toolbar = () => {
+const Toolbar = (props) => {
+	const [ showRules, setShowRules ] = useState(false);
+	const { gameInfo } = useGameApi();
+
 	return <>
+		{showRules && <RulesIframe src={gameInfo.rulesURL} onClose={() => setShowRules(false)}/>}
 		<div className='game-toolbar'>
 			<div className='btn-toolbar'>
 	    	<BugOutlined size='big' className='icon'/>
 	    	<p className='btn-text'>Report a bug</p>
 	    </div>
-	    <div className='btn-toolbar'>
+	    {gameInfo.rulesURL && <div className='btn-toolbar' onClick={() => setShowRules(true)}>
 	    	<QuestionOutlined size='big' className='icon'/>
 	    	<p className='btn-text'>How to play</p>
-	    </div>
-	    <div className='btn-toolbar'>
+	    </div>}
+	    {props.gameReady && <div className='btn-toolbar' onClick={props.onLeaveGame}>
 	    	<CloseOutlined size='big' className='icon'/>
 	    	<p className='btn-text'>Exit game</p>
-	    </div>
+	    </div>}
     </div>
 	</>
 }
@@ -281,8 +291,7 @@ export const GameTest = () => {
 	}, [ gameSession ])
 
 	return (<>
-		<Toolbar/>
-		{/*<Rules/>*/}
+		<Toolbar onLeaveGame={leaveGame} gameReady={gameReady} gameSession={gameSession}/>
 		{!gameReady && <Menu progressBarRef={progressBarRef} progressNumberRef={progressNumberRef} onGameSession={setGameSession}/>}
 		<GameClient 
 			unityBuild={gameInfo.build} 
@@ -290,7 +299,6 @@ export const GameTest = () => {
 			onLoadingProgress={onLoadingProgress} 
 			onFinished={() => setFinished(true)}
 		/>
-		{gameReady && <a onClick={leaveGame} className="button-close"/>}
 		{gameReady && gameSession.finished && <div className='blackout'>
 			<BigButton
 				icon={HomeOutlined}
