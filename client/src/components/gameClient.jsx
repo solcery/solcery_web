@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
-import { SolceryAPIConnection } from '../api'
-const md5 = require('js-md5');
+import { SolceryAPIConnection } from '../api';
+import { getTable, insertTable } from '../utils';
+const md5 = require('js-md5'); 
 
 function delay(ms) {
 	return new Promise(resolve => setTimeout(resolve, ms));
@@ -49,6 +50,25 @@ export default function GameClient(props) {
 				frameworkUrl: unityBuildData.fields.frameworkUrl,
 				codeUrl: unityBuildData.fields.codeUrl,
 				streamingAssetsUrl: unityBuildData.fields.streamingAssetsUrl,
+				cacheControl: function (url) {
+		          // Revalidate if file is up to date before loading from cache
+		          if (url.match(/\.data/) 
+		              || url.match(/\.bundle/)) {
+		            return "must-revalidate";
+		          }
+
+		          // Load file from cache without revalidation.
+		          if (url.match(/\.custom/)
+		                  || url.match(/\.png/)
+		                  || url.match(/\.jpg/)
+		                  || url.match(/\.wav/)) {
+		            return "immutable";
+		          }
+
+		          // Disable explicit caching for all other files.
+		          // Note: the default browser cache may cache them anyway.
+		          return "no-store";
+		        },
 				companyName: "Solcery",
 				productName: "solcery_client_unity",
 				productVersion: "0.1"
@@ -64,22 +84,38 @@ export default function GameClient(props) {
 			} 
 
 			if (message === 'OnUnityLoaded') {
+				let data = param ? JSON.parse(param) : {};
 
-				// TODO: add metadata parsing
 				let content = gameSession.getUnityContent();
 				let contentHash = md5(JSON.stringify(content));
-				if (!content.metadata) {
-					content.metadata = {}
+				let cachedContentHash = getTable(data, 'content_metadata', 'game_content', 'hash');
+
+				if (false && contentHash === cachedContentHash) {
+					console.log('Content cache valid, sending Null')
+					sendToUnity('UpdateGameContent', null);
+
+				} else {
+					insertTable(content, contentHash, 'metadata', 'hash')
+					sendToUnity('UpdateGameContent', content);
 				}
-				content.metadata.hash = contentHash;
-				sendToUnity('UpdateGameContent', content);
 
 				let overrides = gameSession.getContentOverrides();
-				overrides.metadata = {
-					hash: md5(JSON.stringify(overrides)),
-					content_hash: contentHash,
+				console.log(JSON.stringify(overrides))
+				let overridesHash = md5(JSON.stringify(overrides));
+				let cachedOverridesHash = getTable(data, 'content_metadata', 'game_content_overrides', 'hash');
+				if (false && overridesHash === cachedOverridesHash) {
+					console.log('Overrides cache valid, sending Null')
+					sendToUnity('UpdateGameContentOverrides', null);
+				} else {
+					overrides.metadata = {
+						hash: md5(JSON.stringify(overrides)),
+						content_hash: contentHash,
+					}
+					sendToUnity('UpdateGameContentOverrides', overrides);
 				}
-				sendToUnity('UpdateGameContentOverrides', overrides);
+
+
+
 				let unityPackage = gameSession.game.exportPackage();
 				unityPackage.predict = true;
 				sendToUnity('UpdateGameState', unityPackage)	

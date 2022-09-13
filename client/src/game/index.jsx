@@ -52,7 +52,7 @@ export class Session {
 		let nfts = this.nfts.map(nft => ({
 			id: nft.entityId,
 			data: {
-				name: nft.name,
+				displayed_name: nft.name,
 				picture: nft.image,
 			},
 		}))
