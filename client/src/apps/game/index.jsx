@@ -5,8 +5,9 @@ import { Session } from '../../game';
 import GameClient from '../../components/gameClient';
 import { SolceryAPIConnection } from '../../api';
 import BasicGameClient from '../../components/basicGameClient';
-import { Button, Spin } from 'antd';
-import { CaretRightOutlined } from '@ant-design/icons';
+import { Button, Spin, Tooltip } from 'antd';
+import { HomeOutlined, CloseOutlined, BugOutlined, CaretRightOutlined, QuestionOutlined } from '@ant-design/icons';
+
 
 import './walletModal.css';
 import './style.scss';
@@ -22,28 +23,28 @@ const NFT_WIDTH = 200;
 const MARGIN = 20;
 const DELAY = 40;
 
-const StartButton = (props) => {
+const BigButton = (props) => {
 	const [ clicked, setClicked ] = useState(false);
 
-	const start = () => {
+	const onClick = () => {
     setClicked(true);
 		props.onClick && props.onClick();
   }
 
-  let className = 'button-start';
+  let className = 'button-big';
   if (clicked) {
     className += ' success';
   }
 
-  const caption = props.status === 'continue' ? 'Continue' : 'New game';
+  const caption = props.caption;
 
-	return <div onClick={start} className={className} href="#" role="button">
-    <span className='label'>{caption}</span>
+	return <div onClick={onClick} className={className} href="#" role="button">
+    <span className='label'>{props.caption}</span>
     <div className="icon">
-      <CaretRightOutlined size='big' className='play'/>
+    	<props.icon size='big' className='play'/>
     </div>
-    <div ref={props.progressBarRef} className='loading'></div>
-    <div ref={props.progressNumberRef} className='loading-text'>Loading: 0%</div>
+    {props.progressBarRef && <div ref={props.progressBarRef} className='loading'/>}
+    {props.progressNumberRef && <div ref={props.progressNumberRef} className='loading-text'>Loading: 0%</div>}
   </div>;
 }
 
@@ -130,6 +131,43 @@ const NftBar = (props) => {
    </div>;
 }
 
+const RulesIframe = (props) => {
+	return <>
+		<div className='blackout' onClick={props.onClose}>
+			<div className='game-rules-body'>
+				<div className='game-rules-title'>
+					<CloseOutlined className='game-rules-close' size='big' onClick={props.onClose}/>
+					How to play
+				</div>
+				<iframe className='game-rules-iframe' src='https://solcery.xyz'/>
+			</div>
+		</div>
+	</>;
+}
+
+const Toolbar = (props) => {
+	const [ showRules, setShowRules ] = useState(false);
+	const { gameInfo } = useGameApi();
+
+	return <>
+		{showRules && <RulesIframe src={gameInfo.rulesURL} onClose={() => setShowRules(false)}/>}
+		<div className='game-toolbar'>
+			<div className='btn-toolbar'>
+	    	<BugOutlined size='big' className='icon'/>
+	    	<p className='btn-text'>Report a bug</p>
+	    </div>
+	    {gameInfo.rulesURL && <div className='btn-toolbar' onClick={() => setShowRules(true)}>
+	    	<QuestionOutlined size='big' className='icon'/>
+	    	<p className='btn-text'>How to play</p>
+	    </div>}
+	    {props.gameReady && <div className='btn-toolbar' onClick={props.onLeaveGame}>
+	    	<CloseOutlined size='big' className='icon'/>
+	    	<p className='btn-text'>Exit game</p>
+	    </div>}
+    </div>
+	</>
+}
+
 const Menu = (props) => {
 	const { gameApi, gameInfo } = useGameApi();
 	const { nfts, publicKey, ConnectionComponent } = usePlayer();
@@ -210,8 +248,9 @@ const Menu = (props) => {
  			{ConnectionComponent}
     </div>}
 		{playerNfts && <NftBar nfts={playerNfts}/>}
-		{playerNfts && <StartButton
-			status={status} 
+		{playerNfts && <BigButton
+			icon={CaretRightOutlined}
+			caption={status === 'newgame' ? 'Start' : 'Continue'} 
 			onClick={status === 'newgame' ? createGame : continueGame} 
 			progressBarRef={props.progressBarRef}
 			progressNumberRef={props.progressNumberRef}
@@ -224,11 +263,11 @@ export const GameTest = () => {
 	const [ gameSession, setGameSession ] = useState();
 	const [ gameReady, setGameReady ] = useState(false);
 	const [ loadingProgress, setLoadingProgress ] = useState(0);
+	const [ finished, setFinished ] = useState(false);
 	const progressBarRef = useRef();
 	const progressNumberRef = useRef();
 
 	const onLoadingProgress = (progress) => {
-
 		if (progressBarRef.current) {
 			progressBarRef.current.style.width = `${progress}%`;
 		}
@@ -241,17 +280,31 @@ export const GameTest = () => {
 	const reset = () => {
 		setGameSession(undefined);
 		setGameReady(false);
+		setFinished(false);
 	}
 
 	const leaveGame = useCallback(() => {
 		if (!gameSession) return;
-		if (!window.confirm('Are you sure want to abandon current game?')) return;
-		gameApi.game.leaveGame({ gameId: gameSession.id }).then(reset)
+		let outcome = gameSession.outcome;
+		if (!outcome && !window.confirm('Are you sure want to abandon current game?')) return;
+		gameApi.game.leaveGame({ gameId: gameSession.id, outcome }).then(reset)
 	}, [ gameSession ])
 
 	return (<>
+		<Toolbar onLeaveGame={leaveGame} gameReady={gameReady} gameSession={gameSession}/>
 		{!gameReady && <Menu progressBarRef={progressBarRef} progressNumberRef={progressNumberRef} onGameSession={setGameSession}/>}
-		<GameClient unityBuild={gameInfo.build} gameSession={gameSession} onLoadingProgress={onLoadingProgress}/>
-		{gameReady && <a onClick={leaveGame} className="button-close"/>}
+		<GameClient 
+			unityBuild={gameInfo.build} 
+			gameSession={gameSession} 
+			onLoadingProgress={onLoadingProgress} 
+			onFinished={() => setFinished(true)}
+		/>
+		{gameReady && gameSession.finished && <div className='blackout'>
+			<BigButton
+				icon={HomeOutlined}
+				caption={'Back to menu'} 
+				onClick={leaveGame}
+			/>
+		</div>}
 	</>);
 }

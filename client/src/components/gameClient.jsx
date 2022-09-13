@@ -9,6 +9,7 @@ function delay(ms) {
 
 export default function GameClient(props) {
 	const [ loadingProgress, setLoadingProgress ] = useState(0);
+	const [ finished, setFinished ] = useState(false);
 	const getAspect = () => {
 		return {
 			width: window.innerWidth,
@@ -32,6 +33,12 @@ export default function GameClient(props) {
 		iframeRef.current.width = aspect.width;
 		iframeRef.current.height = aspect.height;
 	}
+
+	useEffect(() => {
+		if (finished) {
+			props.onFinished(gameSession.outcome);
+		}
+	}, [ finished ])
 
 	useEffect(() => {
 
@@ -85,13 +92,11 @@ export default function GameClient(props) {
 
 			if (message === 'OnUnityLoaded') {
 				let data = param ? JSON.parse(param) : {};
-
 				let content = gameSession.getUnityContent();
 				let contentHash = md5(JSON.stringify(content));
 				let cachedContentHash = getTable(data, 'content_metadata', 'game_content', 'hash');
 
 				if (false && contentHash === cachedContentHash) {
-					console.log('Content cache valid, sending Null')
 					sendToUnity('UpdateGameContent', null);
 
 				} else {
@@ -100,11 +105,9 @@ export default function GameClient(props) {
 				}
 
 				let overrides = gameSession.getContentOverrides();
-				console.log(JSON.stringify(overrides))
 				let overridesHash = md5(JSON.stringify(overrides));
 				let cachedOverridesHash = getTable(data, 'content_metadata', 'game_content_overrides', 'hash');
 				if (false && overridesHash === cachedOverridesHash) {
-					console.log('Overrides cache valid, sending Null')
 					sendToUnity('UpdateGameContentOverrides', null);
 				} else {
 					overrides.metadata = {
@@ -118,11 +121,15 @@ export default function GameClient(props) {
 
 				let unityPackage = gameSession.game.exportPackage();
 				unityPackage.predict = true;
-				sendToUnity('UpdateGameState', unityPackage)	
+				sendToUnity('UpdateGameState', unityPackage);
+				setFinished(gameSession.finished)
 			}
 			if (message === 'SendCommand') {
+				if (gameSession.finished) return; //TODO notify
 				let command = JSON.parse(param);
 				gameSession.onPlayerCommand(command).then(unityPackage => {
+					setFinished(gameSession.finished)
+					if (!unityPackage) return;
 					unityPackage.predict = true;
 					sendToUnity('UpdateGameState', unityPackage);
 				})
@@ -139,10 +146,16 @@ export default function GameClient(props) {
 
 	if (!gameSession) return <>NO SESSION</>
 	let aspect = getAspect();
+	let iframeStyle = { 
+		borderStyle: 'none',
+		margin: '0', 
+		visibility: loadingProgress < 100 ? 'hidden' : 'unset',
+		pointerEvents: finished ? 'none' : 'auto',
+	}
 	return <iframe 
 		key='unity'
 		ref={iframeRef} 
-		style={{ borderStyle: 'none', margin: '0', visibility: loadingProgress < 100 ? 'hidden' : 'unset' }}
+		style={iframeStyle}
 		src='/unity.html'
 		scrolling='no'
 		width={aspect.width}
