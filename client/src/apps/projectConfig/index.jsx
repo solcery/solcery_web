@@ -15,7 +15,7 @@ const schema = {
 				name: 'SStruct',
 				data: {
 					fields: [
-						{ code: 'sourceProjectId', name: 'Source project ID', type: 'SString', readonly: true },
+						{ code: 'sourceProjectId', name: 'Source project ID', type: 'SString'},
 						{ code: 'isLocked', name: 'Locked', type: 'SBool' },
 						{ code: 'reason', name: 'Reason', type: 'SString' },
 					]

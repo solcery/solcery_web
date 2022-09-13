@@ -105,9 +105,12 @@ funcs.leaveGame = async function (data) {
     .getDb(data.project)
     .collection(GAMES_COLLECTION)
     .findOne(query);
+  let outcome = data.params.outcome;
+  let status = outcome ? 'finished' : 'cancelled';
   var update = {
     $set: { 
-      status: 'cancelled'
+      status,
+      outcome,
     },
   };
   return await db.getDb(data.project)
