@@ -70,7 +70,7 @@ forgeNft = async function ({ nft, collection }, publicKey, dirName) {
           secretAccessKey: process.env.AWS_KEY
         })
 
-        const filename = path.join(dirName, `${mint}.jpg`);
+        const filename = `${mint}.jpg`;
         const fileContent = fs.readFileSync(filename);
         const params = {
           Bucket: 'solcery-nfts',
