@@ -40,10 +40,8 @@ export function UnityBuilder() {
 			nfts
 		});
 		session.start();
-		let states = session.game.diffLog;
-		for (let index in states) {
-			states[index].id = index;
-		}
+		let unityPackage = session.game.exportPackage();
+		unityPackage.predict = true;
 		setResult([
 			{
 				filename: 'game_content',
@@ -55,7 +53,7 @@ export function UnityBuilder() {
 			},
 			{
 				filename: 'game_state',
-				data: { states },
+				data: unityPackage,
 			},
 		]);
 	};

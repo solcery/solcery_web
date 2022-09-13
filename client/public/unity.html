@@ -7,7 +7,6 @@
   </head>
   <body style="text-align: center">
     <canvas id="unity-canvas" width=1920 height=900 style="width: 100%; height: 100%; background: #231F20"></canvas>
-    <script src="Build/WebGl.loader.js"></script>
     <script>    
 
       function resizeCanvas()
@@ -23,6 +22,8 @@
         canvas.width = width * coef;
         canvas.height = height * coef;
       }
+
+      var unityInstance;
 
       window.addEventListener('resize', resizeCanvas, false);
       resizeCanvas();
@@ -42,6 +43,8 @@
         return chunks
       }
 
+
+
       const sendPackage = (funcName, param) => {
        const USHORT_SIZE = 65536;
        let data = typeof param === 'string' ? param : JSON.stringify(param);
@@ -58,6 +61,7 @@
        }
       }
 
+
       window.sendToUnity = (jsonData) => {
         let data = JSON.parse(jsonData)
         try {
@@ -67,19 +71,11 @@
           // TODO: error handling
         }
       }
-      
-      var unityInstance;
-      var unityInstance = createUnityInstance(document.querySelector("#unity-canvas"), {
-        dataUrl: "Build/WebGl.data",
-        frameworkUrl: "Build/WebGl.framework.js",
-        codeUrl: "Build/WebGl.wasm",
-        streamingAssetsUrl: "StreamingAssets",
-        companyName: "Solcery",
-        productName: "solcery_client_unity",
-        productVersion: "0.1",
-        // matchWebGLToCanvasSize: true, // Uncomment this to separately control WebGL canvas render size and DOM element size.
-        // devicePixelRatio: 1, // Uncomment this to override low DPI rendering on high DPI displays.
-      }).then(instance => unityInstance = instance);
+
+      window.top.getUnityConfig().then(config => {
+        eval(config.loaderScript);
+        createUnityInstance(document.querySelector("#unity-canvas"), config).then(instance => unityInstance = instance);
+      });
     </script>
   </body>
 </html>

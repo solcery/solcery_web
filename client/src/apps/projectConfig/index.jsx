@@ -15,14 +15,22 @@ const schema = {
 				name: 'SStruct',
 				data: {
 					fields: [
-						{ code: 'sourceProjectId', name: 'Source project ID', type: 'SString', readonly: true },
+						{ code: 'sourceProjectId', name: 'Source project ID', type: 'SString'},
 						{ code: 'isLocked', name: 'Locked', type: 'SBool' },
 						{ code: 'reason', name: 'Reason', type: 'SString' },
 					]
 				}
 			},
 		},
-		{ code: 'releaseProjectId', name: 'Game project ID', type: 'SString' }
+		{ code: 'releaseProjectId', name: 'Game project ID', type: 'SString' },
+		{ code: 'build', name: 'Build', type: {
+				name: 'SLink',
+				data: {
+					project: 'solcery',
+					templateCode: 'unityBuilds',
+				}
+			}
+		}
 	],
 };
 

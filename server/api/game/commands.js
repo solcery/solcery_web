@@ -41,19 +41,8 @@ commands.leaveGame = {
 		gameId: {
 			required: true
 		},
+		outcome: true
 	}
 }
-
-// commands.get = {
-// 	params: {
-// 		project: {
-// 			required: true
-// 		},
-// 		game: {
-// 			required: true
-// 		},
-// 	},
-// };
-
 
 module.exports = commands;

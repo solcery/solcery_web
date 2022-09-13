@@ -183,7 +183,7 @@ export const basicActions = [
 		params: [{ code: 'duration', name: 'Duration', type: 'SBrick<value>' }],
 		exec: (runtime, params, ctx) => {
 			let duration = runtime.execBrick(params.duration, ctx);
-			ctx.game.animate(duration);
+			ctx.game.pause(duration);
 		},
 	},
 	{
@@ -286,7 +286,7 @@ export const basicActions = [
 		lib: 'action',
 		func: 'play_sound',
 		name: 'Play sound',
-		params: [{ code: 'sound_id', name: 'Sound', type: 'SLink<sounds|sound>' }],
+		params: [{ code: 'sound_id', name: 'Sound', type: 'SLink<sounds>' }],
 		exec: (runtime, params, ctx) => {
 			ctx.game.playSound(params.sound_id);
 		},
