@@ -71,7 +71,7 @@ forgeNft = async function ({ nft, collection }, publicKey, dirName) {
         })
 
         const filename = `${mint}.jpg`;
-        const fileContent = fs.readFileSync(filename);
+        const fileContent = fs.readFileSync(path.join(dirName,filename));
         const params = {
           Bucket: 'solcery-nfts',
           Key: `nfts/${filename}`,

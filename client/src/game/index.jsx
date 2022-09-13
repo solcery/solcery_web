@@ -61,7 +61,7 @@ export class Session {
 			.map(cardType => {
 				let fields = [];
 				let overrides = cardType.nftOverrides;
-				if (overrides.overrideName) fields.push('name');
+				if (overrides.overrideName) fields.push('displayed_name');
 				if (overrides.overrideImage) fields.push('picture');
 				return {
 					id: cardType.id,
