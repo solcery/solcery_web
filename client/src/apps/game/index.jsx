@@ -3,11 +3,11 @@ import { useGameApi } from '../../contexts/gameApi';
 import { usePlayer } from '../../contexts/player';
 import { Session } from '../../game';
 import GameClient from '../../components/gameClient';
+import { notify } from '../../components/notification';
 import { SolceryAPIConnection } from '../../api';
 import BasicGameClient from '../../components/basicGameClient';
-import { Button, Spin, Tooltip } from 'antd';
-import { HomeOutlined, CloseOutlined, BugOutlined, CaretRightOutlined, QuestionOutlined } from '@ant-design/icons';
-
+import { Modal, Space, Button, Input, Spin, Tooltip } from 'antd';
+import { SendOutlined, HomeOutlined, CloseOutlined, BugOutlined, CaretRightOutlined, QuestionOutlined } from '@ant-design/icons';
 
 import './walletModal.css';
 import './style.scss';
@@ -69,17 +69,17 @@ const NftCard = (props) => {
     '--transition-delay': DELAY * Math.abs(props.index - middleIndex) + 'ms',
     '--z-index': props.index + 10,
     '--new-rotation': newRotation + 'deg',
+    cursor: props.url ? 'pointer' : 'auto',
   }
 
-
-  return <div className={`card`} style={style}>
+  return <a href={props.url} target='_blank' className={`card`} style={style} onClick={props.onClick}>
     <div className={'card-face'} style = {{'--rotation': -newRotation + 'deg'}}>
       <img src={props.image} className='nft-image' onLoad={props.onLoad}/>
       <div className='nft-name'>
         {props.name}
       </div>
     </div>
-  </div>;
+  </a>;
 }
 
 const NftBar = (props) => {
@@ -88,12 +88,6 @@ const NftBar = (props) => {
   const loaded = useRef(0);
   const { gameInfo } = useGameApi();
 
-  const onLoad = () => {
-    loaded.current += 1;
-    if (loaded.current === props.nfts.length) {
-      delay(100).then(() => setOpen(true));
-    }
-  }
 
   useEffect(() => {
     if (!open) return;
@@ -107,24 +101,34 @@ const NftBar = (props) => {
 
   if (!props.nfts) return <></>;
 
+  let nfts = props.nfts;
   let className = 'cards-split';
   if (open) className = className + ' transition';
 
-  let text = `Your NFTs supported by ${gameInfo.gameName}`;
-  if (props.nfts.length === 0) {
-  	text = `You have no NFTs supported by ${gameInfo.gameName}`
+  let text = `Your NFTs supported by ${gameInfo.gameName}:`;
+  if (nfts.length === 0) {
+  	text = `No suitable NFTs found. Supported collections:`;
+  	nfts = gameInfo.supportedCollections;
+  }
+
+  const onLoad = () => {
+    loaded.current += 1;
+    if (loaded.current >= nfts.length) {
+      delay(100).then(() => setOpen(true));
+    }
   }
 
   return <div ref={ref} className={className}>
   	<div className={'cards-header'}>
   		{text}
   	</div>
-    {props.nfts.length > 0 && props.nfts.map((nft, index) => <NftCard 
-        total={props.nfts.length}
+    {nfts.map((nft, index) => <NftCard 
+        total={nfts.length}
         index={index}
         key={`nft_${index}`} 
         image={nft.image} 
         name={nft.name}
+        url={nft.magicEdenUrl}
         onLoad={onLoad}
     />)}  
     {props.nfts.length === 0 && <div></div>}
@@ -133,26 +137,91 @@ const NftBar = (props) => {
 
 const RulesIframe = (props) => {
 	return <>
-		<div className='blackout' onClick={props.onClose}>
-			<div className='game-rules-body'>
-				<div className='game-rules-title'>
-					<CloseOutlined className='game-rules-close' size='big' onClick={props.onClose}/>
-					How to play
+		<div className='popup-blackout' onClick={props.onClose}>
+				<div className='popup-frame'>
+					<div className='popup-title'>
+						<CloseOutlined className='popup-close' size='big' onClick={props.onClose}/>
+						How to play
+					</div>
+					<iframe className='popup-rules-iframe' src='https://solcery.xyz'/>
 				</div>
-				<iframe className='game-rules-iframe' src='https://solcery.xyz'/>
-			</div>
+
 		</div>
 	</>;
 }
 
+const BugReportPopup = (props) => {
+	let [ sent, setSent ] = useState(false);
+	let [ message, setMessage ] = useState(false);
+	let [ contacts, setContacts ] = useState(false);
+	const { gameApi } = useGameApi();
+	const { publicKey } = usePlayer();
+
+	const send = () => {
+		if (!message) {
+			notify({
+				message: `No message`,
+				description: "Please specify the problem you've encountered",
+				type: 'warning',
+			});
+			return;
+		}
+		setSent(true);
+		let payload = {
+			publicKey,
+			message,
+			contacts,
+		}
+		gameApi.game.bugreport({ payload }).then(() => {
+			notify({
+				message: `Bug report sent`,
+				description: 'Thank you for your feedback!',
+				type: 'success',
+			});
+			props.onClose();
+		})
+	}
+
+	return <Modal 
+		title='Report a bug' 
+		visible={props.visible}
+		okText='Send'
+		okButtonProps={{
+			icon: <SendOutlined/>
+		}}
+		onOk={send}
+		onCancel={props.onClose}
+		onClose={props.onClose}
+		>
+		<Space style={{ width: '100%' }} direction='vertical'>
+			Description
+			<Input.TextArea 
+				onChange={(e) => setMessage(e.target.value)}
+				className='message'
+				placeholder='Specify the problem for us'
+			/>
+			<Space/>
+			Contact information (optional)
+			<Input 
+				className='contact'
+				onChange={(e) => setContacts(e.target.value)}
+				placeholder='Discord tag, email, etc'
+			/>
+			<Space/>
+		</Space>
+	</Modal>;
+}
+
 const Toolbar = (props) => {
 	const [ showRules, setShowRules ] = useState(false);
+	const [ showBugReport, setShowBugReport ] = useState(false);
 	const { gameInfo } = useGameApi();
 
 	return <>
 		{showRules && <RulesIframe src={gameInfo.rulesURL} onClose={() => setShowRules(false)}/>}
+		<BugReportPopup visible={showBugReport} onClose={() => setShowBugReport(false)}/>
 		<div className='game-toolbar'>
-			<div className='btn-toolbar'>
+			<div className='btn-toolbar' onClick={() => setShowBugReport(true)}>
 	    	<BugOutlined size='big' className='icon'/>
 	    	<p className='btn-text'>Report a bug</p>
 	    </div>

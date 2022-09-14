@@ -45,4 +45,12 @@ commands.leaveGame = {
 	}
 }
 
+commands.bugreport = {
+	params: {
+		payload: {
+			required: true
+		}
+	},
+};
+
 module.exports = commands;
