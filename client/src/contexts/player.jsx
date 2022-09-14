@@ -3,6 +3,17 @@ import { ConnectionProvider, WalletProvider, useWallet, useConnection } from '@s
 import { WalletAdapterNetwork } from '@solana/wallet-adapter-base';
 import {
     PhantomWalletAdapter,
+    SolflareWalletAdapter,
+    BraveWalletAdapter,
+    NightlyWalletAdapter,
+    SolletWalletAdapter,
+    BitKeepWalletAdapter,
+    CoinbaseWalletAdapter,
+    Coin98WalletAdapter,
+    ExodusWalletAdapter,
+    SlopeWalletAdapter,
+    SafePalWalletAdapter,
+    GlowWalletAdapter
 } from '@solana/wallet-adapter-wallets';
 import {
     WalletModalProvider,
@@ -24,6 +35,17 @@ export const PlayerProvider: FC = (props) => {
 
     const wallets = useMemo(() => [
         new PhantomWalletAdapter(),
+        new SolflareWalletAdapter(),
+        new BraveWalletAdapter(),
+        new NightlyWalletAdapter(),
+        new GlowWalletAdapter(),
+        new SolletWalletAdapter(),
+        new BitKeepWalletAdapter(),
+        new Coin98WalletAdapter(),
+        new CoinbaseWalletAdapter(),
+        new ExodusWalletAdapter(),
+        new SlopeWalletAdapter(),
+        new SafePalWalletAdapter(),
     ],
     [network]);
 
