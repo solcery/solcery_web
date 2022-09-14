@@ -7,7 +7,8 @@ const {
   VERSIONS_COLLECTION, 
   GAME_PREFIX,
   CONFIG_COLLECTION,
-  GAME_INFO_COLLECTION
+  GAME_INFO_COLLECTION,
+  FORGE_DB,
 } = require("../../db/names");
 
 const funcs = {};
@@ -122,6 +123,26 @@ funcs.release = async function (data) {
   }
   let gameSettings = data.params.contentMeta.gameSettings;
   var update = { $set: gameSettings };
+  
+  let supportedCollections = data.params.contentMeta.collections;
+  if (supportedCollections) {
+    supportedCollections = Object.values(supportedCollections).map(col => ObjectId(col.collection));
+    supportedCollections = await db
+      .getDb(FORGE_DB)
+      .collection(OBJECT_COLLECTION)
+      .find({ 
+        _id: { $in: supportedCollections },
+        template: 'collections',
+      })
+      .toArray();
+    supportedCollections = supportedCollections.map(collection => ({
+      name: collection.fields.name,
+      image: collection.fields.logo,
+      magicEdenUrl: collection.fields.magicEdenUrl,
+    }))
+    update['$set'].supportedCollections = supportedCollections;
+  }
+
   await db.getDb(gameDbName)
     .collection(GAME_INFO_COLLECTION)
     .updateOne({}, update)

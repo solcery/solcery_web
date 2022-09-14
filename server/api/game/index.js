@@ -35,6 +35,7 @@ funcs.startNewGame = async function (data) {
   }
   let playerNfts =  data.params.nfts ? data.params.nfts : [];
   game = {
+    startTime: Math.floor(Date.now() / 1000), 
     contentVersion: version,
     players: [ data.userId ],
     nfts: [ playerNfts ],
@@ -116,6 +117,18 @@ funcs.leaveGame = async function (data) {
   return await db.getDb(data.project)
     .collection(GAMES_COLLECTION)
     .updateOne(query, update)
+};
+
+funcs.bugreport = async function (data) {
+  let payload = data.params.payload ? data.params.payload : {};
+  let query = Object.assign({ 
+    _id: new ObjectId(data.params.gameId), 
+    time: Math.floor(Date.now() / 1000),
+  }, payload);
+  return await db
+    .getDb('solcery')
+    .collection('bugreports')
+    .insertOne(query);
 };
 
 const commands = require('./commands');
