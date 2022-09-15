@@ -18,10 +18,13 @@ function delay(ms) {
 
 const AMPLITUDE = 7;
 const NEW_AMPLITUDE = 3;
-const NFT_PANEL_WIDTH = 1200;
-const NFT_WIDTH = 200;
-const MARGIN = 20;
+const NFT_PANEL_WIDTH = 120;
+const NFT_WIDTH = 20;
+const MARGIN = 2;
 const DELAY = 40;
+
+const NFT_PANEL_WIDTH_PORTRAIT = 80;
+const NFT_WIDTH_PORTRAIT = 30;
 
 const BigButton = (props) => {
 	const [ clicked, setClicked ] = useState(false);
@@ -51,11 +54,19 @@ const BigButton = (props) => {
 const NftCard = (props) => {  
 
   let offset = Math.min((NFT_PANEL_WIDTH - NFT_WIDTH) / (props.total - 1), NFT_WIDTH + MARGIN);
+  let offset_portrait = Math.min((NFT_PANEL_WIDTH_PORTRAIT - NFT_WIDTH_PORTRAIT) / (props.total - 1), NFT_WIDTH_PORTRAIT + MARGIN);
   let globalOffset = 0;
+  let globalOffset_portrait = 0;
   if (offset === NFT_WIDTH + MARGIN) {
     let requiredSpace = props.total * (NFT_WIDTH + MARGIN) - MARGIN;
     let remainingSpace = NFT_PANEL_WIDTH - requiredSpace;
     globalOffset = remainingSpace / 2;
+  }
+
+  if (offset_portrait === NFT_WIDTH_PORTRAIT + MARGIN) {
+    let requiredSpace_portrait = props.total * (NFT_WIDTH_PORTRAIT + MARGIN) - MARGIN;
+    let remainingSpace_portrait = NFT_PANEL_WIDTH_PORTRAIT - requiredSpace_portrait;
+    globalOffset_portrait = remainingSpace_portrait / 2;
   }
   
   let middleIndex = Math.floor(props.total / 2);
@@ -63,9 +74,10 @@ const NftCard = (props) => {
   let newRotation = Math.floor((Math.random() * 2 - 1) * NEW_AMPLITUDE);
   let animLength = DELAY * Math.abs(props.index - middleIndex);
   let style = {
-    '--init-offset': (NFT_PANEL_WIDTH - NFT_WIDTH) / 2 + 'px',
+    '--init-offset': (NFT_PANEL_WIDTH - NFT_WIDTH) / 2 + 'vh',
     '--rotation': rotation + 'deg',
-    '--offset': props.index * offset + globalOffset + 'px',
+    '--offset': props.index * offset + globalOffset + 'vh',
+	'--offset-portrait': props.index * offset_portrait + globalOffset_portrait + 'vw',
     '--transition-delay': DELAY * Math.abs(props.index - middleIndex) + 'ms',
     '--z-index': props.index + 10,
     '--new-rotation': newRotation + 'deg',
@@ -119,9 +131,9 @@ const NftBar = (props) => {
   }
 
   return <div ref={ref} className={className}>
-  	<div className={'cards-header'}>
+  	{/* <div className={'cards-header'}>
   		{text}
-  	</div>
+  	</div> */}
     {nfts.map((nft, index) => <NftCard 
         total={nfts.length}
         index={index}

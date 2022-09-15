@@ -74,7 +74,7 @@
 		background-position-y: top;
 		background-position-x: center;
 		background-repeat: no-repeat;
-		background-size: cover;
+		background-size: auto 100%;
 	}
 
 	.game-header {
@@ -315,8 +315,11 @@ $transition: #{$speed} cubic-bezier(0.31, -0.105, 0.43, 1.4) all;
 
 .cards-split {
 	// background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(0,0,0,0.5) 30%, rgba(0,0,0,0.5) 70%, rgba(255,255,255,0) 100%);
-	width: 1200px;
-	height: 240px;
+	width: 120vh;
+	@media (orientation: portrait) {
+		width: 80vw;
+	}
+	height: 25vh;
 	position: relative;
 	padding-top: 20px;
 	bottom: 40px;
@@ -341,8 +344,12 @@ $transition: #{$speed} cubic-bezier(0.31, -0.105, 0.43, 1.4) all;
 	}
 
 	.card {
-		height: 200px;
-		width: 200px;
+		height: 20vh;
+		width: 20vh;
+		@media (orientation: portrait) {
+			height: 30vw;
+			width: 30vw;
+		}
 		left: var(--init-offset);
 		position: absolute;
 		box-shadow: 1px 2px 2px 0 #aaa;
@@ -378,6 +385,7 @@ $transition: #{$speed} cubic-bezier(0.31, -0.105, 0.43, 1.4) all;
 
 			.nft-image {
 				max-width: 100%;
+				width: 100%;
 				height: auto;
 				border-radius: 5px;
 			}
@@ -386,8 +394,17 @@ $transition: #{$speed} cubic-bezier(0.31, -0.105, 0.43, 1.4) all;
 				position: absolute;
 				width: 100%;
 				bottom: 0px;
-				height: 40px;
-				line-height: 40px;
+				height: 5vh;
+				line-height: 4vh;
+        font-size: 1.2vh;
+				@media (orientation: portrait) {
+					height: 5vw;
+					line-height: 5vw;
+          font-size: 2vw;
+				}
+        overflow: hidden;
+        text-overflow:ellipsis;
+        word-wrap: break-word;
 				background-color: rgba(0, 0, 0, 0.5);
 				color: #fff;
 				z-index: 2;
@@ -398,9 +415,18 @@ $transition: #{$speed} cubic-bezier(0.31, -0.105, 0.43, 1.4) all;
 	}
 
 	&.transition {
-		.card {
-			left: var(--offset);
-			transform: rotateZ(var(--new-rotation));
+		@media (orientation: portrait) {
+			.card {
+				left: var(--offset-portrait);
+				transform: rotateZ(var(--new-rotation));
+			}
+		}
+
+		@media (orientation: landscape) {
+			.card {
+				left: var(--offset);
+				transform: rotateZ(var(--new-rotation));
+			}
 		}
 	}
 
