@@ -7,7 +7,8 @@ import { notify } from '../../components/notification';
 import { SolceryAPIConnection } from '../../api';
 import BasicGameClient from '../../components/basicGameClient';
 import { Modal, Space, Button, Input, Spin, Tooltip } from 'antd';
-import { SendOutlined, HomeOutlined, CloseOutlined, BugOutlined, CaretRightOutlined, QuestionOutlined } from '@ant-design/icons';
+import { SendOutlined } from '@ant-design/icons'
+import { CloseIcon, BugIcon, QuestionMarkIcon, PlayIcon, HomeIcon } from '../../components/icons';
 
 import './walletModal.css';
 import './style.scss';
@@ -44,7 +45,7 @@ const BigButton = (props) => {
 	return <div onClick={onClick} className={className} href="#" role="button">
 		<span className='label'>{props.caption}</span>
 		<div className="icon">
-			<props.icon size='big' className='play'/>
+			<props.icon className='play'/>
 		</div>
 		{props.progressBarRef && <div ref={props.progressBarRef} className='loading'/>}
 		{props.progressNumberRef && <div ref={props.progressNumberRef} className='loading-text'>Loading: 0%</div>}
@@ -152,7 +153,7 @@ const RulesIframe = (props) => {
 		<div className='popup-blackout' onClick={props.onClose}>
 				<div className='popup-frame'>
 					<div className='popup-title'>
-						<CloseOutlined className='popup-close' size='big' onClick={props.onClose}/>
+						<CloseIcon className='popup-close' size='big' onClick={props.onClose}/>
 						How to play
 					</div>
 					<iframe className='popup-rules-iframe' src={props.src}/>
@@ -235,21 +236,21 @@ const Toolbar = (props) => {
 		<BugReportPopup visible={showBugReport} onClose={() => setShowBugReport(false)}/>
 		<div className='game-toolbar'>
 			<div className='btn-toolbar' onClick={() => setShowBugReport(true)}>
-				<BugOutlined size='big' className='icon'/>
+				<BugIcon className='icon'/>
 				<p className='btn-text'>Report a bug</p>
 			</div>
 			{gameInfo.rulesUrl && 
 				isMobile ? 
 				<a className='btn-toolbar' href={gameInfo.rulesUrl} target='_blank'>
-					<QuestionOutlined size='big' className='icon'/>
+					<QuestionMarkIcon size='big' className='icon'/>
 					<p className='btn-text'>How to play</p>
 				</a>
 				: <div className='btn-toolbar' onClick={() => setShowRules(true)}>
-				<QuestionOutlined size='big' className='icon'/>
+					<QuestionMarkIcon size='big' className='icon'/>
 				<p className='btn-text'>How to play</p>
 			</div>}
 			{props.gameReady && <div className='btn-toolbar' onClick={props.onLeaveGame}>
-				<CloseOutlined size='big' className='icon'/>
+				<CloseIcon size='big' className='icon'/>
 				<p className='btn-text'>Exit game</p>
 			</div>}
 		</div>
@@ -320,14 +321,14 @@ const Menu = (props) => {
 	}, [ nfts, playerNfts ]);
 
 	if (!gameInfo) return <>Loading</>;
-
 	return <div className='game-menu'>
-		<div className='bg' style={{ 'backgroundImage': `url(${gameInfo.lobbyBackground})` }}/>
-	 	<div className='game-header'>
-			{gameInfo.gameName}
-	 		<div className='game-subheader'>
-	 			 {gameInfo.gameVersion}
-	 		</div>
+		<div className='bg' style={{ backgroundImage: `url(${gameInfo.lobbyBackground})` }}>
+		 	<div className='game-header'>
+				{gameInfo.gameName}
+		 		<div className='game-subheader'>
+		 			 {gameInfo.gameVersion}
+		 		</div>
+			</div>
 		</div>
 		{!publicKey && <div className='auth'>
 			<div className='auth-header'>
@@ -337,7 +338,7 @@ const Menu = (props) => {
 		</div>}
 		{playerNfts && <NftBar nfts={playerNfts}/>}
 		{playerNfts && <BigButton
-			icon={CaretRightOutlined}
+			icon={PlayIcon}
 			caption={status === 'newgame' ? 'Start' : 'Continue'} 
 			onClick={status === 'newgame' ? createGame : continueGame} 
 			progressBarRef={props.progressBarRef}
@@ -389,7 +390,7 @@ export const GameTest = () => {
 		/>
 		{gameReady && gameSession.finished && <div className='blackout'>
 			<BigButton
-				icon={HomeOutlined}
+				icon={HomeIcon}
 				caption={'Back to menu'} 
 				onClick={leaveGame}
 			/>
