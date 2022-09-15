@@ -11,9 +11,14 @@ export default function GameClient(props) {
 	const [ loadingProgress, setLoadingProgress ] = useState(0);
 	const [ finished, setFinished ] = useState(false);
 	const getAspect = () => {
+		const width = 1920;
+        const height = 900;
+        let innerWidth = window.innerWidth;
+        let innerHeight = window.innerHeight;
+        let coef = Math.min(innerWidth / width, innerHeight / height);
 		return {
-			width: window.innerWidth,
-			height: window.innerWidth / 2.133
+			width: width * coef,
+			height: height * coef,
 		}
 	}
 
@@ -23,7 +28,6 @@ export default function GameClient(props) {
 	const sendToUnity = (funcName, param) => {
 		if (!iframeRef.current) return;
 		let data = { funcName, param }
-		// console.log(JSON.stringify(param))
 		iframeRef.current.contentWindow.sendToUnity(JSON.stringify(data));
 	}
 
@@ -146,19 +150,31 @@ export default function GameClient(props) {
 
 	if (!gameSession) return <>NO SESSION</>
 	let aspect = getAspect();
-	let iframeStyle = { 
+	let iframeStyle = {
 		borderStyle: 'none',
-		margin: '0', 
-		visibility: loadingProgress < 100 ? 'hidden' : 'unset',
+		margin: '0',
+		padding: '0px',
+		border: '1px solid gray'
+	}
+	let divStyle = {
+		position: 'absolute',
+		width: '100%',
+		height: '100%',
+		display: 'flex',
+  		justifyContent: 'center',
+  		alignItems: 'center',
+  		visibility: loadingProgress < 100 ? 'hidden' : 'unset',
 		pointerEvents: finished ? 'none' : 'auto',
 	}
-	return <iframe 
-		key='unity'
-		ref={iframeRef} 
-		style={iframeStyle}
-		src='/unity.html'
-		scrolling='no'
-		width={aspect.width}
-		height={aspect.height}
-	/>
+	return <div style={divStyle}>
+		<iframe 
+			key='unity'
+			ref={iframeRef} 
+			style={iframeStyle}
+			src='/unity.html'
+			scrolling='no'
+			width={aspect.width}
+			height={aspect.height}
+		/>
+	</div>
 }
