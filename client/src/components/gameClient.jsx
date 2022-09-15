@@ -148,7 +148,7 @@ export default function GameClient(props) {
 			}
 	}, [])
 
-	if (!gameSession) return <>NO SESSION</>
+	if (!gameSession) return <></>
 	let aspect = getAspect();
 	let iframeStyle = {
 		borderStyle: 'none',
