@@ -85,15 +85,15 @@
 	.game-header {
 		position: absolute;
 		width: 100%;
-		top: 4vh;
+		top: calc(var(--vh, 1vh) * 4);
 
-		height: 18vh;
-		line-height: 16vh;
-		font-size: 10vh;
+		height: calc(var(--vh, 1vh) * 18);
+		line-height: calc(var(--vh, 1vh) * 16);
+		font-size: calc(var(--vh, 1vh) * 10);
     @media (orientation: portrait) {
-      height: 14vh;
-      line-height: 12.4vh;
-      font-size: 7.8vh;
+      height: calc(var(--vh, 1vh) * 14);
+      line-height: calc(var(--vh, 1vh) * 12.4);
+      font-size: calc(var(--vh, 1vh) * 7.8);
     }
 
 		background: linear-gradient(
@@ -112,15 +112,15 @@
 
 		.game-subheader {
 			position: relative;
-			height: 3vh;
-			line-height: 3vh;
-			bottom: 3vh;
-			font-size: 2vh;
+			height: calc(var(--vh, 1vh) * 3);
+			line-height: calc(var(--vh, 1vh) * 3);
+			bottom: calc(var(--vh, 1vh) * 3);
+			font-size: calc(var(--vh, 1vh) * 2);
       @media (orientation: portrait) {
-        height: 2.66vh;
-        line-height: 2.66vh;
-        bottom: 2.2vh;
-        font-size: 1.77vh;
+        height: calc(var(--vh, 1vh) * 2.66);
+        line-height: calc(var(--vh, 1vh) * 2.66);
+        bottom: calc(var(--vh, 1vh) * 2.2);
+        font-size: calc(var(--vh, 1vh) * 1.77);
       }
 
 			text-align: center;
@@ -173,11 +173,11 @@ $transition: #{$speed} cubic-bezier(0.31, -0.105, 0.43, 1.4) all;
 .button-big {
 	display: block;
 	background-color: $color;
-	height: 12vh;
-	width: 36vh;
+	height: calc(var(--vh, 1vh) * 12);
+	width: calc(var(--vh, 1vh) * 36);
 	max-width: 80vw;
-	line-height: 12vh;
-	margin-top: 38vh;
+	line-height: calc(var(--vh, 1vh) * 12);
+	margin-top: calc(var(--vh, 1vh) * 38);
 	margin-left: auto;
 	margin-right: auto;
 	color: #fff;
@@ -207,7 +207,7 @@ $transition: #{$speed} cubic-bezier(0.31, -0.105, 0.43, 1.4) all;
 	.label {
 		width: 72%;
 		line-height: inherit;
-		font-size: 2.2vh;
+		font-size: calc(var(--vh, 1vh) * 2.2);
 		left: 0;
 		transition: $transition;
 
@@ -326,11 +326,11 @@ $transition: #{$speed} cubic-bezier(0.31, -0.105, 0.43, 1.4) all;
 
 .cards-split {
 	// background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(0,0,0,0.5) 30%, rgba(0,0,0,0.5) 70%, rgba(255,255,255,0) 100%);
-	width: 120vh;
+	width: calc(var(--vh, 1vh) * 120);
 	@media (orientation: portrait) {
 		width: 80vw;
 	}
-	height: 25vh;
+	height: calc(var(--vh, 1vh) * 25);
 	position: relative;
 	padding-top: 20px;
 	bottom: 40px;
@@ -345,11 +345,11 @@ $transition: #{$speed} cubic-bezier(0.31, -0.105, 0.43, 1.4) all;
 
 	.cards-header {
 		width: 100%;
-		height: 5vh;
-    bottom: 28vh;
+		height: calc(var(--vh, 1vh) * 5);
+    bottom: calc(var(--vh, 1vh) * 28);
 		position: absolute;
-		font-size: 2vh;
-    line-height: 5vh;
+		font-size: calc(var(--vh, 1vh) * 2);
+    line-height: calc(var(--vh, 1vh) * 5);
 		text-align: center;
 		font-family: 'Montserrat', sans-serif;
 		background: linear-gradient(
@@ -362,8 +362,8 @@ $transition: #{$speed} cubic-bezier(0.31, -0.105, 0.43, 1.4) all;
 	}
 
 	.card {
-		height: 20vh;
-		width: 20vh;
+		height: calc(var(--vh, 1vh) * 20);
+		width: calc(var(--vh, 1vh) * 20);
 		@media (orientation: portrait) {
 			height: 30vw;
 			width: 30vw;
@@ -412,9 +412,9 @@ $transition: #{$speed} cubic-bezier(0.31, -0.105, 0.43, 1.4) all;
 				position: absolute;
 				width: 100%;
 				bottom: 0px;
-				height: 5vh;
-				line-height: 5vh;
-        font-size: 1.2vh;
+				height: calc(var(--vh, 1vh) * 5);
+				line-height: calc(var(--vh, 1vh) * 5);
+        font-size: calc(var(--vh, 1vh) * 1.2);
 				@media (orientation: portrait) {
 					height: 5vw;
 					line-height: 5vw;
@@ -487,20 +487,20 @@ $transition: #{$speed} cubic-bezier(0.31, -0.105, 0.43, 1.4) all;
 	z-index: 2;
 	right: 0;
 	top: 0;
-	height: 6vh;
+	height: calc(var(--vh, 1vh) * 6);
   @media (orientation: portrait) {
       height: 9.6vw;
       border-radius: 0 0 3vw 3vw;
       right: 1.5vw;
   }
-	border-radius: 0 0 2vh 2vh;
-	right: 1vh;
+	border-radius: 0 0 calc(var(--vh, 1vh) * 2) calc(var(--vh, 1vh) * 2);
+	right: calc(var(--vh, 1vh) * 1);
 	padding-left: 5px;
 	padding-right: 5px;
 	background-color: rgba(40, 60, 50, 0.3);
 
 	.btn-toolbar {
-		top: 0.5vh;
+		top: calc(var(--vh, 1vh) * 0.5);
 		margin-left: 4px;
 		margin-right: 4px;
 		border-radius: 50%;
@@ -508,8 +508,8 @@ $transition: #{$speed} cubic-bezier(0.31, -0.105, 0.43, 1.4) all;
 		flex-direction: column;
 		justify-content: center;
 		background-color: rgba(40, 60, 50, 0.8);
-		height: 5vh;
-		width: 5vh;
+		height: calc(var(--vh, 1vh) * 5);
+		width: calc(var(--vh, 1vh) * 5);
     @media (orientation: portrait) {
       top: 0.8vw;
       height: 8vw;
@@ -551,7 +551,7 @@ $transition: #{$speed} cubic-bezier(0.31, -0.105, 0.43, 1.4) all;
 	}
 }
 
-@keyframes pop {
+@keyframes pop { 
 	0% {
 		clip-path: circle(5%);
 		transform: scale(0.5);
