@@ -143,7 +143,7 @@ const RulesIframe = (props) => {
 						<CloseOutlined className='popup-close' size='big' onClick={props.onClose}/>
 						How to play
 					</div>
-					<iframe className='popup-rules-iframe' src='https://solcery.xyz'/>
+					<iframe className='popup-rules-iframe' src={props.src}/>
 				</div>
 
 		</div>
