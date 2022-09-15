@@ -136,6 +136,7 @@ const NftBar = (props) => {
 }
 
 const RulesIframe = (props) => {
+	console.log(props.src)
 	return <>
 		<div className='popup-blackout' onClick={props.onClose}>
 				<div className='popup-frame'>
@@ -218,7 +219,7 @@ const Toolbar = (props) => {
 	const { gameInfo } = useGameApi();
 
 	return <>
-		{showRules && <RulesIframe src={gameInfo.rulesURL} onClose={() => setShowRules(false)}/>}
+		{showRules && <RulesIframe src={gameInfo.rulesUrl} onClose={() => setShowRules(false)}/>}
 		<BugReportPopup visible={showBugReport} onClose={() => setShowBugReport(false)}/>
 		<div className='game-toolbar'>
 			<div className='btn-toolbar' onClick={() => setShowBugReport(true)}>
