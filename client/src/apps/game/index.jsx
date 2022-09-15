@@ -13,7 +13,7 @@ import './walletModal.css';
 import './style.scss';
 
 function delay(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
+	return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 const AMPLITUDE = 7;
@@ -30,121 +30,121 @@ const BigButton = (props) => {
 	const [ clicked, setClicked ] = useState(false);
 
 	const onClick = () => {
-    setClicked(true);
+		setClicked(true);
 		props.onClick && props.onClick();
-  }
+	}
 
-  let className = 'button-big';
-  if (clicked) {
-    className += ' success';
-  }
+	let className = 'button-big';
+	if (clicked) {
+		className += ' success';
+	}
 
-  const caption = props.caption;
+	const caption = props.caption;
 
 	return <div onClick={onClick} className={className} href="#" role="button">
-    <span className='label'>{props.caption}</span>
-    <div className="icon">
-    	<props.icon size='big' className='play'/>
-    </div>
-    {props.progressBarRef && <div ref={props.progressBarRef} className='loading'/>}
-    {props.progressNumberRef && <div ref={props.progressNumberRef} className='loading-text'>Loading: 0%</div>}
-  </div>;
+		<span className='label'>{props.caption}</span>
+		<div className="icon">
+			<props.icon size='big' className='play'/>
+		</div>
+		{props.progressBarRef && <div ref={props.progressBarRef} className='loading'/>}
+		{props.progressNumberRef && <div ref={props.progressNumberRef} className='loading-text'>Loading: 0%</div>}
+	</div>;
 }
 
-const NftCard = (props) => {  
+const NftCard = (props) => {	
 
-  let offset = Math.min((NFT_PANEL_WIDTH - NFT_WIDTH) / (props.total - 1), NFT_WIDTH + MARGIN);
-  let offset_portrait = Math.min((NFT_PANEL_WIDTH_PORTRAIT - NFT_WIDTH_PORTRAIT) / (props.total - 1), NFT_WIDTH_PORTRAIT + MARGIN);
-  let globalOffset = 0;
-  let globalOffset_portrait = 0;
-  if (offset === NFT_WIDTH + MARGIN) {
-    let requiredSpace = props.total * (NFT_WIDTH + MARGIN) - MARGIN;
-    let remainingSpace = NFT_PANEL_WIDTH - requiredSpace;
-    globalOffset = remainingSpace / 2;
-  }
+	let offset = Math.min((NFT_PANEL_WIDTH - NFT_WIDTH) / (props.total - 1), NFT_WIDTH + MARGIN);
+	let offset_portrait = Math.min((NFT_PANEL_WIDTH_PORTRAIT - NFT_WIDTH_PORTRAIT) / (props.total - 1), NFT_WIDTH_PORTRAIT + MARGIN);
+	let globalOffset = 0;
+	let globalOffsetPortrait = 0;
+	if (offset === NFT_WIDTH + MARGIN) {
+		let requiredSpace = props.total * (NFT_WIDTH + MARGIN) - MARGIN;
+		let remainingSpace = NFT_PANEL_WIDTH - requiredSpace;
+		globalOffset = remainingSpace / 2;
+	}
 
-  if (offset_portrait === NFT_WIDTH_PORTRAIT + MARGIN) {
-    let requiredSpace_portrait = props.total * (NFT_WIDTH_PORTRAIT + MARGIN) - MARGIN;
-    let remainingSpace_portrait = NFT_PANEL_WIDTH_PORTRAIT - requiredSpace_portrait;
-    globalOffset_portrait = remainingSpace_portrait / 2;
-  }
-  
-  let middleIndex = Math.floor(props.total / 2);
-  let rotation = Math.floor((Math.random() * 2 - 1) * AMPLITUDE);
-  let newRotation = Math.floor((Math.random() * 2 - 1) * NEW_AMPLITUDE);
-  let animLength = DELAY * Math.abs(props.index - middleIndex);
-  let style = {
-    '--init-offset': (NFT_PANEL_WIDTH - NFT_WIDTH) / 2 + 'vh',
-    '--rotation': rotation + 'deg',
-    '--offset': props.index * offset + globalOffset + 'vh',
-	'--offset-portrait': props.index * offset_portrait + globalOffset_portrait + 'vw',
-    '--transition-delay': DELAY * Math.abs(props.index - middleIndex) + 'ms',
-    '--z-index': props.index + 10,
-    '--new-rotation': newRotation + 'deg',
-    cursor: props.url ? 'pointer' : 'auto',
-  }
+	if (offset_portrait === NFT_WIDTH_PORTRAIT + MARGIN) {
+		let requiredSpacePortrait = props.total * (NFT_WIDTH_PORTRAIT + MARGIN) - MARGIN;
+		let remainingSpacePortrait = NFT_PANEL_WIDTH_PORTRAIT - requiredSpacePortrait;
+		globalOffsetPortrait = remainingSpacePortrait / 2;
+	}
+	
+	let middleIndex = Math.floor(props.total / 2);
+	let rotation = Math.floor((Math.random() * 2 - 1) * AMPLITUDE);
+	let newRotation = Math.floor((Math.random() * 2 - 1) * NEW_AMPLITUDE);
+	let animLength = DELAY * Math.abs(props.index - middleIndex);
+	let style = {
+		'--init-offset': (NFT_PANEL_WIDTH - NFT_WIDTH) / 2 + 'vh',
+		'--rotation': rotation + 'deg',
+		'--offset': props.index * offset + globalOffset + 'vh',
+		'--offset-portrait': props.index * offset_portrait + globalOffsetPortrait + 'vw',
+		'--transition-delay': DELAY * Math.abs(props.index - middleIndex) + 'ms',
+		'--z-index': props.index + 10,
+		'--new-rotation': newRotation + 'deg',
+		cursor: props.url ? 'pointer' : 'auto',
+	}
 
-  return <a href={props.url} target='_blank' className={`card`} style={style} onClick={props.onClick}>
-    <div className={'card-face'} style = {{'--rotation': -newRotation + 'deg'}}>
-      <img src={props.image} className='nft-image' onLoad={props.onLoad}/>
-      <div className='nft-name'>
-        {props.name}
-      </div>
-    </div>
-  </a>;
+	return <a href={props.url} target='_blank' className={`card`} style={style} onClick={props.onClick}>
+		<div className={'card-face'} style = {{'--rotation': -newRotation + 'deg'}}>
+			<img src={props.image} className='nft-image' onLoad={props.onLoad}/>
+			<div className='nft-name'>
+				{props.name}
+			</div>
+		</div>
+	</a>;
 }
 
 const NftBar = (props) => {
-  const [ open, setOpen ] = useState(false);
-  const ref = useRef();
-  const loaded = useRef(0);
-  const { gameInfo } = useGameApi();
+	const [ open, setOpen ] = useState(false);
+	const ref = useRef();
+	const loaded = useRef(0);
+	const { gameInfo } = useGameApi();
 
 
-  useEffect(() => {
-    if (!open) return;
-    if (!props.nfts) return;
-    delay(DELAY * props.nfts.length / 2).then(() => {
-      if (ref.current) {
-        ref.current.className += ' active';
-      }
-    });
-  }, [ open, props.nfts ])
+	useEffect(() => {
+		if (!open) return;
+		if (!props.nfts) return;
+		delay(DELAY * props.nfts.length / 2).then(() => {
+			if (ref.current) {
+				ref.current.className += ' active';
+			}
+		});
+	}, [ open, props.nfts ])
 
-  if (!props.nfts) return <></>;
+	if (!props.nfts) return <></>;
 
-  let nfts = props.nfts;
-  let className = 'cards-split';
-  if (open) className = className + ' transition';
+	let nfts = props.nfts;
+	let className = 'cards-split';
+	if (open) className = className + ' transition';
 
-  let text = `Your NFTs supported by ${gameInfo.gameName}:`;
-  if (nfts.length === 0) {
-  	text = `No suitable NFTs found. Supported collections:`;
-  	nfts = gameInfo.supportedCollections;
-  }
+	let text = `Your NFTs supported by ${gameInfo.gameName}:`;
+	if (nfts.length === 0) {
+		text = `No suitable NFTs found. Supported collections:`;
+		nfts = gameInfo.supportedCollections;
+	}
 
-  const onLoad = () => {
-    loaded.current += 1;
-    if (loaded.current >= nfts.length) {
-      delay(100).then(() => setOpen(true));
-    }
-  }
+	const onLoad = () => {
+		loaded.current += 1;
+		if (loaded.current >= nfts.length) {
+			delay(100).then(() => setOpen(true));
+		}
+	}
 
-  return <div ref={ref} className={className}>
-  	<div className={'cards-header'}>
-  		{text}
-  	</div>
-    {nfts.map((nft, index) => <NftCard 
-        total={nfts.length}
-        index={index}
-        key={`nft_${index}`} 
-        image={nft.image} 
-        name={nft.name}
-        url={nft.magicEdenUrl}
-        onLoad={onLoad}
-    />)}  
-    {props.nfts.length === 0 && <div></div>}
-   </div>;
+	return <div ref={ref} className={className}>
+		<div className={'cards-header'}>
+			{text}
+		</div>
+		{nfts.map((nft, index) => <NftCard 
+				total={nfts.length}
+				index={index}
+				key={`nft_${index}`} 
+				image={nft.image} 
+				name={nft.name}
+				url={nft.magicEdenUrl}
+				onLoad={onLoad}
+		/>)}	
+		{props.nfts.length === 0 && <div></div>}
+	 </div>;
 }
 
 const RulesIframe = (props) => {
@@ -235,24 +235,24 @@ const Toolbar = (props) => {
 		<BugReportPopup visible={showBugReport} onClose={() => setShowBugReport(false)}/>
 		<div className='game-toolbar'>
 			<div className='btn-toolbar' onClick={() => setShowBugReport(true)}>
-	    	<BugOutlined size='big' className='icon'/>
-	    	<p className='btn-text'>Report a bug</p>
-	    </div>
-	    {gameInfo.rulesUrl && 
-	    	isMobile ? 
-	    	<a className='btn-toolbar' href={gameInfo.rulesUrl} target='_blank'>
-		    	<QuestionOutlined size='big' className='icon'/>
-		    	<p className='btn-text'>How to play</p>
-		    </a>
-	    	: <div className='btn-toolbar' onClick={() => setShowRules(true)}>
-	    	<QuestionOutlined size='big' className='icon'/>
-	    	<p className='btn-text'>How to play</p>
-	    </div>}
-	    {props.gameReady && <div className='btn-toolbar' onClick={props.onLeaveGame}>
-	    	<CloseOutlined size='big' className='icon'/>
-	    	<p className='btn-text'>Exit game</p>
-	    </div>}
-    </div>
+				<BugOutlined size='big' className='icon'/>
+				<p className='btn-text'>Report a bug</p>
+			</div>
+			{gameInfo.rulesUrl && 
+				isMobile ? 
+				<a className='btn-toolbar' href={gameInfo.rulesUrl} target='_blank'>
+					<QuestionOutlined size='big' className='icon'/>
+					<p className='btn-text'>How to play</p>
+				</a>
+				: <div className='btn-toolbar' onClick={() => setShowRules(true)}>
+				<QuestionOutlined size='big' className='icon'/>
+				<p className='btn-text'>How to play</p>
+			</div>}
+			{props.gameReady && <div className='btn-toolbar' onClick={props.onLeaveGame}>
+				<CloseOutlined size='big' className='icon'/>
+				<p className='btn-text'>Exit game</p>
+			</div>}
+		</div>
 	</>
 }
 
@@ -306,8 +306,8 @@ const Menu = (props) => {
 			} else {
 				gameApi.game.getContentVersion().then(contentVersion => {
 					let supportedCollections = contentVersion.content.web.collections
-      		let collectionFilter = Object.values(supportedCollections).map(col => col.collection);
-      		setPlayerNfts(nfts.filter(nft => collectionFilter.includes(nft.collection)));
+					let collectionFilter = Object.values(supportedCollections).map(col => col.collection);
+					setPlayerNfts(nfts.filter(nft => collectionFilter.includes(nft.collection)));
 				})
 				setStatus('newgame')
 			}
@@ -322,19 +322,19 @@ const Menu = (props) => {
 	if (!gameInfo) return <>Loading</>;
 
 	return <div className='game-menu'>
-    <div className='bg' style={{ 'backgroundImage': `url(${gameInfo.lobbyBackground})` }}/>
-   	<div className='game-header'>
-      {gameInfo.gameName}
-   		<div className='game-subheader'>
-   			 {gameInfo.gameVersion}
-   		</div>
-    </div>
-    {!publicKey && <div className='auth'>
-    	<div className='auth-header'>
-    		Login
-    	</div>
+		<div className='bg' style={{ 'backgroundImage': `url(${gameInfo.lobbyBackground})` }}/>
+	 	<div className='game-header'>
+			{gameInfo.gameName}
+	 		<div className='game-subheader'>
+	 			 {gameInfo.gameVersion}
+	 		</div>
+		</div>
+		{!publicKey && <div className='auth'>
+			<div className='auth-header'>
+				Login
+			</div>
  			{ConnectionComponent}
-    </div>}
+		</div>}
 		{playerNfts && <NftBar nfts={playerNfts}/>}
 		{playerNfts && <BigButton
 			icon={CaretRightOutlined}
