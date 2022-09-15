@@ -217,15 +217,22 @@ const Toolbar = (props) => {
 	const [ showBugReport, setShowBugReport ] = useState(false);
 	const { gameInfo } = useGameApi();
 
+	let isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
 	return <>
-		{showRules && <RulesIframe src={gameInfo.rulesUrl} onClose={() => setShowRules(false)}/>}
+		{!isMobile && showRules && <RulesIframe src={gameInfo.rulesUrl} onClose={() => setShowRules(false)}/>}
 		<BugReportPopup visible={showBugReport} onClose={() => setShowBugReport(false)}/>
 		<div className='game-toolbar'>
 			<div className='btn-toolbar' onClick={() => setShowBugReport(true)}>
 	    	<BugOutlined size='big' className='icon'/>
 	    	<p className='btn-text'>Report a bug</p>
 	    </div>
-	    {gameInfo.rulesUrl && <div className='btn-toolbar' onClick={() => setShowRules(true)}>
+	    {gameInfo.rulesUrl && 
+	    	isMobile ? 
+	    	<a className='btn-toolbar' href={gameInfo.rulesUrl} target='_blank'>
+		    	<QuestionOutlined size='big' className='icon'/>
+		    	<p className='btn-text'>How to play</p>
+		    </a>
+	    	: <div className='btn-toolbar' onClick={() => setShowRules(true)}>
 	    	<QuestionOutlined size='big' className='icon'/>
 	    	<p className='btn-text'>How to play</p>
 	    </div>}

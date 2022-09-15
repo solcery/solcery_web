@@ -431,6 +431,7 @@ $transition: #{$speed} cubic-bezier(0.310, -0.105, 0.430, 1.400) all;
 
   .btn-toolbar {
     top: 5px;
+    color: white;
     margin-left: 4px;
     margin-right: 4px;
     border-radius:50%;
@@ -439,12 +440,12 @@ $transition: #{$speed} cubic-bezier(0.310, -0.105, 0.430, 1.400) all;
     justify-content:center;
     background-color: rgba(40, 60, 50, .8);
     height:3rem;
+    width:3rem;
     padding:0;
     position:relative;
     text-align:center;
     transform-origin:center;
     transition:all 0.25s;
-    width:3rem;
     cursor: pointer;
 
 
@@ -452,6 +453,7 @@ $transition: #{$speed} cubic-bezier(0.310, -0.105, 0.430, 1.400) all;
       position: absolute;
       opacity: 0;
       top: 100%;
+      pointer-events: none;
     }
 
     .icon {
