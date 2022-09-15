@@ -225,7 +225,7 @@ const Toolbar = (props) => {
 	    	<BugOutlined size='big' className='icon'/>
 	    	<p className='btn-text'>Report a bug</p>
 	    </div>
-	    {gameInfo.rulesURL && <div className='btn-toolbar' onClick={() => setShowRules(true)}>
+	    {gameInfo.rulesUrl && <div className='btn-toolbar' onClick={() => setShowRules(true)}>
 	    	<QuestionOutlined size='big' className='icon'/>
 	    	<p className='btn-text'>How to play</p>
 	    </div>}
