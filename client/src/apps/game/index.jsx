@@ -136,7 +136,6 @@ const NftBar = (props) => {
 }
 
 const RulesIframe = (props) => {
-	console.log(props.src)
 	return <>
 		<div className='popup-blackout' onClick={props.onClose}>
 				<div className='popup-frame'>
