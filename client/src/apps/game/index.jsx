@@ -379,6 +379,11 @@ export const GameTest = () => {
 		gameApi.game.leaveGame({ gameId: gameSession.id, outcome }).then(reset)
 	}, [ gameSession ])
 
+	useEffect(() => {
+		let vh = window.innerHeight * 0.01;
+		document.documentElement.style.setProperty('--vh', `${vh}px`);
+	}, [])
+
 	return (<>
 		<Toolbar onLeaveGame={leaveGame} gameReady={gameReady} gameSession={gameSession}/>
 		{!gameReady && <Menu progressBarRef={progressBarRef} progressNumberRef={progressNumberRef} onGameSession={setGameSession}/>}
