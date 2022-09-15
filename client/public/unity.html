@@ -9,10 +9,20 @@
     <canvas id="unity-canvas" style="width:100%; position: absolute; top: 0px; left: 0px; height: 100%; background: green"/>
     <script>
 
+      function resizeCanvas()
+      {
+        let canvas = document.getElementsByTagName("unity-canvas");
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+      }
+      window.addEventListener('resize', resizeCanvas, false);
+      resizeCanvas();
+
       var unityInstance;
       window.dispatchReactUnityEvent = (event, param) => {
         window.top.onMessageFromUnity(event, param); 
       } 
+
 
       function chunkSubstr(str, size = 65536) {
         const numChunks = Math.ceil(str.length / size)
