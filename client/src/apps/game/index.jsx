@@ -131,9 +131,9 @@ const NftBar = (props) => {
   }
 
   return <div ref={ref} className={className}>
-  	{/* <div className={'cards-header'}>
+  	<div className={'cards-header'}>
   		{text}
-  	</div> */}
+  	</div>
     {nfts.map((nft, index) => <NftCard 
         total={nfts.length}
         index={index}
