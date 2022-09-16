@@ -1,6 +1,8 @@
 import { BrickRuntime } from '../content/brickLib';
 import { notify } from '../components/notification';
 import { getTable } from '../utils';
+import contentWeb from './contentWeb.json';
+import contentUnity from './contentUnity.json';
 
 const STATE_TYPES = {
 	state: 0,
@@ -18,6 +20,12 @@ const objectToArray = (obj) => {
 		return { key, value };
 	});
 };
+
+const content = {
+	web: contentWeb,
+	unity: contentUnity,
+}
+const strLog = '[{"command_data_type":0,"object_id":7,"trigger_target_entity_type":1},{"command_data_type":0,"object_id":68,"trigger_target_entity_type":1},{"command_data_type":2,"object_id":39,"drag_drop_id":328,"target_place_id":35,"trigger_target_entity_type":1},{"command_data_type":0,"object_id":57,"trigger_target_entity_type":1},{"command_data_type":0,"object_id":10,"trigger_target_entity_type":1},{"command_data_type":0,"object_id":94,"trigger_target_entity_type":1},{"command_data_type":0,"object_id":30,"trigger_target_entity_type":1},{"command_data_type":1,"object_id":94,"trigger_target_entity_type":1},{"command_data_type":0,"object_id":94,"trigger_target_entity_type":1},{"command_data_type":2,"object_id":94,"drag_drop_id":328,"target_place_id":34,"trigger_target_entity_type":1},{"command_data_type":2,"object_id":94,"drag_drop_id":328,"target_place_id":31,"trigger_target_entity_type":1},{"command_data_type":2,"object_id":39,"drag_drop_id":328,"target_place_id":32,"trigger_target_entity_type":1},{"command_data_type":2,"object_id":9,"drag_drop_id":328,"target_place_id":35,"trigger_target_entity_type":1},{"command_data_type":0,"object_id":10,"trigger_target_entity_type":1},{"command_data_type":0,"object_id":89,"trigger_target_entity_type":1},{"command_data_type":0,"object_id":93,"trigger_target_entity_type":1},{"command_data_type":0,"object_id":10,"trigger_target_entity_type":1},{"command_data_type":0,"object_id":63,"trigger_target_entity_type":1},{"command_data_type":0,"object_id":71,"trigger_target_entity_type":1},{"command_data_type":2,"object_id":63,"drag_drop_id":328,"target_place_id":25,"trigger_target_entity_type":1},{"command_data_type":2,"object_id":9,"drag_drop_id":328,"target_place_id":24,"trigger_target_entity_type":1},{"command_data_type":2,"object_id":39,"drag_drop_id":328,"target_place_id":34,"trigger_target_entity_type":1},{"command_data_type":2,"object_id":110,"drag_drop_id":416,"target_place_id":31,"trigger_target_entity_type":1},{"command_data_type":0,"object_id":10,"trigger_target_entity_type":1},{"command_data_type":0,"object_id":135,"trigger_target_entity_type":1},{"command_data_type":0,"object_id":95,"trigger_target_entity_type":1},{"command_data_type":0,"object_id":64,"trigger_target_entity_type":1},{"command_data_type":2,"object_id":39,"drag_drop_id":328,"target_place_id":31,"trigger_target_entity_type":1},{"command_data_type":2,"object_id":9,"drag_drop_id":328,"target_place_id":44,"trigger_target_entity_type":1},{"command_data_type":2,"object_id":9,"drag_drop_id":328,"target_place_id":45,"trigger_target_entity_type":1},{"command_data_type":0,"object_id":10,"trigger_target_entity_type":1},{"command_data_type":0,"object_id":70,"trigger_target_entity_type":1},{"command_data_type":0,"object_id":32,"trigger_target_entity_type":1},{"command_data_type":2,"object_id":32,"drag_drop_id":328,"target_place_id":31,"trigger_target_entity_type":1},{"command_data_type":2,"object_id":148,"drag_drop_id":416,"target_place_id":31,"trigger_target_entity_type":1},{"command_data_type":2,"object_id":138,"drag_drop_id":416,"target_place_id":31,"trigger_target_entity_type":1},{"command_data_type":1,"object_id":32,"trigger_target_entity_type":1},{"command_data_type":0,"object_id":32,"trigger_target_entity_type":1},{"command_data_type":0,"object_id":10,"trigger_target_entity_type":1},{"command_data_type":0,"object_id":10,"trigger_target_entity_type":1}]';
 
 export class Session {
 	
@@ -52,11 +60,11 @@ export class Session {
 
 	constructor(data) {
 		this.id = data.id;
-		this.content = data.content;
-		this.seed = data.seed ?? 0;
+		this.content = content;
+		this.seed = 183;
 		this.game = new Game(this);
 		this.players = data.players;
-		this.log = data.log ?? [];
+		this.log = JSON.parse(strLog)
 		this.runtime = new BrickRuntime(data.content.web, this.seed);
 		this.layout = data.layout;
 		this.nfts = data.nfts ?? [];
