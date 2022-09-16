@@ -64,9 +64,13 @@
         }
       }
 
+      const onDownloadProgress = (progress) => {
+        window.top.onUnityDownloadProgress(progress);
+      }
+
       window.top.getUnityConfig().then(config => {
         eval(config.loaderScript);
-        createUnityInstance(document.querySelector("#unity-canvas"), config).then(instance => unityInstance = instance);
+        createUnityInstance(document.querySelector("#unity-canvas"), config, onDownloadProgress).then(instance => unityInstance = instance);
       });
     </script>
   </body>

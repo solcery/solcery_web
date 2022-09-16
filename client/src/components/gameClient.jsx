@@ -7,9 +7,12 @@ function delay(ms) {
 	return new Promise(resolve => setTimeout(resolve, ms));
 }
 
+const DOWNLOADING_PROGRESS_PERCENTAGE = 20;
+
 export default function GameClient(props) {
-	const [ loadingProgress, setLoadingProgress ] = useState(0);
+	const [ loaded, setLoaded ] = useState(false);
 	const [ finished, setFinished ] = useState(false);
+
 	const getAspect = () => {
 		const width = 1920;
         const height = 900;
@@ -38,6 +41,7 @@ export default function GameClient(props) {
 		iframeRef.current.height = aspect.height;
 	}
 
+
 	useEffect(() => {
 		if (finished) {
 			props.onFinished(gameSession.outcome);
@@ -45,6 +49,10 @@ export default function GameClient(props) {
 	}, [ finished ])
 
 	useEffect(() => {
+
+		window.onUnityDownloadProgress = (progress) => {
+			props.onLoadingProgress && props.onLoadingProgress(Math.floor(DOWNLOADING_PROGRESS_PERCENTAGE * progress));
+		}
 
 
 		window.getUnityConfig = async () => {
@@ -82,7 +90,7 @@ export default function GameClient(props) {
 		        },
 				companyName: "Solcery",
 				productName: "solcery_client_unity",
-				productVersion: "0.1"
+				productVersion: "0.1",
 			}
 			return config
 		}
@@ -90,8 +98,12 @@ export default function GameClient(props) {
 		window.onMessageFromUnity = (message, param) => {
 			if (message === 'OnUnityLoadProgress') {
 				let { progress } = JSON.parse(param)
-				setLoadingProgress(progress)
-				props.onLoadingProgress && props.onLoadingProgress(progress);
+				if (progress >= 100) {
+					setLoaded(true);
+					props.onLoadingProgress && props.onLoadingProgress(100);
+				}
+				let prog = Math.floor(progress * (1 - DOWNLOADING_PROGRESS_PERCENTAGE / 100)) + DOWNLOADING_PROGRESS_PERCENTAGE;
+				props.onLoadingProgress && props.onLoadingProgress(prog);
 			} 
 
 			if (message === 'OnUnityLoaded') {
@@ -148,6 +160,13 @@ export default function GameClient(props) {
 			}
 	}, [])
 
+	useEffect(() => {
+		if (!gameSession) {
+			setLoaded(false);
+			setFinished(0);
+		}
+	}, [ gameSession ])
+
 	if (!gameSession) return <></>
 	let aspect = getAspect();
 	let iframeStyle = {
@@ -163,7 +182,7 @@ export default function GameClient(props) {
 		display: 'flex',
   		justifyContent: 'center',
   		alignItems: 'center',
-  		visibility: loadingProgress < 100 ? 'hidden' : 'unset',
+  		visibility: loaded ? 'unset' : 'hidden',
 		pointerEvents: finished ? 'none' : 'auto',
 	}
 	return <div style={divStyle}>
