@@ -284,12 +284,13 @@ const Menu = (props) => {
 			log,
 			gameApi,
 			seed,
+			onError: props.onError
 		});
-		session.start();
 		setGameSession(session);
 		if (status === 'newgame') {
 			props.onGameSession(session);
-		}
+		}	
+		session.start();
 	}
 
 	const continueGame = () => {
@@ -349,12 +350,33 @@ const Menu = (props) => {
 
 export const GameTest = () => {
 	const { gameApi, gameInfo } = useGameApi();
+	const { publicKey } = usePlayer();
 	const [ gameSession, setGameSession ] = useState();
 	const [ gameReady, setGameReady ] = useState(false);
 	const [ loadingProgress, setLoadingProgress ] = useState(0);
 	const [ finished, setFinished ] = useState(false);
 	const progressBarRef = useRef();
 	const progressNumberRef = useRef();
+
+	const onError = (err, gameId) => {
+		if (gameSession) {
+			gameId = gameSession.id;
+		}
+		let payload = {
+			publicKey,
+			gameId,
+			message: err.message,
+			error: err.data,
+		}
+		gameApi.game.bugreport({ payload }).then(() => {
+			notify({
+				message: `Fatal error`,
+				description: 'Bug report automatically sent. Game cancelled.',
+				type: 'error',
+			});
+			cancelGameOnError(gameId);
+		})
+	}
 
 	const onLoadingProgress = (progress) => {
 		if (progressBarRef.current) {
@@ -372,7 +394,11 @@ export const GameTest = () => {
 		setFinished(false);
 	}
 
-	const leaveGame = useCallback(() => {
+	const cancelGameOnError = (gameId) => {
+		gameApi.game.leaveGame({ gameId }).then(reset)
+	}
+
+	const leaveGame = useCallback((gameId) => {
 		if (!gameSession) return;
 		let outcome = gameSession.outcome;
 		if (!outcome && !window.confirm('Are you sure want to abandon current game?')) return;
@@ -381,14 +407,15 @@ export const GameTest = () => {
 
 	return (<>
 		<Toolbar onLeaveGame={leaveGame} gameReady={gameReady} gameSession={gameSession}/>
-		{!gameReady && <Menu progressBarRef={progressBarRef} progressNumberRef={progressNumberRef} onGameSession={setGameSession}/>}
+		{!gameReady && <Menu progressBarRef={progressBarRef} progressNumberRef={progressNumberRef} onGameSession={setGameSession} onError={onError}/>}
 		<GameClient 
 			unityBuild={gameInfo.build} 
 			gameSession={gameSession} 
 			onLoadingProgress={onLoadingProgress} 
 			onFinished={() => setFinished(true)}
+			onError={onError}
 		/>
-		{gameReady && gameSession.finished && <div className='blackout'>
+		{gameReady && finished && <div className='blackout'>
 			<BigButton
 				icon={HomeIcon}
 				caption={'Back to menu'} 

@@ -21,15 +21,31 @@ const objectToArray = (obj) => {
 
 export class Session {
 	
+	error(err) {
+		if (this.onError) {
+			err.data = {
+				type: 'runtime'
+			}
+			this.onError(err, this.id);
+		} else {
+			console.error(err);
+		}
+	}
+
 	start() {
 		if (this.started) return;
 		if (this.game) {
 			delete this.game;
 			this.game = new Game(this);
 		}
-		this.game.start(this.layout, this.nfts);
-		for (let command of this.log) {
-			this.applyCommand(command)
+		try {
+			this.game.start(this.layout, this.nfts);
+			for (let command of this.log) {
+				this.applyCommand(command)
+			}
+		}
+		catch (err) {
+			this.error(err)
 		}
 		this.started = true;
 	}
@@ -45,6 +61,7 @@ export class Session {
 		this.layout = data.layout;
 		this.nfts = data.nfts ?? [];
 		this.gameApi = data.gameApi;
+		this.onError = data.onError;
 	}
 
 	getUnityContent = () => this.content.unity;
@@ -112,7 +129,11 @@ export class Session {
 			);	
 		}
 		this.log.push(command);
-		return this.applyCommand(command);
+		try {
+			return this.applyCommand(command);
+		} catch (err) {
+			this.error(err)
+		}
 	};
 }
 
@@ -210,7 +231,9 @@ export class Game {
 		entity.attrs.place = place;
 		let cardType = this.content.cardTypes[cardTypeId];
 		if (!cardType) {
-			console.log('tracking unknown cardType')
+			console.log('tracking unknown cardType');
+			console.log(JSON.stringify(this.content));
+			console.log(JSON.stringify(this.session.getUnityContent()));
 			console.log(JSON.stringify(this.session.log));
 			console.log(this.session.seed);
 			throw new Error('Game.createEntity error: Unknown cardType!');

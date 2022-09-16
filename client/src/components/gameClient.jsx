@@ -31,7 +31,19 @@ export default function GameClient(props) {
 	const sendToUnity = (funcName, param) => {
 		if (!iframeRef.current) return;
 		let data = { funcName, param }
-		iframeRef.current.contentWindow.sendToUnity(JSON.stringify(data));
+		try {
+			iframeRef.current.contentWindow.sendToUnity(JSON.stringify(data));
+		}
+		catch (err) {
+			if (props.onError) {
+				err.data = {
+					type: 'unity',
+					funcName,
+				}
+				props.onError(err);
+			}
+			throw err;
+		}
 	}
 
 	const handleResize = () => {
@@ -41,12 +53,6 @@ export default function GameClient(props) {
 		iframeRef.current.height = aspect.height;
 	}
 
-
-	useEffect(() => {
-		if (finished) {
-			props.onFinished(gameSession.outcome);
-		}
-	}, [ finished ])
 
 	useEffect(() => {
 
@@ -107,38 +113,40 @@ export default function GameClient(props) {
 			} 
 
 			if (message === 'OnUnityLoaded') {
-				let data = param ? JSON.parse(param) : {};
-				let content = gameSession.getUnityContent();
-				let contentHash = md5(JSON.stringify(content));
-				let cachedContentHash = getTable(data, 'content_metadata', 'game_content', 'hash');
+				try {
+					let data = param ? JSON.parse(param) : {};
+					let content = gameSession.getUnityContent();
+					let contentHash = md5(JSON.stringify(content));
+					let cachedContentHash = getTable(data, 'content_metadata', 'game_content', 'hash');
 
-				if (false && contentHash === cachedContentHash) {
-					sendToUnity('UpdateGameContent', null);
+					if (false && contentHash === cachedContentHash) {
+						sendToUnity('UpdateGameContent', null);
 
-				} else {
-					insertTable(content, contentHash, 'metadata', 'hash')
-					sendToUnity('UpdateGameContent', content);
-				}
-
-				let overrides = gameSession.getContentOverrides();
-				let overridesHash = md5(JSON.stringify(overrides));
-				let cachedOverridesHash = getTable(data, 'content_metadata', 'game_content_overrides', 'hash');
-				if (false && overridesHash === cachedOverridesHash) {
-					sendToUnity('UpdateGameContentOverrides', null);
-				} else {
-					overrides.metadata = {
-						hash: md5(JSON.stringify(overrides)),
-						content_hash: contentHash,
+					} else {
+						insertTable(content, contentHash, 'metadata', 'hash')
+						sendToUnity('UpdateGameContent', content);
 					}
-					sendToUnity('UpdateGameContentOverrides', overrides);
+
+					let overrides = gameSession.getContentOverrides();
+					let overridesHash = md5(JSON.stringify(overrides));
+					let cachedOverridesHash = getTable(data, 'content_metadata', 'game_content_overrides', 'hash');
+					if (false && overridesHash === cachedOverridesHash) {
+						sendToUnity('UpdateGameContentOverrides', null);
+					} else {
+						overrides.metadata = {
+							hash: md5(JSON.stringify(overrides)),
+							content_hash: contentHash,
+						}
+						sendToUnity('UpdateGameContentOverrides', overrides);
+					}
+
+					let unityPackage = gameSession.game.exportPackage();
+					unityPackage.predict = true;
+					sendToUnity('UpdateGameState', unityPackage);
+					setFinished(gameSession.finished)
+				} catch (err) {
+					console.error(err);
 				}
-
-
-
-				let unityPackage = gameSession.game.exportPackage();
-				unityPackage.predict = true;
-				sendToUnity('UpdateGameState', unityPackage);
-				setFinished(gameSession.finished)
 			}
 			if (message === 'SendCommand') {
 				if (gameSession.finished) return; //TODO notify
@@ -149,6 +157,14 @@ export default function GameClient(props) {
 					unityPackage.predict = true;
 					sendToUnity('UpdateGameState', unityPackage);
 				})
+				
+			}
+
+			if (message === 'OnGameStateConfirmed') {
+				if (gameSession.finished) {
+					setFinished(true);
+					props.onFinished(gameSession.outcome)
+				}
 			}
 		}
 	}, [ gameSession, props.unityBuild ])
