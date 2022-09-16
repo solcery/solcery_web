@@ -15,6 +15,11 @@ export default function PlayPage() {
 	const { sageApi, projectConfig } = useProject();
 	let navigate = useNavigate()
 
+	const onError = (err) => {
+		console.log('onPlayPageError');
+		console.log(err)
+	}
+
 	useEffect(() => {
 		async function buildContent() {
 			let content = await sageApi.project.getContent({ objects: true, templates: true });
@@ -34,7 +39,8 @@ export default function PlayPage() {
 					content,
 					layout,
 					nfts,
-					seed
+					seed,
+					onError
 				});
 				session.start();
 				setGameSession(session);
@@ -53,6 +59,6 @@ export default function PlayPage() {
 
 	if (!gameSession) return <>Loading</>;
 	return <div>
-		<GameClient unityBuild={projectConfig.build} gameSession={gameSession}/>
+		<GameClient unityBuild={projectConfig.build} gameSession={gameSession} onError={onError}/>
 	</div>;
 }
