@@ -209,7 +209,6 @@ export class Game {
 		if (!place) throw new Error('Game.createEntity error: No place given for created entity!');
 		entity.attrs.place = place;
 		let cardType = this.content.cardTypes[cardTypeId];
-		cardType = undefined;
 		if (!cardType) {
 			console.log('tracking unknown cardType');
 			console.log(JSON.stringify(this.content));
