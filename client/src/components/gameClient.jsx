@@ -7,13 +7,21 @@ function delay(ms) {
 	return new Promise(resolve => setTimeout(resolve, ms));
 }
 
+const DOWNLOADING_PROGRESS_PERCENTAGE = 20;
+
 export default function GameClient(props) {
-	const [ loadingProgress, setLoadingProgress ] = useState(0);
+	const [ loaded, setLoaded ] = useState(false);
 	const [ finished, setFinished ] = useState(false);
+
 	const getAspect = () => {
+		const width = 1920;
+        const height = 900;
+        let innerWidth = window.innerWidth;
+        let innerHeight = window.innerHeight;
+        let coef = Math.min(innerWidth / width, innerHeight / height);
 		return {
-			width: window.innerWidth,
-			height: window.innerWidth / 2.133
+			width: width * coef,
+			height: height * coef,
 		}
 	}
 
@@ -23,7 +31,6 @@ export default function GameClient(props) {
 	const sendToUnity = (funcName, param) => {
 		if (!iframeRef.current) return;
 		let data = { funcName, param }
-		// console.log(JSON.stringify(param))
 		iframeRef.current.contentWindow.sendToUnity(JSON.stringify(data));
 	}
 
@@ -34,6 +41,7 @@ export default function GameClient(props) {
 		iframeRef.current.height = aspect.height;
 	}
 
+
 	useEffect(() => {
 		if (finished) {
 			props.onFinished(gameSession.outcome);
@@ -41,6 +49,10 @@ export default function GameClient(props) {
 	}, [ finished ])
 
 	useEffect(() => {
+
+		window.onUnityDownloadProgress = (progress) => {
+			props.onLoadingProgress && props.onLoadingProgress(Math.floor(DOWNLOADING_PROGRESS_PERCENTAGE * progress));
+		}
 
 
 		window.getUnityConfig = async () => {
@@ -78,7 +90,7 @@ export default function GameClient(props) {
 		        },
 				companyName: "Solcery",
 				productName: "solcery_client_unity",
-				productVersion: "0.1"
+				productVersion: "0.1",
 			}
 			return config
 		}
@@ -86,8 +98,12 @@ export default function GameClient(props) {
 		window.onMessageFromUnity = (message, param) => {
 			if (message === 'OnUnityLoadProgress') {
 				let { progress } = JSON.parse(param)
-				setLoadingProgress(progress)
-				props.onLoadingProgress && props.onLoadingProgress(progress);
+				if (progress >= 100) {
+					setLoaded(true);
+					props.onLoadingProgress && props.onLoadingProgress(100);
+				}
+				let prog = Math.floor(progress * (1 - DOWNLOADING_PROGRESS_PERCENTAGE / 100)) + DOWNLOADING_PROGRESS_PERCENTAGE;
+				props.onLoadingProgress && props.onLoadingProgress(prog);
 			} 
 
 			if (message === 'OnUnityLoaded') {
@@ -144,21 +160,40 @@ export default function GameClient(props) {
 			}
 	}, [])
 
-	if (!gameSession) return <>NO SESSION</>
+	useEffect(() => {
+		if (!gameSession) {
+			setLoaded(false);
+			setFinished(0);
+		}
+	}, [ gameSession ])
+
+	if (!gameSession) return <></>
 	let aspect = getAspect();
-	let iframeStyle = { 
+	let iframeStyle = {
 		borderStyle: 'none',
-		margin: '0', 
-		visibility: loadingProgress < 100 ? 'hidden' : 'unset',
+		margin: '0',
+		padding: '0px',
+		border: '1px solid gray'
+	}
+	let divStyle = {
+		position: 'absolute',
+		width: '100%',
+		height: '100%',
+		display: 'flex',
+  		justifyContent: 'center',
+  		alignItems: 'center',
+  		visibility: loaded ? 'unset' : 'hidden',
 		pointerEvents: finished ? 'none' : 'auto',
 	}
-	return <iframe 
-		key='unity'
-		ref={iframeRef} 
-		style={iframeStyle}
-		src='/unity.html'
-		scrolling='no'
-		width={aspect.width}
-		height={aspect.height}
-	/>
+	return <div style={divStyle}>
+		<iframe 
+			key='unity'
+			ref={iframeRef} 
+			style={iframeStyle}
+			src='/unity.html'
+			scrolling='no'
+			width={aspect.width}
+			height={aspect.height}
+		/>
+	</div>
 }
