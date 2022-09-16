@@ -43,12 +43,6 @@ export default function GameClient(props) {
 
 
 	useEffect(() => {
-		if (finished) {
-			props.onFinished(gameSession.outcome);
-		}
-	}, [ finished ])
-
-	useEffect(() => {
 
 		window.onUnityDownloadProgress = (progress) => {
 			props.onLoadingProgress && props.onLoadingProgress(Math.floor(DOWNLOADING_PROGRESS_PERCENTAGE * progress));
@@ -149,6 +143,13 @@ export default function GameClient(props) {
 					unityPackage.predict = true;
 					sendToUnity('UpdateGameState', unityPackage);
 				})
+			}
+
+			if (message === 'OnGameStateConfirmed') {
+				if (gameSession.finished) {
+					setFinished(true);
+					props.onFinished(gameSession.outcome)
+				}
 			}
 		}
 	}, [ gameSession, props.unityBuild ])

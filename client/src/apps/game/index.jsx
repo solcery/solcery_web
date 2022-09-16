@@ -388,7 +388,7 @@ export const GameTest = () => {
 			onLoadingProgress={onLoadingProgress} 
 			onFinished={() => setFinished(true)}
 		/>
-		{gameReady && gameSession.finished && <div className='blackout'>
+		{gameReady && finished && <div className='blackout'>
 			<BigButton
 				icon={HomeIcon}
 				caption={'Back to menu'} 
