@@ -2,6 +2,7 @@ import React, { useContext, useState, useRef } from 'react';
 
 import { WalletsAuth } from './wallets';
 import { FractalAuth } from './fractal';
+import { player } from '../../config';
 
 const AuthContext = React.createContext(undefined);
 
@@ -21,11 +22,20 @@ export const AuthProvider = (props) => {
         }
     }
 
+    let AuthComponent = WalletsAuth;
+    console.log(player.authType)
+    if (player.authType === 'fractal') {
+        AuthComponent = FractalAuth;
+    }  
+    if (player.authType === 'wallets') {
+        AuthComponent = WalletsAuth;
+    } 
+
     const value = {
         publicKey,
         auth,
         disconnect,
-        AuthComponent: FractalAuth,
+        AuthComponent,
     }
     return (<AuthContext.Provider value={value}>
         { props.children }

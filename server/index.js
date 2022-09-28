@@ -38,6 +38,7 @@ if (!isDev && cluster.isMaster) {
   app.use(bodyParser.json({ limit: "10mb" }));
 
   app.post("/api/*", (request, response) => {
+    response.header("Access-Control-Allow-Origin", '*');
     apiCall(response, request.body);
   });
 
