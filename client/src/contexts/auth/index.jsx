@@ -1,0 +1,38 @@
+import React, { useContext, useState, useRef } from 'react';
+
+import { WalletsAuth } from './wallets';
+import { FractalAuth } from './fractal';
+
+const AuthContext = React.createContext(undefined);
+
+export const AuthProvider = (props) => {
+    const [ publicKey, setPublicKey ] = useState(undefined);
+    const onDisconnect = useRef(undefined);
+    const auth = (key, onDisconnectCallback) => {
+        setPublicKey(key);
+        onDisconnect.current = onDisconnectCallback;
+    }
+
+    const disconnect = () => {
+        setPublicKey(undefined);
+        if (onDisconnect.current) {
+            onDisconnect.current();
+            onDisconnect.current = undefined;
+        }
+    }
+
+    const value = {
+        publicKey,
+        auth,
+        disconnect,
+        AuthComponent: FractalAuth,
+    }
+    return (<AuthContext.Provider value={value}>
+        { props.children }
+    </AuthContext.Provider>);
+}
+
+export function useAuth() {
+    const { publicKey, auth, disconnect, AuthComponent } = useContext(AuthContext);
+    return { publicKey, auth, disconnect, AuthComponent };
+}
