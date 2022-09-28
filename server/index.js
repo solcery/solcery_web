@@ -5,6 +5,7 @@ const bodyParser = require("body-parser");
 // const mongoose = require("mongoose");
 const numCPUs = require("os").cpus().length;
 require("dotenv").config({ path: "./config.env" });
+const cors = require('cors')
 
 const isDev = process.env.NODE_ENV !== "production";
 const PORT = process.env.PORT || 5000;
@@ -33,6 +34,8 @@ if (!isDev && cluster.isMaster) {
 
   // Priority serve any static files.
   app.use(express.static(path.resolve(__dirname, "../client/build")));
+  app.use(cors());
+
 
   app.use(bodyParser.urlencoded({ limit: "10mb", extended: false }));
   app.use(bodyParser.json({ limit: "10mb" }));
