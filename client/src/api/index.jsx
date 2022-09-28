@@ -1,5 +1,6 @@
 import { notify } from '../components/notification';
-const API_PATH = '/api/';
+import { api } from '../config';
+const API_PATH = api.url;
 
 const makeRequest = (data) => {
 	if (!data) throw new Error('API request error: no data provided for API call!');
@@ -9,6 +10,7 @@ const makeRequest = (data) => {
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json',
+			'Origin': 'https://play.solcery.xyz'
 		},
 		body: JSON.stringify(data),
 	};

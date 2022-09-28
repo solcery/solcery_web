@@ -8,7 +8,7 @@ export default function Game() {
 	return (
 		<BrowserRouter>
 			<Routes>
-				<Route path=":projectId" element={<GameApiProvider/>}>
+				<Route path=":projectId" element={<GameApiProvider playerAuth={['fractal']} />}>
 					<Route path="" element={<GameTest/>}/>
 				</Route>
 				<Route exact path="" element={<Navigate to="/eclipse" />}/>

@@ -23,9 +23,6 @@ const buildApi = (config) => {
   return api;
 }
 
-const config = require('./config');
-const apiLibrary = buildApi(config);
-
 const checkParams = (command, params) => {
   if (!command.params) return true;
   for (let [ param, data ] of Object.entries(command.params)) {
@@ -97,5 +94,8 @@ const apiCall = async (response, data) => {
     response.json(result)
   }
 }
+
+const config = require('../config');
+const apiLibrary = buildApi(config.api);
 
 module.exports = apiCall
