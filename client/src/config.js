@@ -1,8 +1,8 @@
 module.exports = {
 	api: {
-		url: '/api/'
+		url: 'https://play.solcery.xyz/api/'
 	},
 	player: {
-		authType: 'wallets'
+		authType: 'fractal'
 	},
 }

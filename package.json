@@ -6,7 +6,7 @@
     "node": "16.x"
   },
   "scripts": {
-    "start": "node server",
+    "start": "cd client/ && yarn && yarn start",
     "debug": "yarn build & yarn start",
     "build": "cd client/ && yarn && yarn build"
   },
