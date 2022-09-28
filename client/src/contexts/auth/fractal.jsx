@@ -25,13 +25,16 @@ const FractalConnector = (props) => {
 }
 
 const LoginButton = (props) => {
+    const buttonProps = {
+        style: {
+            display: 'flex',
+            margin: 'auto',
+        },
+    }
     return (<SignInWithFractal
+        buttonProps={buttonProps}
         onError={(err) => {
             console.error(err.getUserFacingErrorMessage());
-        }}
-        onSuccess={(user) => {
-            // console.log(user)
-            // props.onConnect();
         }}
     />);
 }
