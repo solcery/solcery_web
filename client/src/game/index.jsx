@@ -183,6 +183,13 @@ export class Game {
 			for (let i = 0; i < cardPack.amount; i++) {
 				this.createEntity(cardPack.cardType, cardPack.place, cardPack.initializer);
 			}
+			if (cardPack.cards) {
+				for (let { cardType, amount } of cardPack.cards) {
+					for (let j = 0; j < amount; j++) {
+						this.createEntity(cardType, cardPack.place, cardPack.initializer);
+					}
+				}
+			}
 		}
 		if (nfts && this.content.collections) {
 			for (let nft of nfts) {
