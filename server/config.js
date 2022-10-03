@@ -2,19 +2,18 @@ module.exports = {
 	api: {
 		modules: [
 			{
-				name: 'game',
-				path: './game',
+				name: 'project',
+				path: './project',
+			},
+			{
+				name: 'user',
+				path: './user',
 			},
 			{
 				name: 'template',
 				path: './template',
-			},
-			{
-				name: 'forge',
-				path: './forge',
-			},
-
+			}
 		],
-		auth: './player/auth',
+		auth: './user/auth',
 	}
 }
