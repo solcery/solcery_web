@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState, useCallback } from 'react';
 import { useParams, Outlet } from 'react-router-dom';
 import { SolceryAPIConnection } from '../api';
 import { PlayerProvider } from './player';
+import { AuthProvider } from './auth';
 
 const apiConfig = {
 	modules: [
@@ -39,9 +40,11 @@ export function GameApiProvider(props) {
 	if (status === '404') return <>No game found</>; //TODO: proper 404 redirect
 
 	return (<GameApiContext.Provider value={{ gameApi, gameInfo }}>
-		<PlayerProvider>
-			<Outlet />
-		</PlayerProvider>
+		<AuthProvider>
+			<PlayerProvider>
+				<Outlet />
+			</PlayerProvider>
+		</AuthProvider>
 	</GameApiContext.Provider>);
 }
 

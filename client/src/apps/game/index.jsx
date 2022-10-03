@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback, useRef } from 'react';
 import { useGameApi } from '../../contexts/gameApi';
 import { usePlayer } from '../../contexts/player';
+import { useAuth } from '../../contexts/auth';
 import { Session } from '../../game';
 import GameClient from '../../components/gameClient';
 import { notify } from '../../components/notification';
@@ -8,7 +9,7 @@ import { SolceryAPIConnection } from '../../api';
 import BasicGameClient from '../../components/basicGameClient';
 import { Modal, Space, Button, Input, Spin, Tooltip } from 'antd';
 import { SendOutlined } from '@ant-design/icons'
-import { CloseIcon, BugIcon, QuestionMarkIcon, PlayIcon, HomeIcon } from '../../components/icons';
+import { CloseIcon, BugIcon, QuestionMarkIcon, PlayIcon, HomeIcon, QuitIcon } from '../../components/icons';
 
 import './walletModal.css';
 import './style.scss';
@@ -229,6 +230,7 @@ const Toolbar = (props) => {
 	const [ showRules, setShowRules ] = useState(false);
 	const [ showBugReport, setShowBugReport ] = useState(false);
 	const { gameInfo } = useGameApi();
+	const { publicKey, disconnect } = useAuth()
 
 	let isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
 	return <>
@@ -251,7 +253,11 @@ const Toolbar = (props) => {
 			</div>}
 			{props.gameReady && <div className='btn-toolbar' onClick={props.onLeaveGame}>
 				<CloseIcon size='big' className='icon'/>
-				<p className='btn-text'>Exit game</p>
+				<p className='btn-text'>Quit game</p>
+			</div>}
+			{!props.gameReady && publicKey && <div className='btn-toolbar' onClick={disconnect}>
+				<QuitIcon size='big' className='icon'/>
+				<p className='btn-text'>Sign out</p>
 			</div>}
 		</div>
 	</>
@@ -259,7 +265,8 @@ const Toolbar = (props) => {
 
 const Menu = (props) => {
 	const { gameApi, gameInfo } = useGameApi();
-	const { nfts, publicKey, ConnectionComponent } = usePlayer();
+	const { AuthComponent } = useAuth();
+	const { nfts, publicKey } = usePlayer();
 	const [ isNewGame, setIsNewGame ] = useState(true);
 	const [ gameSession, setGameSession ] = useState();
 	const [ status, setStatus ] = useState('idle');
@@ -299,8 +306,13 @@ const Menu = (props) => {
 
 	useEffect(() => {
 		if (!gameApi) return;
-		if (!publicKey) return;
-		if (!nfts) return;
+		if (!publicKey || !nfts) {
+			if (playerNfts) {
+				setPlayerNfts(undefined);
+				setStatus('idle');
+			}
+			return;
+		};
 		gameApi.game.getPlayerOngoingGame().then(game => {
 			if (game) {
 				setStatus('continue');
@@ -335,7 +347,9 @@ const Menu = (props) => {
 			<div className='auth-header'>
 				Login
 			</div>
- 			{ConnectionComponent}
+			<div className='auth-body'>
+ 				<AuthComponent/>
+			</div>
 		</div>}
 		{playerNfts && <NftBar nfts={playerNfts}/>}
 		{playerNfts && <BigButton
