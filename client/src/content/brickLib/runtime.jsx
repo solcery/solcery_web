@@ -48,6 +48,7 @@ export class BrickRuntime {
 			insertTable(this.bricks, brick, lib, func);
 		}
 		this.random = new Random(seed)
+		console.log(content.customBricks)
 	}
 
 	newLog(game) {

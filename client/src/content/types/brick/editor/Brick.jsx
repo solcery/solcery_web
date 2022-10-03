@@ -138,6 +138,7 @@ export default function Brick(props) {
 
 	let width = Math.max(12, 1 + nestedParams.length * 5);
 	
+
 	return (
 		<>
 			<div
