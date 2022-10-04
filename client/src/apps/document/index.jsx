@@ -26,6 +26,11 @@ export default function DocumentEditor(props) {
 		() => {
 			// TODO: move to object context
 			let res = props.doc.getChanges();
+			for (let [ key ,value ] of Object.entries(res)) {
+				if (value === undefined) {
+					res[key] = null;
+				}
+			}
 			if (res) {
 				props.onSave(res);
 			} else {

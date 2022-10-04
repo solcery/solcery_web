@@ -4,7 +4,7 @@ import { InputNumber } from 'antd';
 export const ValueRender = (props) => {
 
 	const onChange = (value) => {
-		props.onChange(value ?? undefined);
+		props.onChange(value !== undefined ? value : null);
 	}
 	
 	if (!props.onChange) return <>{props.defaultValue}</>;
