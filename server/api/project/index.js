@@ -73,8 +73,9 @@ funcs.getLogs = async function (data) {
 };
 
 funcs.migrate = async function (data) {
-  if (data.params.objects) {
-    let replaces = data.params.objects.map(object => {
+  let { objects, templates, newObjects, newTemplates } = data.params;
+  if (objects && objects.length > 0) {
+    let replaces = objects.map(object => {
       let obj = Object.assign({}, object);
       delete obj._id;
       return {
@@ -88,7 +89,13 @@ funcs.migrate = async function (data) {
       .collection(OBJECT_COLLECTION)
       .bulkWrite(replaces);
   }
-  if (data.params.templates) {
+  if (newObjects && newObjects.length > 0) {
+    newObjects.forEach(obj => obj._id = ObjectId(obj._id))
+    await db .getDb(data.project)
+      .collection(OBJECT_COLLECTION)
+      .insertMany(newObjects);
+  }
+  if (templates && templates.length > 0) {
     let replaces = data.params.templates.map(template => {
       let tpl = Object.assign({}, template);
       delete tpl._id;
@@ -102,6 +109,12 @@ funcs.migrate = async function (data) {
     await db .getDb(data.project)
       .collection(TEMPLATE_COLLECTION)
       .bulkWrite(replaces);
+  }
+  if (newTemplates && newTemplates.length > 0) {
+    newTemplates.forEach(tpl => tpl._id = ObjectId(tpl._id))
+    await db .getDb(data.project)
+      .collection(TEMPLATE_COLLECTION)
+      .insertMany(newTemplates);
   }
 };
 
