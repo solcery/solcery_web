@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState, useCallback } from 'react';
 import { useParams, Outlet } from 'react-router-dom';
 import { SolceryAPIConnection } from '../api';
 import { BrickLibraryProvider } from './brickLibrary';
+import { ContentProvider } from './content';
 import { UserProvider } from './user';
 
 const apiConfig = {
@@ -19,7 +20,6 @@ export function ProjectProvider(props) {
 	let { projectId } = useParams();
 	let [sageApi, setSageApi] = useState();
 	let [ projectConfig, setProjectConfig ] = useState();
-
 	const setUserSession = useCallback(
 		(session) => {
 			sageApi.setSession(session);
@@ -41,11 +41,13 @@ export function ProjectProvider(props) {
 
 	return (
 		<ProjectContext.Provider value={{ projectId, sageApi, setUserSession, projectConfig }}>
-			<UserProvider>
-				<BrickLibraryProvider>
-					<Outlet />
-				</BrickLibraryProvider>
-			</UserProvider>
+			<ContentProvider>
+				<UserProvider>
+					<BrickLibraryProvider>
+						<Outlet />
+					</BrickLibraryProvider>
+				</UserProvider>
+			</ContentProvider>
 		</ProjectContext.Provider>
 	);
 }

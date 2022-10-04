@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useProject } from '../../../contexts/project';
+import { useContent } from '../../../contexts/content';
 import { SolceryAPIConnection } from '../../../api';
 import { Select } from 'antd';
 const { Option } = Select;
@@ -8,38 +9,39 @@ const filterOption = (inputValue, option) => {
 	return option.toLowerCase().includes(inputValue.toLowerCase());
 }
 
+
+
 export const ValueRender = (props) => {
 	const [objects, setObjects] = useState(undefined);
 	const [ api, setApi ] = useState();
-	const { sageApi, projectId } = useProject();
+	const { projectId } = useProject();
+	const { content } = useContent();
+
+	const loadObjects = (objs) => {
+		let res = objs
+			.filter(object => object.fields.name !== undefined)
+			.map(object => ({
+				id: object._id,
+				title: object.fields.name,
+			}));
+		setObjects(res);
+	}
 
 	useEffect(() => {
 		if (props.type.project) {
-			setApi(new SolceryAPIConnection(props.type.project, { modules: [ 'template' ]}));
+			let api = new SolceryAPIConnection(props.type.project, { modules: [ 'template' ]});
+			api.template.getAllObjects({ template: props.type.templateCode }).then(loadObjects);
 			return;
+		} else {
+			if (!content) return;
+			let objs = content.objects.filter(obj => obj.template === props.type.templateCode)
+			loadObjects(objs);
 		}
-		setApi(sageApi)
-	}, [ sageApi, props.type ]);
+	}, [ props.type, content ]);
 
 	const onChange = (newValue) => {
 		props.onChange && props.onChange(newValue);
 	};
-
-	useEffect(() => {
-		if (!api) return;
-		api.template.getAllObjects({ template: props.type.templateCode }).then((res) => {
-			setObjects(
-				res
-					.filter((object) => object.fields.name !== undefined)
-					.map((object) => {
-						return {
-							id: object._id,
-							title: object.fields.name,
-						};
-					})
-			);
-		});
-	}, [props.type, api]);
 
 	if (!props.onChange) {
 		if (!props.defaultValue) return <>None</>;

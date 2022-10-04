@@ -1,7 +1,7 @@
 import { Button, Input } from 'antd';
 import { useState } from 'react';
 import { useProject } from '../../contexts/project';
-import { migrator } from './migrators/08.08.22_customTransforms';
+import { migrator } from './migrations/03.10.22_structLayout';
 
 const { TextArea } = Input;
 
@@ -12,6 +12,7 @@ export default function Migrator() {
 	const applyMigrator = async () => {
 		let content = await sageApi.project.getContent({ objects: true, templates: true });
 		let migrated = migrator(content);
+		console.log(migrated)
 		setResult(JSON.stringify(migrated, undefined, 2));
 		sageApi.project.migrate(migrated);
 	};
