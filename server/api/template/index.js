@@ -71,15 +71,18 @@ funcs.createObject = async function (data) {
 
 funcs.updateObjectById = async function (data) {
   // TODO: validate
-  var query = {
+  let query = {
     _id: ObjectId(data.params.objectId),
     template: data.params.template,
   };
-  let fields = {}
+  let update = { $set: {}, $unset: {} };
   for (let [ field, value ] of Object.entries(data.params.fields)) {
-    fields[`fields.${field}`] = value;
+    if (value !== null) {
+      update.$set[`fields.${field}`] = value;
+    } else {
+      update.$unset[`fields.${field}`] = true;
+    }
   }
-  var update = { $set: fields };
   return await db.getDb(data.project)
     .collection(OBJECT_COLLECTION)
     .updateOne(query, update)
