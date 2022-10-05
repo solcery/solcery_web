@@ -1,17 +1,19 @@
 import React, { useContext, useEffect, useState, useCallback, useRef } from 'react';
 import { useProject } from './project';
+const md5 = require('js-md5'); 
 
 const ContentContext = React.createContext(undefined);
 
 export function ContentProvider(props) {
 	const { sageApi } = useProject();
 	let [ cachedContent, setCachedContent ] = useState();
+	let contentHash = useRef(undefined);
 	let contentUpdating = useRef(false)
 
 	useEffect(() => {
 		if (!sageApi) return;
 		contentUpdating.current = true;
-		sageApi.project.getContent({ objects: true }).then(res => {
+		sageApi.project.getContent({ objects: true, templates: true }).then(res => {
 			setCachedContent(res);
 			contentUpdating.current = false;
 		})
@@ -20,8 +22,12 @@ export function ContentProvider(props) {
 	const updateContent = useCallback(() => {
 		if (contentUpdating.current) return;
 		contentUpdating.current = true;
-		sageApi.project.getContent({ objects: true }).then(res => {
-			setCachedContent(res);
+		sageApi.project.getContent({ objects: true, templates: true }).then(res => {
+			let hash = md5(JSON.stringify(res)); // TODO: optimize
+			if (hash != contentHash.current) {
+				contentHash.current = hash
+				setCachedContent(res);
+			}
 			contentUpdating.current = false;
 		})
 	}, [ sageApi ]);
@@ -45,5 +51,5 @@ export function useContent() {
 		setContent(cachedContent);
 	}, [ cachedContent ]);
 
-	return { content };
+	return { content, updateContent };
 }

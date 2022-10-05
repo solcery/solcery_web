@@ -2,14 +2,22 @@ import { insertTable } from '../utils';
 import { Template } from './template';
 
 export default class Document {
-	constructor(schema, fields) {
+	constructor(schema, fields, id) {
 		let tpl = schema instanceof Template ? schema : new Template(schema);
+		this.id = id;
 		this.schema = tpl.fields;
-		this.fields = fields;
+		this.fields = {};
 		this.fieldStatus = {};
 		this.initialFields = {};
+		if (!fields) {
+			fields = {};
+			for (let field of Object.values(this.schema)) {
+				fields[field.code] = field.type.default();
+			}
+		}
 		for (let field of Object.values(this.schema)) {
-			this.initialFields[field.code] = field.type.clone(fields[field.code]);
+			this.initialFields[field.code] = fields[field.code];
+			this.fields[field.code] = field.type.clone(fields[field.code]);
 			this.fieldStatus[field.code] = 'old';
 		}
 	}
