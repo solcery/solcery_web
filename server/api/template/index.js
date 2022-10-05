@@ -88,6 +88,30 @@ funcs.updateObjectById = async function (data) {
     .updateOne(query, update)
 };
 
+funcs.updateObjects = async function (data) {
+  let objects = data.params.objects;
+  let updates = objects.map(object => {
+    let update = { $set: {}, $unset: {} };
+    for (let [ field, value ] of Object.entries(object.fields)) {
+      if (value !== null) {
+        update.$set[`fields.${field}`] = value;
+      } else {
+        update.$unset[`fields.${field}`] = true;
+      }
+    }
+    return {
+      updateOne: {
+        filter: { _id: ObjectId(object._id) },
+        update,
+      }
+    }
+  });
+  return await db .getDb(data.project)
+    .collection(OBJECT_COLLECTION)
+    .bulkWrite(updates);
+  
+};
+
 funcs.cloneObject = async function (data) {
   // TODO: validate
   let query = {
