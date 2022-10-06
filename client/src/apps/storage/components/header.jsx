@@ -166,11 +166,11 @@ export const HeaderCell = (props) => {
 				<p>{field.name}</p>
 			</div>
 			{(props.sorter || props.filter) && <div style={{ height: '30px', marginTop: '10px', display: 'flex' }}>
-				{props.sorter && (
+				{props.sorter && field.type.sorter && (
 					<HeaderSorter value={props.sorter.value} onChange={props.sorter.onChange} field={field} />
 				)}
 
-				{props.filter && (
+				{props.filter && field.type.filter && (
 					<HeaderFilter value={props.filter.value} onChange={props.filter.onChange} field={field}/>
 				)}
 			</div>}
