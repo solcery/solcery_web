@@ -200,6 +200,10 @@ export class Game {
 				nft.entityId = entity.id;
 			}
 		}
+		if (this.content.gameSettings.initAction) {
+			let ctx = this.createContext();
+			this.runtime.execBrick(this.content.gameSettings.initAction, ctx)
+		}
 	};
 
 	objectEvent = (objectId, event) => {
@@ -237,14 +241,7 @@ export class Game {
 		if (!place) throw new Error('Game.createEntity error: No place given for created entity!');
 		entity.attrs.place = place;
 		let cardType = this.content.cardTypes[cardTypeId];
-		if (!cardType) {
-			console.log('tracking unknown cardType');
-			console.log(JSON.stringify(this.content));
-			console.log(JSON.stringify(this.session.getUnityContent()));
-			console.log(JSON.stringify(this.session.log));
-			console.log(this.session.seed);
-			throw new Error('Game.createEntity error: Unknown cardType!');
-		}
+		if (!cardType) throw new Error('Game.createEntity error: Unknown cardType!');
 		if (cardType.action_on_create) {
 			this.runtime.execBrick(cardType.action_on_create, this.createContext(entity, ctx));
 		}

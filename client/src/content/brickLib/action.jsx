@@ -350,6 +350,9 @@ export const basicActions = [
 				if (obj === 'game') {
 					src = ctx.game.attrs;
 				}
+				if (obj === 'scope') {
+					src = ctx.scopes[ctx.scopes.length - 1].vars;
+				}
 				if (obj === 'vars') {
 					src = ctx.vars;
 				}
