@@ -121,7 +121,7 @@ export default function StorageViewerBase({ template, objects, fields, onEnableE
 				type={field.type}
 				path={{
 					moduleName: template.code,
-					objectId: object._id,
+					objectId: object.id,
 					templateCode: template.code,
 					fieldPath: [ field.code ],
 				}}
