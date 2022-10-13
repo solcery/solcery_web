@@ -29,6 +29,8 @@ commands.migrate = {
 	params: {
 		objects: true,
 		templates: true,
+		newObjects: true,
+		newTemplates: true,
 	},
 };
 
