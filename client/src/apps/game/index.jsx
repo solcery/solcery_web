@@ -347,7 +347,9 @@ const Menu = (props) => {
 			<div className='auth-header'>
 				Login
 			</div>
- 			<AuthComponent/>
+			<div className='auth-body'>
+ 				<AuthComponent/>
+			</div>
 		</div>}
 		{playerNfts && <NftBar nfts={playerNfts}/>}
 		{playerNfts && <BigButton

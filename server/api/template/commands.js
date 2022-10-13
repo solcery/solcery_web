@@ -56,6 +56,16 @@ commands.updateObjectById = {
 	},
 };
 
+commands.updateObjects = {
+	log: true,
+	private: true,
+	params: {
+		objects: {
+			required: true,
+		},
+	},
+};
+
 commands.createObject = {
 	log: true,
 	private: true,
