@@ -1,26 +1,10 @@
 import { BrickRuntime } from '../content/brickLib';
 import { notify } from '../components/notification';
 import { getTable } from '../utils';
+import { UnityPackage } from './unityPackage';
 
-const STATE_TYPES = {
-	state: 0,
-	delay: 1,
-	timer: 2,
-};
+export class Game {
 
-const ACTION_TYPES = {
-	NONE: 0,
-	SOUND: 1,
-};
-
-const objectToArray = (obj) => {
-	return Object.entries(obj).map(([key, value]) => {
-		return { key, value };
-	});
-};
-
-export class Session {
-	
 	error(err) {
 		if (this.onError) {
 			err.data = {
@@ -52,19 +36,98 @@ export class Session {
 
 	constructor(data) {
 		this.id = data.id;
-		this.content = data.content;
-		this.seed = data.seed ?? 0;
-		this.game = new Game(this);
+		this.version = data.version;
 		this.players = data.players;
-		this.log = data.log ?? [];
-		this.runtime = new BrickRuntime(data.content.web, this.seed);
-		this.layout = data.layout;
+		this.player = data.player; // Current player info
+		this.content = data.content;
 		this.nfts = data.nfts ?? [];
-		this.gameApi = data.gameApi;
+		this.unityBuild = data.unityBuild;
 		this.onError = data.onError;
+		this.onAction = data.onAction;
+		this.gameState = new GameState({
+			seed: data.seed,
+			content: data.content,
+		})
+		this.layoutOverride = data.layoutOverride;
+		
+		this.actionLog = [];
+		if (data.actionLog) {
+			for (let action of data.actionLog) {
+				this.applyAction(action);
+			}
+			// this.applyAction(data.actionLog);
+		}
 	}
 
-	getUnityContent = () => this.content.unity;
+	applyAction(action) {
+		let { type, data } = action.action;
+		this.gameState.newPackage();
+		switch (type) {
+			case 'init':
+				this.gameState.start(this.layoutOverride, this.nfts);
+				break;
+			case 'leftClick':
+				this.gameState.objectEvent(data.objectId, 'action_on_left_click');
+				break;
+			case 'rightClick':
+				this.gameState.objectEvent(data.objectId, 'action_on_right_click');
+				break;
+			case 'dragndrop':
+				this.gameState.dragndrop(data.objectId, data.dragndropId, data.targetPlaceId);
+				break;
+			default: 
+				throw ('ERR');
+		}
+		let pkg = this.gameState.exportPackage();
+		this.actionLog.push({
+			action, 
+			package: pkg,
+		})
+	}
+
+	updateLog(log) {
+		if (log.length > this.actionLog.length);
+		let toAdd = log.slice(this.actionLog.length);
+		for (let entry of toAdd) {
+			this.applyAction(entry);
+		};
+		if (this.onLogUpdate) {
+			console.log('onLogUpdate')
+			this.onLogUpdate(this.actionLog);
+		}
+	}
+
+	onClientCommand = (command) => {
+		let action = {};
+		switch (command.command_data_type) {
+			case 0: // Left click
+				action.type ='leftClick';
+				action.data = {
+					objectId: command.object_id,
+				};
+				break;
+			case 1:
+				action.type ='rightClick';
+				action.data = {
+					objectId: command.object_id,
+				};
+				break;
+			case 2:
+				action.type ='dragndrop';
+				action.data = {
+					objectId: command.object_id,
+					targetPlaceId: command.target_place_id,
+					dragndropId: command.drag_drop_id,
+				};
+				break;
+			default:
+				throw 'Unkown client action: ', action;
+
+		}
+		this.onAction(action);
+	}
+
+	getUnityContent = (mods) => this.content.unity;
 
 	getContentOverrides = () => {
 		// TODO: do not override without nfts
@@ -91,62 +154,24 @@ export class Session {
 	}
 
 	checkOutcome = () => {
-		let outcome = this.game.checkOutcome();
+		let outcome = this.gameState.checkOutcome();
 		if (outcome) {
 			this.outcome = outcome;
 			this.finished = true;
 		}
 	}
-
-	// applying command to log
-	applyCommand = (command) => {
-		if (this.finished) return;
-		this.game.newPackage();
-		if (command.command_data_type === 0) {
-			this.game.objectEvent(command.object_id, 'action_on_left_click');
-		}
-		if (command.command_data_type === 1) {
-			this.game.objectEvent(command.object_id, 'action_on_right_click');
-		}
-		if (command.command_data_type === 2) {
-			this.game.dropCard(command.object_id, command.drag_drop_id, command.target_place_id);
-		}
-		this.checkOutcome();
-		return this.game.exportPackage();
-	}
-
-	onServerCommandFail = (oldLog) => {
-		this.log = oldLog;
-		this.start();
-	}
-
-	onPlayerCommand = async (command) => {
-		if (this.gameApi) { // server-based game
-			let oldLog = [ ...this.log ];
-			this.gameApi.game.action({ gameId: this.id, action: command }).then(
-				() => {}, 
-				() => this.onServerCommandFail(oldLog)
-			);	
-		}
-		this.log.push(command);
-		try {
-			return this.applyCommand(command);
-		} catch (err) {
-			this.error(err)
-		}
-	};
 }
 
-export class Game {
+export class GameState {
 	objects = {};
 	attrs = {};
 	diff = undefined;
 	diffLog = undefined;
 
-	constructor(session) {
-		this.session = session;
-		this.content = session.content.web;
-		this.runtime = new BrickRuntime(this.content, session.seed);
+	constructor(data) {
+		this.seed = data.seed ?? 0;
+		this.content = data.content.web;
+		this.runtime = new BrickRuntime(this.content, data.seed);
 		for (let attr of Object.values(this.content.gameAttributes)) {
 			this.attrs[attr.code] = 0;
 		}
@@ -216,7 +241,7 @@ export class Game {
 		}
 	};
 
-	dropCard = (objectId, dragAndDropId, targetPlace) => {
+	dragndrop = (objectId, dragAndDropId, targetPlace) => {
 		let object = this.objects[objectId];
 		if (!object) throw new Error('Attempt to call drop for unkown object!');
 		let ctx = this.createContext(object, {
@@ -277,14 +302,13 @@ export class Game {
 class Entity {
 	id = undefined;
 	tplId = undefined;
-	game = undefined;
 
-	constructor(id, tplId, game) {
+	constructor(id, tplId, gameState) {
 		this.id = id;
 		this.tplId = tplId;
 		this.attrs = {};
-		this.game = game;
-		for (let attr of Object.values(game.content.attributes)) {
+		this.gameState = gameState;
+		for (let attr of Object.values(gameState.content.attributes)) {
 			this.attrs[attr.code] = 0;
 		}
 	}
@@ -292,188 +316,14 @@ class Entity {
 	setAttr(attr, value) {
 		if (this.attrs[attr] === undefined) throw new Error(`trying to set unknown entity attr [${attr}]`);
 		this.attrs[attr] = value;
-		this.game.pushPackageEvent('onEntityAttrChanged', this, attr, value);
+		this.gameState.pushPackageEvent('onEntityAttrChanged', this, attr, value);
 	}
 
 	transform(tplId) {
 		this.tplId = tplId;
-		this.game.pushPackageEvent('onEntityTransform', this, tplId);
+		this.gameState.pushPackageEvent('onEntityTransform', this, tplId);
 	}
 }
 
-class UnityPackageState {
-	actions = [];
 
-	gameAttrs = {};
-	entities = {};
-
-	export() {
-		let attrs = objectToArray(this.gameAttrs);
-		let objects = Object.values(this.entities).map(entity => ({
-			id: entity.id,
-			tplId: entity.tplId,
-			attrs: objectToArray(entity.attrs),	
-		}));
-		let state = {
-			state_type: STATE_TYPES.state,
-			value: {
-				attrs,
-				objects,
-			},
-		};
-		let actions = this.actions;
-		return { state, actions };
-	}
-
-	onEntityAttrChanged(entity, attr, value) {
-		if (!this.entities[entity.id]) {
-			this.entities[entity.id] = {
-				id: entity.id,
-				tplId: entity.tplId,
-				attrs: {},
-			};
-		}
-		this.entities[entity.id].attrs[attr] = value;
-	}
-
-	onEntityCreated(entity) {
-		this.entities[entity.id] = {
-			id: entity.id,
-			tplId: entity.tplId,
-			attrs: Object.assign({}, entity.attrs),
-		};
-	}
-
-	onEntityTransform(entity) {
-		if (!this.entities[entity.id]) {
-			this.entities[entity.id] = {
-				id: entity.id,
-				tplId: entity.tplId,
-				attrs: {},
-			};
-		}
-		this.entities[entity.id].tplId = entity.tplId;
-	}
-
-	onGameAttrChanged(attr, value) {
-		this.gameAttrs[attr] = value;
-	}
-
-	onPlaySound(soundId) {
-		this.actions.push({
-			action_type: ACTION_TYPES.SOUND, // Тип экшена
-			value: {
-				sound_id: soundId 
-			}
-		});
-	}
-}
-
-class UnityPackage { 
-	actions = [];
-	states = [];
-	exported = false;
-
-	constructor(game) {
-		this.newCurrent()
-		if (!game) return;
-		for (let [ attr, value ] of Object.entries(game.attrs)) {
-			this.current.onGameAttrChanged(attr, value);
-		}
-		for (let object of Object.values(game.objects)) {
-			for (let [ attr, value ] of Object.entries(object.attrs)) {
-				this.current.onEntityAttrChanged(object, attr, value);
-			}
-		}
-	}	
-
-	newCurrent() {
-		this.current = new UnityPackageState();
-	}
-
-	export() {
-		if (this.current) this.pushCurrent();
-		return {
-			actions: this.actions,
-			states: this.states,
-		}
-	}
-
-	addState(state, actions) {
-		let id = this.states.length;
-		state.id = id;
-		this.states.push(state);
-		if (!actions) return;
-		for (let action of actions) {
-			action.state_id = id;
-			this.actions.push(action);
-		}
-	}
-
-	pushCurrent() {
-		if (!this.current) return;
-		let { state, actions } = this.current.export();
-		this.addState(state, actions);
-		this.current = undefined;
-	}
-
-
-	onPause(duration) {
-		this.pushCurrent();
-		this.addState({
-			state_type: STATE_TYPES.delay,
-			value: {
-				delay: duration,
-			},
-		});
-	}
-
-	onStartTimer(object, duration) {
-		this.addState({
-			state_type: STATE_TYPES.timer,
-			value: {
-				object_id: object.id,
-				start: true,
-				duration,
-			},
-		});
-	}
-
-	onStopTimer(object) {
-		this.states.push({
-			state_type: STATE_TYPES.timer,
-			value: {
-				object_id: object.id,
-				start: false,
-			},
-		});
-	}
-
-
-	onEntityAttrChanged(entity, attr, value) {
-		if (!this.current) this.newCurrent();
-		this.current.onEntityAttrChanged(entity, attr, value);
-	}
-
-	onEntityCreated(entity) {
-		if (!this.current) this.newCurrent();
-		this.current.onEntityCreated(entity);
-	}
-
-	onEntityTransform(entity) {
-		if (!this.current) this.newCurrent();
-		this.current.onEntityTransform(entity);
-	}
-
-	onGameAttrChanged(attr, value) {
-		if (!this.current) this.newCurrent();
-		this.current.onGameAttrChanged(attr, value);
-	}
-
-	onPlaySound(soundId) {
-		if (!this.current) this.newCurrent();
-		this.current.onPlaySound(soundId);
-	}
-
-}
 
