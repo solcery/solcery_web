@@ -102,7 +102,7 @@ export const PlayerProvider = (props) => {
         if (!publicKey) return;
         if (ws.current) return;
          
-        ws.current = io('ws://localhost:5000', {
+        ws.current = io('ws://solcery-server.herokuapp.com', {
           reconnectionDelayMax: 10000,
         });
         ws.current.on('message', onMessage);
