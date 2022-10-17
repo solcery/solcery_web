@@ -4,6 +4,7 @@ import { getTable } from '../utils';
 import { UnityPackage } from './unityPackage';
 
 export class Game {
+	playerContent = {};
 
 	error(err) {
 		if (this.onError) {
@@ -34,28 +35,52 @@ export class Game {
 		this.started = true;
 	}
 
+	modifyUnityContent() {
+		console.log('modifyUnityContent')
+		let currentPlayer = this.players.find(player => player.id === this.playerPubkey);
+		if (!currentPlayer) return;;
+		let contentPlayers = getTable(this.content.unity, 'players', 'objects');
+		if (!contentPlayers) return;
+		let currentPlayerObject = contentPlayers.find(player => player.index === currentPlayer.index);
+		if (!currentPlayerObject) return;
+		let modifierIds = currentPlayerObject.modifiers;
+		if (!modifierIds) return;
+		console.log('MODIFIERS: ', modifierIds)
+		console.log(this.content.unity)
+		for (let modifierId of modifierIds) {
+			let modifier = this.content.unity.modifiers.objects.find(mod => mod.id === modifierId);
+			let places = modifier.places;
+			if (!places) continue;
+			for (let { original, override } of places) {
+				let originPlace = this.content.unity.places.objects.find(place => place.id === original);
+				let overridePlace = this.content.unity.places.objects.find(place => place.id === override);
+				Object.assign(originPlace, overridePlace);
+			}
+		}
+	}
+
 	constructor(data) {
 		this.id = data.id;
 		this.version = data.version;
 		this.players = data.players;
-		this.player = data.player; // Current player info
+		this.playerPubkey = data.playerPubkey; // Current player info
 		this.content = data.content;
 		this.nfts = data.nfts ?? [];
 		this.unityBuild = data.unityBuild;
 		this.onError = data.onError;
+		this.modifiers = data.modifiers;
 		this.onAction = data.onAction;
 		this.gameState = new GameState({
 			seed: data.seed,
 			content: data.content,
 		})
 		this.layoutOverride = data.layoutOverride;
-		
+		this.modifyUnityContent();
 		this.actionLog = [];
 		if (data.actionLog) {
 			for (let action of data.actionLog) {
 				this.applyAction(action);
 			}
-			// this.applyAction(data.actionLog);
 		}
 	}
 
@@ -127,7 +152,7 @@ export class Game {
 		this.onAction(action);
 	}
 
-	getUnityContent = (mods) => this.content.unity;
+	getUnityContent = () => this.content.unity;
 
 	getContentOverrides = () => {
 		// TODO: do not override without nfts

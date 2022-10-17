@@ -41,6 +41,7 @@ export const PlayerProvider = (props) => {
         data.content = res.content;
         data.unityBuild = res.unityBuild;
         data.onAction = onAction;
+        data.playerPubkey = publicKey.toBase58();
         game.current = new Game(data);
         setIngame(true);
     }

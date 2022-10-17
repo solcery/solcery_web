@@ -34,19 +34,54 @@ const BigButton = (props) => {
 	</div>;
 }
 
+const Auth = (props) => {
+	const { status } = usePlayer();
+	const { AuthComponent } = useAuth();
+	if (status) return;
+	return <div className='auth'>
+		<div className='auth-header'>
+			Login
+		</div>
+		<div className='auth-body'>
+				<AuthComponent/>
+		</div>
+	</div>
+}
+
+const GameMenu = (props) => {
+	const { nfts, publicKey, status, playerRequest } = usePlayer();
+
+	const joinQueue = () => playerRequest({
+		type: 'joinQueue'
+	})
+
+	const leaveQueue = () => playerRequest({
+		type: 'leaveQueue'
+	})
+	
+	if (!status) return;
+	return <>
+		{status.code === 'online' && <BigButton
+			icon={PlayIcon}
+			caption={'Find game'}
+			onClick={joinQueue}
+		/>}
+		{status.code === 'queued' && <BigButton
+			icon={PlayIcon}
+			caption={'Cancel'}
+			onClick={leaveQueue}
+		/>}
+	</>
+}
 
 export const Menu = (props) => {
 	const { gameApi, gameInfo } = useGameApi();
-	const { AuthComponent } = useAuth();
-	const { nfts, publicKey, status, playerRequest } = usePlayer();
+	const { nfts, status } = usePlayer();
 	const [ isNewGame, setIsNewGame ] = useState(true);
 	const [ gameSession, setGameSession ] = useState();
 	const [ playerNfts, setPlayerNfts ] = useState(undefined);
 
-	const play = () => playerRequest({
-		type: 'play'
-	})
-	
+
 
 	if (!gameInfo) return <></>;
 	return <div className='game-menu'>
@@ -58,21 +93,9 @@ export const Menu = (props) => {
 		 		</div>
 			</div>
 		</div>
-		{!publicKey && <div className='auth'>
-			<div className='auth-header'>
-				Login
-			</div>
-			<div className='auth-body'>
- 				<AuthComponent/>
-			</div>
-		</div>}
+		
 		<NftBar nfts={playerNfts}/>
-		{publicKey && <BigButton
-			icon={PlayIcon}
-			caption={status === 'newgame' ? 'Start' : 'Continue'} 
-			progressBarRef={props.progressBarRef}
-			progressNumberRef={props.progressNumberRef}
-			onClick={play}
-		/>}
+		<Auth/>
+		<GameMenu/>
 	</div>;
 }
