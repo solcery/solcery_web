@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useProject } from '../../../contexts/project';
 import { useContent } from '../../../contexts/content';
-import { SolceryAPIConnection } from '../../../api';
 import { Select } from 'antd';
 const { Option } = Select;
 
@@ -29,8 +28,8 @@ export const ValueRender = (props) => {
 
 	useEffect(() => {
 		if (props.type.project) {
-			let api = new SolceryAPIConnection(props.type.project, { modules: [ 'template' ]});
-			api.template.getAllObjects({ template: props.type.templateCode }).then(loadObjects);
+			// let api = new SolceryAPIConnection(props.type.project, { modules: [ 'template' ]});
+			// api.template.getAllObjects({ template: props.type.templateCode }).then(loadObjects);
 			return;
 		} else {
 			if (!content) return;

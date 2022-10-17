@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { SolceryAPIConnection } from '../api';
 import { getTable, insertTable } from '../utils';
+import { useGame } from '../contexts/game';
 const md5 = require('js-md5'); 
 
 function delay(ms) {
@@ -10,8 +11,12 @@ function delay(ms) {
 const DOWNLOADING_PROGRESS_PERCENTAGE = 20;
 
 export default function GameClient(props) {
+	const { game, actionLog } = useGame();
 	const [ loaded, setLoaded ] = useState(false);
 	const [ finished, setFinished ] = useState(false);
+	const [ logLength, setLogLength ] = useState(0);
+	const [ unityReady, setUnityReady ] = useState(false);
+	const step = useRef(0);
 
 	const getAspect = () => {
 		const width = 1920;
@@ -26,7 +31,6 @@ export default function GameClient(props) {
 	}
 
 	const iframeRef = useRef();
-	let gameSession = props.gameSession;
 
 	const sendToUnity = (funcName, param) => {
 		if (!iframeRef.current) return;
@@ -35,6 +39,7 @@ export default function GameClient(props) {
 			iframeRef.current.contentWindow.sendToUnity(JSON.stringify(data));
 		}
 		catch (err) {
+			console.error(err)
 			if (props.onError) {
 				err.data = {
 					type: 'unity',
@@ -46,35 +51,78 @@ export default function GameClient(props) {
 		}
 	}
 
-	const handleResize = () => {
-		let aspect = getAspect();
-		if (!iframeRef.current) return;
-		iframeRef.current.width = aspect.width;
-		iframeRef.current.height = aspect.height;
+	const onUnityReady = (data) => {
+		let content = game.getUnityContent();
+		let contentHash = md5(JSON.stringify(content));
+		let cachedContentHash = getTable(data, 'content_metadata', 'game_content', 'hash');
+
+		if (false && contentHash === cachedContentHash) {
+			sendToUnity('UpdateGameContent', null);
+
+		} else {
+			insertTable(content, contentHash, 'metadata', 'hash')
+			sendToUnity('UpdateGameContent', content);
+		}
+		let overrides = game.getContentOverrides();
+		let overridesHash = md5(JSON.stringify(overrides));
+		let cachedOverridesHash = getTable(data, 'content_metadata', 'game_content_overrides', 'hash');
+		if (false && overridesHash === cachedOverridesHash) {
+			sendToUnity('UpdateGameContentOverrides', null);
+		} else {
+			overrides.metadata = {
+				hash: md5(JSON.stringify(overrides)),
+				content_hash: contentHash,
+			}
+			sendToUnity('UpdateGameContentOverrides', overrides);
+		}
+		setUnityReady(true);
 	}
 
+	const onUnityLoadingProgress = (progress) => {
+		if (progress >= 100) {
+			setLoaded(true);
+			props.onLoadingProgress && props.onLoadingProgress(100);
+		}
+		let prog = Math.floor(progress * (1 - DOWNLOADING_PROGRESS_PERCENTAGE / 100)) + DOWNLOADING_PROGRESS_PERCENTAGE;
+		props.onLoadingProgress && props.onLoadingProgress(prog);
+	}
+
+	const onUnityDownloadingProgress = (progress) => {
+		props.onLoadingProgress && props.onLoadingProgress(Math.floor(DOWNLOADING_PROGRESS_PERCENTAGE * progress));
+	}
+
+	const onUnityGameStateConfirmed = () => {
+		setUnityReady(true);
+	}
 
 	useEffect(() => {
+		if (!unityReady) return;
+		if (actionLog.length > step.current) {
+			setUnityReady(false);
+			sendToUnity('UpdateGameState', actionLog[actionLog.length - 1].package);
+			step.current = actionLog.length;
+		}
+	}, [ unityReady, actionLog ])
+
+	useEffect(() => {
+		if (!game) return;
 
 		window.onUnityDownloadProgress = (progress) => {
-			props.onLoadingProgress && props.onLoadingProgress(Math.floor(DOWNLOADING_PROGRESS_PERCENTAGE * progress));
+			onUnityDownloadingProgress(progress);
 		}
 
-
 		window.getUnityConfig = async () => {
-			let api = new SolceryAPIConnection('solcery', { modules: [ 'template' ]});
-			let unityBuildId = props.unityBuild;
-			let unityBuildData = await api.template.getObjectById({ template: 'unityBuilds', objectId: unityBuildId });
-			let loaderUrl = unityBuildData.fields.loaderUrl;
+			let unityBuildData = game.unityBuild;
+			let loaderUrl = unityBuildData.loaderUrl;
 			let loader = await fetch(loaderUrl);
 			let script = await loader.text();
 
 			let config = {
 				loaderScript: script,
-				dataUrl: unityBuildData.fields.dataUrl,
-				frameworkUrl: unityBuildData.fields.frameworkUrl,
-				codeUrl: unityBuildData.fields.codeUrl,
-				streamingAssetsUrl: unityBuildData.fields.streamingAssetsUrl,
+				dataUrl: unityBuildData.dataUrl,
+				frameworkUrl: unityBuildData.frameworkUrl,
+				codeUrl: unityBuildData.codeUrl,
+				streamingAssetsUrl: unityBuildData.streamingAssetsUrl,
 				cacheControl: function (url) {
 		          // Revalidate if file is up to date before loading from cache
 		          if (url.match(/\.data/) 
@@ -98,78 +146,40 @@ export default function GameClient(props) {
 				productName: "solcery_client_unity",
 				productVersion: "0.1",
 			}
-			return config
+			return config;
 		}
 
-		window.onMessageFromUnity = (message, param) => {
-			if (message === 'OnUnityLoadProgress') {
-				let { progress } = JSON.parse(param)
-				if (progress >= 100) {
-					setLoaded(true);
-					props.onLoadingProgress && props.onLoadingProgress(100);
-				}
-				let prog = Math.floor(progress * (1 - DOWNLOADING_PROGRESS_PERCENTAGE / 100)) + DOWNLOADING_PROGRESS_PERCENTAGE;
-				props.onLoadingProgress && props.onLoadingProgress(prog);
-			} 
-
-			if (message === 'OnUnityLoaded') {
-				try {
-					let data = param ? JSON.parse(param) : {};
-					let content = gameSession.getUnityContent();
-					let contentHash = md5(JSON.stringify(content));
-					let cachedContentHash = getTable(data, 'content_metadata', 'game_content', 'hash');
-
-					if (false && contentHash === cachedContentHash) {
-						sendToUnity('UpdateGameContent', null);
-
-					} else {
-						insertTable(content, contentHash, 'metadata', 'hash')
-						sendToUnity('UpdateGameContent', content);
-					}
-
-					let overrides = gameSession.getContentOverrides();
-					let overridesHash = md5(JSON.stringify(overrides));
-					let cachedOverridesHash = getTable(data, 'content_metadata', 'game_content_overrides', 'hash');
-					if (false && overridesHash === cachedOverridesHash) {
-						sendToUnity('UpdateGameContentOverrides', null);
-					} else {
-						overrides.metadata = {
-							hash: md5(JSON.stringify(overrides)),
-							content_hash: contentHash,
-						}
-						sendToUnity('UpdateGameContentOverrides', overrides);
-					}
-
-					let unityPackage = gameSession.game.exportPackage();
-					unityPackage.predict = true;
-					sendToUnity('UpdateGameState', unityPackage);
-					setFinished(gameSession.finished)
-				} catch (err) {
-					console.error(err);
-				}
+		window.onMessageFromUnity = (message, stringParam) => {
+			if (stringParam) {
+				var param = JSON.parse(stringParam);
 			}
-			if (message === 'SendCommand') {
-				if (gameSession.finished) return; //TODO notify
-				let command = JSON.parse(param);
-				gameSession.onPlayerCommand(command).then(unityPackage => {
-					setFinished(gameSession.finished)
-					if (!unityPackage) return;
-					unityPackage.predict = true;
-					sendToUnity('UpdateGameState', unityPackage);
-				})
-				
-			}
-
-			if (message === 'OnGameStateConfirmed') {
-				if (gameSession.finished) {
-					setFinished(true);
-					props.onFinished(gameSession.outcome)
-				}
+			switch (message) {
+				case 'OnUnityLoadProgress':
+					onUnityLoadingProgress(param.progress);
+					break;
+				case 'OnUnityLoaded':
+					onUnityReady(param)
+					break;
+				case 'SendCommand':
+					game.onClientCommand(param);
+					break;
+				case 'OnGameStateConfirmed':
+					onUnityGameStateConfirmed();
+					break;
+				default:
+					throw 'Unkown unity command';
 			}
 		}
-	}, [ gameSession, props.unityBuild ])
+	}, [ game ])
 
 	useEffect(() => {
+		const handleResize = () => {
+			let aspect = getAspect();
+			if (!iframeRef.current) return;
+			iframeRef.current.width = aspect.width;
+			iframeRef.current.height = aspect.height;
+		}
+
 		window.addEventListener('resize', handleResize)
 		return () => {
 				window.removeEventListener('resize', handleResize)
@@ -177,13 +187,15 @@ export default function GameClient(props) {
 	}, [])
 
 	useEffect(() => {
-		if (!gameSession) {
+		if (!game) {
 			setLoaded(false);
 			setFinished(0);
+			return;
 		}
-	}, [ gameSession ])
 
-	if (!gameSession) return <></>
+	}, [ game ])
+
+	if (!game) return <></>
 	let aspect = getAspect();
 	let iframeStyle = {
 		borderStyle: 'none',

@@ -23,7 +23,6 @@ export const AuthProvider = (props) => {
     }
 
     let AuthComponent = WalletsAuth;
-    console.log(player.authType)
     if (player.authType === 'fractal') {
         AuthComponent = FractalAuth;
     }  
