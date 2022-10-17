@@ -5,7 +5,7 @@ import { PlayerProvider } from './player';
 import { AuthProvider } from './auth';
 
 const apiConfig = {
-	url: 'http://solcery-server.herokuapp.com/api',
+	url: 'https://solcery-server.herokuapp.com/api',
 }
 
 const GameApiContext = React.createContext(undefined);
