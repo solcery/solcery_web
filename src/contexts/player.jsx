@@ -28,7 +28,7 @@ export const PlayerProvider = (props) => {
     const { gameApi, gameId } = useGameApi();
     const { publicKey } = useAuth();
 
-    const [ ws, setWs ] = useState();
+    const ws = useRef();
     const [ nfts, setNfts ] = useState(undefined);
     const [ status, setStatus ] = useState(undefined);
     const game = useRef();
@@ -69,13 +69,13 @@ export const PlayerProvider = (props) => {
 
     const playerRequest = useCallback((data) => {
         if (!status) return;
-        if (!ws) return;
-        ws.emit('message', data);
-    }, [ ws, status ])
+        if (!ws.current) return;
+        ws.current.emit('message', data);
+    }, [ status ])
 
-    const onAction = (action) => {
+    const onAction =(action) => {
         if (!ws) throw 'No WebSocket';
-        ws.emit('message', {
+        ws.current.emit('message', {
             type: 'action',
             data: action,
         });
@@ -100,14 +100,12 @@ export const PlayerProvider = (props) => {
 
     useEffect(() => {
         if (!publicKey) return;
-        if (!ws) {
-            const socket = io('ws://solcery-server.herokuapp.com', {
-              reconnectionDelayMax: 10000,
-            });
-            socket.on('message', onMessage)
-            setWs(socket);
-            return
-        };
+        if (ws.current) return;
+         
+        ws.current = io('ws://localhost:5000', {
+          reconnectionDelayMax: 10000,
+        });
+        ws.current.on('message', onMessage);
         setStatus(undefined);
         let challenge = {
             type: 'challenge',
@@ -116,8 +114,8 @@ export const PlayerProvider = (props) => {
                 pubkey: publicKey,
             }
         }
-        ws.emit('message', challenge)
-    }, [ publicKey, ws ])
+        ws.current.emit('message', challenge)
+    }, [ publicKey ])
 
     let value = status ? {
         publicKey,

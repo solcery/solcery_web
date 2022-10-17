@@ -4,6 +4,7 @@ import { useGame } from '../../contexts/game';
 import GameClient from '../../components/gameClient';
 import { HomeIcon } from '../../components/icons';
 import { Menu } from './menu';
+import { Button } from 'antd';
 
 import './walletModal.css';
 import './style.scss';
@@ -11,7 +12,16 @@ import './style.scss';
 export const GameTest = () => {
 	const { gameInfo } = useGameApi();
 	const { game } = useGame();
-	const { publicKey, status, request } = usePlayer();
+	const { publicKey, status, playerRequest } = usePlayer();
+
+	const leave = () => {
+		playerRequest({ 
+			type: 'leaveGame',
+			data: {
+				outcome: -1,
+			}
+		})
+	}
 
 	const onError = (err, gameId) => {
 		// if (gameSession) {
@@ -38,6 +48,7 @@ export const GameTest = () => {
 		{/*<Toolbar onLeaveGame={leaveGame} gameReady={gameReady} gameSession={gameSession}/>*/}
 		{!game && <Menu/>}
 		{game && <GameClient/>}
+		{game && <Button onClick={leave}>LEAVE</Button>}
 		{/*{gameReady && finished && <div className='blackout'>
 			<BigButton
 				icon={HomeIcon}

@@ -93,7 +93,6 @@ export const Menu = (props) => {
 		 		</div>
 			</div>
 		</div>
-		
 		<NftBar nfts={playerNfts}/>
 		<Auth/>
 		<GameMenu/>
