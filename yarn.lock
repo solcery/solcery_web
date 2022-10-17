@@ -7106,6 +7106,17 @@ engine.io-client@~6.2.1:
     ws "~8.2.3"
     xmlhttprequest-ssl "~2.0.0"
 
+engine.io-client@~6.2.3:
+  version "6.2.3"
+  resolved "https://registry.yarnpkg.com/engine.io-client/-/engine.io-client-6.2.3.tgz#a8cbdab003162529db85e9de31575097f6d29458"
+  integrity sha512-aXPtgF1JS3RuuKcpSrBtimSjYvrbhKW9froICH4s0F3XQWLxsKNxqzG39nnvQZQnva4CMvUK63T7shevxRyYHw==
+  dependencies:
+    "@socket.io/component-emitter" "~3.1.0"
+    debug "~4.3.1"
+    engine.io-parser "~5.0.3"
+    ws "~8.2.3"
+    xmlhttprequest-ssl "~2.0.0"
+
 engine.io-parser@~5.0.3:
   version "5.0.4"
   resolved "https://registry.yarnpkg.com/engine.io-parser/-/engine.io-parser-5.0.4.tgz#0b13f704fa9271b3ec4f33112410d8f3f41d0fc0"
@@ -14797,6 +14808,16 @@ socket.io-client@^4.5.1:
     "@socket.io/component-emitter" "~3.1.0"
     debug "~4.3.2"
     engine.io-client "~6.2.1"
+    socket.io-parser "~4.2.0"
+
+socket.io-client@^4.5.3:
+  version "4.5.3"
+  resolved "https://registry.yarnpkg.com/socket.io-client/-/socket.io-client-4.5.3.tgz#bed69209d001465b2fea650d2e95c1e82768ab5e"
+  integrity sha512-I/hqDYpQ6JKwtJOf5ikM+Qz+YujZPMEl6qBLhxiP0nX+TfXKhW4KZZG8lamrD6Y5ngjmYHreESVasVCgi5Kl3A==
+  dependencies:
+    "@socket.io/component-emitter" "~3.1.0"
+    debug "~4.3.2"
+    engine.io-client "~6.2.3"
     socket.io-parser "~4.2.0"
 
 socket.io-parser@~4.2.0:

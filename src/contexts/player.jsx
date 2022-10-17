@@ -4,7 +4,7 @@ import { useParams } from 'react-router-dom';
 import { useAuth } from './auth';
 import { GameProvider } from './game';
 import { Game } from '../game';
-// import WebSocket from 'ws';
+import { io } from 'socket.io-client';
 
 const PlayerContext = React.createContext(undefined);
 // const publicKey = new PublicKey(''); // TODO: CHEAT
@@ -56,30 +56,29 @@ export const PlayerProvider = (props) => {
     }
 
     const onMessage = (message) => {
-        let parsed = JSON.parse(message.data);
-        if (parsed.type === 'playerStatus') {
-            setStatus(parsed.data)
+        if (message.type === 'playerStatus') {
+            setStatus(message.data)
         }
-        if (parsed.type === 'gameStart') {
-            onGameStart(parsed.data);
+        if (message.type === 'gameStart') {
+            onGameStart(message.data);
         }
-        if (parsed.type === 'gameAction') {
-            onGameAction(parsed.data);
+        if (message.type === 'gameAction') {
+            onGameAction(message.data);
         }
     };
 
     const playerRequest = useCallback((data) => {
         if (!status) return;
         if (!ws) return;
-        ws.send(JSON.stringify(data));
+        ws.emit('message', data);
     }, [ ws, status ])
 
     const onAction = (action) => {
         if (!ws) throw 'No WebSocket';
-        ws.send(JSON.stringify({
+        ws.emit('message', {
             type: 'action',
             data: action,
-        }));
+        });
     }
 
     useEffect(() => {
@@ -102,11 +101,14 @@ export const PlayerProvider = (props) => {
     useEffect(() => {
         if (!publicKey) return;
         if (!ws) {
-            connectToServer('ws://localhost:7000/ws').then(setWs);
-            return;
+            const socket = io('ws://solcery-server.herokuapp.com', {
+              reconnectionDelayMax: 10000,
+            });
+            socket.on('message', onMessage)
+            setWs(socket);
+            return
         };
-        setStatus(undefined)
-        ws.onmessage = onMessage;
+        setStatus(undefined);
         let challenge = {
             type: 'challenge',
             data: {
@@ -114,7 +116,7 @@ export const PlayerProvider = (props) => {
                 pubkey: publicKey,
             }
         }
-        ws.send(JSON.stringify(challenge))
+        ws.emit('message', challenge)
     }, [ publicKey, ws ])
 
     let value = status ? {
