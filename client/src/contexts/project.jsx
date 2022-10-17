@@ -6,7 +6,7 @@ import { ContentProvider } from './content';
 import { UserProvider } from './user';
 
 const apiConfig = {
-	url: 'err'
+	url: 'http://create.solcery.xyz/api'
 }
 
 const ProjectContext = React.createContext(undefined);

@@ -6,7 +6,7 @@ import { build, validate } from '../content';
 import { DownloadJSON } from './DownloadJSON';
 import { notify } from './notification';
 import { Link, useNavigate } from 'react-router-dom';
-import { Session } from '../game';
+import { Game } from '../game';
 import { DownloadOutlined } from '@ant-design/icons';
 const { Option } = Select;
 
@@ -28,19 +28,25 @@ export function UnityBuilder() {
 			navigate('validator');
 			return;
 		}
-		let layout = layoutPresets;
-		if (!layout || layout.length === 0) {
-			layout = undefined; // TODO: empty layoutPresets should be undefined
+		let layoutOverride = layoutPresets;
+		if (!layoutOverride || layoutOverride.length === 0) {
+			layoutOverride = undefined; // TODO: empty layoutPresets should be undefined
 		}
 		content = res.constructed;
 		content.unity = content.unity_local;
-		let session = new Session({
+		let game = new Game({
 			content,
-			layout,
-			nfts
+			layoutOverride,
+			nfts,
+			actionLog: [
+				{ 
+					action: {
+						type: 'init',
+					}
+				}
+			],
 		});
-		session.start();
-		let unityPackage = session.game.exportPackage();
+		let unityPackage = game.actionLog[0].package
 		unityPackage.predict = true;
 		setResult([
 			{
@@ -49,7 +55,7 @@ export function UnityBuilder() {
 			},
 			{
 				filename: 'game_content_overrides',
-				data: session.getContentOverrides(),
+				data: game.getContentOverrides(),
 			},
 			{
 				filename: 'game_state',

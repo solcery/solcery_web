@@ -4,7 +4,6 @@ import { getTable } from '../utils';
 import { UnityPackage } from './unityPackage';
 
 export class Game {
-	playerContent = {};
 
 	error(err) {
 		if (this.onError) {
