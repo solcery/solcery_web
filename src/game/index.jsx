@@ -37,8 +37,6 @@ export class Game {
 
 	modifyUnityContent() {
 		let currentPlayer = this.players.find(player => player.id === this.playerId);
-		console.log(this.players)
-		console.log(currentPlayer)
 		if (!currentPlayer) return;;
 		let contentPlayers = getTable(this.content.unity, 'players', 'objects');
 		if (!contentPlayers) return;
@@ -46,7 +44,6 @@ export class Game {
 		if (!currentPlayerObject) return;
 		let modifierIds = currentPlayerObject.modifiers;
 		if (!modifierIds) return;
-		console.log(modifierIds)
 		for (let modifierId of modifierIds) {
 			let modifier = this.content.unity.modifiers.objects.find(mod => mod.id === modifierId);
 			let places = modifier.places;

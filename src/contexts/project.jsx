@@ -11,7 +11,8 @@ const apiConfig = {
 		'project',
 		'template',
 		'user'
-	]
+	],
+	auth: './user/auth'
 }
 
 const ProjectContext = React.createContext(undefined);
