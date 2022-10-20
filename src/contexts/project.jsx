@@ -1,12 +1,17 @@
 import React, { useContext, useEffect, useState, useCallback } from 'react';
 import { useParams, Outlet } from 'react-router-dom';
-import { SolceryAPI } from '../api';
+import { SolceryAPIConnection } from '../api';
 import { BrickLibraryProvider } from './brickLibrary';
 import { ContentProvider } from './content';
 import { UserProvider } from './user';
 
 const apiConfig = {
-	url: 'err'
+	url: 'https://create.solcery.xyz/api/',
+	modules: [
+		'project',
+		'template',
+		'user'
+	]
 }
 
 const ProjectContext = React.createContext(undefined);
@@ -29,7 +34,7 @@ export function ProjectProvider(props) {
 
 	useEffect(() => {
 		if (!projectId) return;
-		let api = new SolceryAPI(projectId, apiConfig)
+		let api = new SolceryAPIConnection(projectId, apiConfig)
 		setSageApi(api);
 		api.project.getConfig().then(res => setProjectConfig(res.fields))
 	}, [ projectId ]);

@@ -36,7 +36,9 @@ export class Game {
 	}
 
 	modifyUnityContent() {
-		let currentPlayer = this.players.find(player => player.id === this.playerPubkey);
+		let currentPlayer = this.players.find(player => player.id === this.playerId);
+		console.log(this.players)
+		console.log(currentPlayer)
 		if (!currentPlayer) return;;
 		let contentPlayers = getTable(this.content.unity, 'players', 'objects');
 		if (!contentPlayers) return;
@@ -44,6 +46,7 @@ export class Game {
 		if (!currentPlayerObject) return;
 		let modifierIds = currentPlayerObject.modifiers;
 		if (!modifierIds) return;
+		console.log(modifierIds)
 		for (let modifierId of modifierIds) {
 			let modifier = this.content.unity.modifiers.objects.find(mod => mod.id === modifierId);
 			let places = modifier.places;
@@ -58,15 +61,28 @@ export class Game {
 
 	constructor(data) {
 		this.id = data.id;
-		this.version = data.version;
+		this.version = data.version; // Unused
 		this.players = data.players;
-		this.playerPubkey = data.playerPubkey; // Current player info
+		this.playerId = data.playerId; // Current player info
 		this.content = data.content;
 		this.nfts = data.nfts ?? [];
 		this.unityBuild = data.unityBuild;
 		this.onError = data.onError;
 		this.modifiers = data.modifiers;
 		this.onAction = data.onAction;
+		console.log(this.playerId)
+		if (!this.onAction) {
+			this.onAction = (action) => {
+				console.log('default on action')
+				this.applyAction({
+					player: this.playerId,
+					action
+				});
+				if (this.onLogUpdate) {
+					this.onLogUpdate(this.actionLog);
+				}
+			}
+		}
 		this.gameState = new GameState({
 			seed: data.seed,
 			content: data.content,

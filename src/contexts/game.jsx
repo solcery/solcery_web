@@ -7,7 +7,6 @@ export const GameProvider = (props) => {
     let game = props.game;
 
     const onGameLogUpdate = (log) => {
-        console.log('onGameLogUpdate')
         setActionLog([...log]);
     }
 

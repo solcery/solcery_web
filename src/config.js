@@ -1,6 +1,6 @@
 module.exports = {
 	api: {
-		url: '/api/'
+		url: 'https://create.solcery.xyz/api/'
 	},
 	player: {
 		authType: 'wallets'
