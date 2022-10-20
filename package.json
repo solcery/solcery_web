@@ -5,6 +5,9 @@
   "resolutions": {
     "react-error-overlay": "6.0.9"
   },
+  "engines": {
+    "node": "16.x"
+  },
   "dependencies": {
     "@fractalwagmi/react-sdk": "^1.0.3",
     "@metaplex-foundation/mpl-token-metadata": "^2.2.2",
