@@ -12,12 +12,12 @@ import { FilterOutlined } from '@ant-design/icons';
 import { HeaderCell } from './components/header';
 import { ActionsBar } from './components/actionsBar';
 import Document from './../../content/document';
-import { SBrick } from './../../content/types';
+import { SBrick } from './../../content/types/brick';
 
 const { Column } = Table;
 
 export default function StorageViewer({ template, docs, fields, onExitEditMode }) {
-	const { sageApi } = useProject();
+	const { engine } = useProject();
 	const { updateContent } = useContent();
 	const [objects, setObjects] = useState();
 	const [ headerDocument, setHeaderDocument ] = useState();
@@ -49,11 +49,10 @@ export default function StorageViewer({ template, docs, fields, onExitEditMode }
 					})
 				}
 			}
-			console.log(payload)
 			if (payload.length === 0) {
 				return;
 			}
-			sageApi.template.updateObjects({ objects: payload }).then(res => {
+			engine.template(template.code).updateObjects({ objects: payload }).then(res => {
 				notify({
 					message: 'Changes applied',
 					type: 'success',

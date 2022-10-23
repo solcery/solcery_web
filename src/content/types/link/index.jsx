@@ -1,4 +1,4 @@
-import { SType, defaultFilter } from '../base';
+import { defaultFilter } from '../base';
 import { ValueRender } from './components';
 import { Template } from '../../template';
 
@@ -50,5 +50,4 @@ class SLink {
 	clone = (a) => a;
 }
 
-SType.register('SLink', SLink);
 export { SLink };

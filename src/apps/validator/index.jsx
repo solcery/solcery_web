@@ -11,14 +11,14 @@ const { Option } = Select;
 
 export default function Validator() {
 	const [ result, setResult ] = useState()
-	const { sageApi } = useProject();
+	const { engine } = useProject();
 
 	useEffect(() => {
 		validateContent();
 	}, [])
 
 	const validateContent = async () => {
-		let content = await sageApi.project.getContent({ objects: true, templates: true });
+		let content = await engine.getContent({ objects: true, templates: true });
 		let res = await validate({ content });
 		setResult(res)
 	};

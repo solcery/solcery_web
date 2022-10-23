@@ -2,7 +2,6 @@ import React, { useContext, useState, useRef } from 'react';
 
 import { WalletsAuth } from './wallets';
 import { FractalAuth } from './fractal';
-import { player } from '../../config';
 
 const AuthContext = React.createContext(undefined);
 
@@ -15,6 +14,7 @@ export const AuthProvider = (props) => {
     }
 
     const disconnect = () => {
+        console.log('disconnect')
         setPublicKey(undefined);
         if (onDisconnect.current) {
             onDisconnect.current();
@@ -23,12 +23,12 @@ export const AuthProvider = (props) => {
     }
 
     let AuthComponent = WalletsAuth;
-    if (player.authType === 'fractal') {
-        AuthComponent = FractalAuth;
-    }  
-    if (player.authType === 'wallets') {
-        AuthComponent = WalletsAuth;
-    } 
+    // if (player.authType === 'fractal') {
+    //     AuthComponent = FractalAuth;
+    // }  
+    // if (player.authType === 'wallets') {
+    //     AuthComponent = WalletsAuth;
+    // } 
 
     const value = {
         publicKey,

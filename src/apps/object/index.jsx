@@ -8,7 +8,7 @@ import { notify } from '../../components/notification';
 
 export function ObjectPage() {
 	const { objectId } = useParams();
-	const { sageApi } = useProject();
+	const { engine } = useProject();
 	const { template } = useTemplate();
 	const { load } = useBrickLibrary();
 	const { doc } = useDocument();
@@ -23,23 +23,15 @@ export function ObjectPage() {
 	};
 
 	const onSave = (payload) => {
-		sageApi.template
-			.updateObjectById({
-				template: template.code,
-				objectId,
-				fields: payload,
-			})
-			.then(res => {
-				if (res.modifiedCount === 1) {
-					notify({
-						message: 'Object updated',
-						description: `${objectId}`,
-						type: 'success',
-					});
-					load();
-					goUp();
-				}
+		engine.template(template.code).object(objectId).update(payload).then(res => {
+			notify({
+				message: 'Object updated',
+				description: `${objectId}`,
+				type: 'success',
 			});
+			load();
+			goUp();
+		});
 	};
 	return <DocumentEditor 
 		doc={doc} 

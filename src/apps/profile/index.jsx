@@ -59,32 +59,29 @@ const schema = {
 };
 
 export default function Profile() {
-	const { id, reload } = useUser();
+	const { userId } = useUser();
 	const [doc, setDoc] = useState(undefined);
-	const { sageApi } = useProject();
+	const { engine } = useProject();
 
 	const reloadDoc = useCallback(() => {
-		sageApi.user.getById({ id }).then((res) => setDoc(new Document(schema, res.fields)));
-	}, [sageApi.user, id]);
+		engine.user(userId).get().then(res => setDoc(new Document(schema, res.fields)));
+	}, [ engine, userId] );
 
 	useEffect(() => {
 		reloadDoc();
 	}, [reloadDoc]);
 
 	const onSave = (fields) => {
-		return sageApi.user.update({ id, fields }).then((res) => {
-			if (res.modifiedCount) {
-				notify({
-					message: 'User updated',
-					description: `${id}`,
-					type: 'success',
-				});
-				reload();
-				reloadDoc();
-			}
+		return engine.user(userId).update(fields).then(res => {
+			notify({
+				message: 'User updated',
+				description: `${userId}`,
+				type: 'success',
+			});
+			reloadDoc();
 		});
 	};
 
-	if (!id || !doc) return <></>;
+	if (!userId || !doc) return <></>;
 	return <DocumentEditor doc={doc} onSave={onSave} />;
 }

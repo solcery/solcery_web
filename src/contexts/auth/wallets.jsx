@@ -1,5 +1,5 @@
 import React, { FC, useMemo, useContext, useEffect, useCallback, useState } from 'react';
-import { ConnectionProvider, WalletProvider, useWallet, useConnection } from '@solana/wallet-adapter-react/lib/cjs';
+import { ConnectionProvider, WalletProvider, useWallet, useConnection } from '@solana/wallet-adapter-react';
 import { WalletAdapterNetwork } from '@solana/wallet-adapter-base';
 import {
     PhantomWalletAdapter,
@@ -13,7 +13,8 @@ import {
     ExodusWalletAdapter,
     SlopeWalletAdapter,
     SafePalWalletAdapter,
-    GlowWalletAdapter
+    GlowWalletAdapter,
+    FractalWalletAdapter,
 } from '@solana/wallet-adapter-wallets';
 import { FractalProvider } from '@fractalwagmi/react-sdk';
 import {
@@ -26,6 +27,7 @@ import { useAuth } from './index';
 
 const network = WalletAdapterNetwork.Mainnet;
 const wallets = [
+    new FractalWalletAdapter(),
     new PhantomWalletAdapter(),
     new SolflareWalletAdapter(),
     new BraveWalletAdapter(),
@@ -41,8 +43,11 @@ const wallets = [
 ];
 const endpoint = 'https://solana-api.projectserum.com';
 
+require('@solana/wallet-adapter-react-ui/styles.css');
+
 const WalletsConnector = (props) => {
-    const { publicKey } = useWallet();
+    const { publicKey, connect, connected, provider } = useWallet();
+    
     useEffect(() => {
         if (!publicKey) return;
         props.onConnect(publicKey);

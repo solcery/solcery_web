@@ -5,24 +5,24 @@ const md5 = require('js-md5');
 const ContentContext = React.createContext(undefined);
 
 export function ContentProvider(props) {
-	const { sageApi } = useProject();
+	const { engine } = useProject();
 	let [ cachedContent, setCachedContent ] = useState();
 	let contentHash = useRef(undefined);
 	let contentUpdating = useRef(false)
 
 	useEffect(() => {
-		if (!sageApi) return;
+		if (!engine) return;
 		contentUpdating.current = true;
-		sageApi.project.getContent({ objects: true, templates: true }).then(res => {
+		engine.getContent({ objects: true, templates: true }).then(res => {
 			setCachedContent(res);
 			contentUpdating.current = false;
 		})
-	}, [ sageApi ]);
+	}, [ engine ]);
 
 	const updateContent = useCallback(() => {
 		if (contentUpdating.current) return;
 		contentUpdating.current = true;
-		sageApi.project.getContent({ objects: true, templates: true }).then(res => {
+		engine.getContent({ objects: true, templates: true }).then(res => {
 			let hash = md5(JSON.stringify(res)); // TODO: optimize
 			if (hash != contentHash.current) {
 				contentHash.current = hash
@@ -30,7 +30,7 @@ export function ContentProvider(props) {
 			}
 			contentUpdating.current = false;
 		})
-	}, [ sageApi ]);
+	}, [ engine ]);
 
 	return (
 		<ContentContext.Provider value={{ cachedContent, updateContent }}>

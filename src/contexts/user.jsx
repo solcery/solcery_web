@@ -2,65 +2,49 @@ import React, { useContext, useEffect, useState, useCallback } from 'react';
 import { Input, Button } from 'antd';
 import { useCookies } from 'react-cookie';
 import { useProject } from './project';
+import { useAuth } from './auth';
 import { Alert } from 'antd';
-import { useParams } from 'react-router-dom';
 
 const UserContext = React.createContext(undefined);
 
+
 export function UserProvider(props) {
 	const [cookies, setCookie] = useCookies();
+	const { publicKey, AuthComponent } = useAuth();
+	const [ userId, setUserId ] = useState();
 	const [user, setUser] = useState(undefined);
-	const { projectId } = useParams();
-	const { sageApi, setUserSession } = useProject();
-
-	const [login, setLogin] = useState(undefined);
-	const [password, setPassword] = useState(undefined);
-	const [error, setError] = useState(undefined);
-
-	const loadUser = useCallback(
-		(userData) => {
-			if (!userData) return;
-			if (!userData.session) return;
-			if (!setUserSession) return;
-			setUser(
-				Object.assign(
-					{
-						id: userData._id,
-						nick: userData.login,
-					},
-					userData.fields
-				)
-			);
-			setUserSession(userData.session);
-		},
-		[setUserSession]
-	);
-
-	const reload = () => {
-		sageApi.user.getById({ id: user.id }).then((res) => loadUser(res));
-	};
+	const { projectId } = useProject();
+	const { engine } = useProject();
 
 	useEffect(() => {
-		if (user) return;
-		if (!sageApi) return;
-		if (!cookies[`session.${projectId}`]) return;
-		sageApi.user.getSession({ session: cookies[`session.${projectId}`] }).then((res) => loadUser(res));
-	}, [loadUser, user, projectId, sageApi, cookies]);
-
-	const auth = useCallback(() => {
-		if (!login || !password) {
-			setError('Please specify login and password!');
+		if (userId) return;
+		if (publicKey) {
+			setUserId(publicKey.toBase58());
+			return;
+		};
+		if (cookies[`${projectId}.session`]) {
+			setUserId(cookies[`${projectId}.session`]);
 			return;
 		}
-		sageApi.user.login({ login, password }).then((res) => {
-			const SESSION_LENGTH = 86400 * 30 * 1000;
-			setCookie(`session.${projectId}`, res.session, {
-				expires: new Date(new Date().getTime() + SESSION_LENGTH),
-				path: '/',
-			});
-			loadUser(res);
+	}, [ publicKey, cookies ])
+
+	useEffect(() => {
+		if (!userId) return;
+		const SESSION_LENGTH = 86400 * 30 * 1000;
+		setCookie(`${projectId}.session`, userId, {
+			expires: new Date(new Date().getTime() + SESSION_LENGTH),
+			path: '/',
 		});
-	}, [loadUser, login, password, projectId, setCookie, sageApi]);
+	}, [ userId ])
+
+	useEffect(() => {
+		if (!engine) return;
+		if (!userId) return;
+ 		engine.setAccessParam('pubkey', userId);
+		engine.user(userId).get().then(res => {
+			setUser(Object.assign({ userId, }, res.fields))
+		});
+	}, [ userId, engine ])
 
 	useEffect(() => {
 		if (user && user.css) {
@@ -71,32 +55,12 @@ export function UserProvider(props) {
 				document.getElementsByTagName('head')[0].appendChild(style);
 			}
 		}
-	}, [user]);
-	if (!sageApi) return <></>;
-	if (!user)
-		return (
-			<>
-				<h1> Project name: {projectId} </h1>
-				<Input
-					placeholder="Login"
-					autoFocus
-					onChange={(e) => {
-						setLogin(e.target.value);
-					}}
-					onPressEnter={auth}
-				/>
-				<Input.Password
-					placeholder="Password"
-					onChange={(e) => {
-						setPassword(e.target.value);
-					}}
-					onPressEnter={auth}
-				/>
-				<Button onClick={auth}>LOGIN</Button>
-				{error && <Alert message={error} banner={true} />}
-			</>
-		);
-	return <UserContext.Provider value={Object.assign({ reload }, user)}>{props.children}</UserContext.Provider>;
+	}, [ user ]);
+
+	if (!user) return <AuthComponent/>;
+	return <UserContext.Provider value={user}>
+		{props.children}
+	</UserContext.Provider>;
 }
 
 export function useUser() {

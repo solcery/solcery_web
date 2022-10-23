@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { useProject } from '../../../contexts/project';
 import { useContent } from '../../../contexts/content';
 import { Select } from 'antd';
@@ -50,7 +51,7 @@ export const ValueRender = (props) => {
 			if (props.isFilter) {
 				return <>{obj.title}</>;
 			}
-			return <a href={`/${props.type.project ?? projectId}/template/${props.type.templateCode}/${props.defaultValue}`}>{obj.title}</a>; //TODO
+			return <Link to={`/${props.type.project ?? projectId}/template/${props.type.templateCode}/${props.defaultValue}`}>{obj.title}</Link>; //TODO
 		} else {
 			return <>{`Missing object ${props.defaultValue}`}</>;
 		}

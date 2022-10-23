@@ -1,19 +1,19 @@
 import React, { useContext, useEffect, useState, useCallback } from 'react';
-import { BrickLibrary } from '../content/brickLib';
+import { BrickLibrary } from '../content/brickLib/brickLibrary';
 import { useProject } from './project';
 
 const BrickLibraryContext = React.createContext(undefined);
 
 export function BrickLibraryProvider(props) {
 	// const [ revision ] = useState(0);
-	const { sageApi } = useProject();
+	const { engine } = useProject();
 	const [brickLibrary, setBrickLibrary] = useState(undefined);
 
 	const load = useCallback(async () => {
-		let content = await sageApi.project.getContent({ objects: true, templates: true });
+		let content = await engine.getContent({ objects: true, templates: true });
 		let bl = new BrickLibrary(content);
 		setBrickLibrary(bl.bricks);
-	}, [sageApi.project]);
+	}, [ engine ]);
 
 	useEffect(() => {
 		load();

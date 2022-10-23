@@ -1,4 +1,4 @@
-import { SType } from '../base';
+import { SType } from '../index';
 import { ValueRender } from './components';
 
 const MAP_TYPES_DELIMETER = '|';
@@ -54,5 +54,4 @@ class SMap {
 			: undefined;
 }
 
-SType.register('SMap', SMap);
 export { SMap };

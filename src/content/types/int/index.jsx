@@ -1,4 +1,4 @@
-import { SType, defaultFilter } from '../base';
+import { defaultFilter } from '../base';
 import { ValueRender } from './components';
 
 class SInt {
@@ -18,5 +18,4 @@ class SInt {
 	clone = (a) => a;
 }
 
-SType.register('SInt', SInt);
 export { SInt };

@@ -1,4 +1,4 @@
-import { SType, defaultFilter } from '../base';
+import { defaultFilter } from '../base';
 import { ValueRender } from './components';
 
 class SEnum {
@@ -15,5 +15,4 @@ class SEnum {
 	clone = (a) => a;
 }
 
-SType.register('SEnum', SEnum);
 export { SEnum };

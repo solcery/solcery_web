@@ -6,10 +6,10 @@ const { Option } = Select;
 
 export function ContentImporter() {
 	const [contentDump, setContentDump] = useState();
-	const { sageApi } = useProject();
+	const { engine } = useProject();
 
 	const importContent = () => {
-		sageApi.project.restore({ src: JSON.parse(contentDump) });
+		engine.restore(JSON.parse(contentDump));
 	};
 
 	return (
@@ -23,15 +23,14 @@ export function ContentImporter() {
 
 export function ContentExporter() {
 	const [exportType, setExportType] = useState('full');
-	const { sageApi } = useProject();
+	const { engine, projectId } = useProject();
 
 	const exportContent = async () => {
 		let params = {
 			objects: exportType === 'full' || exportType === 'objects',
 			templates: exportType === 'full' || exportType === 'templates',
 		};
-		let content = await sageApi.project.getContent(params);
-		let projectId = sageApi.projectId;
+		let content = await engine.getContent(params);
 
 		let date = Date.now();
 		let data = JSON.stringify(content, undefined, 2);

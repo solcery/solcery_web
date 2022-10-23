@@ -13,44 +13,46 @@ const { Option } = Select;
 export default function Home() {
 	const navigate = useNavigate();
 	const [unityData, setUnityData] = useState();
-	const { sageApi, projectConfig } = useProject();
+	const { engine } = useProject();
 	const { layoutPresets, nfts } = useUser();
 	const [ contentRevision, setContentRevision ] = useState();
+	const [ projectConfig, setProjectConfig ] = useState();
 
 	const releaseProject = async () => {
-		let content = await sageApi.project.getContent({ objects: true, templates: true });
-		let res = await build({ targets: ['web', 'web_meta', 'unity_local'], content });
-		if (!res.status) {
-			notify({
-				message: 'Release error',
-				description: 'Content validation unsuccessfull',
-				type: 'error'
-			})
-			navigate('validator')
-			return;
-		}
-		let result = await sageApi.project.release({
-			gameProjectId: projectConfig.releaseProjectId,
-			contentWeb: res.constructed.web,
-			contentUnity: res.constructed.unity_local,
-			contentMeta: res.constructed.web_meta,
-		})
-		if (result) {
-			notify({
-				message: 'Release successful!',
-				description: `Released version: ${result}`,
-				type: 'success'
-			})
-		} else {
-			notify({
-				message: 'Release failed!',
-				type: 'warning'
-			})
-		}
+		// let content = await engine.getContent({ objects: true, templates: true });
+		// let 
+		// let res = await build({ targets: ['web', 'web_meta', 'unity_local'], content });
+		// if (!res.status) {
+		// 	notify({
+		// 		message: 'Release error',
+		// 		description: 'Content validation unsuccessfull',
+		// 		type: 'error'
+		// 	})
+		// 	navigate('validator')
+		// 	return;
+		// }
+		// let result = await engine.release({
+		// 	gameProjectId: projectConfig.releaseProjectId,
+		// 	contentWeb: res.constructed.web,
+		// 	contentUnity: res.constructed.unity_local,
+		// 	contentMeta: res.constructed.web_meta,
+		// })
+		// if (result) {
+		// 	notify({
+		// 		message: 'Release successful!',
+		// 		description: `Released version: ${result}`,
+		// 		type: 'success'
+		// 	})
+		// } else {
+		// 	notify({
+		// 		message: 'Release failed!',
+		// 		type: 'warning'
+		// 	})
+		// }
 	}
 
 	const syncContent = async () => {
-		let res = await sageApi.project.sync();
+		let res = await engine.sync();
 		if (!res) return;
 		notify({
 			message: 'Sync successful',
@@ -59,15 +61,17 @@ export default function Home() {
 	}
 
 	useEffect(() => {
-		sageApi.project.getContent({ templates: true }).then(content => {
+		engine.getContent({ templates: true }).then(content => {
 			let revision = 0;
 			for (let template of content.templates) {
 				revision = revision + template.revision;
 			}
 			setContentRevision(revision);
 		})
-	}, [ sageApi.project ])
+		engine.getConfig().then(config => setProjectConfig(config.fields));
+	}, [ engine ])
 
+	if (!projectConfig) return;
 	return (
 		<>
 			<Card title='Status'>

@@ -1,8 +1,5 @@
 import { insertTable } from '../../utils';
 import { SType } from '../types';
-import { basicActions } from './index';
-import { basicValues } from './index';
-import { basicConditions } from './index';
 
 export const paramFromMapEntry = (entry) => {
 	return {
@@ -32,6 +29,9 @@ export class BrickLibrary {
 	}
 
 	constructor(content) {
+		const { basicActions } = require('./action');
+		const { basicConditions } = require('./condition');
+		const { basicValues } = require('./value');
 		basicActions.forEach((brick) => this.addBrick(brick));
 		basicConditions.forEach((brick) => this.addBrick(brick));
 		basicValues.forEach((brick) => this.addBrick(brick));
@@ -58,5 +58,3 @@ export class BrickLibrary {
 		}
 	}
 }
-
-export default BrickLibrary;

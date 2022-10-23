@@ -1,4 +1,4 @@
-import { SType } from '../base';
+import { SType } from '../index';
 import { ValueRender } from './components';
 
 class SStruct {
@@ -48,5 +48,4 @@ class SStruct {
 	};
 }
 
-SType.register('SStruct', SStruct);
 export { SStruct };

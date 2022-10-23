@@ -36,18 +36,18 @@ const schema = {
 
 export default function ProjectConfig() {
 	const [doc, setDoc] = useState(undefined);
-	const { sageApi } = useProject();
+	const { engine } = useProject();
 
 	const reloadDoc = useCallback(() => {
-		sageApi.project.getConfig().then(res => setDoc(new Document(schema, res.fields)));
-	}, [ sageApi.project ]);
+		engine.getConfig().then(res => setDoc(new Document(schema, res.fields)));
+	}, [ engine ]);
 
 	useEffect(() => {
 		reloadDoc();
 	}, [ reloadDoc ]);
 
 	const onSave = (fields) => {
-		return sageApi.project.setConfig({ fields }).then(res => {
+		return engine.setConfig({ fields }).then(res => {
 			if (res.modifiedCount) {
 				notify({ message: 'Project config updated', type: 'success' });
 				reloadDoc();

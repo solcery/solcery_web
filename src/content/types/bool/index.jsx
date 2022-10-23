@@ -1,4 +1,4 @@
-import { SType, defaultFilter } from '../base';
+import { defaultFilter } from '../base';
 import { ValueRender } from './components';
 
 class SBool {
@@ -11,5 +11,4 @@ class SBool {
 	clone = (a) => a;
 }
 
-SType.register('SBool', SBool);
 export { SBool };

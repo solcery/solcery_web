@@ -1,4 +1,3 @@
-import { SType } from '../../index';
 import { ValueRender, FilterRender } from './components';
 
 const validateBrick = (v) => {
@@ -13,24 +12,7 @@ const validateBrick = (v) => {
 	return true;
 };
 
-// const argFromParam = (param) => {
-// 	return {
-// 		lib: param.type.brickType,
-// 		func: `arg`,
-// 		name: `Arg [${param.name}]`,
-// 		params: [
-// 			{
-// 				code: 'name',
-// 				name: 'Name',
-// 				type: SType.from('SString'),
-// 				value: param.code,
-// 				readonly: true,
-// 			},
-// 		],
-// 	};
-// };
-
-class SBrick {
+export class SBrick {
 	static fromString = (data) => new SBrick({ brickType: data });
 
 	constructor(data) {
@@ -140,5 +122,4 @@ class SBrick {
 	};
 }
 
-SType.register('SBrick', SBrick);
-export { SBrick };
+// export { SBrick };

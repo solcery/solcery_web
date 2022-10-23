@@ -2,16 +2,16 @@ import { BrickEditor } from './editor/BrickEditor';
 import { ReactFlowProvider } from 'react-flow-renderer';
 import { useNavigate, useParams, Link } from 'react-router-dom';
 import { useState, useEffect, useRef } from 'react';
-import { paramFromMapEntry } from '../../brickLib';
+import { paramFromMapEntry } from '../../brickLib/brickLibrary';
 import { Select, Popover } from 'antd';
-import { SType } from '../base';
+import { SType } from '../index';
 import { insertTable } from '../../../utils';
 import { useBrickLibrary } from '../../../contexts/brickLibrary';
 import { useUser } from '../../../contexts/user';
 
 const { Option } = Select;
 
-const paramMapType = SType.from({
+const paramMapSchema = {
 	name: 'SMap',
 	data: {
 		keyType: 'SString',
@@ -23,7 +23,7 @@ const paramMapType = SType.from({
 			},
 		},
 	},
-});
+};
 
 const argFromParam = (param) => {
 	return {
@@ -43,6 +43,8 @@ const argFromParam = (param) => {
 };
 
 export const ValueRender = (props) => {
+
+	const paramMapType = SType.from(paramMapSchema);
 	const { objectId } = useParams();
 	let brickTree = useRef(props.defaultValue ? props.defaultValue.brickTree : undefined);
 	const [brickParams, setBrickParams] = useState(props.defaultValue ? props.defaultValue.brickParams : []);

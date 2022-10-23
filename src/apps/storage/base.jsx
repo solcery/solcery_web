@@ -17,7 +17,7 @@ const { Column } = Table;
 
 export default function StorageViewerBase({ template, objects, fields, onEnableEditMode }) {
 	const [cookies, setCookie, removeCookie] = useCookies();
-	const { sageApi } = useProject();
+	const { engine } = useProject();
 	const { updateContent } = useContent();
 	const navigate = useNavigate();
 
@@ -168,10 +168,8 @@ export default function StorageViewerBase({ template, objects, fields, onEnableE
 		/>
 		<Button
 			onClick={() => {
-				sageApi.template.createObject({ template: template.code }).then((res) => {
-					if (res.insertedId) {
-						navigate(`${res.insertedId}`);
-					}
+				engine.template(template.code).createObject().then(insertedId => {
+					navigate(`${insertedId}`);
 				});
 			}}
 		>

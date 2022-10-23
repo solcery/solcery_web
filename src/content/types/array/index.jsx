@@ -1,4 +1,4 @@
-import { SType } from '../base';
+import { SType } from '../index';
 import { ValueRender } from './components';
 
 class SArray {
@@ -22,5 +22,4 @@ class SArray {
 	clone = (value) => (value ? value.map((val) => this.valueType.clone(val)) : undefined);
 }
 
-SType.register('SArray', SArray);
 export { SArray };

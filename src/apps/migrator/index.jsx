@@ -7,13 +7,13 @@ const { TextArea } = Input;
 
 export default function Migrator() {
 	const [result, setResult] = useState('');
-	const { sageApi } = useProject();
+	const { engine } = useProject();
 
 	const applyMigrator = async () => {
-		let content = await sageApi.project.getContent({ objects: true, templates: true });
+		let content = await engine.getContent({ objects: true, templates: true });
 		let migrated = migrator(content);
 		setResult(JSON.stringify(migrated, undefined, 2));
-		sageApi.project.migrate(migrated);
+		engine.migrate(migrated);
 	};
 
 	return (

@@ -1,6 +1,5 @@
 import { notify } from '../components/notification';
-import { api } from '../config';
-const API_PATH = api.url;
+const API_PATH = 'path';
 
 const makeRequest = (url, data) => {
 	if (!data) throw new Error('API request error: no data provided for API call!');
@@ -18,14 +17,14 @@ const makeRequest = (url, data) => {
 				return res.data; // TODO: status, error
 			} else {
 				notify({
-					message: 'Server error',
-					description: res.error,
+					message: 'API error',
+					description: res.data,
 					type: 'error',
 				});
 			}
 		}, (err) => {
 			notify({
-				message: 'Server error',
+				message: 'API error',
 				description: 'No response from server',
 				type: 'error',
 			});
@@ -89,15 +88,101 @@ export class SolceryAPI {
 		if (!config) throw new Error('Error building SolceryAPIConnection, no config provided!');
 		if (!config.url) throw new Error('Error building SolceryAPIConnection, no url provided!');
 		this.config = config;
+		this.accessParams = {};
 	}
 
 	async connect() {
 		let apiInfo = await makeRequest(this.config.url, {
 			command: 'help'
 		})
-		for (let [command, commandData] of (Object.entries(apiInfo.commands))) {
+		for (let [command, commandData] of (Object.entries(apiInfo))) {
 			this.commands[command] = commandData;
 		}
+		return this;
+	}
+
+	setAccessParams(params) {
+		this.accessParams = params;
+	}
+
+
+	async createAccessor() {
+		let apiPaths = await makeRequest(this.config.url, {
+			command: 'help',
+			paths: true,
+		});
+		const api = this;
+		const handlePath = (currentPath, path = []) => {
+			const currentName = path[path.length - 1];
+			const pathProto = {
+				params: currentPath.params,
+				accessParams: currentPath.access,
+				path: [...path],
+				setAccessParam: function(param, value) {
+					if (!this.accessParams[param]) throw `No access param ${param}`;
+					if (!this.access) this.access = {};
+					this.access[param] = value;
+				}
+			}
+			if (currentPath.commands) {
+				for (let [ commandName, commandData ] of Object.entries(currentPath.commands)) {
+					const requireAccess = !commandData.public;
+					pathProto[commandName] = function(param) {
+						let commandCallParams = Object.assign({}, this.params);
+						if (commandData.params) {
+							let paramNames = Object.keys(commandData.params);
+							if (paramNames.length === 1) {
+								let paramName = paramNames[0];
+								commandCallParams[paramName] = param;
+							} else {
+								Object.assign(commandCallParams, param);
+							}
+						}
+						let fullName = [...this.path, commandName].join('.');
+						if (!commandData.public) {
+							Object.assign(commandCallParams, this.access);
+						}
+						return api.call(fullName, commandCallParams);
+					};
+				}
+			}
+			for (let [propName, propData] of Object.entries(currentPath)) {
+				if (propName === 'commands') continue;
+				if (propName === 'params') continue;
+				if (propName === 'access') continue;
+				path.push(propName)
+				let layerConstructor = handlePath(propData, path);
+				pathProto[propName] = function (...args) {
+					let next = layerConstructor(...args);
+					Object.assign(next.params, this.params);
+					if (this.access) {
+						Object.assign(next.params, this.access);
+					}
+					return next
+				}
+				path.pop();
+			}
+			return (param) => {
+				let ctx = Object.create(pathProto);
+				ctx.params = {};
+				ctx._name = currentName
+
+				if (pathProto.params) { //TODO: order
+					let paramNames = Object.keys(pathProto.params);
+					if (paramNames.length === 1) {
+						let paramName = paramNames[0];
+						ctx.params[paramName] = param;
+					} else {
+						Object.assign(ctx.params, param);
+					}
+				}
+				return ctx;
+			}
+		}
+		return handlePath(apiPaths)();
+		engine.template('some_template').object('object_id').update({ name: 'New name' })
+		// session.engine('polygon').getContent({ templates: true, objects: true });
+		// this.test().engine('test').getConfig();
 	}
 
 	static async create(config) {

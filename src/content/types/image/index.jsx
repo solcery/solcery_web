@@ -1,4 +1,3 @@
-import { SType } from '../base';
 import { ValueRender } from './components';
 
 const DEFAULT_PREVIEW_WIDTH = 200;
@@ -18,5 +17,4 @@ class SImage {
 	clone = (a) => a;
 }
 
-SType.register('SImage', SImage);
 export { SImage };

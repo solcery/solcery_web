@@ -18,7 +18,6 @@ import StorageViewerEdit from './edit';
 const { Column } = Table;
 
 export default function StorageViewer({ templateCode, moduleName }) {
-	const { sageApi } = useProject();
 	const { content, updateContent } = useContent();
 	const { doubleClickToOpenObject } = useUser();
 	const [ editModeDocs, setEditModeDocs ] = useState();
@@ -36,7 +35,6 @@ export default function StorageViewer({ templateCode, moduleName }) {
 	let fields = Object.values(template.fields).filter(field => !field.hidden);
 
 	const enterEditMode = (objects) => {
-		console.log(objects)
 		let documents = objects.map(obj => new Document(template, obj.fields, obj.id))
 		setEditModeDocs(documents)
 	}

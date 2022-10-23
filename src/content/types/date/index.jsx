@@ -1,4 +1,3 @@
-import { SType } from '../base';
 import { ValueRender } from './components';
 
 class SDate {
@@ -26,5 +25,4 @@ class SDate {
 	clone = (a) => a;
 }
 
-SType.register('SDate', SDate);
 export { SDate };

@@ -1,10 +1,6 @@
 import { getTable } from 'utils';
-import { BrickLibrary } from './brickLib';
+import { BrickLibrary } from './brickLib/brickLibrary';
 import { Template } from '../content/template';
-
-export * from './types';
-export * from './template';
-export * from './brickLib';
 
 export const execute = async (func, extra) => {
 	let meta = Object.assign(

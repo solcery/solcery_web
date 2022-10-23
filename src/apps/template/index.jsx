@@ -18,15 +18,15 @@ export function TemplatePage() {
 export function TemplateSchema() {
 	const { templateCode } = useParams();
 	const [jsonSchema, setJsonSchema] = useState();
-	const { sageApi } = useProject();
+	const { engine } = useProject();
 
 	const loadSchema = (templateSchema) => {
 		setJsonSchema(JSON.stringify(templateSchema, undefined, 2));
 	};
 
 	useEffect(() => {
-		sageApi.template.getSchema({ template: templateCode }).then(loadSchema);
-	}, [templateCode, sageApi.template]);
+		engine.template(templateCode).getSchema().then(loadSchema);
+	}, [templateCode, engine]);
 
 	const save = () => {
 		let schema;
@@ -37,7 +37,7 @@ export function TemplateSchema() {
 			return;
 		}
 		if (schema) {
-			sageApi.template.setSchema({ template: templateCode, schema }).then((res) => {
+			engine.template(templateCode).setSchema(schema).then((res) => {
 				if (res.acknowledged) {
 					notify({ message: 'Schema applied!', type: 'success' });
 				}

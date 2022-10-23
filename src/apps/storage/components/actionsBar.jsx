@@ -5,54 +5,41 @@ import { notify } from '../../../components/notification';
 import { useNavigate } from 'react-router-dom';
 
 export const ActionsBar = (props) => {
-	const { sageApi } = useProject();
+	const { engine } = useProject();
 	const { fastCopy } = useUser();
 	const navigate = useNavigate();
 
-	if (!sageApi) return;
+	if (!engine) return;
 
 	let object = props.object;
 	let templateCode = props.templateCode;
 
 	const copyObject = () => {
-		sageApi.template.cloneObject({
-				template: templateCode,
-				objectId: object.id,
-			})
-			.then((res) => {
-				if (res.insertedId) {
-					if (fastCopy) {
-						navigate(`${res.insertedId}`);
-					} else {
-						notify({
-							message: 'Object created',
-							type: 'success',
-							description: res.insertedId,
-							url: `${templateCode}/${res.insertedId}`,
-						});
-					}
-					if (props.onAction) {
-						console.log('onAction')
-						props.onAction();
-					}
-				}
-			});
+		engine.template(templateCode).object(object.id).clone().then(insertedId => {
+			if (fastCopy) {
+				navigate(`${insertedId}`);
+			} else {
+				notify({
+					message: 'Object created',
+					type: 'success',
+					description: insertedId,
+					url: `${templateCode}/${insertedId}`,
+				});
+			}
+			if (props.onAction) {
+				props.onAction();
+			}
+		});
 	};
 	const deleteObject = () => {
 		if (window.confirm('Deleting object [' + object.id + '] ' + object.fields.title + '. Are you sure?')) {
-			sageApi.template.removeObjectById({
-				template: templateCode,
-				objectId: object.id,
-			})
-			.then(res => {
-				if (res.deletedCount) {
-					notify({
-						message: 'Object deleted',
-						type: 'success',
-						description: object.id,
-					});
-					if (props.onAction) props.onAction();
-				}
+			engine.template(templateCode).object(object.id).delete().then(res => {
+				notify({
+					message: 'Object deleted',
+					type: 'success',
+					description: object.id,
+				});
+				if (props.onAction) props.onAction();
 			});
 		}
 	};

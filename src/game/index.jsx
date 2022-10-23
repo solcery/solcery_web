@@ -1,4 +1,4 @@
-import { BrickRuntime } from '../content/brickLib';
+import { BrickRuntime } from '../content/brickLib/runtime';
 import { notify } from '../components/notification';
 import { getTable } from '../utils';
 import { UnityPackage } from './unityPackage';

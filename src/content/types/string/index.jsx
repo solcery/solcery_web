@@ -1,4 +1,3 @@
-import { SType } from '../base';
 import { ValueRender } from './components';
 import { DefaultFilterRender } from '../base/components';
 
@@ -57,5 +56,4 @@ class SString {
 	clone = (a) => a;
 }
 
-SType.register('SString', SString);
 export { SString };

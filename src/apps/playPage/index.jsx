@@ -26,7 +26,7 @@ export default function PlayPage() {
 	const [ player, setPlayer ] = useState();
 	const [ players, setPlayers ] = useState();
 	const { layoutPresets, nfts } = useUser();
-	const { sageApi, projectConfig } = useProject();
+	const { engine } = useProject();
 	const [ playerId, setPlayerId ] = useState();
 	const [ selectedPlayerId, setSelectedPlayerId ] = useState();
 	const [ unityBuild, setUnityBuild ] = useState();
@@ -35,8 +35,7 @@ export default function PlayPage() {
 	let navigate = useNavigate()
 
 	const buildContent = async () => {
-		if (!projectConfig) return;
-		let content = await sageApi.project.getContent({ objects: true, templates: true });
+		let content = await engine.getContent({ objects: true, templates: true });
 		let construction = build({
 			targets: ['web', 'unity_local'],
 			content,
@@ -64,7 +63,7 @@ export default function PlayPage() {
 	}
 
 	useEffect(() => {
-		if (!sageApi) return;
+		if (!engine) return;
 		if (!content) {
 			buildContent().then(setContent);
 			return;
@@ -72,7 +71,7 @@ export default function PlayPage() {
 		let p = Object.values(content.web.players);
 		setSelectedPlayerId(p[0].id)
 		setPlayers(p);
-	}, [ content, sageApi ])
+	}, [ content, engine ])
 
 	useEffect(() => {
 		if (!players) return;
@@ -82,12 +81,12 @@ export default function PlayPage() {
 	}, [ players ])
 
 	useEffect(() => {
-		if (!projectConfig) return;
-		if (!unityBuild) {
-			let buildId = projectConfig.build;
+		if (unityBuild) return;
+		engine.getConfig(config => {
+			let build = config.fields.build;
 			getUnityBuild(buildId).then(setUnityBuild);
-		}
-	}, [ unityBuild, projectConfig ])
+		})
+	}, [ engine, unityBuild ])
 			
 
 	useEffect(() => {

@@ -14,11 +14,11 @@ export default function Builder() {
 	const navigate = useNavigate();
 	const [targets, setTargets] = useState([]);
 	const [result, setResult] = useState()
-	const { sageApi } = useProject();
+	const { engine } = useProject();
 
 	const buildProject = async () => {
 		setResult();
-		let content = await sageApi.project.getContent({ objects: true, templates: true });
+		let content = await engine.getContent({ objects: true, templates: true });
 		let res = await build({ targets, content });
 		if (!res.status) {
 			notify({

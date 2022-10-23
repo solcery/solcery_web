@@ -5,13 +5,13 @@ import { useProject } from '../../contexts/project';
 const { Column } = Table;
 
 export default function ApiLogs() {
-	const { sageApi } = useProject();
+	const { engine } = useProject();
 
 	const [logs, setLogs] = useState();
 
 	useEffect(() => {
-		sageApi.project.getLogs().then(setLogs);
-	}, [sageApi.project]);
+		//engine.getLogs().then(setLogs);
+	}, [engine]);
 
 	if (!logs) return <></>;
 	let tableData = logs.map((entry) => ({

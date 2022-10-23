@@ -1,4 +1,3 @@
-import { SType } from '../base';
 import { ValueRender } from './components';
 
 class SSound {
@@ -11,5 +10,4 @@ class SSound {
 	clone = (a) => a;
 }
 
-SType.register('SSound', SSound);
 export { SSound };

@@ -7,12 +7,15 @@ import { UserOutlined, CaretRightOutlined, DeploymentUnitOutlined } from '@ant-d
 
 export const TopMenu = () => {
 	const [templates, setTemplates] = useState([]);
-	const { sageApi, projectConfig } = useProject();
-	const { nick } = useUser();
+	const { engine, projectConfig } = useProject();
+	const [ projectName, setProjectName ] = useState();
+	const user = useUser();
 
 	useEffect(() => {
-		sageApi.project.getContent({ templates: true }).then((res) => setTemplates(res.templates));
-	}, [sageApi.project]);
+		engine.getContent({ templates: true }).then((res) => setTemplates(res.templates));
+		engine.getConfig().then(res => setProjectName(res.fields.projectName));
+
+	}, [engine]);
 
 	let tpls = templates
 		.filter((template) => template.menuOrder)
@@ -26,7 +29,7 @@ export const TopMenu = () => {
 		{
 			key: 'project',
 			icon: <DeploymentUnitOutlined />,
-			label: <span style={{ fontWeight: 'bold' }}>{projectConfig?.projectName}</span>,
+			label: <span style={{ fontWeight: 'bold' }}>{projectName}</span>,
 			children: [
 				{ 
 					key: 'home',
@@ -74,17 +77,16 @@ export const TopMenu = () => {
 			label: <Link to="play" style={{ fontWeight: 'bold' }}>Play</Link>,
 		},
 		...tpls,
-		{
-			key: 'profile',
-			icon: <UserOutlined />,
-			label: <Link to="profile" style={{ fontWeight: 'bold' }}>{nick}</Link>,
-		},
 	];
 
-	return (
-		<>
-			<Menu mode="horizontal" items={items}/>
-			<Outlet />
-		</>
-	);
+	if (user) items.push({
+		key: 'profile',
+		icon: <UserOutlined />,
+		label: <Link to="profile" style={{ fontWeight: 'bold' }}>{user.login}</Link>,
+	})
+
+	return (<>
+		<Menu mode="horizontal" items={items}/>
+		<Outlet />
+	</>);
 };

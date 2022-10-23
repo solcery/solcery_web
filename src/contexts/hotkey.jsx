@@ -66,7 +66,9 @@ export function HotkeyProvider(props) {
 	});
 
 	return (
-		<HotkeyContext.Provider value={{ addHotkey, removeHotkey }}>{props.children}</HotkeyContext.Provider>
+		<HotkeyContext.Provider value={{ addHotkey, removeHotkey }}>
+			{props.children}
+		</HotkeyContext.Provider>
 	);
 }
 
