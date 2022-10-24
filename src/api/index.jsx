@@ -1,5 +1,4 @@
 import { notif } from '../components/notification';
-const API_PATH = 'path';
 
 const makeRequest = (url, data) => {
 	if (!data) throw new Error('API request error: no data provided for API call!');
@@ -7,7 +6,7 @@ const makeRequest = (url, data) => {
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json',
-			'Origin': 'http://localhost'
+			'Origin': 'http://create.solcery.xyz',
 		},
 		body: JSON.stringify(data),
 	};
@@ -28,8 +27,8 @@ export class SolceryAPI {
 	commands = {};
 
 	constructor(config) {
-		if (!config) throw new Error('Error building SolceryAPIConnection, no config provided!');
-		if (!config.url) throw new Error('Error building SolceryAPIConnection, no url provided!');
+		if (!config) throw new Error('Error building SolceryAPI, no config provided!');
+		if (!config.url) throw new Error('Error building SolceryAPI, no url provided!');
 		this.config = config;
 		this.accessParams = {};
 	}
