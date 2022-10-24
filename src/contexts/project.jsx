@@ -25,9 +25,7 @@ export function ProjectProvider(props) {
 	useEffect(() => {
 		if (!projectId) return;
 		if (!solceryAPI) return;
-		solceryAPI.createAccessor().then(accessor => {
-			setEngine(accessor.engine(projectId));
-		})
+		setEngine(solceryAPI.engine(projectId));
 	}, [ solceryAPI, projectId ]);
 
 	useEffect(() => {

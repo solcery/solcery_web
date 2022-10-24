@@ -6,7 +6,7 @@ import { useProject } from '../../contexts/project';
 import { useContent } from '../../contexts/content';
 import { useHotkey } from '../../contexts/hotkey';
 import { useUser } from '../../contexts/user';
-import { notify } from '../../components/notification';
+import { notif } from '../../components/notification';
 import { useCookies } from 'react-cookie';
 import { FilterOutlined } from '@ant-design/icons';
 import { HeaderCell } from './components/header';
@@ -53,10 +53,7 @@ export default function StorageViewer({ template, docs, fields, onExitEditMode }
 				return;
 			}
 			engine.template(template.code).updateObjects({ objects: payload }).then(res => {
-				notify({
-					message: 'Changes applied',
-					type: 'success',
-				});
+				notif.success('Changes applied');
 				updateContent();
 				onExitEditMode();
 			})

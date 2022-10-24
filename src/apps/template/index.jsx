@@ -3,7 +3,7 @@ import { useProject } from '../../contexts/project';
 import { useParams, Navigate } from 'react-router-dom';
 import { useTemplate } from '../../contexts/template';
 import { useState, useEffect } from 'react';
-import { notify } from '../../components/notification';
+import { notif } from '../../components/notification';
 import StorageViewer from '../storage';
 
 const { TextArea } = Input;
@@ -33,13 +33,13 @@ export function TemplateSchema() {
 		try {
 			schema = JSON.parse(jsonSchema);
 		} catch {
-			notify({ message: 'JSON parsing error', type: 'error' });
+			notif.error('JSON parsing error');
 			return;
 		}
 		if (schema) {
 			engine.template(templateCode).setSchema(schema).then((res) => {
 				if (res.acknowledged) {
-					notify({ message: 'Schema applied!', type: 'success' });
+					notif.success('Schema applied!');
 				}
 			});
 		}

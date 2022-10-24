@@ -1,20 +1,20 @@
 import React from 'react';
 import { notification } from 'antd';
+import { Link } from 'react-router-dom';
 
-export function notify ({
-	message = '',
-	description = undefined,
-	txid = '',
-	url = '',
-	type = 'info',
-	placement = 'bottomLeft',
-}) {
+function notify(type = 'info', message = '', description, url) {
 	if (url) {
-		description = <a href={url}>{description}</a>;
+		description = <Link to={url}>{description}</Link>;
 	}
 	notification[type]({
 		message,
 		description,
-		placement,
+		placement: 'bottomLeft',
 	});
+}
+
+export const notif = {
+	success: (...args) => notify('success', ...args),
+	warning: (...args) => notify('warning', ...args),
+	error: (...args) => notify('error', ...args),
 }

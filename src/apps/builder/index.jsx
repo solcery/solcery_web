@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Button, Select, Card } from 'antd';
 import { useUser } from '../../contexts/user';
 import { DownloadJSON } from '../../components/DownloadJSON';
-import { notify } from '../../components/notification';
+import { notif } from '../../components/notification';
 import { useProject } from '../../contexts/project';
 import { build, validate } from '../../content';
 import { Link, useNavigate } from 'react-router-dom';
@@ -21,11 +21,7 @@ export default function Builder() {
 		let content = await engine.getContent({ objects: true, templates: true });
 		let res = await build({ targets, content });
 		if (!res.status) {
-			notify({
-				message: 'Build error',
-				description: 'Content validation unsuccessfull.',
-				type: 'error'
-			})
+			notif.error('Build error', 'Content is not valid');
 			navigate('../validator');
 			return;
 		}

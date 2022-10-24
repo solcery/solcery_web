@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Button, Select, Card } from 'antd';
 import { useUser } from '../../contexts/user';
 import { UnityBuilder } from '../../components/unityBuilder';
-import { notify } from '../../components/notification';
+import { notif } from '../../components/notification';
 import { useProject } from '../../contexts/project';
 import { build, validate } from '../../content';
 import { Link, useNavigate } from 'react-router-dom';
@@ -23,11 +23,7 @@ export default function Home() {
 		// let 
 		// let res = await build({ targets: ['web', 'web_meta', 'unity_local'], content });
 		// if (!res.status) {
-		// 	notify({
-		// 		message: 'Release error',
-		// 		description: 'Content validation unsuccessfull',
-		// 		type: 'error'
-		// 	})
+		// 	notif.error('Release error', 'Content is not valid');
 		// 	navigate('validator')
 		// 	return;
 		// }
@@ -38,26 +34,16 @@ export default function Home() {
 		// 	contentMeta: res.constructed.web_meta,
 		// })
 		// if (result) {
-		// 	notify({
-		// 		message: 'Release successful!',
-		// 		description: `Released version: ${result}`,
-		// 		type: 'success'
-		// 	})
+		// 	notif.success('Released' `New version: ${result}`)
 		// } else {
-		// 	notify({
-		// 		message: 'Release failed!',
-		// 		type: 'warning'
-		// 	})
+		// 	notif.warning('Release failed');
 		// }
 	}
 
 	const syncContent = async () => {
 		let res = await engine.sync();
 		if (!res) return;
-		notify({
-			message: 'Sync successful',
-			type: 'success',
-		})
+		notif.success('Sync successful');
 	}
 
 	useEffect(() => {

@@ -4,7 +4,7 @@ import AddBrickButton from './AddBrickButton';
 import Brick from './Brick';
 import LayoutHelper from './LayoutHelper';
 import makeLayoutedElements from './dagreLayout';
-import { notify } from '../../../../components/notification';
+import { notif } from '../../../../components/notification';
 import './BrickEditor.scss';
 
 let brickUniqueID = 0;
@@ -75,22 +75,16 @@ export const BrickEditor = (props) => {
 				if (param.type.brickType === pastedBrickTree.lib) {
 					parentBrick.params[paramCode] = pastedBrickTree;
 					onChangeBrickTree(JSON.parse(JSON.stringify(bt)));
-					notify({ message: 'Pasted successfully', type: 'success' });
+					notif.success('Pasted successfully');
 				} else {
-					notify({
-						message: 'Unable to paste brick tree: incompatible brick types.',
-						type: 'error',
-					});
+					notif.error('Paste failed', 'Incompatible brick types')
 				}
 			} else {
 				if (pastedBrickTree.lib === props.brickType || props.brickType === 'any') {
 					onChangeBrickTree(pastedBrickTree);
-					notify({ message: 'Pasted successfully', type: 'success' });
+					notif.success('Pasted successfully');
 				} else {
-					notify({
-						message: 'Unable to paste brick tree: incompatible brick types.',
-						type: 'error',
-					});
+					notif.error('Paste failed', 'Incompatible brick types')
 				}
 			}
 		},

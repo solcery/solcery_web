@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { Handle, Position } from 'react-flow-renderer';
-import { notify } from '../../../../components/notification';
+import { notif } from '../../../../components/notification';
 import { useProject } from '../../../../contexts/project';
 import { Tooltip, Button, Input } from 'antd';
 import { CommentOutlined, DashOutlined, CloseOutlined} from '@ant-design/icons';
@@ -91,11 +91,7 @@ export default function Brick(props) {
 	const copy = () => {
 		if (!hovered.current) return;
 		let brickJson = JSON.stringify(props.data.brick);
-		notify({
-			message: 'Brick copied',
-			description: brickJson.substring(0, 30) + '...',
-			type: 'success',
-		});
+		notif.success('Brick copied', brickJson.substring(0, 30) + '...');
 		navigator.clipboard.writeText(brickJson);
 	};
 
@@ -109,11 +105,7 @@ export default function Brick(props) {
 		try {
 			pastedBrickTree = JSON.parse(clipboardContents);
 		} catch {
-			notify({
-				message: 'Invalid brickTree format in clipboard',
-				description: clipboardContents,
-				type: 'error',
-			});
+			notif.error('Brick paste failed', clipboardContents)
 		}
 		if (!pastedBrickTree) return; // TODO: add validation
 		props.data.onPaste(pastedBrickTree, props.data.brickTree, props.data.parentBrick, props.data.paramCode);

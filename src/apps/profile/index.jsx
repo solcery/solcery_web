@@ -3,7 +3,7 @@ import { useProject } from '../../contexts/project';
 import { useUser } from '../../contexts/user';
 import DocumentEditor from '../document';
 import Document from '../../content/document';
-import { notify } from '../../components/notification';
+import { notif } from '../../components/notification';
 
 const schema = {
 	code: 'users',
@@ -73,11 +73,7 @@ export default function Profile() {
 
 	const onSave = (fields) => {
 		return engine.user(userId).update(fields).then(res => {
-			notify({
-				message: 'User updated',
-				description: `${userId}`,
-				type: 'success',
-			});
+			notif.success('User updated', userId);
 			reloadDoc();
 		});
 	};

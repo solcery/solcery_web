@@ -62,11 +62,7 @@ const BugReportPopup = (props) => {
 
 	const send = () => {
 		if (!message) {
-			notify({
-				message: `No message`,
-				description: "Please specify the problem you've encountered",
-				type: 'warning',
-			});
+			notif.warning('No message', 'Please specify the problem you\'ve encountered');
 			return;
 		}
 		setSent(true);
@@ -76,11 +72,7 @@ const BugReportPopup = (props) => {
 			contacts,
 		}
 		gameApi.game.bugreport({ payload }).then(() => {
-			notify({
-				message: `Bug report sent`,
-				description: 'Thank you for your feedback!',
-				type: 'success',
-			});
+			notif.success('Bug report sent', 'Thank you for your feedback!');
 			props.onClose();
 		})
 	}

@@ -1,7 +1,7 @@
 import { Table, Button } from 'antd';
 import React, { useState, useEffect } from 'react';
 import { useHotkey } from '../../contexts/hotkey';
-import { notify } from '../../components/notification';
+import { notif } from '../../components/notification';
 import { useLocation } from 'react-router-dom';
 import './style.css';
 
@@ -34,11 +34,7 @@ export default function DocumentEditor(props) {
 			if (res) {
 				props.onSave(res);
 			} else {
-				notify({
-					message: `Not saved`,
-					description: 'No changes, exiting',
-					type: 'warning',
-				});
+				notif.warning('Not saved', 'No changes, exiting');
 				exit();
 			}
 		},

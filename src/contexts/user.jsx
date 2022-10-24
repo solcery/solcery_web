@@ -18,14 +18,15 @@ export function UserProvider(props) {
 
 	useEffect(() => {
 		if (userId) return;
-		if (publicKey) {
-			setUserId(publicKey.toBase58());
-			return;
-		};
-		if (cookies[`${projectId}.session`]) {
-			setUserId(cookies[`${projectId}.session`]);
-			return;
-		}
+		setUserId('TEUZkqw3bGDn4To6C7KNcckgoLiSLSZWaGJSWx8beFz')
+		// if (publicKey) {
+		// 	setUserId(publicKey.toBase58());
+		// 	return;
+		// };
+		// if (cookies[`${projectId}.session`]) {
+		// 	setUserId(cookies[`${projectId}.session`]);
+		// 	return;
+		// }
 	}, [ publicKey, cookies ])
 
 	useEffect(() => {

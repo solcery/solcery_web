@@ -1,4 +1,4 @@
-import { notify } from '../components/notification';
+import { notif } from '../components/notification';
 const API_PATH = 'path';
 
 const makeRequest = (url, data) => {
@@ -16,70 +16,13 @@ const makeRequest = (url, data) => {
 			if (res.status) {
 				return res.data; // TODO: status, error
 			} else {
-				notify({
-					message: 'API error',
-					description: res.data,
-					type: 'error',
-				});
+				notif.error('API error', res.data);
 			}
 		}, (err) => {
-			notify({
-				message: 'API error',
-				description: 'No response from server',
-				type: 'error',
-			});
+			notif.error('API error', 'No response from server');
 		});
 	});
 };
-
-export class SolceryAPIConnection {
-
-	setSession(session) {
-		this.session = session;
-	}
-
-	constructor(projectId, config) {
-		this.projectId = projectId;
-		if (!config) {
-			throw new Error('Error building SageAPIConnection, no config provided!');
-		}
-		if (config.auth) {
-			this.auth = require(`${config.auth}`);
-		}
-		for (let moduleName of config.modules) {
-			let commands = require(`./${moduleName}/commands`);
-			if (this[moduleName]) {
-				throw new Error('Error building SageAPIConnection, name conflict!');
-			}
-			this[moduleName] = {};
-			for (let [commandName, command] of Object.entries(commands)) {
-				this[moduleName][commandName] = (data = {}) => {
-					let requestData = {
-						project: this.projectId,
-						module: moduleName,
-						command: commandName,
-						params: {},
-					};
-					if (command.params) {
-						for (let [paramName, param] of Object.entries(command.params)) {
-							if (param.required && data[paramName] === undefined) {
-								throw new Error(`SageAPI error: Missing param '${paramName}' for command '${commandName}'!`);
-							}
-							requestData.params[paramName] = data[paramName];
-						}
-					}
-					if (command.private) {
-						if (!this.auth) {
-							throw new Error(`SageAPI error: Attempt to execute private command without auth provided!`);
-						}
-						this.auth(this.session, requestData);
-					}
-					return makeRequest(API_PATH, requestData);
-				};
-			}
-		}
-	}
-}
 
 export class SolceryAPI {
 	commands = {};
@@ -180,9 +123,6 @@ export class SolceryAPI {
 			}
 		}
 		return handlePath(apiPaths)();
-		engine.template('some_template').object('object_id').update({ name: 'New name' })
-		// session.engine('polygon').getContent({ templates: true, objects: true });
-		// this.test().engine('test').getConfig();
 	}
 
 	static async create(config) {

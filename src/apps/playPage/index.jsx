@@ -1,98 +1,68 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Game } from '../../game';
-import { SolceryAPIConnection } from '../../api';
 import Unity, { UnityContext } from 'react-unity-webgl';
 import { useBrickLibrary } from '../../contexts/brickLibrary';
 import { build } from '../../content';
-import { Select, Button } from 'antd';
 import { useUser } from '../../contexts/user';
 import { useProject } from '../../contexts/project';
 import { GameProvider } from '../../contexts/game';
 import GameClient from '../../components/gameClient';
-import { notify } from '../../components/notification';
+import { notif } from '../../components/notification';
+import { useApi } from '../../contexts/api';
 
-const { Option } = Select;
-
-let apiConfig = {
-	modules: [
-		'template',
-	],
-}
+import './style.css';
 
 export default function PlayPage() {
-	const [ game, setGame ] = useState();
-	const [ playerGames, setPlayerGames ] = useState();
-	const [ player, setPlayer ] = useState();
-	const [ players, setPlayers ] = useState();
+	const [ games, setGames ] = useState();
 	const { layoutPresets, nfts } = useUser();
 	const { engine } = useProject();
-	const [ playerId, setPlayerId ] = useState();
-	const [ selectedPlayerId, setSelectedPlayerId ] = useState();
 	const [ unityBuild, setUnityBuild ] = useState();
 	const [ content, setContent ] = useState();
-
+	const { solceryAPI } = useApi();
+	const [ gameData, setGameData ] = useState();
 	let navigate = useNavigate()
-
-	const buildContent = async () => {
-		let content = await engine.getContent({ objects: true, templates: true });
-		let construction = build({
-			targets: ['web', 'unity_local'],
-			content,
-		});
-		if (!construction.status) {
-			notify({
-				message: 'Play mode error',
-				description: 'Content validation unsuccessfull',
-				type: 'error'
-
-			})
-			navigate('../validator');
-		}
-		construction.constructed.unity = construction.constructed.unity_local;
-		return construction.constructed;
-	}
-
-	const getUnityBuild = async (buildId) => {
-		let systemApi = new SolceryAPIConnection('solcery', apiConfig);
-		let buildObject = await systemApi.template.getObjectById({ 
-			objectId: buildId, 
-			template: 'unityBuilds',
-		});
-		return buildObject.fields;
-	}
 
 	useEffect(() => {
 		if (!engine) return;
-		if (!content) {
-			buildContent().then(setContent);
-			return;
-		}
-		let p = Object.values(content.web.players);
-		setSelectedPlayerId(p[0].id)
-		setPlayers(p);
+		if (content) return;
+		engine.getContent({ objects: true, templates: true }).then(raw => {
+			let construction = build({
+				targets: ['web', 'unity_local'],
+				content: raw,
+			});
+			if (!construction.status) {
+				notif.error('Error', 'Content is not valid');
+				navigate('../validator');
+			}
+			construction.constructed.unity = construction.constructed.unity_local;
+			setContent(construction.constructed);
+		});
 	}, [ content, engine ])
 
 	useEffect(() => {
-		if (!players) return;
-		if (players.length === 1) {
-			setPlayerId(players[0].id);
-		}
-	}, [ players ])
-
-	useEffect(() => {
+		if (!engine) return;
+		if (!solceryAPI) return;
 		if (unityBuild) return;
-		engine.getConfig(config => {
-			let build = config.fields.build;
-			getUnityBuild(buildId).then(setUnityBuild);
+		engine.getConfig().then(config => {
+			let buildId = config.fields.build;
+			solceryAPI.system().getUnityBuild(buildId).then(setUnityBuild);
 		})
-	}, [ engine, unityBuild ])
+	}, [ engine, solceryAPI, unityBuild ])
 			
+	const onAction = (command) => {
+		gameData.actionLog.push({
+			action: command,
+		});
+		for (let game of games) {
+			game.updateLog(gameData.actionLog);
+		}
+	}
 
 	useEffect(() => {
 		if (!content) return;
 		if (!unityBuild) return;
-		if (!playerId) return;
+		console.log('content: ', content)
 		let layoutOverride = layoutPresets;
 		if (!layoutOverride || layoutOverride.length === 0) {
 			layoutOverride = undefined; // TODO: empty layoutPresets should be undefined
@@ -109,54 +79,52 @@ export default function PlayPage() {
 			})
 		}
 
-		setGame(new Game({
-			unityBuild,
-			content,
-			actionLog: [{
+		let actionLog = [
+			{
 				action: {
 					type: 'init',
 				}
-			}],
-			seed,
-			layoutOverride,
-			nfts,
+			}
+		];
+		setGameData({
+			id: 'LOCAL_GAME',
 			players,
-			playerId,
-		}))
-	}, [ content, playerId, unityBuild, layoutPresets ])
+			actionLog,
+			seed,
+			content,
+			unityBuild,
+			layoutOverride,
+		})
+	}, [ content, unityBuild, layoutPresets ])
 
 	useEffect(() => {
-		if (!game) return;
-	}, [ game ])
+		if (!gameData) return;
+		if (games) return;
+		let playerGames = [];
+		for (let player of gameData.players) {
+			let playerGameData = Object.assign({
+				playerId: player.id, // TODO: add nfts
+			}, gameData);
+			let playerGame = new Game(playerGameData);
+			playerGames.push(playerGame);
+		}
+		setGames(playerGames);
+	}, [ gameData ])
 
-	const onError = (err) => {
-		console.log('onPlayPageError');
-		console.log(err)
-	}
+	useEffect(() => {
+		if (!games) return;
+		for (let game of games) {
+			game.onAction = onAction; // HACK
+		}
+	}, [ games ])
 
-	const onPlayerAction = useCallback((action) => {
-		if (!game) return;
-		console.log('onPlayerAction', action)
-	}, [ game ]);
-
-	const onPlayerChosen = () => {
-		setPlayerId(selectedPlayerId);
-	}
-
-	if (players && !playerId) return <>
-		<Select onChange={setSelectedPlayerId} defaultValue={selectedPlayerId}>
-			{players.map(player => 
-				<Option key={player.id} value={player.id}>
-					{`Player ${player.index}`}
-				</Option>
-			)}
-		</Select>
-		<Button onClick={onPlayerChosen}>
-			GO!
-		</Button>
-		</>
-	if (!game) return <>Loading</>;
-	return <GameProvider game={game}>
-			<GameClient/>
-		</GameProvider>;
+	if (!games) return <></>;
+	let gameClassName = 'game-frame ' + (games.length > 1 ? 'multi' : 'single');
+	return (<div className='games-space'>
+		{games.map((game, index) => <div className={gameClassName}>
+			<GameProvider game={game}> 
+				<GameClient/>
+			</GameProvider>
+		</div>)}
+	</div>);
 }

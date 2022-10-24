@@ -24,9 +24,9 @@ class Random {
 export class BrickRuntime {
 	bricks = {};
 	constructor(content, seed = 0) {
-		const basicActions = require('./action');
-		const basicConditions = require('./condition');
-		const basicValues = require('./value');
+		const { basicActions } = require('./action');
+		const { basicConditions } = require('./condition');
+		const { basicValues } = require('./value');
 		basicActions.forEach((brick) => insertTable(this.bricks, brick, brick.lib, brick.func));
 		basicConditions.forEach((brick) => insertTable(this.bricks, brick, brick.lib, brick.func));
 		basicValues.forEach((brick) => insertTable(this.bricks, brick, brick.lib, brick.func));

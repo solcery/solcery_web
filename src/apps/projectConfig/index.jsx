@@ -2,7 +2,7 @@ import { useEffect, useState, useCallback } from 'react';
 import { useProject } from '../../contexts/project'
 import DocumentEditor from '../document';
 import Document from '../../content/document';
-import { notify } from '../../components/notification';
+import { notif } from '../../components/notification';
 
 const schema = {
 	code: 'projectConfig',
@@ -48,10 +48,8 @@ export default function ProjectConfig() {
 
 	const onSave = (fields) => {
 		return engine.setConfig({ fields }).then(res => {
-			if (res.modifiedCount) {
-				notify({ message: 'Project config updated', type: 'success' });
-				reloadDoc();
-			}
+			notif.success('Project config updated');
+			reloadDoc();
 		});
 	};
 

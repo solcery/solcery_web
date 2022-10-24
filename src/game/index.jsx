@@ -1,5 +1,4 @@
 import { BrickRuntime } from '../content/brickLib/runtime';
-import { notify } from '../components/notification';
 import { getTable } from '../utils';
 import { UnityPackage } from './unityPackage';
 
@@ -61,13 +60,12 @@ export class Game {
 		this.version = data.version; // Unused
 		this.players = data.players;
 		this.playerId = data.playerId; // Current player info
-		this.content = data.content;
+		this.content = JSON.parse(JSON.stringify(data.content));
 		this.nfts = data.nfts ?? [];
 		this.unityBuild = data.unityBuild;
 		this.onError = data.onError;
 		this.modifiers = data.modifiers;
 		this.onAction = data.onAction;
-		console.log(this.playerId)
 		if (!this.onAction) {
 			this.onAction = (action) => {
 				console.log('default on action')

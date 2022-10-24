@@ -4,7 +4,7 @@ import { useBrickLibrary } from '../../contexts/brickLibrary';
 import { useTemplate } from '../../contexts/template';
 import { useDocument } from '../../contexts/document';
 import DocumentEditor from '../document';
-import { notify } from '../../components/notification';
+import { notif } from '../../components/notification';
 
 export function ObjectPage() {
 	const { objectId } = useParams();
@@ -24,11 +24,7 @@ export function ObjectPage() {
 
 	const onSave = (payload) => {
 		engine.template(template.code).object(objectId).update(payload).then(res => {
-			notify({
-				message: 'Object updated',
-				description: `${objectId}`,
-				type: 'success',
-			});
+			notif.success('Object updated', objectId);
 			load();
 			goUp();
 		});

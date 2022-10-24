@@ -19,9 +19,6 @@
       resizeCanvas();
 
       var unityInstance;
-      window.dispatchReactUnityEvent = (event, param) => {
-        window.top.onMessageFromUnity(event, param); 
-      } 
 
 
       function chunkSubstr(str, size = 65536) {
@@ -53,6 +50,10 @@
        }
       }
 
+      window.launch = (config) => {
+        eval(config.loaderScript);
+        createUnityInstance(document.querySelector("#unity-canvas"), config, onDownloadProgress).then(instance => unityInstance = instance);
+      }
 
       window.sendToUnity = (jsonData) => {
         let data = JSON.parse(jsonData)
@@ -64,14 +65,26 @@
         }
       }
 
-      const onDownloadProgress = (progress) => {
-        window.top.onUnityDownloadProgress(progress);
+      const sendMessageToParent = (type, data) => {
+        window.top.postMessage({ type, data })
       }
 
-      window.top.getUnityConfig().then(config => {
-        eval(config.loaderScript);
-        createUnityInstance(document.querySelector("#unity-canvas"), config, onDownloadProgress).then(instance => unityInstance = instance);
-      });
+      const onDownloadProgress = (progress) => {
+        sendMessageToParent('dowloadProgress', progress);
+      }
+
+      window.dispatchReactUnityEvent = (event, stringParam) => {
+        if (stringParam) {
+          var param = JSON.parse(stringParam);
+        }
+        // if (event === 'OnUnityLoadProgress') { // TODO: postMessage takes too much time
+        //   window.top.onUnityProgress(param);
+        //   return;
+        // }
+        sendMessageToParent('unityEvent', { event, param });
+      }
+      sendMessageToParent('iframeReady');
+
     </script>
   </body>
 </html>

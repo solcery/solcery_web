@@ -4,7 +4,7 @@ import { useUser } from '../contexts/user';
 import { useProject } from '../contexts/project';
 import { build, validate } from '../content';
 import { DownloadJSON } from './DownloadJSON';
-import { notify } from './notification';
+import { notif } from './notification';
 import { Link, useNavigate } from 'react-router-dom';
 import { Game } from '../game';
 import { DownloadOutlined } from '@ant-design/icons';
@@ -20,11 +20,7 @@ export function UnityBuilder() {
 		let content = await engine.getContent({ objects: true, templates: true });
 		let res = build({ targets: ['web', 'unity_local'], content });
 		if (!res.status) {
-			notify({
-				message: 'Unity build error',
-				description: 'Content validation unsuccessfull',
-				type: 'error'
-			})
+			notif.error('Unity build error', 'Content is not valid');
 			navigate('validator');
 			return;
 		}

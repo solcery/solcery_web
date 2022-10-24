@@ -1,6 +1,7 @@
 import { useGameApi } from '../../contexts/gameApi';
 import { usePlayer } from '../../contexts/player';
 import { useGame } from '../../contexts/game';
+import { notif } from '../../components/notification';
 import GameClient from '../../components/gameClient';
 import { HomeIcon } from '../../components/icons';
 import { Menu } from './menu';
@@ -34,11 +35,7 @@ export const GameTest = () => {
 		// 	error: err.data,
 		// }
 		// gameApi.game.bugreport({ payload }).then(() => {
-		// 	notify({
-		// 		message: `Fatal error`,
-		// 		description: 'Bug report automatically sent. Game cancelled.',
-		// 		type: 'error',
-		// 	});
+		// 	notif.error('Fatal error', 'Bug report automatically sent. Game cancelled');
 		// 	cancelGameOnError(gameId);
 		// })
 	}

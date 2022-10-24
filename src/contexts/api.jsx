@@ -7,7 +7,10 @@ export function ApiProvider(props) {
 	const [ solceryAPI, setSolceryAPI ] = useState();
 
 	useEffect(() => {
-		new SolceryAPI({ url: 'http://localhost:5000/api/' }).connect().then(setSolceryAPI)
+		new SolceryAPI({ url: 'http://localhost:5000/api/' }).connect().then(api => {
+			console.log(api)
+			api.createAccessor().then(setSolceryAPI);
+		})
 	}, [])
 
 	return <ApiContext.Provider value={{ solceryAPI }}>

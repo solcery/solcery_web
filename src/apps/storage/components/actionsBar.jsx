@@ -1,7 +1,7 @@
 import { useProject } from '../../../contexts/project';
 import { useUser } from '../../../contexts/user';
 import { Button } from 'antd';
-import { notify } from '../../../components/notification';
+import { notif } from '../../../components/notification';
 import { useNavigate } from 'react-router-dom';
 
 export const ActionsBar = (props) => {
@@ -19,12 +19,7 @@ export const ActionsBar = (props) => {
 			if (fastCopy) {
 				navigate(`${insertedId}`);
 			} else {
-				notify({
-					message: 'Object created',
-					type: 'success',
-					description: insertedId,
-					url: `${templateCode}/${insertedId}`,
-				});
+				notif.success('Object created', insertedId, `${templateCode}/${insertedId}`)
 			}
 			if (props.onAction) {
 				props.onAction();
@@ -34,11 +29,7 @@ export const ActionsBar = (props) => {
 	const deleteObject = () => {
 		if (window.confirm('Deleting object [' + object.id + '] ' + object.fields.title + '. Are you sure?')) {
 			engine.template(templateCode).object(object.id).delete().then(res => {
-				notify({
-					message: 'Object deleted',
-					type: 'success',
-					description: object.id,
-				});
+				notif.success('Object deleted', object.id);
 				if (props.onAction) props.onAction();
 			});
 		}
