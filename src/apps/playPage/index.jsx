@@ -53,11 +53,11 @@ export default function PlayPage() {
 	useEffect(() => {
 		if (!content) return;
 		if (!unityBuild) return;
-		console.log('content: ', content)
 		let layoutOverride = layoutPresets;
 		if (!layoutOverride || layoutOverride.length === 0) {
 			layoutOverride = undefined; // TODO: empty layoutPresets should be undefined
 		}
+		console.log(nfts)
 		let seed = Math.floor(Math.random() * 255);
 		
 		let players = [];
@@ -68,7 +68,6 @@ export default function PlayPage() {
 				index: playerInfo.index,
 			})
 		}
-
 		let actionLog = [
 			{
 				action: {

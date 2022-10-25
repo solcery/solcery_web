@@ -30,6 +30,11 @@ const schema = {
 						data: {
 							fields: [
 								{
+									code: 'player',
+									name: 'Player',
+									type: 'SLink<players>',
+								},
+								{
 									code: 'name',
 									name: 'Name',
 									type: 'SString',

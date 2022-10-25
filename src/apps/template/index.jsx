@@ -37,10 +37,8 @@ export function TemplateSchema() {
 			return;
 		}
 		if (schema) {
-			engine.template(templateCode).setSchema(schema).then((res) => {
-				if (res.acknowledged) {
-					notif.success('Schema applied!');
-				}
+			engine.template(templateCode).setSchema(schema).then(() => {
+				notif.success('Schema applied!');
 			});
 		}
 	};

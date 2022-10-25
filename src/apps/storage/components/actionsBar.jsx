@@ -32,7 +32,6 @@ export const ActionsBar = (props) => {
 	const deleteObject = async () => {
 		if (!window.confirm('Deleting object [' + object.id + '] ' + (object.fields.name ?? '') + '. Are you sure?')) return
 		let res = await engine.template(templateCode).object(object.id).delete();
-		if (!res) return;
 		notif.success('Object deleted', object.id);
 		if (props.onAction) props.onAction();
 	};

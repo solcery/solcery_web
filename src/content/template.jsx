@@ -12,6 +12,7 @@ export class Template {
 	}
 
 	buildObject = (object, meta) => {
+		meta.template = this;
 		meta.object = object;
 		let result = {
 			id: meta.getIntId(object._id),

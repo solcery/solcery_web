@@ -1,7 +1,7 @@
 import { Button, Input } from 'antd';
 import { useState } from 'react';
 import { useProject } from '../../contexts/project';
-import { migrator } from './migrations/03.10.22_structLayout';
+import { migrator } from './migrations/25.10.22_nullableEnums';
 
 const { TextArea } = Input;
 

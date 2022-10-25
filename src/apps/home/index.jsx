@@ -42,7 +42,6 @@ export default function Home() {
 
 	const syncContent = async () => {
 		let res = await engine.sync();
-		if (!res) return;
 		notif.success('Sync successful');
 	}
 

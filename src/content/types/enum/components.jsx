@@ -4,7 +4,7 @@ import { Select } from 'antd';
 const { Option } = Select;
 
 export const ValueRender = (props) => {
-	let defaultIndex = props.type.values.indexOf(props.defaultValue ?? 0);
+	let defaultIndex = props.type.values.indexOf(props.defaultValue ?? null);
 	if (!props.onChange) {
 		return <>{props.type.titles[defaultIndex]}</>;
 	}
@@ -20,7 +20,7 @@ export const ValueRender = (props) => {
 };
 
 export const FilterRender = (props) => {
-	let defaultIndex = props.type.values.indexOf(props.defaultValue ?? 0);
+	let defaultIndex = props.type.values.indexOf(props.defaultValue ?? null);
 	if (!props.onChange) {
 		return <>{props.type.titles[defaultIndex]}</>;
 	}
