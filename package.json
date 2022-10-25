@@ -21,6 +21,7 @@
     "antd": "^4.19.5",
     "craco-less": "^2.0.0",
     "dagre": "^0.8.5",
+    "dotenv": "^16.0.3",
     "js-md5": "^0.7.3",
     "mongodb": "^4.10.0",
     "node-polyfill-webpack-plugin": "^2.0.1",

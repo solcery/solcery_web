@@ -71,7 +71,6 @@ export class Game {
 		this.onAction = data.onAction;
 		if (!this.onAction) {
 			this.onAction = (action) => {
-				console.log('default on action')
 				this.applyAction({
 					player: this.playerId,
 					action
