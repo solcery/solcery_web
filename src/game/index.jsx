@@ -69,15 +69,17 @@ export class Game {
 		this.onError = data.onError;
 		this.modifiers = data.modifiers;
 		this.onAction = data.onAction;
-		if (!this.onAction) {
-			this.onAction = (action) => {
+		this.onPlayerAction = (action) => {
+			if (!this.onAction) {
 				this.applyAction({
 					player: this.playerId,
-					action
+					action,
 				});
 				if (this.onLogUpdate) {
 					this.onLogUpdate(this.actionLog);
 				}
+			} else {
+				this.onAction(action);
 			}
 		}
 		this.gameState = new GameState({
@@ -95,6 +97,11 @@ export class Game {
 	}
 
 	applyAction(action) {
+		const playerId = action.playerId;
+		let player = this.players.find(player => player.id === playerId);
+		if (player) {
+			var player_index = player.index;
+		}
 		let { type, data } = action.action;
 		this.gameState.newPackage();
 		switch (type) {
@@ -102,13 +109,13 @@ export class Game {
 				this.gameState.start(this.layoutOverride, this.nfts);
 				break;
 			case 'leftClick':
-				this.gameState.objectEvent(data.objectId, 'action_on_left_click');
+				this.gameState.objectEvent(data.objectId, 'action_on_left_click', { player_index });
 				break;
 			case 'rightClick':
-				this.gameState.objectEvent(data.objectId, 'action_on_right_click');
+				this.gameState.objectEvent(data.objectId, 'action_on_right_click', { player_index });
 				break;
 			case 'dragndrop':
-				this.gameState.dragndrop(data.objectId, data.dragndropId, data.targetPlaceId);
+				this.gameState.dragndrop(data.objectId, data.dragndropId, data.targetPlaceId, { player_index });
 				break;
 			default: 
 				throw ('ERR');
@@ -158,7 +165,7 @@ export class Game {
 				throw 'Unkown client action: ', action;
 
 		}
-		this.onAction(action);
+		this.onPlayerAction(action);
 	}
 
 	getUnityContent = () => this.content.unity;
@@ -265,10 +272,10 @@ export class GameState {
 		}
 	};
 
-	objectEvent = (objectId, event) => {
+	objectEvent = (objectId, event, vars) => {
 		let object = this.objects[objectId];
 		if (!object) throw new Error('Attempt to call event unkown object!');
-		let ctx = this.createContext(object);
+		let ctx = this.createContext(object, { vars });
 		let cardType = this.content.cardTypes[object.tplId];
 		if (cardType[event]) {
 			this.runtime.execBrick(cardType[event], ctx);

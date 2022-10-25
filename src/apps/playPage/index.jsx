@@ -50,15 +50,6 @@ export default function PlayPage() {
 		})
 	}, [ engine, solceryAPI, unityBuild ])
 			
-	const onAction = (command) => {
-		gameData.actionLog.push({
-			action: command,
-		});
-		for (let game of games) {
-			game.updateLog(gameData.actionLog);
-		}
-	}
-
 	useEffect(() => {
 		if (!content) return;
 		if (!unityBuild) return;
@@ -75,7 +66,6 @@ export default function PlayPage() {
 			players.push({
 				id: playerInfo.id,
 				index: playerInfo.index,
-
 			})
 		}
 
@@ -114,7 +104,16 @@ export default function PlayPage() {
 	useEffect(() => {
 		if (!games) return;
 		for (let game of games) {
-			game.onAction = onAction; // HACK
+			game.onAction = (action) => {
+				let cmd = {
+					playerId: game.playerId,
+					action,
+				}
+				gameData.actionLog.push(cmd);
+				for (let g of games) {
+					g.updateLog(gameData.actionLog);
+				}
+			}
 		}
 	}, [ games ])
 
