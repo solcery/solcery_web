@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useProject } from '../../../contexts/project';
 import { useContent } from '../../../contexts/content';
+import { useApi } from '../../../contexts/api';
 import { Select } from 'antd';
 const { Option } = Select;
 
@@ -13,7 +14,7 @@ const filterOption = (inputValue, option) => {
 
 export const ValueRender = (props) => {
 	const [objects, setObjects] = useState(undefined);
-	const [ api, setApi ] = useState();
+	const { solceryAPI } = useApi();
 	const { projectId } = useProject();
 	const { content } = useContent();
 
@@ -29,8 +30,7 @@ export const ValueRender = (props) => {
 
 	useEffect(() => {
 		if (props.type.project) {
-			// let api = new SolceryAPIConnection(props.type.project, { modules: [ 'template' ]});
-			// api.template.getAllObjects({ template: props.type.templateCode }).then(loadObjects);
+			solceryAPI.engine(props.type.project).template(props.type.templateCode).getObjects().then(loadObjects);
 			return;
 		} else {
 			if (!content) return;

@@ -8,6 +8,7 @@ import { notif } from '../../components/notification';
 const schema = {
 	code: 'users',
 	fields: [
+		{ code: 'nick', name: 'Nickname', type: 'SString' },
 		{ code: 'css', name: 'CSS', type: 'SString' },
 		{ code: 'readonlyBricks', name: 'Show readonly bricks', type: 'SBool' },
 		{ code: 'showBrickComments', name: 'Show brick comments', type: 'SBool' },

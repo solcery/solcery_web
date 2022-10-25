@@ -42,7 +42,7 @@ export function UserProvider(props) {
 		if (!userId) return;
  		engine.setAccessParam('pubkey', userId);
 		engine.user(userId).get().then(res => {
-			setUser(Object.assign({ userId, }, res.fields))
+			setUser(Object.assign({ userId }, res.fields))
 		});
 	}, [ userId, engine ])
 

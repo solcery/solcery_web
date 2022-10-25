@@ -82,7 +82,7 @@ export const TopMenu = () => {
 	if (user) items.push({
 		key: 'profile',
 		icon: <UserOutlined />,
-		label: <Link to="profile" style={{ fontWeight: 'bold' }}>{user.login}</Link>,
+		label: <Link to="profile" style={{ fontWeight: 'bold' }}>{user.nick}</Link>,
 	})
 
 	return (<>

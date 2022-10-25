@@ -7,8 +7,8 @@ export function ApiProvider(props) {
 	const [ solceryAPI, setSolceryAPI ] = useState();
 
 	useEffect(() => {
-		new SolceryAPI({ url: 'https://solcery-server.herokuapp.com/api/' }).connect().then(api => {
-			console.log(api)
+		const url = process.env.API_URL + '/api/';
+		new SolceryAPI({ url }).connect().then(api => {
 			api.createAccessor().then(setSolceryAPI);
 		})
 	}, [])

@@ -50,7 +50,10 @@ export class Game {
 			for (let { original, override } of places) {
 				let originPlace = this.content.unity.places.objects.find(place => place.id === original);
 				let overridePlace = this.content.unity.places.objects.find(place => place.id === override);
-				Object.assign(originPlace, overridePlace);
+				for (let prop of Object.keys(overridePlace)) {
+					if (prop === 'id') continue;
+					originPlace[prop] = overridePlace[prop];
+				}
 			}
 		}
 	}

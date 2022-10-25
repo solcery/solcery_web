@@ -52,7 +52,7 @@ export default function StorageViewer({ template, docs, fields, onExitEditMode }
 			if (payload.length === 0) {
 				return;
 			}
-			engine.template(template.code).updateObjects({ objects: payload }).then(res => {
+			engine.template(template.code).updateObjects(payload).then(res => {
 				notif.success('Changes applied');
 				updateContent();
 				onExitEditMode();

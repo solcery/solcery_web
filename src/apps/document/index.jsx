@@ -26,15 +26,15 @@ export default function DocumentEditor(props) {
 		() => {
 			// TODO: move to object context
 			let res = props.doc.getChanges();
-			for (let [ key ,value ] of Object.entries(res)) {
-				if (value === undefined) {
-					res[key] = null;
-				}
-			}
 			if (res) {
+				for (let [ key ,value ] of Object.entries(res)) {
+					if (value === undefined) {
+						res[key] = null;
+					}
+				}
 				props.onSave(res);
 			} else {
-				notif.warning('Not saved', 'No changes, exiting');
+				notif.info('Not saved', 'No changes, exiting');
 				exit();
 			}
 		},
