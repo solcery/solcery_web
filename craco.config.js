@@ -27,7 +27,6 @@ module.exports = () => {
       plugins: {
         add: [
           new webpack.DefinePlugin({ process: {} }),
-          new webpack.DefinePlugin(envKeys)
         ]
       },
       configure: {
