@@ -32,7 +32,7 @@ const schema = {
 								{
 									code: 'player',
 									name: 'Player',
-									type: 'SLink<players>',
+									type: 'SInt',
 								},
 								{
 									code: 'name',

@@ -86,6 +86,18 @@ export default function GameClient(props) {
 		setUnityReady(true);
 	}
 
+	const onUnityCommand = (command) => {
+		let content = game.getUnityContent();
+		let commands = content.commands.objects;
+		let command_type = command.command_data_type;
+		let contentCommand = commands.find(cmd => cmd.command_type === command_type);
+		if (contentCommand) {
+			let ctx = { ...command };
+			delete ctx.command_data_type;
+			game.onPlayerCommand(contentCommand.id, ctx);
+		}
+	}
+
 	const onUnityEvent = (event, param) => {
 		switch (event) {
 			case 'OnUnityLoadProgress':
@@ -95,7 +107,7 @@ export default function GameClient(props) {
 				onUnityReady(param)
 				break;
 			case 'SendCommand':
-				game.onClientCommand(param);
+				onUnityCommand(param);
 				break;
 			case 'OnGameStateConfirmed':
 				onUnityGameStateConfirmed();

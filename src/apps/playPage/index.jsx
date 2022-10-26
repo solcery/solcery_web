@@ -59,20 +59,21 @@ export default function PlayPage() {
 		}
 		console.log(nfts)
 		let seed = Math.floor(Math.random() * 255);
-		
 		let players = [];
 		let playerSettings = Object.values(content.web.players);
 		for (let playerInfo of playerSettings) {
+			if (nfts) {
+				var playerNfts = nfts.filter(nft => nft.player === playerInfo.index);
+			}
 			players.push({
 				id: playerInfo.id,
 				index: playerInfo.index,
+				nfts: playerNfts,
 			})
-		}
+		};
 		let actionLog = [
 			{
-				action: {
-					type: 'init',
-				}
+				type: 'init',
 			}
 		];
 		setGameData({
@@ -92,7 +93,7 @@ export default function PlayPage() {
 		let playerGames = [];
 		for (let player of gameData.players) {
 			let playerGameData = Object.assign({
-				playerId: player.id, // TODO: add nfts
+				playerIndex: player.index,
 			}, gameData);
 			let playerGame = new Game(playerGameData);
 			playerGames.push(playerGame);
@@ -104,11 +105,8 @@ export default function PlayPage() {
 		if (!games) return;
 		for (let game of games) {
 			game.onAction = (action) => {
-				let cmd = {
-					playerId: game.playerId,
-					action,
-				}
-				gameData.actionLog.push(cmd);
+				action.playerIndex = game.playerIndex;
+				gameData.actionLog.push(action);
 				for (let g of games) {
 					g.updateLog(gameData.actionLog);
 				}

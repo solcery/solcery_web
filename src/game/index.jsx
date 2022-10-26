@@ -16,26 +16,8 @@ export class Game {
 		}
 	}
 
-	start() {
-		if (this.started) return;
-		if (this.game) {
-			delete this.game;
-			this.game = new Game(this);
-		}
-		try {
-			this.game.start(this.layout, this.nfts);
-			for (let command of this.log) {
-				this.applyCommand(command)
-			}
-		}
-		catch (err) {
-			this.error(err)
-		}
-		this.started = true;
-	}
-
 	modifyUnityContent() {
-		let currentPlayer = this.players.find(player => player.id === this.playerId);
+		let currentPlayer = this.players.find(player => player.index === this.playerIndex);
 		if (!currentPlayer) return;;
 		let contentPlayers = getTable(this.content.unity, 'players', 'objects');
 		if (!contentPlayers) return;
@@ -62,29 +44,18 @@ export class Game {
 		this.id = data.id;
 		this.version = data.version; // Unused
 		this.players = data.players;
-		this.playerId = data.playerId; // Current player info
+		this.playerIndex = data.playerIndex; // Current player info
 		this.content = JSON.parse(JSON.stringify(data.content));
-		this.nfts = data.nfts ?? [];
 		this.unityBuild = data.unityBuild;
 		this.onError = data.onError;
 		this.modifiers = data.modifiers;
 		this.onAction = data.onAction;
 		this.onPlayerAction = (action) => {
-			if (!this.onAction) {
-				this.applyAction({
-					player: this.playerId,
-					action,
-				});
-				if (this.onLogUpdate) {
-					this.onLogUpdate(this.actionLog);
-				}
-			} else {
-				this.onAction(action);
-			}
+			
 		}
 		this.gameState = new GameState({
 			seed: data.seed,
-			content: data.content,
+			content: data.content
 		})
 		this.layoutOverride = data.layoutOverride;
 		this.modifyUnityContent();
@@ -97,28 +68,17 @@ export class Game {
 	}
 
 	applyAction(action) {
-		const playerId = action.playerId;
-		let player = this.players.find(player => player.id === playerId);
-		if (player) {
-			var player_index = player.index;
-		}
-		let { type, data } = action.action;
+		let { type, commandId, ctx, playerIndex } = action;
 		this.gameState.newPackage();
 		switch (type) {
 			case 'init':
-				this.gameState.start(this.layoutOverride, this.nfts);
+				this.gameState.start(this.players, this.layoutOverride);
 				break;
-			case 'leftClick':
-				this.gameState.objectEvent(data.objectId, 'action_on_left_click', { player_index });
-				break;
-			case 'rightClick':
-				this.gameState.objectEvent(data.objectId, 'action_on_right_click', { player_index });
-				break;
-			case 'dragndrop':
-				this.gameState.dragndrop(data.objectId, data.dragndropId, data.targetPlaceId, { player_index });
+			case 'gameCommand':
+				this.gameState.applyCommand(commandId, playerIndex, ctx)
 				break;
 			default: 
-				throw ('ERR');
+				throw ('ERR1');
 		}
 		let pkg = this.gameState.exportPackage();
 		this.actionLog.push({
@@ -138,47 +98,40 @@ export class Game {
 		}
 	}
 
-	onClientCommand = (command) => {
-		let action = {};
-		switch (command.command_data_type) {
-			case 0: // Left click
-				action.type ='leftClick';
-				action.data = {
-					objectId: command.object_id,
-				};
-				break;
-			case 1:
-				action.type ='rightClick';
-				action.data = {
-					objectId: command.object_id,
-				};
-				break;
-			case 2:
-				action.type ='dragndrop';
-				action.data = {
-					objectId: command.object_id,
-					targetPlaceId: command.target_place_id,
-					dragndropId: command.drag_drop_id,
-				};
-				break;
-			default:
-				throw 'Unkown client action: ', action;
-
+	onPlayerCommand = (commandId, ctx) => {
+		let action = {
+			type: 'gameCommand',
+			commandId,
+			ctx,
 		}
-		this.onPlayerAction(action);
+		if (this.onAction) {
+			this.onAction(action);
+			return;
+		}
+		action.playerIndex = this.playerIndex;
+		this.applyAction(action);
+		if (this.onLogUpdate) {
+			this.onLogUpdate(this.actionLog);
+		}
 	}
 
 	getUnityContent = () => this.content.unity;
 
 	getContentOverrides = () => {
 		// TODO: do not override without nfts
-		let nfts = this.nfts.map(nft => ({
-			id: nft.entityId,
-			data: {
-				displayed_name: nft.name,
-				picture: nft.image,
-			},
-		}))
+		let nfts = [];
+		for (let player of this.players) {
+			if (!player.nfts) continue;
+			for (let nft of player.nfts) {
+				nfts.push({
+					id: nft.entityId,
+					data: {
+						displayed_name: nft.name,
+						picture: nft.image,
+					},
+				});
+			}
+		}
 		let card_types = Object.values(this.content.web.cardTypes)
 			.filter(cardType => cardType.nftOverrides)
 			.map(cardType => {
@@ -212,6 +165,7 @@ export class GameState {
 	constructor(data) {
 		this.seed = data.seed ?? 0;
 		this.content = data.content.web;
+		this.players = data.players;
 		this.runtime = new BrickRuntime(this.content, data.seed);
 		for (let attr of Object.values(this.content.gameAttributes)) {
 			this.attrs[attr.code] = 0;
@@ -241,7 +195,7 @@ export class GameState {
 		this.unityPackage[event](...args);
 	}
 
-	start = (layoutOverride, nfts) => {
+	start = (players, layoutOverride) => {
 		let layout = layoutOverride ?? this.content.gameSettings.layout;
 		if (!layout) throw new Error('Error: Trying to initLayout without preset scheme');
 		for (let cardPack of Object.values(this.content.cards)) {
@@ -257,13 +211,17 @@ export class GameState {
 				}
 			}
 		}
-		if (nfts && this.content.collections) {
-			for (let nft of nfts) {
-				let collection = Object.values(this.content.collections)
-					.find(obj => obj.collection === nft.collection);
-				if (!collection) continue;
-				let entity = this.createEntity(collection.cardType, collection.place, collection.initAction);
-				nft.entityId = entity.id;
+		if (this.content.collections) {
+			for (let player of players) {
+				if (!player.nfts) continue;
+				for (let nft of player.nfts) {
+					let collection = Object.values(this.content.collections)
+						.find(obj => obj.collection === nft.collection);
+					if (!collection) continue;
+					let playerInfo = Object.values(this.content.players).find(p => p.index === player.index);
+					let entity = this.createEntity(collection.cardType, playerInfo.nftPlace, collection.initAction);
+					nft.entityId = entity.id;
+				}
 			}
 		}
 		if (this.content.gameSettings.initAction) {
@@ -279,6 +237,23 @@ export class GameState {
 		let cardType = this.content.cardTypes[object.tplId];
 		if (cardType[event]) {
 			this.runtime.execBrick(cardType[event], ctx);
+		}
+	};
+
+	applyCommand = (commandId, playerIndex, scopeVars) => {
+		let command = this.content.commands[commandId];
+		if (!command) throw 'No such game command';
+		if (playerIndex) {
+			var extra = { 
+				vars: { 
+					player_index: playerIndex 
+				} 
+			}
+		}
+		let ctx = this.createContext(undefined, extra);
+		if (scopeVars) Object.assign(ctx.scopes[0].vars, scopeVars);
+		if (command.action) {
+			this.runtime.execBrick(command.action, ctx);
 		}
 	};
 
@@ -308,13 +283,13 @@ export class GameState {
 		entity.attrs.place = place;
 		let cardType = this.content.cardTypes[cardTypeId];
 		if (!cardType) throw new Error('Game.createEntity error: Unknown cardType!');
+		this.pushPackageEvent('onEntityCreated', entity);
 		if (cardType.action_on_create) {
 			this.runtime.execBrick(cardType.action_on_create, this.createContext(entity, ctx));
 		}
 		if (initAction) {
 			this.runtime.execBrick(initAction, this.createContext(entity, ctx));
 		}
-		this.pushPackageEvent('onEntityCreated', entity);
 		return entity;
 	}
 

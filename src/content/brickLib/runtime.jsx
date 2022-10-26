@@ -70,7 +70,9 @@ export class BrickRuntime {
 	context = (object, extra) => {
 		var ctx = Object.assign(
 			{
-				scopes: [],
+				scopes: [
+					this.newScope(),
+				],
 				vars: {},
 			},
 			extra

@@ -30,14 +30,31 @@ export function UnityBuilder() {
 		}
 		content = res.constructed;
 		content.unity = content.unity_local;
+		let players = [];
+		let playerSettings = Object.values(content.web.players);
+		for (let playerInfo of playerSettings) {
+			if (nfts) {
+				var playerNfts = nfts.filter(nft => nft.player === playerInfo.index);
+			}
+			players.push({
+				id: playerInfo.id,
+				index: playerInfo.index,
+				nfts: playerNfts,
+			})
+		};
 		let session = new Game({
 			content,
 			layoutOverride,
-			nfts
+			nfts,
+			players,
+			seed: 1,
+			actionLog: [],
+			playerId: players[0].id,
 		});
-		session.start();
-		let unityPackage = session.game.exportPackage();
+		session.gameState.start(session.players);
+		let unityPackage = session.gameState.exportPackage();
 		unityPackage.predict = true;
+		console.log(unityPackage)
 		setResult([
 			{
 				filename: 'game_content',
