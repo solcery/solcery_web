@@ -1,7 +1,8 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { SolceryAPI } from '../api';
 
-const SERVER_URL = 'https://solcery-server.herokuapp.com'
+// const SERVER_URL = 'https://solcery-server.herokuapp.com'
+const SERVER_URL = 'http://localhost:5000'
 
 const ApiContext = React.createContext(undefined);
 
