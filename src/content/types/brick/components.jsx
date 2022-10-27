@@ -18,6 +18,7 @@ const paramMapSchema = {
 		valueType: {
 			name: 'SEnum',
 			data: {
+				required: true,
 				values: ['action', 'condition', 'value'],
 				titles: ['Action', 'Condition', 'Value'],
 			},

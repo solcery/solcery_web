@@ -22,7 +22,7 @@ export function ProjectProvider(props) {
 	useEffect(() => {
 		if (!engine) return;
 		engine.getConfig().then(res => {
-			document.title = `${res.fields.projectName} - Sage`
+			document.title = `${res.projectName} - Sage`
 		});
 	}, [ engine ])
 

@@ -39,7 +39,9 @@ export default function ProjectConfig() {
 	const { engine } = useProject();
 
 	const reloadDoc = useCallback(() => {
-		engine.getConfig().then(res => setDoc(new Document(schema, res.fields)));
+		engine.getConfig().then(res => {
+			setDoc(new Document(schema, res))
+		});
 	}, [ engine ]);
 
 	useEffect(() => {
@@ -47,7 +49,7 @@ export default function ProjectConfig() {
 	}, [ reloadDoc ]);
 
 	const onSave = (fields) => {
-		return engine.setConfig({ fields }).then(res => {
+		return engine.setConfig(fields).then(res => {
 			notif.success('Project config updated');
 			reloadDoc();
 		});
