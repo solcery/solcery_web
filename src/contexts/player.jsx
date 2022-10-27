@@ -6,8 +6,8 @@ import { GameProvider } from './game';
 import { Game } from '../game';
 import { io } from 'socket.io-client';
 
-// const SERVER_URL = 'ws://solcery-server.herokuapp.com';
-const SERVER_URL = 'ws://localhost:5000';
+const SERVER_URL = 'ws://solcery-server.herokuapp.com';
+// const SERVER_URL = 'ws://localhost:5000';
 
 const PlayerContext = React.createContext(undefined);
 // const publicKey = new PublicKey(''); // TODO: CHEAT
