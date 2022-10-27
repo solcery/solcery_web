@@ -1,16 +1,13 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { SolceryAPI } from '../api';
 
-const SERVER_URL = 'https://solcery-server.herokuapp.com'
-// const SERVER_URL = 'http://localhost:5000'
-
 const ApiContext = React.createContext(undefined);
 
 export function ApiProvider(props) {
 	const [ solceryAPI, setSolceryAPI ] = useState();
 
 	useEffect(() => {
-		const url = SERVER_URL + '/api/';
+		const url = process.env.REACT_APP_API_URL;
 		new SolceryAPI({ url }).connect().then(api => {
 			api.createAccessor().then(setSolceryAPI);
 		})

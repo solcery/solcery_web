@@ -6,25 +6,8 @@ import { GameProvider } from './game';
 import { Game } from '../game';
 import { io } from 'socket.io-client';
 
-const SERVER_URL = 'ws://solcery-server.herokuapp.com';
-// const SERVER_URL = 'ws://localhost:5000';
-
 const PlayerContext = React.createContext(undefined);
 // const publicKey = new PublicKey(''); // TODO: CHEAT
-
-async function connectToServer(url) { // TODO: move to independent class
-    let connected = false;
-    var ws = new WebSocket(url);
-    return new Promise((resolve, reject) => {
-        // setTimeout(function() {
-        //     if (!connected) reject('Socket timeout: Failed to handshake');
-        // }, 5000);
-        ws.onopen = () => {
-            connected = true;
-            resolve(ws);
-        }
-    });
-}
 
 export const PlayerProvider = (props) => {
     let { projectId } = useParams();
@@ -106,7 +89,7 @@ export const PlayerProvider = (props) => {
         if (!publicKey) return;
         if (ws.current) return;
          
-        ws.current = io(SERVER_URL, {
+        ws.current = io(process.env.REACT_APP_WS_URL, {
           reconnectionDelayMax: 10000,
         });
         ws.current.on('message', onMessage);

@@ -13,7 +13,7 @@ export const TopMenu = () => {
 
 	useEffect(() => {
 		engine.getContent({ templates: true }).then((res) => setTemplates(res.templates));
-		engine.getConfig().then(res => setProjectName(res.fields.projectName));
+		engine.getConfig().then(res => setProjectName(res.projectName));
 
 	}, [engine]);
 
