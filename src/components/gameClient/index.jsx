@@ -178,7 +178,7 @@ export default function GameClient(props) {
 
 	useEffect(() => {
 		if (!game) return;
-		const name = `${game.id}.${game.playerId}.iframe`;
+		const name = `${game.id}.${game.playerIndex}.iframe`;
 
 		window.addEventListener('message', (message) => {
 			if (message.source.name !== name) {

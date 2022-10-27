@@ -6,15 +6,6 @@ import { UserProvider } from './user';
 import { AuthProvider } from './auth';
 import { useApi } from './api';
 
-const apiConfig = {
-	url: 'https://create.solcery.xyz/api/',
-	modules: [
-		'project',
-		'template',
-		'user'
-	],
-}
-
 const ProjectContext = React.createContext(undefined);
 
 export function ProjectProvider(props) {

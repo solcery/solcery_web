@@ -3,18 +3,16 @@ import { useParams, Outlet } from 'react-router-dom';
 import { SolceryAPI } from '../api';
 import { PlayerProvider } from './player';
 import { AuthProvider } from './auth';
-
-const apiConfig = {
-	url: 'https://solcery-server.herokuapp.com/api/',
-}
+import { useApi } from './api';
 
 const GameApiContext = React.createContext(undefined);
 
 export function GameApiProvider(props) {
 	let { projectId } = useParams();
-	let [gameApi, setGameApi] = useState();
+	let { solceryAPI } = useApi();
 	let [ status, setStatus ] = useState();
 	let [ gameInfo, setGameInfo ] = useState();
+	let [ gameApi, setGameApi ] = useState();
 	let [ gameId, setGameId ] = useState(undefined);
 
 	useEffect(() => {
@@ -24,13 +22,14 @@ export function GameApiProvider(props) {
 
 	useEffect(() => {
 		if (!gameId) return;
-		SolceryAPI.create(apiConfig).then(async (api) => {
-			let gameInfo = await api.call('game.getGameInfo', { gameId });
-			console.log(gameInfo)
-			setGameInfo(gameInfo);
-			setGameApi(api);
-		});
-	}, [ gameId ]);
+		if (!solceryAPI) return;
+		setGameApi(solceryAPI.game(gameId));
+	}, [ gameId, solceryAPI ]);
+
+	useEffect(() => {
+		if (!gameApi) return;
+		gameApi.getGameInfo().then(setGameInfo);
+	}, [ gameApi])
 
 	return (<GameApiContext.Provider value={{ gameInfo, gameApi, gameId }}>
 		<AuthProvider>

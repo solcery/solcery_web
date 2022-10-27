@@ -64,8 +64,7 @@ export class Game {
 			for (let action of data.actionLog) {
 				this.applyAction(action);
 			}
-		}
-	}
+		}	}
 
 	applyAction(action) {
 		let { type, commandId, ctx, playerIndex } = action;

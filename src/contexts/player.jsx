@@ -6,6 +6,9 @@ import { GameProvider } from './game';
 import { Game } from '../game';
 import { io } from 'socket.io-client';
 
+// const SERVER_URL = 'ws://solcery-server.herokuapp.com';
+const SERVER_URL = 'ws://localhost:5000';
+
 const PlayerContext = React.createContext(undefined);
 // const publicKey = new PublicKey(''); // TODO: CHEAT
 
@@ -37,19 +40,20 @@ export const PlayerProvider = (props) => {
 
     const onGameStart = async (data) => {
         let version = data.version;
-        let res = await gameApi.call('game.getGameVersion', { gameId, version });
+        let res = await gameApi.getGameVersion(version);
+        let players = data.players;
+        let myPlayerIndex = data.players.find(p => p.id = publicKey.toBase58()).index;
         data.content = res.content;
         data.unityBuild = res.unityBuild;
         data.onAction = onAction;
-        data.playerId = publicKey.toBase58();
+        data.playerIndex = myPlayerIndex;
         game.current = new Game(data);
         setIngame(true);
     }
 
     const onGameAction = (data) => {
         if (!game.current) {
-            throw new Error('err')
-            // storedGameUpdates.current.push(data);
+            throw new Error('err');
             return;
         }
         game.current.updateLog(data.actionLog);
@@ -73,7 +77,7 @@ export const PlayerProvider = (props) => {
         ws.current.emit('message', data);
     }, [ status ])
 
-    const onAction =(action) => {
+    const onAction = (action) => {
         if (!ws) throw 'No WebSocket';
         ws.current.emit('message', {
             type: 'action',
@@ -102,7 +106,7 @@ export const PlayerProvider = (props) => {
         if (!publicKey) return;
         if (ws.current) return;
          
-        ws.current = io('ws://solcery-server.herokuapp.com', {
+        ws.current = io(SERVER_URL, {
           reconnectionDelayMax: 10000,
         });
         ws.current.on('message', onMessage);
