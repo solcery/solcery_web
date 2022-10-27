@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Unity WebGL Player | solcery_client_unity</title>
+  </head>
+  <body style="padding: 0px">
+    <canvas id="unity-canvas" width=1920 height=900 style="height: 100%; position: absolute; top: 0px; left: 0px; background: green"/>
+    <script>
+
+      function resizeCanvas()
+      {
+        let canvas = document.getElementsByTagName("unity-canvas");
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+      }
+      window.addEventListener('resize', resizeCanvas, false);
+      resizeCanvas();
+
+      var unityInstance;
+
+
+      function chunkSubstr(str, size = 65536) {
+        const numChunks = Math.ceil(str.length / size)
+        const chunks = new Array(numChunks)
+
+        for (let i = 0, o = 0; i < numChunks; ++i, o += size) {
+          chunks[i] = str.substr(o, size)
+        }
+
+        return chunks
+      }
+
+
+
+      const sendPackage = (funcName, param) => {
+       const USHORT_SIZE = 65536;
+       let data = typeof param === 'string' ? param : JSON.stringify(param);
+       const chunks = chunkSubstr(data)
+       // console.log(`Web - sending package to Unity client [${funcName}]: ${data}`);
+       for (let i = 0; i < chunks.length; i++) {
+         let chunk_package = {
+           count: chunks.length,
+           index: i,
+           value: chunks[i],
+         };
+         // console.log(`Web - sending package to Unity client [${funcName}]: ${JSON.stringify(chunk_package)}`);
+         unityInstance.SendMessage('ReactToUnity', funcName, JSON.stringify(chunk_package));
+       }
+      }
+
+      window.launch = (config) => {
+        eval(config.loaderScript);
+        createUnityInstance(document.querySelector("#unity-canvas"), config, onDownloadProgress).then(instance => unityInstance = instance);
+      }
+
+      window.sendToUnity = (jsonData) => {
+        let data = JSON.parse(jsonData)
+        try {
+          sendPackage(data.funcName, data.param)
+        }
+        catch (e) {
+          // TODO: error handling
+        }
+      }
+
+      const sendMessageToParent = (type, data) => {
+        window.top.postMessage({ type, data })
+      }
+
+      const onDownloadProgress = (progress) => {
+        sendMessageToParent('dowloadProgress', progress);
+      }
+
+      window.dispatchReactUnityEvent = (event, stringParam) => {
+        if (stringParam) {
+          var param = JSON.parse(stringParam);
+        }
+        // if (event === 'OnUnityLoadProgress') { // TODO: postMessage takes too much time
+        //   window.top.onUnityProgress(param);
+        //   return;
+        // }
+        sendMessageToParent('unityEvent', { event, param });
+      }
+      sendMessageToParent('iframeReady');
+
+    </script>
+  </body>
+</html>
