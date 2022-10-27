@@ -1,9 +1,9 @@
 import { createRoot } from "react-dom/client";
 
-const Empty = () => <>Empty</>;
+import Sage from './builds/Sage';
 
 let container = document.getElementById('root')
 const root = createRoot(container);
 
-root.render(<>Empty</>);
+root.render(<Sage/>);
 
