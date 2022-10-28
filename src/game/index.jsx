@@ -254,6 +254,11 @@ export class GameState {
 		if (command.action) {
 			this.runtime.execBrick(command.action, ctx);
 		}
+		for (let objectId of Object.keys(this.objects)) {
+			if (this.objects[objectId].deleted) {
+				delete this.objects[objectId];
+			}
+		}
 	};
 
 	dragndrop = (objectId, dragAndDropId, targetPlace) => {
@@ -290,6 +295,11 @@ export class GameState {
 			this.runtime.execBrick(initAction, this.createContext(entity, ctx));
 		}
 		return entity;
+	}
+
+	deleteEntity(entity) {
+		entity.setAttr('place', 0);
+		entity.deleted = true;
 	}
 
 	createContext(object, extra = {}) {
