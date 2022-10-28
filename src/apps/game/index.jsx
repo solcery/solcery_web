@@ -45,7 +45,9 @@ export const GameTest = () => {
 	return (<>
 		{/*<Toolbar onLeaveGame={leaveGame} gameReady={gameReady} gameSession={gameSession}/>*/}
 		{!game && <Menu/>}
-		{game && <GameClient/>}
+		{game && <div style={{ width: '100%', aspectRatio: '32/15', position: 'absolute' }}>
+			<GameClient/>
+		</div>}
 		{game && <Button onClick={leave}>LEAVE</Button>}
 		{/*{gameReady && finished && <div className='blackout'>
 			<BigButton
