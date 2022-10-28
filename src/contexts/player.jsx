@@ -24,8 +24,7 @@ export const PlayerProvider = (props) => {
     const onGameStart = async (data) => {
         let version = data.version;
         let res = await gameApi.getGameVersion(version);
-        let players = data.players;
-        let myPlayerIndex = data.players.find(p => p.id = publicKey.toBase58()).index;
+        let myPlayerIndex = data.players.find(p => p.id === publicKey.toBase58()).index;
         data.content = res.content;
         data.unityBuild = res.unityBuild;
         data.onAction = onAction;
@@ -97,7 +96,7 @@ export const PlayerProvider = (props) => {
         let challenge = {
             type: 'challenge',
             data: {
-                server: `game_${projectId}`,
+                server: gameId,
                 pubkey: publicKey,
             }
         }

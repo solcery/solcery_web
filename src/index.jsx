@@ -1,9 +1,16 @@
 import { createRoot } from "react-dom/client";
 
 import Sage from './builds/Sage';
+import Game from './builds/Game';
 
 let container = document.getElementById('root')
 const root = createRoot(container);
 
-root.render(<Sage/>);
+if (process.env.REACT_APP_BUILD === 'Sage') {
+	root.render(<Sage/>);
+} else if (process.env.REACT_APP_BUILD === 'Game') {
+	root.render(<Game/>);
+} else {
+	root.render(<>Empty</>);
+}
 
