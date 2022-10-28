@@ -45,7 +45,7 @@ export default function PlayPage() {
 		if (!solceryAPI) return;
 		if (unityBuild) return;
 		engine.getConfig().then(config => {
-			let buildId = config.fields.build;
+			let buildId = config.build;
 			solceryAPI.system().getUnityBuild(buildId).then(setUnityBuild);
 		})
 	}, [ engine, solceryAPI, unityBuild ])
