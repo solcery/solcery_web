@@ -40,7 +40,10 @@
   },
   "scripts": {
     "start": "craco start",
-    "build": "craco build"
+    "build": "craco build",
+    "sage": "REACT_APP_BUILD=Sage PORT=3000 yarn start",
+    "game": "REACT_APP_BUILD=Game PORT=4000 yarn start",
+    "all": "yarn sage && yarn game"
   },
   "browserslist": {
     "production": [
