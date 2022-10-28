@@ -49,7 +49,7 @@ export default function Home() {
 			}
 			setContentRevision(revision);
 		})
-		engine.getConfig().then(config => setProjectConfig(config.fields));
+		engine.getConfig().then(config => setProjectConfig(config));
 	}, [ engine ])
 
 	if (!projectConfig) return;

@@ -17,7 +17,7 @@ export function GameApiProvider(props) {
 
 	useEffect(() => {
 		if (!projectId) return;
-		setGameId(`game_${projectId}`)
+		setGameId(projectId)
 	}, [ projectId ])
 
 	useEffect(() => {
