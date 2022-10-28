@@ -105,6 +105,10 @@ export default function PlayPage() {
 		if (!games) return;
 		for (let game of games) {
 			game.onAction = (action) => {
+				if (!action.ctx) {
+					action.ctx = {};
+				}
+				action.ctx.player_index = game.playerIndex;
 				action.playerIndex = game.playerIndex;
 				gameData.actionLog.push(action);
 				for (let g of games) {
