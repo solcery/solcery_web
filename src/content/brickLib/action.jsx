@@ -229,7 +229,7 @@ export const basicActions = [
 		name: 'Delete entity',
 		params: [],
 		exec: (runtime, params, ctx) => {
-			ctx.obj.deleted = true;
+			ctx.game.deleteEntity(ctx.object);
 		},
 	},
 	{
