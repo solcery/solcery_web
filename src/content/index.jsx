@@ -34,6 +34,7 @@ export const validate = ({ content }) => {
 		let fields = Object.values(template.fields).filter((field) => field.type.validate);
 		let objects = content.objects.filter((obj) => obj.template === template.code);
 		for (let object of objects) {
+			if (!object.fields.enabled) continue;
 			meta.object = object;
 			for (let field of fields) {
 				meta.error = function (message) {
