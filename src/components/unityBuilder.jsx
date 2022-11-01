@@ -18,7 +18,17 @@ export function UnityBuilder() {
 
 	const buildForUnity = async () => {
 		let content = await engine.getContent({ objects: true, templates: true });
-		let res = build({ targets: ['web', 'unity_local'], content });
+		let targets = [
+			{
+				name: 'web',
+				format: 'web',
+			},
+			{
+				name: 'unity_local',
+				format: 'unity'
+			}
+		];
+		let res = build({ targets, content });
 		if (!res.status) {
 			notif.error('Unity build error', 'Content is not valid');
 			navigate('validator');

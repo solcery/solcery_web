@@ -26,9 +26,19 @@ export default function PlayPage() {
 	useEffect(() => {
 		if (!engine) return;
 		if (content) return;
+		let targets = [
+			{
+				name: 'web',
+				format: 'web',
+			},
+			{
+				name: 'unity_local',
+				format: 'unity'
+			}
+		];
 		engine.getContent({ objects: true, templates: true }).then(raw => {
 			let construction = build({
-				targets: ['web', 'unity_local'],
+				targets,
 				content: raw,
 			});
 			if (!construction.status) {
@@ -60,6 +70,7 @@ export default function PlayPage() {
 		console.log(nfts)
 		let seed = Math.floor(Math.random() * 255);
 		let players = [];
+		console.log(content.web)
 		let playerSettings = Object.values(content.web.players);
 		for (let playerInfo of playerSettings) {
 			if (nfts) {

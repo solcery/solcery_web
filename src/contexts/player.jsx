@@ -5,14 +5,15 @@ import { useAuth } from './auth';
 import { GameProvider } from './game';
 import { Game } from '../game';
 import { io } from 'socket.io-client';
+import { PublicKey } from '@solana/web3.js';
 
 const PlayerContext = React.createContext(undefined);
-// const publicKey = new PublicKey(''); // TODO: CHEAT
 
 export const PlayerProvider = (props) => {
     let { projectId } = useParams();
     const { gameApi, gameId } = useGameApi();
     const { publicKey } = useAuth();
+    // const [ publicKey, setPublicKey ] = useState(new PublicKey('DrANdHtiF3rSQi2X9sAVjL6ZrLhUPfwV3vfcA8LwPryf'))
 
     const ws = useRef();
     const [ nfts, setNfts ] = useState(undefined);
@@ -51,6 +52,9 @@ export const PlayerProvider = (props) => {
         if (message.type === 'gameAction') {
             onGameAction(message.data);
         }
+        if (message.type === 'nfts') {
+            setNfts(message.data);
+        }
     };
 
     const playerRequest = useCallback((data) => {
@@ -86,8 +90,7 @@ export const PlayerProvider = (props) => {
 
     useEffect(() => {
         if (!publicKey) return;
-        if (ws.current) return;
-         
+        // if (ws.current) return;
         ws.current = io(process.env.REACT_APP_WS_URL, {
           reconnectionDelayMax: 10000,
         });
@@ -106,7 +109,7 @@ export const PlayerProvider = (props) => {
     let value = status ? {
         publicKey,
         status,
-        nfts: [],
+        nfts,
         playerRequest,
     } : {};
 

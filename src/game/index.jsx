@@ -50,9 +50,7 @@ export class Game {
 		this.onError = data.onError;
 		this.modifiers = data.modifiers;
 		this.onAction = data.onAction;
-		this.onPlayerAction = (action) => {
-			
-		}
+		console.log(this.players)
 		this.gameState = new GameState({
 			seed: data.seed,
 			content: data.content

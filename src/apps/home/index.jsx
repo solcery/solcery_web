@@ -19,18 +19,36 @@ export default function Home() {
 	const [ projectConfig, setProjectConfig ] = useState();
 
 	const releaseProject = async () => {
+		let targets = [
+			{
+				name: 'web',
+				format: 'web',
+			},
+			{
+				name: 'web_meta',
+				format: 'web',
+			},
+			{
+				name: 'matchmaker',
+				format: 'web',
+			},
+			{
+				name: 'unity_local',
+				format: 'unity'
+			}
+		];
 		let content = await engine.getContent({ objects: true, templates: true });
-		let res = await build({ targets: ['web', 'web_meta', 'unity_local'], content });
+		let res = await build({ targets, content });
 		if (!res.status) {
 			notif.error('Release error', 'Content is not valid');
 			navigate('validator')
 			return;
 		}
 		engine.release({
-			gameProjectId: projectConfig.releaseProjectId,
-			contentWeb: res.constructed.web,
-			contentUnity: res.constructed.unity_local,
-			contentMeta: res.constructed.web_meta,
+			web: res.constructed.web,
+			unity: res.constructed.unity_local,
+			meta: res.constructed.web_meta,
+			matchmaker: res.constructed.matchmaker,
 		}).then(newVersion => {
 			notif.success(`Released new version: ${newVersion}`)
 		})

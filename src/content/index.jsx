@@ -120,10 +120,10 @@ export const build = ({ targets, content }) => {
 				result[res.key] = res.value;
 			}
 			result.metadata = { revision };
-			constructed[target] = result;
+			constructed[target.name] = result;
 		}
 	} catch (error) {
-		console.error(meta.target)
+		console.error(meta.target.name)
 		console.log(meta.template?.code)
 		console.log(meta.object?._id)
 		throw(error) // TODO:
