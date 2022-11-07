@@ -59,7 +59,7 @@ export function UnityBuilder() {
 			players,
 			seed: 1,
 			actionLog: [],
-			playerId: players[0].id,
+			playerIndex: players[0].index,
 		});
 		session.gameState.start(session.players);
 		let unityPackage = session.gameState.exportPackage();
