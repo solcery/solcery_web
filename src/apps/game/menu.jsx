@@ -49,7 +49,7 @@ const Auth = (props) => {
 }
 
 const GameMenu = (props) => {
-	const { nfts, publicKey, status, playerRequest } = usePlayer();
+	const { status, playerRequest } = usePlayer();
 
 	const joinQueue = () => playerRequest({
 		type: 'joinQueue'
@@ -75,14 +75,7 @@ const GameMenu = (props) => {
 }
 
 export const Menu = (props) => {
-	const { gameApi, gameInfo } = useGameApi();
-	const { nfts, status } = usePlayer();
-	const [ isNewGame, setIsNewGame ] = useState(true);
-	const [ gameSession, setGameSession ] = useState();
-	const [ playerNfts, setPlayerNfts ] = useState(undefined);
-
-
-
+	const { gameInfo } = useGameApi();
 	if (!gameInfo) return <></>;
 	return <div className='game-menu'>
 		<div className='bg' style={{ backgroundImage: `url(${gameInfo.lobbyBackground})` }}>
@@ -93,7 +86,7 @@ export const Menu = (props) => {
 		 		</div>
 			</div>
 		</div>
-		<NftBar nfts={playerNfts}/>
+		<NftBar/>
 		<Auth/>
 		<GameMenu/>
 	</div>;

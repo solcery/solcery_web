@@ -18,7 +18,7 @@ class SMap {
 	}
 
 	construct = (value, meta) => {
-		if (meta.target.includes('unity')) {
+		if (meta.target.format === 'unity') {
 			return value.map((val) => {
 				return {
 					key: this.keyType.construct(val.key, meta),
@@ -26,7 +26,7 @@ class SMap {
 				};
 			});
 		}
-		if (meta.target === 'web') {
+		if (meta.target.format === 'web') {
 			return Object.fromEntries(
 				value.map((val) => [this.keyType.construct(val.key, meta), this.valueType.construct(val.value, meta)])
 			);

@@ -86,7 +86,7 @@ export class SBrick {
 				value: paramSig.type.construct(param, meta),
 			});
 		}
-		if (meta.target.includes('unity')) {
+		if (meta.target.format === 'unity') {
 			let func = brickSignature.func;
 			if (func.includes('custom')) {
 				let typeByName = { action: 0, condition: 1, value: 2 };
@@ -98,7 +98,7 @@ export class SBrick {
 			}
 			result.params = params;
 		}
-		if (meta.target === 'web') {
+		if (meta.target.format === 'web') {
 			result.lib = brickSignature.lib;
 			result.func = brickSignature.func;
 			let func = brickSignature.func;

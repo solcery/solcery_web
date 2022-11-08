@@ -18,7 +18,17 @@ export function UnityBuilder() {
 
 	const buildForUnity = async () => {
 		let content = await engine.getContent({ objects: true, templates: true });
-		let res = build({ targets: ['web', 'unity_local'], content });
+		let targets = [
+			{
+				name: 'web',
+				format: 'web',
+			},
+			{
+				name: 'unity_local',
+				format: 'unity'
+			}
+		];
+		let res = build({ targets, content });
 		if (!res.status) {
 			notif.error('Unity build error', 'Content is not valid');
 			navigate('validator');
@@ -54,11 +64,10 @@ export function UnityBuilder() {
 		session.gameState.start(session.players);
 		let unityPackage = session.gameState.exportPackage();
 		unityPackage.predict = true;
-		console.log(unityPackage)
 		setResult([
 			{
 				filename: 'game_content',
-				data: content.unity_local,
+				data: session.getUnityContent(),
 			},
 			{
 				filename: 'game_content_overrides',
