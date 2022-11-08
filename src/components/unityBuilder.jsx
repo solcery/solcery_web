@@ -64,11 +64,10 @@ export function UnityBuilder() {
 		session.gameState.start(session.players);
 		let unityPackage = session.gameState.exportPackage();
 		unityPackage.predict = true;
-		console.log(unityPackage)
 		setResult([
 			{
 				filename: 'game_content',
-				data: content.unity_local,
+				data: session.getUnityContent(),
 			},
 			{
 				filename: 'game_content_overrides',
