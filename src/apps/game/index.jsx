@@ -18,7 +18,7 @@ export const GameTest = () => {
 
 	const leave = () => {
 		playerRequest({ 
-			type: 'leaveGame',
+			type: 'leaveMatch',
 			data: {
 				outcome: -1,
 			}
