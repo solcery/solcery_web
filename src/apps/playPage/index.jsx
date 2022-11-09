@@ -56,7 +56,7 @@ export default function PlayPage() {
 		if (unityBuild) return;
 		engine.getConfig().then(config => {
 			let buildId = config.build;
-			solceryAPI.system().getUnityBuild(buildId).then(setUnityBuild);
+			solceryAPI.getUnityBuild(buildId).then(setUnityBuild);
 		})
 	}, [ engine, solceryAPI, unityBuild ])
 			
@@ -67,10 +67,8 @@ export default function PlayPage() {
 		if (!layoutOverride || layoutOverride.length === 0) {
 			layoutOverride = undefined; // TODO: empty layoutPresets should be undefined
 		}
-		console.log(nfts)
 		let seed = Math.floor(Math.random() * 255);
 		let players = [];
-		console.log(content.web)
 		let playerSettings = Object.values(content.web.players);
 		for (let playerInfo of playerSettings) {
 			if (nfts) {
