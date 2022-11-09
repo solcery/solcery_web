@@ -24,7 +24,7 @@ export const PlayerProvider = (props) => {
 
     const onGameStart = async (data) => {
         let version = data.version;
-        let res = await gameApi.getGameVersion(version);
+        let res = await gameApi.getGameBuild(version);
         let myPlayerIndex = data.players.find(p => p.id === publicKey.toBase58()).index;
         data.content = res.content;
         data.unityBuild = res.unityBuild;
@@ -46,10 +46,10 @@ export const PlayerProvider = (props) => {
         if (message.type === 'playerStatus') {
             setStatus(message.data)
         }
-        if (message.type === 'gameStart') {
+        if (message.type === 'matchStart') {
             onGameStart(message.data);
         }
-        if (message.type === 'gameAction') {
+        if (message.type === 'matchAction') {
             onGameAction(message.data);
         }
         if (message.type === 'nfts') {
