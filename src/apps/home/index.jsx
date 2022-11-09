@@ -38,6 +38,7 @@ export default function Home() {
 			}
 		];
 		let content = await engine.getContent({ objects: true, templates: true });
+
 		let res = await build({ targets, content });
 		if (!res.status) {
 			notif.error('Release error', 'Content is not valid');
@@ -54,9 +55,10 @@ export default function Home() {
 		})
 	}
 
-	const syncContent = async () => {
-		let res = await engine.sync();
-		notif.success('Sync successful');
+	const syncContent = () => {
+		let res = engine.sync().then(() => {
+			notif.success('Sync successful');
+		});
 	}
 
 	useEffect(() => {
