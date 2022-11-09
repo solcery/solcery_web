@@ -57,8 +57,8 @@ export class SolceryAPI {
 		const handlePath = (currentPath, path = []) => {
 			const currentName = path[path.length - 1];
 			const pathProto = {
-				params: currentPath.params,
-				accessParams: currentPath.access,
+				params: currentPath['.params'],
+				accessParams: currentPath['.access'],
 				path: [...path],
 				setAccessParam: function(param, value) {
 					if (!this.accessParams[param]) throw `No access param ${param}`;
@@ -66,8 +66,8 @@ export class SolceryAPI {
 					this.access[param] = value;
 				}
 			}
-			if (currentPath.commands) {
-				for (let [ commandName, commandData ] of Object.entries(currentPath.commands)) {
+			if (currentPath['.commands']) {
+				for (let [ commandName, commandData ] of Object.entries(currentPath['.commands'])) {
 					const requireAccess = !commandData.public;
 					pathProto[commandName] = function(param) {
 						let commandCallParams = Object.assign({}, this.params);
@@ -89,9 +89,9 @@ export class SolceryAPI {
 				}
 			}
 			for (let [propName, propData] of Object.entries(currentPath)) {
-				if (propName === 'commands') continue;
-				if (propName === 'params') continue;
-				if (propName === 'access') continue;
+				if (propName === '.commands') continue;
+				if (propName === '.params') continue;
+				if (propName === '.access') continue;
 				path.push(propName)
 				let layerConstructor = handlePath(propData, path);
 				pathProto[propName] = function (...args) {

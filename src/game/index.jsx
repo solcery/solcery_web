@@ -50,9 +50,6 @@ export class Game {
 		this.onError = data.onError;
 		this.modifiers = data.modifiers;
 		this.onAction = data.onAction;
-		this.onPlayerAction = (action) => {
-			
-		}
 		this.gameState = new GameState({
 			seed: data.seed,
 			content: data.content
@@ -64,7 +61,8 @@ export class Game {
 			for (let action of data.actionLog) {
 				this.applyAction(action);
 			}
-		}	}
+		}	
+	}
 
 	applyAction(action) {
 		let { type, commandId, ctx, playerIndex } = action;
@@ -144,6 +142,17 @@ export class Game {
 				}
 			})
 		return { nfts, card_types };
+	}
+
+	getCommands = () => {
+		return this.actionLog.filter(entry => entry.action.type === 'gameCommand').map((entry, index) => ({
+			id: index + 1,
+			data: {
+				type: 'gameCommand',
+				command_id: entry.action.commandId,
+				ctx: entry.action.ctx,
+			}
+		}));
 	}
 
 	checkOutcome = () => {

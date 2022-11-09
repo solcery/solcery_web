@@ -5,14 +5,15 @@ import { useAuth } from './auth';
 import { GameProvider } from './game';
 import { Game } from '../game';
 import { io } from 'socket.io-client';
+import { PublicKey } from '@solana/web3.js';
 
 const PlayerContext = React.createContext(undefined);
-// const publicKey = new PublicKey(''); // TODO: CHEAT
 
 export const PlayerProvider = (props) => {
     let { projectId } = useParams();
     const { gameApi, gameId } = useGameApi();
     const { publicKey } = useAuth();
+    // const [ publicKey, setPublicKey ] = useState(new PublicKey('DrANdHtiF3rSQi2X9sAVjL6ZrLhUPfwV3vfcA8LwPryf'))
 
     const ws = useRef();
     const [ nfts, setNfts ] = useState(undefined);
@@ -23,7 +24,7 @@ export const PlayerProvider = (props) => {
 
     const onGameStart = async (data) => {
         let version = data.version;
-        let res = await gameApi.getGameVersion(version);
+        let res = await gameApi.getGameBuild(version);
         let myPlayerIndex = data.players.find(p => p.id === publicKey.toBase58()).index;
         data.content = res.content;
         data.unityBuild = res.unityBuild;
@@ -45,11 +46,14 @@ export const PlayerProvider = (props) => {
         if (message.type === 'playerStatus') {
             setStatus(message.data)
         }
-        if (message.type === 'gameStart') {
+        if (message.type === 'matchStart') {
             onGameStart(message.data);
         }
-        if (message.type === 'gameAction') {
+        if (message.type === 'matchAction') {
             onGameAction(message.data);
+        }
+        if (message.type === 'nfts') {
+            setNfts(message.data);
         }
     };
 
@@ -86,8 +90,7 @@ export const PlayerProvider = (props) => {
 
     useEffect(() => {
         if (!publicKey) return;
-        if (ws.current) return;
-         
+        // if (ws.current) return;
         ws.current = io(process.env.REACT_APP_WS_URL, {
           reconnectionDelayMax: 10000,
         });
@@ -106,7 +109,7 @@ export const PlayerProvider = (props) => {
     let value = status ? {
         publicKey,
         status,
-        nfts: [],
+        nfts,
         playerRequest,
     } : {};
 

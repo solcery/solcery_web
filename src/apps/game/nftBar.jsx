@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { useGameApi } from '../../contexts/gameApi';
+import { usePlayer } from '../../contexts/player';
 
 import './style.scss';
 
@@ -65,29 +66,28 @@ export const NftBar = (props) => {
 	const ref = useRef();
 	const loaded = useRef(0);
 	const { gameInfo } = useGameApi();
-
+	const { nfts } = usePlayer();
 
 	useEffect(() => {
 		if (!open) return;
-		if (!props.nfts) return;
-		delay(DELAY * props.nfts.length / 2).then(() => {
+		if (!nfts) return;
+		delay(DELAY * nfts.length / 2).then(() => {
 			if (ref.current) {
 				ref.current.className += ' active';
 			}
 		});
-	}, [ open, props.nfts ])
+	}, [ open, nfts ])
 
-	if (!props.nfts) return <></>;
+	if (!nfts) return <></>;
 
-	let nfts = props.nfts;
 	let className = 'cards-split';
 	if (open) className = className + ' transition';
 
 	let text = `Your NFTs supported by ${gameInfo.gameName}:`;
-	if (nfts.length === 0) {
-		text = `No suitable NFTs found. Supported collections:`;
-		nfts = gameInfo.supportedCollections;
-	}
+	// if (nfts.length === 0) {
+	// 	text = `No suitable NFTs found. Supported collections:`;
+	// 	nfts = gameInfo.supportedCollections;
+	// }
 
 	const onLoad = () => {
 		loaded.current += 1;
@@ -95,7 +95,6 @@ export const NftBar = (props) => {
 			delay(100).then(() => setOpen(true));
 		}
 	}
-	if (!props.nfts) return <></>;
 	return <div ref={ref} className={className}>
 		<div className={'cards-header'}>
 			{text}
@@ -109,6 +108,6 @@ export const NftBar = (props) => {
 				url={nft.magicEdenUrl}
 				onLoad={onLoad}
 		/>)}	
-		{props.nfts.length === 0 && <div></div>}
+		{nfts.length === 0 && <div></div>}
 	 </div>;
 }

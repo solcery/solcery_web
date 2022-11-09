@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Button, Select, Card } from 'antd';
+import { Button, Select, Card, Switch } from 'antd';
 import { useUser } from '../contexts/user';
 import { useProject } from '../contexts/project';
 import { build, validate } from '../content';
@@ -15,10 +15,21 @@ export function UnityBuilder() {
 	const [result, setResult] = useState();
 	const { engine  } = useProject();
 	const { layoutPresets, nfts } = useUser();
+	const [ commandsMode, setCommandsMode ] = useState(false);
 
 	const buildForUnity = async () => {
 		let content = await engine.getContent({ objects: true, templates: true });
-		let res = build({ targets: ['web', 'unity_local'], content });
+		let targets = [
+			{
+				name: 'web',
+				format: 'web',
+			},
+			{
+				name: 'unity_local',
+				format: 'unity'
+			}
+		];
+		let res = build({ targets, content });
 		if (!res.status) {
 			notif.error('Unity build error', 'Content is not valid');
 			navigate('validator');
@@ -32,6 +43,8 @@ export function UnityBuilder() {
 		content.unity = content.unity_local;
 		let players = [];
 		let playerSettings = Object.values(content.web.players);
+		let actionLog = [];
+		let botCommandId = content.web.gameSettings.botActivationCommand;
 		for (let playerInfo of playerSettings) {
 			if (nfts) {
 				var playerNfts = nfts.filter(nft => nft.player === playerInfo.index);
@@ -40,7 +53,16 @@ export function UnityBuilder() {
 				id: playerInfo.id,
 				index: playerInfo.index,
 				nfts: playerNfts,
-			})
+			});
+			if (playerInfo.index > 1 && botCommandId) {
+				actionLog.push({
+					type: 'gameCommand',
+					commandId: botCommandId,
+					ctx: {
+						player_index: playerInfo.index,
+					}
+				})
+			}
 		};
 		let session = new Game({
 			content,
@@ -48,17 +70,21 @@ export function UnityBuilder() {
 			nfts,
 			players,
 			seed: 1,
-			actionLog: [],
-			playerId: players[0].id,
+			actionLog,
+			playerIndex: players[0].index,
 		});
 		session.gameState.start(session.players);
-		let unityPackage = session.gameState.exportPackage();
-		unityPackage.predict = true;
-		console.log(unityPackage)
+		let	unityPackage = session.gameState.exportPackage();
+		if (commandsMode) {
+			unityPackage.commands = session.getCommands();
+			delete unityPackage.actions;
+		} else {
+			unityPackage.predict = true;
+		}
 		setResult([
 			{
 				filename: 'game_content',
-				data: content.unity_local,
+				data: session.getUnityContent(),
 			},
 			{
 				filename: 'game_content_overrides',
@@ -73,6 +99,9 @@ export function UnityBuilder() {
 
 	return (
 		<>
+			<div>With commands</div>
+			<Switch defaultChecked={commandsMode} onChange={() => setCommandsMode(!commandsMode)} />
+			<div></div>
 			{result && result.map(file => <DownloadJSON key={file.filename} filename={file.filename} data={file.data}/>)}
 			<Button onClick={buildForUnity}>{result ? 'Rebuild' : 'Build'}</Button>
 		</>
