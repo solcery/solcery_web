@@ -366,4 +366,20 @@ export const basicActions = [
 			console[params.level](res);
 		},
 	},
+	{
+		lib: 'action',
+		func: 'command',
+		type: 0,
+		subtype: 0,
+		contexts: [ 'bot', 'client' ],
+		name: 'Send Command',
+		params: [
+			{ code: 'command_id', name: 'Command Id', type: 'SLink<commands>' },
+			{ code: 'object_id', name: 'Object Id', type: 'SBrick<value>' },
+		],
+		exec: (runtime, params, ctx) => {
+			let objectId = runtime.execBrick(params.object_id, ctx)
+			ctx.sendCommand(params.command_id, objectId);
+		},
+	}
 ];
