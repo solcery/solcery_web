@@ -35,10 +35,13 @@ export default function Home() {
 			{
 				name: 'unity_local',
 				format: 'unity'
+			},
+			{
+				name: 'bot',
+				format: 'web'
 			}
 		];
 		let content = await engine.getContent({ objects: true, templates: true });
-
 		let res = await build({ targets, content });
 		if (!res.status) {
 			notif.error('Release error', 'Content is not valid');
@@ -50,6 +53,7 @@ export default function Home() {
 			unity: res.constructed.unity_local,
 			meta: res.constructed.web_meta,
 			matchmaker: res.constructed.matchmaker,
+			bot: res.constructed.bot,
 		}).then(newVersion => {
 			notif.success(`Released new version: ${newVersion}`)
 		})
