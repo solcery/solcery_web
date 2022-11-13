@@ -10,6 +10,7 @@ import { GameProvider } from '../../contexts/game';
 import GameClient from '../../components/gameClient';
 import { notif } from '../../components/notification';
 import { useApi } from '../../contexts/api';
+import { Switch } from 'antd';
 
 import './style.css';
 
@@ -108,9 +109,6 @@ export default function PlayPage() {
 			let playerGameData = Object.assign({
 				playerIndex: player.index,
 			}, gameData);
-			if (player.index > 1) {
-				playerGameData.bot = true;
-			}
 			let playerGame = new Game(playerGameData);
 			playerGames.push(playerGame);
 		}
@@ -132,12 +130,19 @@ export default function PlayPage() {
 				}
 			}
 		}
-	}, [ games ])
+	}, [ games ]);
+
+	const setBotForGame = (index, value) => {
+		games[index].setBotStatus(value);
+	}
 
 	if (!games) return <></>;
 	let gameClassName = 'game-frame ' + (games.length > 1 ? 'multi' : 'single');
 	return (<div className='games-space'>
 		{games.map((game, index) => <div className={gameClassName}>
+			<div className='game-debug-bar'>
+				<Switch onChange={(value) => setBotForGame(index, value)}/>Bot
+			</div>
 			<GameProvider game={game}> 
 				<GameClient/>
 			</GameProvider>

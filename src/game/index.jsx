@@ -60,21 +60,27 @@ export class Game {
 		this.layoutOverride = data.layoutOverride;
 		this.modifyUnityContent();
 		this.actionLog = [];
-		if (data.bot) {
-			this.bot = new Bot({
-				gameBuild: {
-					content: this.content
-				},
-				gameState: this.gameState,
-				playerIndex: this.playerIndex,
-				onCommand: (action) => this.onAction(action),
-			})
-		}
 		if (data.actionLog) {
 			for (let action of data.actionLog) {
 				this.applyAction(action);
 			}
 		}
+	}
+
+	setBotStatus(enable) {
+		if (!enable) {
+			delete this.bot;
+			return;
+		}
+		this.bot = new Bot({
+			gameBuild: {
+				content: this.content
+			},
+			gameState: this.gameState,
+			playerIndex: this.playerIndex,
+			onCommand: (action) => this.onAction(action),
+		})
+		this.bot.think();
 	}
 
 	applyAction(action) {
@@ -107,7 +113,7 @@ export class Game {
 			this.onLogUpdate(this.actionLog);
 		}
 		if (this.bot) {
-			this.bot.think();
+			this.bot.think(); //TODO: move somewhere
 		}
 	}
 

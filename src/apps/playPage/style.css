@@ -25,3 +25,9 @@
 .game-frame.multi {
 	width: 50%;
 }
+
+.game-debug-bar {
+	top: 0%;
+	display: block;
+	position: relative;
+}
