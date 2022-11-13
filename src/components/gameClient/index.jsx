@@ -13,7 +13,6 @@ export default function GameClient(props) {
 	const [ finished, setFinished ] = useState(false);
 	const [ unityReady, setUnityReady ] = useState(false);
 	const [ iframeName, setIframeName ] = useState();
-	// const [ loadingProgress, setLoadingProgress ] = useState();
 	const step = useRef(-1);
 	const firstGameStateSent = useRef(false);
 	const loadingBarRef = useRef();
@@ -194,8 +193,10 @@ export default function GameClient(props) {
 			onMessageFromIframe(message.data.type, message.data.data);
 		});
 
-		window.onUnityProgress = (data) => {
-			setLoadingProgress(data.progress)
+		window.unityLoading = window.unityLoading ?? {};
+
+		window.unityLoading[name] = (data) => {
+			onUnityLoadingProgress(data.progress)
 		}
 
 		setIframeName(name);

@@ -32,8 +32,6 @@
         return chunks
       }
 
-
-
       const sendPackage = (funcName, param) => {
        const USHORT_SIZE = 65536;
        let data = typeof param === 'string' ? param : JSON.stringify(param);
@@ -77,10 +75,10 @@
         if (stringParam) {
           var param = JSON.parse(stringParam);
         }
-        // if (event === 'OnUnityLoadProgress') { // TODO: postMessage takes too much time
-        //   window.top.onUnityProgress(param);
-        //   return;
-        // }
+        if (event === 'OnUnityLoadProgress') { // TODO: postMessage takes too much time
+          window.top.unityLoading[window.name](param);
+          return;
+        }
         sendMessageToParent('unityEvent', { event, param });
       }
       sendMessageToParent('iframeReady');
