@@ -35,16 +35,20 @@ const BigButton = (props) => {
 }
 
 const Auth = (props) => {
-	const { status } = usePlayer();
+	const { status, publicKey } = usePlayer();
 	const { AuthComponent } = useAuth();
 	if (status) return;
 	return <div className='auth'>
 		<div className='auth-header'>
 			Login
 		</div>
-		<div className='auth-body'>
+		{publicKey && <div className='auth-body'>
+			<p>Logged as {publicKey.toBase58().substring(0, 10) + '...'}</p>
+			<p>Establishing connection with server</p>
+		</div>}
+		{!publicKey && <div className='auth-body'>
 				<AuthComponent/>
-		</div>
+		</div>}
 	</div>
 }
 
