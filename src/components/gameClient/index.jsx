@@ -14,7 +14,8 @@ export default function GameClient(props) {
 	const [ unityReady, setUnityReady ] = useState(false);
 	const [ iframeName, setIframeName ] = useState();
 	// const [ loadingProgress, setLoadingProgress ] = useState();
-	const step = useRef(0);
+	const step = useRef(-1);
+	const firstGameStateSent = useRef(false);
 	const loadingBarRef = useRef();
 	const loadingProgressRef = useRef();
 	const iframeRef = useRef();
@@ -38,7 +39,7 @@ export default function GameClient(props) {
 		}
 	}
 
-	const onUnityReady = (data) => {
+	const onUnityLoaded = (data) => {
 		const md5 = require('js-md5'); 
 		let content = game.getUnityContent();
 		let contentHash = md5(JSON.stringify(content));
@@ -63,7 +64,7 @@ export default function GameClient(props) {
 			}
 			sendToUnity('UpdateGameContentOverrides', overrides);
 		}
-		setUnityReady(true);
+		setUnityReady(true)
 	}
 
 	const setLoadingProgress = (progress) => {
@@ -104,7 +105,7 @@ export default function GameClient(props) {
 				onUnityLoadingProgress(param.progress);
 				break;
 			case 'OnUnityLoaded':
-				onUnityReady(param)
+				onUnityLoaded(param)
 				break;
 			case 'SendCommand':
 				onUnityCommand(param);
@@ -119,10 +120,16 @@ export default function GameClient(props) {
 
 	useEffect(() => {
 		if (!unityReady) return;
-		if (actionLog.length > step.current) {
+		if (!actionLog) return;
+		if (step.current < actionLog.length - 1) {
+			if (firstGameStateSent.current) {
+				step.current++;
+			} else {
+				step.current = actionLog.length - 1;
+				firstGameStateSent.current = true;
+			}
 			setUnityReady(false);
-			sendToUnity('UpdateGameState', actionLog[actionLog.length - 1].package);
-			step.current = actionLog.length;
+			sendToUnity('UpdateGameState', actionLog[step.current].package);
 		}
 	}, [ unityReady, actionLog ])
 

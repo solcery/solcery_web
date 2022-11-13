@@ -1,7 +1,7 @@
 import { createRoot } from "react-dom/client";
-
 import Sage from './builds/Sage';
 import Game from './builds/Game';
+require('./util')
 
 let container = document.getElementById('root')
 const root = createRoot(container);
