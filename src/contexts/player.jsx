@@ -31,12 +31,15 @@ export const PlayerProvider = (props) => {
         data.onAction = onAction;
         data.playerIndex = myPlayerIndex;
         game.current = new Game(data);
+        if (storedGameUpdates.current.length > 0) {
+            game.current.updateLog(storedGameUpdates.current)
+        }
         setIngame(true);
     }
 
     const onGameAction = (data) => {
         if (!game.current) {
-            throw new Error('err');
+            storedGameUpdates.current = data.actionLog;
             return;
         }
         game.current.updateLog(data.actionLog);
@@ -90,7 +93,6 @@ export const PlayerProvider = (props) => {
 
     useEffect(() => {
         if (!publicKey) return;
-        // if (ws.current) return;
         ws.current = io(process.env.REACT_APP_WS_URL, {
           reconnectionDelayMax: 10000,
         });
