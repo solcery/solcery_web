@@ -64,8 +64,8 @@ export const TopMenu = () => {
 							label: <Link to="migrator">Migrator</Link>, 
 						},
 						{ 
-							key: 'apiLogs' ,
-							label: <Link to="apiLogs">API logs</Link>, 
+							key: 'autotest' ,
+							label: <Link to="autotest">Autotest</Link>, 
 						},
 					]
 				},
