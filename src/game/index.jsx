@@ -1,6 +1,7 @@
 import { BrickRuntime } from '../content/brickLib/runtime';
 import { getTable } from '../utils';
 import { UnityPackage } from './unityPackage';
+import Bot from './bot';
 
 export class Game {
 	playerContent = {};
@@ -44,6 +45,7 @@ export class Game {
 		this.id = data.id;
 		this.version = data.version; // Unused
 		this.players = data.players;
+		// this.playerIndex = 2;
 		this.playerIndex = data.playerIndex; // Current player info
 		this.content = JSON.parse(JSON.stringify(data.content));
 		this.unityBuild = data.unityBuild;
@@ -52,7 +54,8 @@ export class Game {
 		this.onAction = data.onAction;
 		this.gameState = new GameState({
 			seed: data.seed,
-			content: data.content
+			content: data.content,
+			players: data.players,
 		})
 		this.layoutOverride = data.layoutOverride;
 		this.modifyUnityContent();
@@ -61,7 +64,17 @@ export class Game {
 			for (let action of data.actionLog) {
 				this.applyAction(action);
 			}
-		}	
+		}
+		if (data.bot) {
+			this.bot = new Bot({
+				gameBuild: {
+					content: this.content
+				},
+				gameState: this.gameState,
+				playerIndex: this.playerIndex,
+				onCommand: (action) => this.onAction(action),
+			})
+		}
 	}
 
 	applyAction(action) {
@@ -69,10 +82,10 @@ export class Game {
 		this.gameState.newPackage();
 		switch (type) {
 			case 'init':
-				this.gameState.start(this.players, this.layoutOverride);
+				this.gameState.start(this.layoutOverride);
 				break;
 			case 'gameCommand':
-				this.gameState.applyCommand(commandId, playerIndex, ctx)
+				this.gameState.applyCommand(commandId, ctx)
 				break;
 			default: 
 				throw ('ERR1');
@@ -85,13 +98,16 @@ export class Game {
 	}
 
 	updateLog(log) {
-		if (log.length > this.actionLog.length);
+		if (log.length <= this.actionLog.length) return;
 		let toAdd = log.slice(this.actionLog.length);
 		for (let entry of toAdd) {
 			this.applyAction(entry);
 		};
 		if (this.onLogUpdate) {
 			this.onLogUpdate(this.actionLog);
+		}
+		if (this.bot) {
+			this.bot.think();
 		}
 	}
 
@@ -171,7 +187,7 @@ export class GameState {
 	diffLog = undefined;
 
 	constructor(data) {
-		this.seed = data.seed ?? 0;
+		this.seed = data.seed;
 		this.content = data.content.web;
 		this.players = data.players;
 		this.runtime = new BrickRuntime(this.content, data.seed);
@@ -203,7 +219,7 @@ export class GameState {
 		this.unityPackage[event](...args);
 	}
 
-	start = (players, layoutOverride) => {
+	start = (layoutOverride) => {
 		let layout = layoutOverride ?? this.content.gameSettings.layout;
 		if (!layout) throw new Error('Error: Trying to initLayout without preset scheme');
 		for (let cardPack of Object.values(this.content.cards)) {
@@ -220,7 +236,7 @@ export class GameState {
 			}
 		}
 		if (this.content.collections) {
-			for (let player of players) {
+			for (let player of this.players) {
 				if (!player.nfts) continue;
 				for (let nft of player.nfts) {
 					let collection = Object.values(this.content.collections)
@@ -248,17 +264,10 @@ export class GameState {
 		}
 	};
 
-	applyCommand = (commandId, playerIndex, scopeVars) => {
+	applyCommand = (commandId, scopeVars) => {
 		let command = this.content.commands[commandId];
 		if (!command) throw 'No such game command';
-		if (playerIndex) {
-			var extra = { 
-				vars: { 
-					player_index: playerIndex 
-				} 
-			}
-		}
-		let ctx = this.createContext(undefined, extra);
+		let ctx = this.createContext(undefined);
 		if (scopeVars) Object.assign(ctx.scopes[0].vars, scopeVars);
 		if (command.action) {
 			this.runtime.execBrick(command.action, ctx);

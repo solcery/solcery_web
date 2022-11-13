@@ -34,7 +34,11 @@ export default function PlayPage() {
 			{
 				name: 'unity_local',
 				format: 'unity'
-			}
+			},
+			{
+				name: 'bot',
+				format: 'web',
+			},
 		];
 		engine.getContent({ objects: true, templates: true }).then(raw => {
 			let construction = build({
@@ -104,6 +108,9 @@ export default function PlayPage() {
 			let playerGameData = Object.assign({
 				playerIndex: player.index,
 			}, gameData);
+			if (player.index > 1) {
+				playerGameData.bot = true;
+			}
 			let playerGame = new Game(playerGameData);
 			playerGames.push(playerGame);
 		}
