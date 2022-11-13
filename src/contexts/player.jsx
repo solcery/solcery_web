@@ -13,7 +13,6 @@ export const PlayerProvider = (props) => {
     let { projectId } = useParams();
     const { gameApi, gameId } = useGameApi();
     const { publicKey } = useAuth();
-    // const [ publicKey, setPublicKey ] = useState(new PublicKey('DrANdHtiF3rSQi2X9sAVjL6ZrLhUPfwV3vfcA8LwPryf'))
 
     const ws = useRef();
     const [ nfts, setNfts ] = useState(undefined);
@@ -35,6 +34,17 @@ export const PlayerProvider = (props) => {
             game.current.updateLog(storedGameUpdates.current)
         }
         setIngame(true);
+    }
+
+    const disconnect = (reason) => {
+        setStatus();
+        setIngame(false);
+    }
+
+    const onDisconnect = (reason) => {
+        if (reason === 'transport close') {
+            disconnect();
+        }
     }
 
     const onGameAction = (data) => {
@@ -74,6 +84,17 @@ export const PlayerProvider = (props) => {
         });
     }
 
+    const challenge = (publicKey) => {
+        let challenge = {
+            type: 'challenge',
+            data: {
+                server: gameId,
+                pubkey: publicKey,
+            }
+        }
+        ws.current.emit('message', challenge)
+    }
+
     useEffect(() => {
         if (!status) return;
         if (status.code !== 'ingame' && game) {
@@ -81,7 +102,6 @@ export const PlayerProvider = (props) => {
             setIngame(false);
         }
     }, [ status ])
-
 
     useEffect(() => {
         if (!game) return;
@@ -92,28 +112,31 @@ export const PlayerProvider = (props) => {
     }, [ game ])
 
     useEffect(() => {
-        if (!publicKey) return;
+        setStatus();
+        if (!publicKey) {
+            if (ws.current) {
+                ws.current.emit('disconnect');
+            }
+            disconnect();
+            return;
+        };
         ws.current = io(process.env.REACT_APP_WS_URL, {
           reconnectionDelayMax: 10000,
         });
         ws.current.on('message', onMessage);
-        setStatus(undefined);
-        let challenge = {
-            type: 'challenge',
-            data: {
-                server: gameId,
-                pubkey: publicKey,
-            }
-        }
-        ws.current.emit('message', challenge)
+        ws.current.on('disconnect', onDisconnect);
+        ws.current.on('connect', () => challenge(publicKey));
+        ws.current.on('reconnect', () => challenge(publicKey));
     }, [ publicKey ])
 
-    let value = status ? {
-        publicKey,
+    let value = {
+        publicKey
+    };
+    if (status) Object.assign(value, {
         status,
         nfts,
         playerRequest,
-    } : {};
+    })
 
     return (<PlayerContext.Provider value={value}>
         <GameProvider game={ingame && game.current}>

@@ -60,11 +60,6 @@ export class Game {
 		this.layoutOverride = data.layoutOverride;
 		this.modifyUnityContent();
 		this.actionLog = [];
-		if (data.actionLog) {
-			for (let action of data.actionLog) {
-				this.applyAction(action);
-			}
-		}
 		if (data.bot) {
 			this.bot = new Bot({
 				gameBuild: {
@@ -74,6 +69,11 @@ export class Game {
 				playerIndex: this.playerIndex,
 				onCommand: (action) => this.onAction(action),
 			})
+		}
+		if (data.actionLog) {
+			for (let action of data.actionLog) {
+				this.applyAction(action);
+			}
 		}
 	}
 
