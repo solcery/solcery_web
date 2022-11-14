@@ -73,7 +73,7 @@ export function UnityBuilder() {
 			actionLog,
 			playerIndex: players[0].index,
 		});
-		session.gameState.start(session.players);
+		session.gameState.start();
 		let	unityPackage = session.gameState.exportPackage();
 		if (commandsMode) {
 			unityPackage.commands = session.getCommands();
@@ -99,6 +99,7 @@ export function UnityBuilder() {
 
 	return (
 		<>
+			<p>Layout: {layoutPresets ? 'custom ' + JSON.stringify(layoutPresets) : 'using game settings'}</p>
 			<div>With commands</div>
 			<Switch defaultChecked={commandsMode} onChange={() => setCommandsMode(!commandsMode)} />
 			<div></div>
