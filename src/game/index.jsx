@@ -305,9 +305,10 @@ export class GameState {
 	}
 
 	createEntity(cardTypeId, place, initAction, ctx) {
-		let id = ++this.maxEntityId;
+		let id = this.maxEntityId + 1;
 		let entity = new Entity(id, cardTypeId, this);
 		if (this.objects[id]) throw new Error(`Game.createEntity error: Object Id '${id}' is already taken!`);
+		this.maxEntityId = id;
 		this.objects[id] = entity;
 		if (!place) throw new Error('Game.createEntity error: No place given for created entity!');
 		entity.attrs.place = place;
