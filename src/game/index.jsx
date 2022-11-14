@@ -94,7 +94,7 @@ export class Game {
 				this.gameState.applyCommand(commandId, ctx)
 				break;
 			default: 
-				throw ('ERR1');
+				break;
 		}
 		let pkg = this.gameState.exportPackage();
 		this.actionLog.push({
