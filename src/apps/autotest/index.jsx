@@ -116,6 +116,9 @@ export default function Autotest() {
 			}
 			games.push(game);
 		}
+		for (let game of games) {
+			game.setBotStatus(true);
+		}
 		addAction({ type: 'init' });
 		let outcome;
 		for (let game of games) {
@@ -126,7 +129,6 @@ export default function Autotest() {
 			assert(game.outcome === outcome);
 		}
 		return outcome;
-		console.log('FINISHED. OUTCOME: ', outcome);
 	}
 
 	const runAll = () => {
@@ -137,7 +139,7 @@ export default function Autotest() {
 
 	useEffect(() => {
 		if (!running) return;
-		if (progress > runs) {
+		if (progress >= runs) {
 			setRunning(false);
 			return;
 		}
