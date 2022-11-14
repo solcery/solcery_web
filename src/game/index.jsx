@@ -191,6 +191,7 @@ export class GameState {
 	attrs = {};
 	diff = undefined;
 	diffLog = undefined;
+	maxEntityId = 0;
 
 	constructor(data) {
 		this.seed = data.seed;
@@ -304,8 +305,9 @@ export class GameState {
 	}
 
 	createEntity(cardTypeId, place, initAction, ctx) {
-		let id = Object.values(this.objects).length + 1;
+		let id = ++this.maxEntityId;
 		let entity = new Entity(id, cardTypeId, this);
+		if (this.objects[id]) throw new Error(`Game.createEntity error: Object Id '${id}' is already taken!`);
 		this.objects[id] = entity;
 		if (!place) throw new Error('Game.createEntity error: No place given for created entity!');
 		entity.attrs.place = place;
