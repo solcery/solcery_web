@@ -94,7 +94,7 @@ export class Game {
 				this.gameState.applyCommand(commandId, ctx)
 				break;
 			default: 
-				throw ('ERR1');
+				break;
 		}
 		let pkg = this.gameState.exportPackage();
 		this.actionLog.push({
@@ -176,14 +176,6 @@ export class Game {
 			}
 		}));
 	}
-
-	checkOutcome = () => {
-		let outcome = this.gameState.checkOutcome();
-		if (outcome) {
-			this.outcome = outcome;
-			this.finished = true;
-		}
-	}
 }
 
 export class GameState {
@@ -203,13 +195,28 @@ export class GameState {
 		}
 	}
 
-	checkOutcome() {
-		let outcomeValue = getTable(this.content, 'gameSettings', 'outcome');
-		if (!outcomeValue) return;
+	getResult() {
+		let gameOverCondition = this.content.gameSettings.gameOverCondition;
+		if (!gameOverCondition) return;
 		let ctx = this.createContext();
-		let outcome = this.runtime.execBrick(outcomeValue, ctx);
-		if (outcome === 0) return;
-		return outcome;
+		let finished = this.runtime.execBrick(gameOverCondition, ctx);
+		if (!finished) return;
+		if (!this.content.players) return {};
+		let playerScore = {};
+		for (let player of this.players) {
+			let playerInfo = Object.values(this.content.players).find(p => p.index === player.index);
+			let scoreValue = playerInfo.score;
+			if (!scoreValue) {
+				playerScore[playerInfo.index] = 0;
+				continue;
+			}
+			let ctx = this.createContext();
+			let score = this.runtime.execBrick(scoreValue, ctx);
+			playerScore[playerInfo.index] = score;
+		}
+		return {
+			playerScore,
+		};
 	}
 
 	newPackage() {

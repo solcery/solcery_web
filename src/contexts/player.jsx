@@ -21,19 +21,29 @@ export const PlayerProvider = (props) => {
     const [ ingame, setIngame ] = useState(false);
     const storedGameUpdates = useRef([]);
 
-    const onGameStart = async (data) => {
-        let version = data.version;
-        let res = await gameApi.getGameBuild(version);
-        let myPlayerIndex = data.players.find(p => p.id === publicKey.toBase58()).index;
-        data.content = res.content;
-        data.unityBuild = res.unityBuild;
-        data.onAction = onAction;
-        data.playerIndex = myPlayerIndex;
-        game.current = new Game(data);
-        if (storedGameUpdates.current.length > 0) {
-            game.current.updateLog(storedGameUpdates.current)
+    const onMatchUpdate = async (data) => {
+        if (data.started) {
+            let version = data.version;
+            let res = await gameApi.getGameBuild(version);
+            let myPlayerIndex = data.players.find(p => p.id === publicKey.toBase58()).index;
+            data.content = res.content;
+            data.unityBuild = res.unityBuild;
+            data.onAction = onAction;
+            data.playerIndex = myPlayerIndex;
+            game.current = new Game(data);
+            if (storedGameUpdates.current.length > 0) {
+                game.current.updateLog(storedGameUpdates.current)
+            }
+            setIngame(true);
+            return;
         }
-        setIngame(true);
+        if (data.actionLog) {
+            if (!game.current) {
+                storedGameUpdates.current = data.actionLog;
+                return;
+            }
+            game.current.updateLog(data.actionLog);
+        }
     }
 
     const disconnect = (reason) => {
@@ -47,23 +57,12 @@ export const PlayerProvider = (props) => {
         }
     }
 
-    const onGameAction = (data) => {
-        if (!game.current) {
-            storedGameUpdates.current = data.actionLog;
-            return;
-        }
-        game.current.updateLog(data.actionLog);
-    }
-
     const onMessage = (message) => {
         if (message.type === 'playerStatus') {
             setStatus(message.data)
         }
-        if (message.type === 'matchStart') {
-            onGameStart(message.data);
-        }
-        if (message.type === 'matchAction') {
-            onGameAction(message.data);
+        if (message.type === 'matchUpdate') {
+            onMatchUpdate(message.data);
         }
         if (message.type === 'nfts') {
             setNfts(message.data);

@@ -52,8 +52,9 @@ export default class Bot {
 	}
 
 	think() {
+		if (this.gameState.getResult()) return true;
 		let active = this.execBrick(this.strategy.activationCondition);
-		if (!active) return;
+		if (!active) return true;
 		let possibleActions = [];
 		for (let rule of this.rules) {
 			let condition = this.execBrick(rule.condition);
@@ -66,12 +67,12 @@ export default class Bot {
 				action: rule.action,
 			})	
 		}
-		if (possibleActions.length === 0) throw new Error('Bot error. Bot has no possible actions!');
+		if (possibleActions.length === 0) return false;
 		let sumWeight = 0;
 		for (let action of possibleActions) {
 			sumWeight += action.weight;
 		}
-		if (sumWeight === 0) return;
+		if (sumWeight === 0) return false;
 		let currentWeigth = randomInt(sumWeight);
 		let chosenRule;
 		while (currentWeigth >= 0) {
@@ -80,5 +81,6 @@ export default class Bot {
 			currentWeigth -= current.weight;
 		}
 		this.execBrick(chosenRule.action);
+		return true;
 	}
 }
