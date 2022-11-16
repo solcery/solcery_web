@@ -1,0 +1,103 @@
+
+
+@import url('https://fonts.googleapis.com/css?family=Poppins:900i');
+
+.cta {
+    position: absolute;
+    right: 10vh;
+    margin-bottom: auto;
+    display: flex;
+    padding: 1vh 4.5vh 1vh 4.5vh;
+    text-decoration: none;
+    font-family: 'Poppins', sans-serif;
+    font-size: 4vh;
+    background: rgb(170, 30, 170);
+    transition: 1s;
+    box-shadow: 0.6vh 0.6vh 0 black;
+    transform: skewX(-15deg);
+	align-items: center;
+	justify-content: center;
+
+	.arrows {
+		margin-top: auto;
+		margin-bottom: auto;
+		height: 5vh;
+        width: 2vh;
+        margin-left: 3vh;
+        position: relative;
+        top: 12%;
+        transition: 0.5s;
+        margin-right: 0vh;
+		// height: 20%;
+		.arrow {
+			position: absolute;
+			margin: auto;
+			height: 100%;
+			opacity: 20%;
+		}
+
+		.arrow.one {
+			transition: 0.4s;
+		}
+
+		.arrow.two {
+			transition: 0.5s;
+		}
+
+	}
+
+   .btn-caption {
+        transform: skewX(15deg);
+        opacity: 60%;
+        color: white;
+    }
+
+}
+
+.cta:focus {
+  outline: none; 
+}
+
+.cta:hover {
+    transition: 0.5s;
+    box-shadow: 1vh 1vh 0 rgb(30, 170, 170);
+
+    .btn-caption {
+        opacity: 100%;
+    }
+
+    .arrows {
+        transition: 0.5s;
+        margin-right: 4.5vh;
+
+        .arrow.one {
+            transform: translateX(60%);
+            animation: color_anim 1s infinite 0.3s;
+        }
+
+        .arrow.two {
+            transform: translateX(120%);
+            animation: color_anim 1s infinite 0.6s;
+        }
+
+        .arrow.three {
+            animation: color_anim 1s infinite 0s;
+        }
+    }
+
+}
+
+
+/* animations */
+
+@keyframes color_anim {
+    0% {
+        opacity: 60%;
+    }
+    50% {
+        opacity: 100%;
+    }
+    100% {
+        opacity: 60%;
+    }
+}

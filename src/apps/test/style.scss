@@ -65,10 +65,12 @@
 	display: flex;
 
 
-	.bg {
+	.game-body {
     @media (min-aspect-ratio: 2/1) {
       background-size: auto 100%;
     }
+    // background-image:  linear-gradient(to bottom, rgba(245, 246, 252, 0.52), rgba(117, 19, 93, 0.73)), url('bg.png');
+    background-image: url('bg.png');
 		position: absolute;
 		width: 100%;
 		height: 100%;
@@ -81,6 +83,22 @@
 		background-repeat: no-repeat;
 		background-size: cover;
 		background-color: red;
+
+		.game-centered {
+
+		  // background: rgba(0, 0, 0, 0.5);
+		  width: 50vh;
+		  height: 50vh;
+		  position: absolute;
+		  top: 50%;
+		  left: 50%;
+		  margin: -25vh 0 0 -25vh;
+
+		  display: flex;
+		  align-items: center;
+		  justify-content: center;
+		}
+
 	}
 
 	.game-footer {
@@ -89,68 +107,17 @@
 		bottom: 0px;
 		height: 14vh;
 		display: flex;
-		overflow: hidden;
 		align-items: center;
 		background: linear-gradient(
 			90deg,
-			rgba(0, 0, 0, 0.8) 0%,
-			rgba(0, 0, 0, 0.4) 30%,
-			rgba(0, 0, 0, 0.6) 70%,
-			rgba(0, 0, 0, 0.8) 100%
+			rgba(0, 0, 0, 0.9) 0%,
+			rgba(0, 0, 0, 0.9) 30%,
+			rgba(0, 0, 0, 0.9) 70%,
+			rgba(0, 0, 0, 0.6) 100%
 		);
 	}
-
-	.game-header {	
-		position: absolute;
-
-		width: 100%;
-		top: 0px;
-		height: 10vh;
-		line-height: 100%;
-		font-size: 10vh;
-    @media (orientation: portrait) {
-      height: 14vh;
-      font-size: 7.8vh;
-    }
-    z-index: 1;
-    display: flex;
-
-		background: linear-gradient(
-			90deg,
-			rgba(255, 255, 255, 0) 0%,
-			rgba(0, 0, 0, 0.4) 30%,
-			rgba(0, 0, 0, 0.4) 70%,
-			rgba(255, 255, 255, 0) 100%
-		);
-		color: #fff;
-		text-align: center;
-		vertical-align: middle;
-		// border-bottom: 1px solid #aaa;
-		// border-top: 1px solid #aaa;
-		font-family: 'Montserrat', sans-serif;
-
-		.game-subheader {
-			position: relative;
-			height: 3vh;
-			line-height: 3vh;
-			bottom: 3vh;
-			font-size: 2vh;
-      @media (orientation: portrait) {
-        height: 2.66vh;
-        line-height: 2.66vh;
-        bottom: 2.2vh;
-        font-size: 1.77vh;
-      }
-
-			text-align: center;
-			vertical-align: top;
-		}
-
-	}
-
 
 	.auth {
-
 		display: flex;
 		flex-flow: column;
 		background-color: rgba(0, 0, 0, 0.4);
@@ -203,106 +170,4 @@
 		clip-path: circle(50%);
 		transform: scale(1);
 	}
-}
-
-
-@import url('https://fonts.googleapis.com/css?family=Poppins:900i');
-
-.cta {
-	position: absolute;
-	right: 10vh;
-	margin-bottom: auto;
-  display: flex;
-  padding: 1vh 4.5vh 1vh 4.5vh;
-  text-decoration: none;
-  font-family: 'Poppins', sans-serif;
-  font-size: 4vh;
-  color: white;
-  background: #6225E6;
-  transition: 1s;
-  box-shadow: 0.6vh 0.6vh 0 black;
-  transform: skewX(-15deg);
-	align-items: center;
-	justify-content: center;
-
-	.arrows {
-		margin-top: auto;
-		margin-bottom: auto;
-		height: 5vh;
-		// height: 20%;
-		.arrow {
-			position: absolute;
-			margin: auto;
-			height: 100%;
-			opacity: 60%;
-		}
-
-		.arrow.one {
-			transition: 0.4s;
-		}
-
-		.arrow.two {
-			transition: 0.5s;
-		}
-
-	}
-
-}
-
-.cta:focus {
-  outline: none; 
-}
-
-.cta:hover {
-  transition: 0.5s;
-  box-shadow: 1vh 1vh 0 #FBC638;
-}
-
-.cta .arrows {
-    transition: 0.5s;
-    margin-right: 0vh;
-}
-
-.cta:hover .arrows {
-    transition: 0.5s;
-    margin-right: 4.5vh;
-
-    .arrow.one {
-    	transform: translateX(60%);
-    	animation: color_anim 1s infinite 0.3s;
-    }
-
-    .arrow.two {
-    	transform: translateX(120%);
-    	animation: color_anim 1s infinite 0.6s;
-    }
-
-    .arrow.three {
-    	animation: color_anim 1s infinite 0s;
-    }
-}
-
-  span {
-    transform: skewX(15deg) 
-  }
-
-  span:nth-child(2) {
-    width: 2vh;
-    margin-left: 3vh;
-    position: relative;
-    top: 12%;
-  }
-  
-/* animations */
-
-@keyframes color_anim {
-    0% {
-        color: 60%;
-    }
-    50% {
-        opacity: 100%;
-    }
-    100% {
-        opacity: 60%;
-    }
 }
