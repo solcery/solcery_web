@@ -14,7 +14,6 @@ export const AuthProvider = (props) => {
     }
 
     const disconnect = () => {
-        console.log('disconnect')
         setPublicKey(undefined);
         if (onDisconnect.current) {
             onDisconnect.current();
@@ -23,12 +22,6 @@ export const AuthProvider = (props) => {
     }
 
     let AuthComponent = WalletsAuth;
-    // if (player.authType === 'fractal') {
-    //     AuthComponent = FractalAuth;
-    // }  
-    // if (player.authType === 'wallets') {
-    //     AuthComponent = WalletsAuth;
-    // } 
 
     const value = {
         publicKey,

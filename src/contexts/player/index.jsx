@@ -1,54 +1,54 @@
 import React, { useRef, useMemo, useContext, useCallback, useEffect, useState } from 'react';
-import { useGameApi } from './gameApi';
+import { useGameApi } from '../gameApi';
 import { useParams } from 'react-router-dom';
-import { useAuth } from './auth';
-import { GameProvider } from './game';
-import { Game } from '../game';
+import { useAuth } from '../auth';
 import { io } from 'socket.io-client';
 import { PublicKey } from '@solana/web3.js';
 
+import './style.scss'
+
 const PlayerContext = React.createContext(undefined);
+
+const Auth = (props) => {
+    const { status, publicKey } = usePlayer();
+    const { AuthComponent } = useAuth();
+    if (publicKey && status) return;
+    return <div className='auth'>
+        <div className='auth-header'>
+            Login
+        </div>
+        {publicKey && <div className='auth-body'>
+            <p>Logged as {publicKey.toBase58().substring(0, 10) + '...'}</p>
+            <p>Establishing connection with server</p>
+        </div>}
+        {!publicKey && <div className='auth-body'>
+                <AuthComponent/>
+        </div>}
+    </div>
+}
+
 
 export const PlayerProvider = (props) => {
     let { projectId } = useParams();
     const { gameApi, gameId } = useGameApi();
-    const { publicKey } = useAuth();
+    const { publicKey, AuthComponent } = useAuth();
 
     const ws = useRef();
     const [ nfts, setNfts ] = useState(undefined);
     const [ status, setStatus ] = useState(undefined);
-    const game = useRef();
-    const [ ingame, setIngame ] = useState(false);
-    const storedGameUpdates = useRef([]);
+    const [ match, setMatch ] = useState(undefined);
 
     const onMatchUpdate = async (data) => {
-        if (data.started) {
-            let version = data.version;
-            let res = await gameApi.getGameBuild(version);
-            let myPlayerIndex = data.players.find(p => p.id === publicKey.toBase58()).index;
-            data.content = res.content;
-            data.unityBuild = res.unityBuild;
-            data.onAction = onAction;
-            data.playerIndex = myPlayerIndex;
-            game.current = new Game(data);
-            if (storedGameUpdates.current.length > 0) {
-                game.current.updateLog(storedGameUpdates.current)
-            }
-            setIngame(true);
+        if (!data.id) return;
+        if (!match || match.id !== data.id) {
+            setMatch(data);
             return;
         }
-        if (data.actionLog) {
-            if (!game.current) {
-                storedGameUpdates.current = data.actionLog;
-                return;
-            }
-            game.current.updateLog(data.actionLog);
-        }
+        setMatch(Object.assign({}, match, data));
     }
 
     const disconnect = (reason) => {
         setStatus();
-        setIngame(false);
     }
 
     const onDisconnect = (reason) => {
@@ -75,14 +75,6 @@ export const PlayerProvider = (props) => {
         ws.current.emit('message', data);
     }, [ status ])
 
-    const onAction = (action) => {
-        if (!ws) throw 'No WebSocket';
-        ws.current.emit('message', {
-            type: 'action',
-            data: action,
-        });
-    }
-
     const challenge = (publicKey) => {
         let challenge = {
             type: 'challenge',
@@ -93,22 +85,6 @@ export const PlayerProvider = (props) => {
         }
         ws.current.emit('message', challenge)
     }
-
-    useEffect(() => {
-        if (!status) return;
-        if (status.code !== 'ingame' && game) {
-            delete game.current;
-            setIngame(false);
-        }
-    }, [ status ])
-
-    useEffect(() => {
-        if (!game) return;
-        for (let update of storedGameUpdates.current) {
-            game.update(update);
-        }
-        storedGameUpdates.current = [];
-    }, [ game ])
 
     useEffect(() => {
         setStatus();
@@ -128,23 +104,15 @@ export const PlayerProvider = (props) => {
         ws.current.on('reconnect', () => challenge(publicKey));
     }, [ publicKey ])
 
-    let value = {
-        publicKey
-    };
-    if (status) Object.assign(value, {
-        status,
-        nfts,
-        playerRequest,
-    })
-
-    return (<PlayerContext.Provider value={value}>
-        <GameProvider game={ingame && game.current}>
-            { props.children }
-        </GameProvider>
+    return (<PlayerContext.Provider value={{ publicKey, status, nfts, playerRequest, match }}>
+        {(!publicKey || !status) && <div className='blackout'>
+            <Auth/>
+        </div>}
+        { props.children }
     </PlayerContext.Provider>);
 }
 
 export function usePlayer() {
-    const { publicKey, status, nfts, playerRequest } = useContext(PlayerContext);
-    return { publicKey, status, nfts, playerRequest }
+    const { publicKey, status, nfts, playerRequest, match } = useContext(PlayerContext);
+    return { publicKey, status, nfts, playerRequest, match }
 }
