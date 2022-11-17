@@ -1,0 +1,25 @@
+.debug-games-space {
+	margin: 0 auto;
+	text-align: center;
+	flex-flow: row wrap;
+	display: flex;
+}
+
+.debug-game-frame {
+	aspect-ratio: 32/15;
+	min-width: 700px;
+	display: block;
+
+	&.single {
+		width: 100%;
+	}
+	&.multi {
+		width: 50%;
+	}
+}
+
+.debug-game-debug-bar {
+	top: 0%;
+	display: block;
+	position: relative;
+}

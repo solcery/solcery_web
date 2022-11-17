@@ -11,7 +11,7 @@ import { notif } from '../../components/notification';
 import { useApi } from '../../contexts/api';
 import { Switch } from 'antd';
 
-import './style.css';
+import './style.scss';
 
 export default function PlayPage() {
 	const [ games, setGames ] = useState();
@@ -67,9 +67,8 @@ export default function PlayPage() {
 	useEffect(() => {
 		if (!content) return;
 		if (!unityBuild) return;
-		let layoutOverride = layoutPresets;
-		if (!layoutOverride || layoutOverride.length === 0) {
-			layoutOverride = undefined; // TODO: empty layoutPresets should be undefined
+		if (layoutPresets && layoutPresets.length > 0) {
+			content.web.gameSettings.layout = layoutPresets;
 		}
 		let seed = Math.floor(Math.random() * 255);
 		let players = [];
@@ -96,7 +95,6 @@ export default function PlayPage() {
 			seed,
 			content,
 			unityBuild,
-			layoutOverride,
 		})
 	}, [ content, unityBuild, layoutPresets ])
 
@@ -136,10 +134,10 @@ export default function PlayPage() {
 	}
 
 	if (!games) return <></>;
-	let gameClassName = 'game-frame ' + (games.length > 1 ? 'multi' : 'single');
-	return (<div className='games-space'>
-		{games.map((game, index) => <div className={gameClassName}>
-			<div className='game-debug-bar'>
+	let gameClassName = 'debug-game-frame ' + (games.length > 1 ? 'multi' : 'single');
+	return (<div className='debug-games-space'>
+		{games.map((game, index) => <div key={`play.client.${index}`} className={gameClassName}>
+			<div className='debug-game-debug-bar'>
 				<Switch onChange={(value) => setBotForGame(index, value)}/>Bot
 			</div>
 			<GameClient game={game}/>
