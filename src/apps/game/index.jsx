@@ -93,7 +93,7 @@ const Match = () => {
 		{leaveCountdown !== undefined && <div className='blackout'>
 			<p>Game Ended</p>
 			<p>{leaveCountdown}</p>
-			<Button>BACK</Button>
+			<Button onClick={() => setGame()}>BACK</Button>
 		</div>}
 	</>
 }
