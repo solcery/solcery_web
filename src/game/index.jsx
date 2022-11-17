@@ -233,9 +233,9 @@ export class GameState {
 		this.unityPackage[event](...args);
 	}
 
-	start = (layoutOverride) => {
-		let layout = layoutOverride ?? this.content.gameSettings.layout;
-		if (!layout) throw new Error('Error: Trying to initLayout without preset scheme');
+	start = () => {
+		let layout = this.content.gameSettings.layout;
+		if (!layout) throw new Error('Error: Empty game layout');
 		for (let cardPack of Object.values(this.content.cards)) {
 			if (!layout.includes(cardPack.preset)) continue;
 			for (let i = 0; i < cardPack.amount; i++) {

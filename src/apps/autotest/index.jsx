@@ -6,7 +6,6 @@ import { useBrickLibrary } from '../../contexts/brickLibrary';
 import { build } from '../../content';
 import { useUser } from '../../contexts/user';
 import { useProject } from '../../contexts/project';
-import { GameProvider } from '../../contexts/game';
 import GameClient from '../../components/gameClient';
 import { notif } from '../../components/notification';
 import { useApi } from '../../contexts/api';
