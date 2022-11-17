@@ -52,9 +52,23 @@ export const PlayerProvider = (props) => {
     }
 
     const onDisconnect = (reason) => {
-        if (reason === 'transport close') {
-            disconnect();
+        disconnect();
+        if (reason === "io server disconnect") {
+            setTimeout(() => {
+                ws.current.connect();
+            }, 2000);
         }
+    }
+
+    const onConnect = () => {
+        challenge(publicKey)
+    }
+
+    const onReconnect = () => {
+        challenge(publicKey)
+    }
+
+    const onException = (data) => {
     }
 
     const onMessage = (message) => {
@@ -100,8 +114,9 @@ export const PlayerProvider = (props) => {
         });
         ws.current.on('message', onMessage);
         ws.current.on('disconnect', onDisconnect);
-        ws.current.on('connect', () => challenge(publicKey));
-        ws.current.on('reconnect', () => challenge(publicKey));
+        ws.current.on('connect', onConnect);
+        ws.current.on('reconnect', onReconnect);
+        ws.current.on('exception', onException);
     }, [ publicKey ])
 
     return (<PlayerContext.Provider value={{ publicKey, status, nfts, playerRequest, match }}>

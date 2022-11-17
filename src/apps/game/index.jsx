@@ -44,7 +44,6 @@ const Match = () => {
 	}
 
 	const updateGame = (data) => {
-		console.log('updateGame', data)
 		if (data.actionLog) {
 			game.updateLog(data.actionLog);
 			let pubkey = publicKey.toBase58();
@@ -57,7 +56,6 @@ const Match = () => {
 			}
 			gameFinished = gameFinished ?? game.gameState.getResult();
 			if (gameFinished) {
-				console.log('GAME ENDED: ', gameFinished);
 				setLeaveCountdown(10);
 				// If left game or game finished - blackout and exit timer
 			}
