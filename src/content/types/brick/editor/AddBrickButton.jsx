@@ -35,7 +35,6 @@ export default function AddBrickButton(props) {
 
 	const onBrickSubtypeSelected = (index) => {
 		const brickSignature = brickSignatures[index];
-		console.log(brickSignature)
 		props.data.onBrickSubtypeSelected(
 			brickSignature,
 			props.data.brickTree,

@@ -1,23 +1,30 @@
 import { useState, useEffect, useRef } from 'react';
 import { SolceryAPIConnection } from '../../api';
 import { getTable, insertTable } from '../../utils';
-import { useGame } from '../../contexts/game';
 
 import './style.css';
 
 const DOWNLOADING_PROGRESS_PERCENTAGE = 20;
 
 export default function GameClient(props) {
-	const { game, actionLog } = useGame();
 	const [ loaded, setLoaded ] = useState(false);
-	const [ finished, setFinished ] = useState(false);
 	const [ unityReady, setUnityReady ] = useState(false);
 	const [ iframeName, setIframeName ] = useState();
+	const [ actionLog, setActionLog ] = useState();
 	const step = useRef(-1);
 	const firstGameStateSent = useRef(false);
 	const loadingBarRef = useRef();
 	const loadingProgressRef = useRef();
 	const iframeRef = useRef();
+
+	useEffect(() => {
+        if (!props.game) return;
+        if (props.game.onUpdate) return;
+        props.game.onLogUpdate = log => {
+        	setActionLog([ ...log]);
+        };
+        setActionLog(props.game.actionLog);
+    }, [ props.game ])
 
 	const sendToUnity = (funcName, param) => {
 		if (!iframeRef.current) return;
@@ -40,7 +47,7 @@ export default function GameClient(props) {
 
 	const onUnityLoaded = (data) => {
 		const md5 = require('js-md5'); 
-		let content = game.getUnityContent();
+		let content = props.game.getUnityContent();
 		let contentHash = md5(JSON.stringify(content));
 		let cachedContentHash = getTable(data, 'content_metadata', 'game_content', 'hash');
 
@@ -51,7 +58,7 @@ export default function GameClient(props) {
 			insertTable(content, contentHash, 'metadata', 'hash')
 			sendToUnity('UpdateGameContent', content);
 		}
-		let overrides = game.getContentOverrides();
+		let overrides = props.game.getContentOverrides();
 		let overridesHash = md5(JSON.stringify(overrides));
 		let cachedOverridesHash = getTable(data, 'content_metadata', 'game_content_overrides', 'hash');
 		if (false && overridesHash === cachedOverridesHash) {
@@ -87,14 +94,14 @@ export default function GameClient(props) {
 	}
 
 	const onUnityCommand = (command) => {
-		let content = game.getUnityContent();
+		let content = props.game.getUnityContent();
 		let commands = content.commands.objects;
 		let command_type = command.command_data_type;
 		let contentCommand = commands.find(cmd => cmd.command_type === command_type);
 		if (contentCommand) {
 			let ctx = { ...command };
 			delete ctx.command_data_type;
-			game.onPlayerCommand(contentCommand.id, ctx);
+			props.game.onPlayerCommand(contentCommand.id, ctx);
 		}
 	}
 
@@ -133,7 +140,7 @@ export default function GameClient(props) {
 	}, [ unityReady, actionLog ])
 
 	const onIframeReady = async () => {
-		let unityBuildData = game.unityBuild;
+		let unityBuildData = props.game.unityBuild;
 		let loaderUrl = unityBuildData.loaderUrl;
 		let loader = await fetch(loaderUrl);
 		let script = await loader.text();
@@ -183,8 +190,11 @@ export default function GameClient(props) {
 
 
 	useEffect(() => {
-		if (!game) return;
-		const name = `${game.id}.${game.playerIndex}.iframe`;
+		if (!props.game) {
+			setLoaded(false);
+			return;
+		};
+		const name = `${props.game.id}.${props.game.playerIndex}.iframe`;
 
 		window.addEventListener('message', (message) => {
 			if (message.source.name !== name) {
@@ -200,18 +210,9 @@ export default function GameClient(props) {
 		}
 
 		setIframeName(name);
-	}, [ game ])
+	}, [ props.game ])
 
-	useEffect(() => {
-		if (!game) {
-			setLoaded(false);
-			setFinished(0);
-			return;
-		}
-
-	}, [ game ])
-
-	if (!game) return <></>;
+	if (!props.game) return <></>;
 	if (!iframeName) return <></>;
 
 	if (!loaded) {

@@ -3,7 +3,6 @@ import { NftBar } from './nftBar';
 import { CloseIcon, BugIcon, QuestionMarkIcon, PlayIcon, HomeIcon, QuitIcon } from '../../components/icons';
 import { useGameApi } from '../../contexts/gameApi';
 import { usePlayer } from '../../contexts/player';
-import { useGame } from '../../contexts/game';
 import { useAuth } from '../../contexts/auth';
 
 import './walletModal.css';
@@ -34,23 +33,6 @@ const BigButton = (props) => {
 	</div>;
 }
 
-const Auth = (props) => {
-	const { status, publicKey } = usePlayer();
-	const { AuthComponent } = useAuth();
-	if (status) return;
-	return <div className='auth'>
-		<div className='auth-header'>
-			Login
-		</div>
-		{publicKey && <div className='auth-body'>
-			<p>Logged as {publicKey.toBase58().substring(0, 10) + '...'}</p>
-			<p>Establishing connection with server</p>
-		</div>}
-		{!publicKey && <div className='auth-body'>
-				<AuthComponent/>
-		</div>}
-	</div>
-}
 
 const GameMenu = (props) => {
 	const { status, playerRequest } = usePlayer();
@@ -91,7 +73,6 @@ export const Menu = (props) => {
 			</div>
 		</div>
 		<NftBar/>
-		<Auth/>
 		<GameMenu/>
 	</div>;
 }
