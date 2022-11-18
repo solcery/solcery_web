@@ -35,14 +35,13 @@ export function UnityBuilder() {
 			navigate('validator');
 			return;
 		}
-		let layoutOverride = layoutPresets;
-		if (!layoutOverride || layoutOverride.length === 0) {
-			layoutOverride = undefined; // TODO: empty layoutPresets should be undefined
-		}
 		content = res.constructed;
 		content.unity = content.unity_local;
-		let players = [];
+		if (layoutPresets && layoutPresets.length > 0) {
+			content.web.gameSettings.layout = layoutPresets;
+		}
 		let playerSettings = Object.values(content.web.players);
+		let players = [];
 		let actionLog = [];
 		let botCommandId = content.web.gameSettings.botActivationCommand;
 		for (let playerInfo of playerSettings) {
@@ -66,14 +65,13 @@ export function UnityBuilder() {
 		};
 		let session = new Game({
 			content,
-			layoutOverride,
 			nfts,
 			players,
 			seed: 1,
 			actionLog,
 			playerIndex: players[0].index,
 		});
-		session.gameState.start(session.players);
+		session.gameState.start();
 		let	unityPackage = session.gameState.exportPackage();
 		if (commandsMode) {
 			unityPackage.commands = session.getCommands();
@@ -99,6 +97,7 @@ export function UnityBuilder() {
 
 	return (
 		<>
+			<p>Layout: {layoutPresets ? 'custom ' + JSON.stringify(layoutPresets) : 'using game settings'}</p>
 			<div>With commands</div>
 			<Switch defaultChecked={commandsMode} onChange={() => setCommandsMode(!commandsMode)} />
 			<div></div>

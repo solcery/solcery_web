@@ -20,7 +20,7 @@ import Builder from '../../apps/builder';
 import Profile from '../../apps/profile';
 import Home from '../../apps/home';
 import Validator from '../../apps/validator';
-import ApiLogs from '../../apps/apiLogs';
+import Autotest from '../../apps/autotest';
 import ProjectConfig from '../../apps/projectConfig';
 import BrickEditor from '../../apps/brickEditor';
 
@@ -45,7 +45,7 @@ export default function Sage() {
 											</Route>
 										</Route>
 										<Route path="play" element={<PlayPage />} />
-										<Route path="apiLogs" element={<ApiLogs />} />
+										<Route path="autotest" element={<Autotest />} />
 										<Route path="builder" element={<Builder />} />
 										<Route path="migrator" element={<Migrator />} />
 										<Route path="export" element={<ContentExporter />} />

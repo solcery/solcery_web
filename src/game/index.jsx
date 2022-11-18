@@ -1,6 +1,7 @@
 import { BrickRuntime } from '../content/brickLib/runtime';
 import { getTable } from '../utils';
 import { UnityPackage } from './unityPackage';
+import Bot from './bot';
 
 export class Game {
 	playerContent = {};
@@ -44,6 +45,7 @@ export class Game {
 		this.id = data.id;
 		this.version = data.version; // Unused
 		this.players = data.players;
+		// this.playerIndex = 2;
 		this.playerIndex = data.playerIndex; // Current player info
 		this.content = JSON.parse(JSON.stringify(data.content));
 		this.unityBuild = data.unityBuild;
@@ -52,7 +54,8 @@ export class Game {
 		this.onAction = data.onAction;
 		this.gameState = new GameState({
 			seed: data.seed,
-			content: data.content
+			content: data.content,
+			players: data.players,
 		})
 		this.layoutOverride = data.layoutOverride;
 		this.modifyUnityContent();
@@ -61,7 +64,23 @@ export class Game {
 			for (let action of data.actionLog) {
 				this.applyAction(action);
 			}
-		}	
+		}
+	}
+
+	setBotStatus(enable) {
+		if (!enable) {
+			delete this.bot;
+			return;
+		}
+		this.bot = new Bot({
+			gameBuild: {
+				content: this.content
+			},
+			gameState: this.gameState,
+			playerIndex: this.playerIndex,
+			onCommand: (action) => this.onAction(action),
+		})
+		this.bot.think();
 	}
 
 	applyAction(action) {
@@ -69,13 +88,13 @@ export class Game {
 		this.gameState.newPackage();
 		switch (type) {
 			case 'init':
-				this.gameState.start(this.players, this.layoutOverride);
+				this.gameState.start(this.layoutOverride);
 				break;
 			case 'gameCommand':
-				this.gameState.applyCommand(commandId, playerIndex, ctx)
+				this.gameState.applyCommand(commandId, ctx)
 				break;
 			default: 
-				throw ('ERR1');
+				break;
 		}
 		let pkg = this.gameState.exportPackage();
 		this.actionLog.push({
@@ -85,13 +104,16 @@ export class Game {
 	}
 
 	updateLog(log) {
-		if (log.length > this.actionLog.length);
+		if (log.length <= this.actionLog.length) return;
 		let toAdd = log.slice(this.actionLog.length);
 		for (let entry of toAdd) {
 			this.applyAction(entry);
 		};
 		if (this.onLogUpdate) {
 			this.onLogUpdate(this.actionLog);
+		}
+		if (this.bot) {
+			this.bot.think(); //TODO: move somewhere
 		}
 	}
 
@@ -154,14 +176,6 @@ export class Game {
 			}
 		}));
 	}
-
-	checkOutcome = () => {
-		let outcome = this.gameState.checkOutcome();
-		if (outcome) {
-			this.outcome = outcome;
-			this.finished = true;
-		}
-	}
 }
 
 export class GameState {
@@ -169,9 +183,10 @@ export class GameState {
 	attrs = {};
 	diff = undefined;
 	diffLog = undefined;
+	maxEntityId = 0;
 
 	constructor(data) {
-		this.seed = data.seed ?? 0;
+		this.seed = data.seed;
 		this.content = data.content.web;
 		this.players = data.players;
 		this.runtime = new BrickRuntime(this.content, data.seed);
@@ -180,13 +195,28 @@ export class GameState {
 		}
 	}
 
-	checkOutcome() {
-		let outcomeValue = getTable(this.content, 'gameSettings', 'outcome');
-		if (!outcomeValue) return;
+	getResult() {
+		let gameOverCondition = this.content.gameSettings.gameOverCondition;
+		if (!gameOverCondition) return;
 		let ctx = this.createContext();
-		let outcome = this.runtime.execBrick(outcomeValue, ctx);
-		if (outcome === 0) return;
-		return outcome;
+		let finished = this.runtime.execBrick(gameOverCondition, ctx);
+		if (!finished) return;
+		if (!this.content.players) return {};
+		let playerScore = {};
+		for (let player of this.players) {
+			let playerInfo = Object.values(this.content.players).find(p => p.index === player.index);
+			let scoreValue = playerInfo.score;
+			if (!scoreValue) {
+				playerScore[playerInfo.index] = 0;
+				continue;
+			}
+			let ctx = this.createContext();
+			let score = this.runtime.execBrick(scoreValue, ctx);
+			playerScore[playerInfo.index] = score;
+		}
+		return {
+			playerScore,
+		};
 	}
 
 	newPackage() {
@@ -203,9 +233,9 @@ export class GameState {
 		this.unityPackage[event](...args);
 	}
 
-	start = (players, layoutOverride) => {
-		let layout = layoutOverride ?? this.content.gameSettings.layout;
-		if (!layout) throw new Error('Error: Trying to initLayout without preset scheme');
+	start = () => {
+		let layout = this.content.gameSettings.layout;
+		if (!layout) throw new Error('Error: Empty game layout');
 		for (let cardPack of Object.values(this.content.cards)) {
 			if (!layout.includes(cardPack.preset)) continue;
 			for (let i = 0; i < cardPack.amount; i++) {
@@ -220,7 +250,7 @@ export class GameState {
 			}
 		}
 		if (this.content.collections) {
-			for (let player of players) {
+			for (let player of this.players) {
 				if (!player.nfts) continue;
 				for (let nft of player.nfts) {
 					let collection = Object.values(this.content.collections)
@@ -248,17 +278,10 @@ export class GameState {
 		}
 	};
 
-	applyCommand = (commandId, playerIndex, scopeVars) => {
+	applyCommand = (commandId, scopeVars) => {
 		let command = this.content.commands[commandId];
 		if (!command) throw 'No such game command';
-		if (playerIndex) {
-			var extra = { 
-				vars: { 
-					player_index: playerIndex 
-				} 
-			}
-		}
-		let ctx = this.createContext(undefined, extra);
+		let ctx = this.createContext(undefined);
 		if (scopeVars) Object.assign(ctx.scopes[0].vars, scopeVars);
 		if (command.action) {
 			this.runtime.execBrick(command.action, ctx);
@@ -289,8 +312,10 @@ export class GameState {
 	}
 
 	createEntity(cardTypeId, place, initAction, ctx) {
-		let id = Object.values(this.objects).length + 1;
+		let id = this.maxEntityId + 1;
 		let entity = new Entity(id, cardTypeId, this);
+		if (this.objects[id]) throw new Error(`Game.createEntity error: Object Id '${id}' is already taken!`);
+		this.maxEntityId = id;
 		this.objects[id] = entity;
 		if (!place) throw new Error('Game.createEntity error: No place given for created entity!');
 		entity.attrs.place = place;
