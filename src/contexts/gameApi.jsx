@@ -9,7 +9,6 @@ const GameApiContext = React.createContext(undefined);
 
 export function GameApiProvider(props) {
 	let { projectId } = useParams();
-	console.log(useApi());
 	let { solceryAPI } = useApi();
 	let [ status, setStatus ] = useState();
 	let [ gameInfo, setGameInfo ] = useState();
