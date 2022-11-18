@@ -19,9 +19,6 @@ const MenuBurger = (props) => {
 			<div className="bar2"></div>
 			<div className="bar3"></div>
 		</div>
-		<div className='nav-menu-caption'>
-			Esc
-		</div>
 	</div>;
 }
 
