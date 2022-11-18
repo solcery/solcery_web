@@ -32,9 +32,17 @@ export const Menu = (props) => {
 	}
 	useHotkey('Escape', changeVisibility);
 
-	const leaveMatch = () => playerRequest({ 
-		type: 'leaveMatch',
-	})
+	const leaveMatch = () => {
+		playerRequest({ 
+			type: 'leaveMatch',
+		})
+		changeVisibility();
+	}
+
+	const logout = () => {
+		disconnect()
+		changeVisibility();
+	}
 
 	return <>
 		{status && <MenuBurger onClick={changeVisibility} visible={visible}>Open menu</MenuBurger>}
@@ -42,7 +50,7 @@ export const Menu = (props) => {
 			<MenuButton onClick={changeVisibility}>Close</MenuButton>
 			{status && status.code === 'ingame' && <MenuButton onClick={leaveMatch}>Surrender</MenuButton>}
 			<p/>
-			<MenuButton onClick={disconnect}>Log out</MenuButton>
+			<MenuButton onClick={logout}>Log out</MenuButton>
 		</Blackout>}
 	</>
 }
