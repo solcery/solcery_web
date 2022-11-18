@@ -21,7 +21,6 @@ import {
     WalletModalProvider,
     WalletDisconnectButton,
     WalletMultiButton,
-    WalletConnectButton,
 } from '@solana/wallet-adapter-react-ui';
 import { clusterApiUrl, PublicKey } from '@solana/web3.js';
 import { useAuth } from './index';
@@ -44,7 +43,7 @@ const wallets = [
 ];
 const endpoint = 'https://solana-api.projectserum.com';
 
-// require('@solana/wallet-adapter-react-ui/styles.css');
+require('@solana/wallet-adapter-react-ui/styles.css');
 
 const WalletsConnector = (props) => {
     const { publicKey, connect, connected, wallet } = useWallet();
