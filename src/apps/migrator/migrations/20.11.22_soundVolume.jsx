@@ -5,7 +5,7 @@ const migrateBrick = (bt) => {
 			lib: 'value',
 			func: 'const', 
 			params: {
-				value: 1,
+				value: 100,
 			}
 		}
 		return true;
