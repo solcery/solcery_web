@@ -354,7 +354,7 @@ export class GameState {
 	}
 	
 	playSound(soundId, volume) {
-		this.pushPackageEvent('onPlaySound', soundId);
+		this.pushPackageEvent('onPlaySound', soundId, volume);
 	}
 }
 

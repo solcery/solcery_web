@@ -4,27 +4,30 @@ import { useParams } from 'react-router-dom';
 import { useAuth } from '../auth';
 import { io } from 'socket.io-client';
 import { PublicKey } from '@solana/web3.js';
+import { Blackout } from '../../components/blackout';
+import { MenuButton } from '../../components/menuButton';
+import { BigLoader } from '../../components/bigLoader';
 
 import './style.scss'
 
 const PlayerContext = React.createContext(undefined);
 
 const Auth = (props) => {
-    const { status, publicKey } = usePlayer();
     const { AuthComponent } = useAuth();
-    if (publicKey && status) return;
-    return <div className='auth'>
-        <div className='auth-header'>
-            Login
-        </div>
-        {publicKey && <div className='auth-body'>
-            <p>Logged as {publicKey.toBase58().substring(0, 10) + '...'}</p>
-            <p>Establishing connection with server</p>
-        </div>}
-        {!publicKey && <div className='auth-body'>
-                <AuthComponent/>
-        </div>}
-    </div>
+    return <Blackout
+        header='Welcome to Soulcery!'
+        message='Please log in with you preferred wallet'
+    >
+        <AuthComponent/>
+    </Blackout>;
+}
+
+const Connect = () => {
+    const { disconnect } = useAuth();
+    return <Blackout header='No connection with server'>
+        <BigLoader caption='Connecting...'/>
+        <MenuButton onClick={disconnect}>Log out</MenuButton>
+    </Blackout>
 }
 
 
@@ -104,7 +107,8 @@ export const PlayerProvider = (props) => {
         setStatus();
         if (!publicKey) {
             if (ws.current) {
-                ws.current.emit('disconnect');
+                ws.current.disconnect();
+                ws.current = undefined;
             }
             disconnect();
             return;
@@ -120,9 +124,8 @@ export const PlayerProvider = (props) => {
     }, [ publicKey ])
 
     return (<PlayerContext.Provider value={{ publicKey, status, nfts, playerRequest, match }}>
-        {(!publicKey || !status) && <div className='blackout'>
-            <Auth/>
-        </div>}
+        {!publicKey && <Auth/>}
+        {publicKey && !status && <Connect/>}
         { props.children }
     </PlayerContext.Provider>);
 }

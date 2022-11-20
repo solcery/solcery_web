@@ -1,0 +1,56 @@
+/* Burger Menu */
+.burger-menu-container {
+	position: absolute;
+	right: 1vh;
+	top: 1vh;
+	display: flex;
+	justify-content: flex-end;
+	z-index: 101;
+	margin-top: 1vh;
+
+	.nav-menu-btn {
+		display: block;
+		right: 1vh;
+		display: block;
+		cursor: pointer;
+		padding: 6px 0;
+	}
+
+	.nav-menu-caption {
+		line-height: 3.5vh;
+		font-size: 2vh;
+		font-weight: 600;
+		display: block;
+		cursor: pointer;
+	}
+
+}
+
+.bar1, .bar2, .bar3 {
+  width: 3.5vh;
+  height: 0.5vh;
+  background: #fff;
+  margin: 0vh 1vh 0.6vh;
+  
+  transition: 0.4s;
+}
+
+.change .nav-menu-button .bar1 {
+  -webkit-transform: rotate(-45deg) translate(-0.8vh, 0.6vh);
+  transform: rotate(-45deg) translate(-0.8vh, 0.6vh);
+  background: orange;
+}
+
+.change .nav-menu-caption {
+	color: orange;
+}
+
+.change .nav-menu-button .bar2 {
+  opacity: 0;
+}
+
+.change .nav-menu-button .bar3 {
+  -webkit-transform: rotate(45deg) translate(-0.8vh, -0.8vh);
+  transform: rotate(45deg) translate(-0.8vh, -0.8vh);
+  background: orange;
+}

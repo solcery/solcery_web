@@ -1,18 +1,14 @@
 const migrateBrick = (bt) => {
 	let changed = false;
-	if (bt.lib === 'action' && bt.func === 'two') {
-		let pauseBrick = bt.params.action1;
-		let soundBrick = bt.params.action2;
-		if (pauseBrick.func === 'pause' && pauseBrick.params.duration.params.value === 0 && soundBrick.func === 'play_sound') {
-			bt.func = 'play_sound';
-			bt.params = soundBrick.params;
-			return true
+	if (bt.lib === 'action' && bt.func === 'play_sound') {
+		bt.params.volume = {
+			lib: 'value',
+			func: 'const', 
+			params: {
+				value: 1,
+			}
 		}
-		if (pauseBrick.func === 'custom.6292959419189affcfc006b4' && pauseBrick.params['Pause time'].params.value === 0 && soundBrick.func === 'play_sound') {
-			bt.func = 'play_sound';
-			bt.params = soundBrick.params;
-			return true
-		}
+		return true;
 	}
 	for (let param of Object.values(bt.params)) {
 		if (param && param.lib) {

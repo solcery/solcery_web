@@ -20,7 +20,7 @@ import { FractalProvider } from '@fractalwagmi/react-sdk';
 import {
     WalletModalProvider,
     WalletDisconnectButton,
-    WalletMultiButton
+    WalletMultiButton,
 } from '@solana/wallet-adapter-react-ui';
 import { clusterApiUrl, PublicKey } from '@solana/web3.js';
 import { useAuth } from './index';
@@ -46,16 +46,20 @@ const endpoint = 'https://solana-api.projectserum.com';
 require('@solana/wallet-adapter-react-ui/styles.css');
 
 const WalletsConnector = (props) => {
-    const { publicKey, connect, connected, provider } = useWallet();
+    const { publicKey, connect, connected, wallet } = useWallet();
     
+    let connectCaption = 'Select wallet';
+    if (wallet && wallet.adapter.name) {
+        connectCaption = `Use ${wallet.adapter.name}`;
+    }
+
     useEffect(() => {
         if (!publicKey) return;
         props.onConnect(publicKey);
     }, [ publicKey ])
-
     return (<WalletModalProvider>
-        <WalletMultiButton/>
-        <WalletDisconnectButton />
+        <WalletMultiButton className='menu-button'>{connectCaption}</WalletMultiButton>
+        <WalletDisconnectButton className='menu-button'>Disconnect</WalletDisconnectButton>
     </WalletModalProvider>);
 }
 

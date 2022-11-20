@@ -74,11 +74,12 @@ class UnityPackageState {
 		this.gameAttrs[attr] = value;
 	}
 
-	onPlaySound(soundId) {
+	onPlaySound(sound_id, volume) {
 		this.actions.push({
 			action_type: ACTION_TYPES.SOUND, // Тип экшена
 			value: {
-				sound_id: soundId 
+				sound_id,
+				volume,
 			}
 		});
 	}
@@ -185,9 +186,9 @@ export class UnityPackage {
 		this.current.onGameAttrChanged(attr, value);
 	}
 
-	onPlaySound(soundId) {
+	onPlaySound(soundId, volume) {
 		if (!this.current) this.newCurrent();
-		this.current.onPlaySound(soundId);
+		this.current.onPlaySound(soundId, volume);
 	}
 
 }
