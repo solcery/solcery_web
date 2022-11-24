@@ -385,7 +385,7 @@ export const basicValues = [
 			return scope.vars[varName];
 		},
 	},
-	{
+		{
 		type: 2,
 		subtype: 0,
 		lib: 'value',
@@ -393,7 +393,7 @@ export const basicValues = [
 		name: 'Time',
 		params: [],
 		exec: (runtime, params, ctx) => {
-			return runtime.now();
+			return ctx.time;
 		},
-	},
+	}
 ];
