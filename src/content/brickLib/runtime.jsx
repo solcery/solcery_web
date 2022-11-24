@@ -67,6 +67,8 @@ export class BrickRuntime {
 		}
 	}
 
+	now = () => Date.now();
+
 	context = (object, extra) => {
 		var ctx = Object.assign(
 			{
