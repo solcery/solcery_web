@@ -28,7 +28,10 @@ export function GameApiProvider(props) {
 
 	useEffect(() => {
 		if (!gameApi) return;
-		gameApi.getGameInfo().then(setGameInfo);
+		gameApi.getGameInfo().then(info => {
+			document.title = `${info.gameName} - Soulcery`;
+			setGameInfo(info)
+		});
 	}, [ gameApi])
 
 	return (<GameApiContext.Provider value={{ gameInfo, gameApi, gameId }}>

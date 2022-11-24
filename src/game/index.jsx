@@ -45,7 +45,6 @@ export class Game {
 		this.id = data.id;
 		this.version = data.version; // Unused
 		this.players = data.players;
-		// this.playerIndex = 2;
 		this.playerIndex = data.playerIndex; // Current player info
 		this.content = JSON.parse(JSON.stringify(data.content));
 		this.unityBuild = data.unityBuild;
@@ -84,14 +83,14 @@ export class Game {
 	}
 
 	applyAction(action) {
-		let { type, commandId, ctx, playerIndex } = action;
+		let { type, commandId, ctx, playerIndex, time } = action;
 		this.gameState.newPackage();
 		switch (type) {
 			case 'init':
 				this.gameState.start(this.layoutOverride);
 				break;
 			case 'gameCommand':
-				this.gameState.applyCommand(commandId, ctx)
+				this.gameState.applyCommand(commandId, time, ctx)
 				break;
 			default: 
 				break;
@@ -185,13 +184,24 @@ export class GameState {
 	diffLog = undefined;
 	maxEntityId = 0;
 
+
 	constructor(data) {
 		this.seed = data.seed;
 		this.content = data.content.web;
 		this.players = data.players;
 		this.runtime = new BrickRuntime(this.content, data.seed);
+		this.miscRuntime = new BrickRuntime(this.content, data.seed);
 		for (let attr of Object.values(this.content.gameAttributes)) {
 			this.attrs[attr.code] = 0;
+		}
+	}
+	
+	getRuntime(type = 'misc') {
+		if (type === 'misc') {
+			return this.miscRuntime;
+		}
+		if (type === 'main') {
+			return this.runtime;
 		}
 	}
 
@@ -278,10 +288,10 @@ export class GameState {
 		}
 	};
 
-	applyCommand = (commandId, scopeVars) => {
+	applyCommand = (commandId, time, scopeVars) => {
 		let command = this.content.commands[commandId];
 		if (!command) throw 'No such game command';
-		let ctx = this.createContext(undefined);
+		let ctx = this.createContext({ time });
 		if (scopeVars) Object.assign(ctx.scopes[0].vars, scopeVars);
 		if (command.action) {
 			this.runtime.execBrick(command.action, ctx);
@@ -342,7 +352,7 @@ export class GameState {
 	}
 
 	pause(duration) {
-		this.pushPackageEvent('onPause', duration);
+		// this.pushPackageEvent('onPause', duration);
 	}
 
 	startTimer(object, duration) {
