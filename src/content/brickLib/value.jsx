@@ -387,7 +387,7 @@ export const basicValues = [
 	},
 		{
 		type: 2,
-		subtype: 0,
+		subtype: 11, // TODO
 		lib: 'value',
 		func: 'time',
 		name: 'Time',
