@@ -50,7 +50,9 @@ export class Game {
 		this.unityBuild = data.unityBuild;
 		this.onError = data.onError;
 		this.modifiers = data.modifiers;
+		this.started = data.started;
 		this.onAction = data.onAction;
+		this.onLogUpdate = [];
 		this.gameState = new GameState({
 			seed: data.seed,
 			content: data.content,
@@ -84,13 +86,14 @@ export class Game {
 
 	applyAction(action) {
 		let { type, commandId, ctx, playerIndex, time } = action;
+		this.gameState.time = time;
 		this.gameState.newPackage();
 		switch (type) {
 			case 'init':
 				this.gameState.start(this.layoutOverride);
 				break;
 			case 'gameCommand':
-				this.gameState.applyCommand(commandId, time, ctx)
+				this.gameState.applyCommand(commandId, ctx)
 				break;
 			default: 
 				break;
@@ -108,8 +111,8 @@ export class Game {
 		for (let entry of toAdd) {
 			this.applyAction(entry);
 		};
-		if (this.onLogUpdate) {
-			this.onLogUpdate(this.actionLog);
+		for (let logUpdateCallback of this.onLogUpdate) {
+			logUpdateCallback(this.actionLog);
 		}
 		if (this.bot) {
 			this.bot.think(); //TODO: move somewhere
@@ -117,20 +120,13 @@ export class Game {
 	}
 
 	onPlayerCommand = (commandId, ctx) => {
+		if (!this.onAction) return;
 		let action = {
 			type: 'gameCommand',
 			commandId,
 			ctx,
 		}
-		if (this.onAction) {
-			this.onAction(action);
-			return;
-		}
-		action.playerIndex = this.playerIndex;
-		this.applyAction(action);
-		if (this.onLogUpdate) {
-			this.onLogUpdate(this.actionLog);
-		}
+		this.onAction(action);
 	}
 
 	getUnityContent = () => this.content.unity;
@@ -288,10 +284,10 @@ export class GameState {
 		}
 	};
 
-	applyCommand = (commandId, time, scopeVars) => {
+	applyCommand = (commandId, scopeVars) => {
 		let command = this.content.commands[commandId];
 		if (!command) throw 'No such game command';
-		let ctx = this.createContext({ time });
+		let ctx = this.createContext();
 		if (scopeVars) Object.assign(ctx.scopes[0].vars, scopeVars);
 		if (command.action) {
 			this.runtime.execBrick(command.action, ctx);
@@ -352,7 +348,7 @@ export class GameState {
 	}
 
 	pause(duration) {
-		// this.pushPackageEvent('onPause', duration);
+		this.pushPackageEvent('onPause', duration);
 	}
 
 	startTimer(object, duration) {

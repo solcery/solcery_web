@@ -39,13 +39,10 @@ const handleBrick = (brick, args, content) => {
 		}
 		args[nameParam.value] = lib;
 	}
-	console.log(lib, func);
 	if (lib === 'value' && func === 'const') {
-		console.log('CONST');
 		let val = params.value;
 		let cardTypes = content.cardTypes.objects;
 		let cardType = cardTypes.find((cardType) => cardType.id === val);
-		console.log(cardType);
 		if (cardType) {
 			func = 'cardType';
 			params.value = `[-${cardType.id}-]`;

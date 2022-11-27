@@ -393,7 +393,7 @@ export const basicValues = [
 		name: 'Time',
 		params: [],
 		exec: (runtime, params, ctx) => {
-			return ctx.time;
+			return objget(ctx, 'game', 'time') ?? 0;
 		},
 	}
 ];

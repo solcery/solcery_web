@@ -6,7 +6,8 @@ const circumference = 2 * Math.PI * 48;
 export const Countdown = (props) => {
 	const circleRef = useRef();
 	const numberRef = useRef();
-	const seconds = useRef(props.current ?? props.total);
+
+	const seconds = useRef();
 
 	const update = (value) => {
 		let total = props.total;
@@ -33,13 +34,12 @@ export const Countdown = (props) => {
 	}, []);
 
 	useEffect(() => {
-		if (!props) return;
 		if (!props.total) return;
 		seconds.current = props.current ?? seconds.current;
+		update(props.current);
 		let interval = setInterval(() => tick(), 1000);
-		update(seconds.current);
 		return () => clearInterval(interval);
-	}, [ props, props.total, props.current ]);
+	}, [ props.total, props.current ]);
 
 	return <div className='countdown-container'>
 		<div className='countdown'>

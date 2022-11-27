@@ -7,6 +7,7 @@
 	justify-content: flex-end;
 	z-index: 101;
 	margin-top: 1vh;
+	cursor: pointer;
 
 	.nav-menu-btn {
 		display: block;
@@ -38,11 +39,11 @@
 .change .nav-menu-button .bar1 {
   -webkit-transform: rotate(-45deg) translate(-0.8vh, 0.6vh);
   transform: rotate(-45deg) translate(-0.8vh, 0.6vh);
-  background: orange;
+  background: rgb(30, 170, 170);
 }
 
 .change .nav-menu-caption {
-	color: orange;
+	color: rgb(30, 170, 170);
 }
 
 .change .nav-menu-button .bar2 {
@@ -52,5 +53,5 @@
 .change .nav-menu-button .bar3 {
   -webkit-transform: rotate(45deg) translate(-0.8vh, -0.8vh);
   transform: rotate(45deg) translate(-0.8vh, -0.8vh);
-  background: orange;
+  background: rgb(30, 170, 170);
 }

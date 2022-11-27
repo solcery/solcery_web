@@ -26,7 +26,9 @@ export const Lobby = () => {
       <div className='lobby-footer'>
         {isOnline && <PlayButton/>}
         {isQueued && <StopButton/>}
-        {isQueued && <BigLoader className={'fade-in'} caption='Looking for an opponent...'/>}
+        {isQueued && <div style={{ left: '0px' }}>
+          <BigLoader className={'fade-in'} caption='Looking for an opponent...'/>
+        </div>}
       </div>
   </div>;
 }

@@ -43,18 +43,13 @@ export const PlayerProvider = (props) => {
     const matchData = useRef();
 
     const onMatchUpdate = (data) => {
-        console.log('onMatchUpdate')
-        console.log(matchData.current)
-        console.log(data)
         if (!data.id) return;
         if (!matchData.current || (matchData.current.id !== data.id)) {
             matchData.current = data;
             setMatch({ ...matchData.current });
-            console.log('new match')
             return;
         }
         Object.assign(matchData.current, data);
-        console.log('setMatch')
         setMatch({ ...matchData.current });
     };
 
