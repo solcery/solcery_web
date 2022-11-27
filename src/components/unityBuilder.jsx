@@ -43,7 +43,6 @@ export function UnityBuilder() {
 		let playerSettings = Object.values(content.web.players);
 		let players = [];
 		let actionLog = [];
-		let botCommandId = content.web.gameSettings.botActivationCommand;
 		for (let playerInfo of playerSettings) {
 			if (nfts) {
 				var playerNfts = nfts.filter(nft => nft.player === playerInfo.index);
@@ -53,15 +52,6 @@ export function UnityBuilder() {
 				index: playerInfo.index,
 				nfts: playerNfts,
 			});
-			if (playerInfo.index > 1 && botCommandId) {
-				actionLog.push({
-					type: 'gameCommand',
-					commandId: botCommandId,
-					ctx: {
-						player_index: playerInfo.index,
-					}
-				})
-			}
 		};
 		let session = new Game({
 			content,
@@ -69,7 +59,7 @@ export function UnityBuilder() {
 			players,
 			seed: 1,
 			actionLog,
-			playerIndex: players[0].index,
+			playerIndex: 1,
 		});
 		session.gameState.start();
 		let	unityPackage = session.gameState.exportPackage();

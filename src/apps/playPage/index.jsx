@@ -138,6 +138,7 @@ export default function PlayPage() {
 	return (<div className='debug-games-space'>
 		{games.map((game, index) => <div key={`play.client.${index}`} className={gameClassName}>
 			<div className='debug-game-debug-bar'>
+				<p>Player Index: {game.playerIndex}</p>
 				<Switch onChange={(value) => setBotForGame(index, value)}/>Bot
 			</div>
 			<GameClient game={game}/>

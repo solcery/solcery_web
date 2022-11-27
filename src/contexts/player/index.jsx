@@ -40,15 +40,18 @@ export const PlayerProvider = (props) => {
     const [ nfts, setNfts ] = useState(undefined);
     const [ status, setStatus ] = useState(undefined);
     const [ match, setMatch ] = useState(undefined);
+    const matchData = useRef();
 
-    const onMatchUpdate = async (data) => {
+    const onMatchUpdate = (data) => {
         if (!data.id) return;
-        if (!match || match.id !== data.id) {
-            setMatch(data);
+        if (!matchData.current || (matchData.current.id !== data.id)) {
+            matchData.current = data;
+            setMatch({ ...matchData.current });
             return;
         }
-        setMatch(Object.assign({}, match, data));
-    }
+        Object.assign(matchData.current, data);
+        setMatch({ ...matchData.current });
+    };
 
     const disconnect = (reason) => {
         setStatus();

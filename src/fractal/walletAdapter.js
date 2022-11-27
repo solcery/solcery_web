@@ -27,7 +27,6 @@ export class FractalWalletAdapter extends EventEmitter {
                 var _a;
                 this._readyState = wallet_adapter_base_1.WalletReadyState.Installed;
                 this.emit('readyStateChange', this._readyState);
-                console.log('true')
                 return true;
             });
         }

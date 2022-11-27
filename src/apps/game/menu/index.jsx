@@ -47,7 +47,6 @@ export const Menu = (props) => {
 	return <>
 		{status && <MenuBurger onClick={changeVisibility} visible={visible}>Open menu</MenuBurger>}
 		{visible && <Blackout header='Menu'>
-			<MenuButton onClick={changeVisibility}>Close</MenuButton>
 			{status && status.code === 'ingame' && <MenuButton onClick={leaveMatch}>Surrender</MenuButton>}
 			<p/>
 			<MenuButton onClick={logout}>Log out</MenuButton>

@@ -25,13 +25,11 @@ const migrateBrick = (bt) => {
 		}
 	}
 	if (bt.func === applyToNonDisabled) {
-		console.log(bt);
 		bt.func = newApply;
 		bt.params['Affect Disabled'] = customFalse;
 		changed = true;
 	}
 	if (bt.func === applyToAll) {
-		console.log(bt);
 		bt.func = newApply;
 		bt.params['Affect Disabled'] = customTrue;
 		changed = true;

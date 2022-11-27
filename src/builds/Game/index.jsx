@@ -15,11 +15,12 @@ export default function Game() {
 				<ApiProvider>
 					<BrowserRouter>
 						<Routes>
+							<Route exact path="eclipse" element={<Navigate to="/paint_n_powder" />}/>
+							<Route exact path="summoner" element={<Navigate to="/paint_n_powder" />}/>
 							<Route path=":projectId" element={<GameApiProvider/>}>
 								<Route path="" element={<GameApp/>}/>
 							</Route>
-							<Route exact path="eclipse" element={<Navigate to="/summoner" />}/>
-							<Route exact path="" element={<Navigate to="/summoner" />}/>
+							<Route exact path="" element={<Navigate to="/paint_n_powder" />}/>
 						</Routes>
 					</BrowserRouter>
 				</ApiProvider>
