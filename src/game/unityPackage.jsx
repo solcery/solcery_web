@@ -13,6 +13,7 @@ const STATE_TYPES = {
 const ACTION_TYPES = {
 	NONE: 0,
 	SOUND: 1,
+	ANIMATION: 2,
 };
 
 class UnityPackageState {
