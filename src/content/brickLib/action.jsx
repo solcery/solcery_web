@@ -386,5 +386,29 @@ export const basicActions = [
 			let objectId = runtime.execBrick(params.object_id, ctx)
 			ctx.sendCommand(params.command_id, objectId);
 		},
+	},
+	{
+		lib: 'action',
+		func: 'push_action',
+		type: 0,
+		subtype: 20,
+		contexts: [ 'client' ],
+		name: 'Client action',
+		params: [
+			{ 
+				code: 'action_type', name: 'Action type', type: {
+					name: 'SEnum',
+					data: {
+						values: [ 1, 2 ],
+						titles: [ 'Sound', 'Animation' ],
+					}
+				} 
+			},
+		],
+		exec: (runtime, params, ctx) => {
+			let scope = ctx.scopes[ctx.scopes.length - 1];
+			let scopeVars = scope.vars;
+			ctx.game.pushPackageEvent('onAction', params.action_type, scopeVars)
+		},
 	}
 ];
