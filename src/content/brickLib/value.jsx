@@ -385,7 +385,7 @@ export const basicValues = [
 			return scope.vars[varName];
 		},
 	},
-		{
+	{
 		type: 2,
 		subtype: 11, // TODO
 		lib: 'value',
@@ -394,6 +394,17 @@ export const basicValues = [
 		params: [],
 		exec: (runtime, params, ctx) => {
 			return objget(ctx, 'game', 'time') ?? 0;
+		},
+	},
+	{
+		type: 2,
+		subtype: 0, // TODO
+		lib: 'value',
+		func: 'animation_id',
+		name: 'Animation Id',
+		params: [{ code: 'value', name: 'Value', type: 'SLink<animations>' }],
+		exec: (runtime, params, ctx) => {
+			return params.value;
 		},
 	}
 ];
