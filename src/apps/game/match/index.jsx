@@ -7,17 +7,30 @@ import { Countdown } from '../../../components/countdown';
 import { Game } from '../../../game';
 import { Lobby } from '../lobby';
 import { Button } from 'antd';
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef, useCallback } from 'react'
 
 import './style.scss';
 
 const LEAVE_TIMEOUT = 10;
 
 export const Match = () => {
-	const { match, publicKey, playerRequest } = usePlayer();
+	const { match, status, publicKey, playerRequest } = usePlayer();
 	const [ game, setGame ] = useState();
 	const { gameApi } = useGameApi();
 	const [ personalResult, setPersonalResult ] = useState();
+	const [ afkTimeout, setAfkTimeout ] = useState();
+	const [ newLog, setNewLog ] = useState();
+	const serverTime = useRef();
+
+	const onGameStateConfirmed = (step) => {
+		if (step >= game.actionLog.length - 1) {
+			updateLeaveGame();
+		}
+	}
+
+	const onLogUpdate = (log) => {
+		updateAfk();
+	}
 
 	const sendAction = (action) => {
         playerRequest({
@@ -39,45 +52,76 @@ export const Match = () => {
         data.unityBuild = res.unityBuild;
         data.onAction = sendAction;
         data.playerIndex = myPlayerIndex;
-        setGame(new Game(data));
         setPersonalResult();
+        setGame(new Game(data));
 	}
 
-	const updateGame = (data) => {
-		if (data.actionLog) {
-			game.updateLog(data.actionLog);
-			let pubkey = publicKey.toBase58();
-			let gameFinished
-			for (let action of data.actionLog) {
-				if (action.type === 'leaveMatch' && action.player === pubkey) {
-					setPersonalResult('surrender')
+	const updateLeaveGame = () => {
+		let pubkey = publicKey.toBase58();
+		let gameFinished
+		for (let action of game.actionLog) {
+			if (action.type === 'leaveMatch' && action.player === pubkey) {
+				setPersonalResult('surrender')
+				return;
+			}
+		}
+		let result = game.gameState.getResult();
+		if (result) {
+			let playerData = game.players.find(player => player.id = pubkey);
+			if (playerData) {
+				if (result.playerScore[playerData.index] > 0) {
+					setPersonalResult('victory');
 					return;
 				}
 			}
-			let result = game.gameState.getResult();
-			if (result) {
-				let playerData = game.players.find(player => player.id = pubkey);
-				if (playerData) {
-					if (result.playerScore[playerData.index] > 0) {
-						setPersonalResult('victory');
-						return;
-					}
-				}
-				setPersonalResult('defeat');
-			}
+			setPersonalResult('defeat');
 		}
 	}
 
+	const updateAfk = () => {
+		let pubkey = publicKey.toBase58();
+	    let myPlayer = game.players.find(player => player.id === pubkey);
+	    if (!myPlayer) return;
+	    let myIndex = myPlayer.index;
+	    let myPlayerSettings = Object.values(game.content.web.players).find(player => player.index === myIndex);
+	    if (!myPlayerSettings) return; 
+	    if (!myPlayerSettings.afkTimeout) return;
+	    if (!myPlayerSettings.afkLastActionTime) return;
+	    let ctx = game.gameState.createContext();
+	    let runtime = game.gameState.getRuntime();
+	    let timeout = runtime.execBrick(myPlayerSettings.afkTimeout, ctx);
+	    let lastActionTime = runtime.execBrick(myPlayerSettings.afkLastActionTime, ctx);
+	    if (timeout <= 0) {
+	    	setAfkTimeout();
+	    } else {
+	    	let serverGameTime = serverTime.current - game.started;
+	    	setAfkTimeout({
+	    		total: Math.floor((timeout - lastActionTime) / 1000),
+	    		current: Math.floor((timeout - serverGameTime) / 1000),
+	    	})
+	    }
+	}
+
 	useEffect(() => {
+		if (!status) return;
 		if (!match) return;
+		serverTime.current = match.time;
 		if (!match.id) return; //Ignore match update without Id
-		if (!game) {
-			if (match.started) newGame(match);
+		if (!game) {	
+			if (!match.started)	return;
+			if (status.code !== 'ingame') return;
+			if (status.data.matchId !== match.id) return;
+			newGame(match);
 			return;
 		}
-		if (game.id !== match.id) return; //TODO: ??
-		updateGame(match);
-	}, [ match ]);
+		if (game.id !== match.id) return;
+		if (!game.onLogUpdate.includes(onLogUpdate)) {
+			game.onLogUpdate.push(onLogUpdate)
+		}
+		if (match.actionLog.length > game.actionLog.length) {
+			game.updateLog(match.actionLog);
+		}
+	}, [ match, game, status ]);
 
 	useEffect(() => {
 		if (!personalResult) return;
@@ -102,19 +146,32 @@ export const Match = () => {
 	}
 
 	if (!game) return <Lobby/>;
-
-	if (game) return <>
+	return <>
+		{afkTimeout && <div className='timeout-popup fade-in'>
+			<Countdown 
+				total={afkTimeout.total} 
+				current={afkTimeout.current}
+				caption='Time left'
+			/>
+		</div>}
 		<div className='game-container'>
 			<div className='game-frame'>
-				<GameClient game={game}/>
+				<GameClient 
+					game={game}
+					onGameStateConfirmed={onGameStateConfirmed}
+				/>
 			</div>
 		</div>
 		{personalResult && <Blackout
 			header='Game over'
 			message={message}
 		>
-			<Countdown total={LEAVE_TIMEOUT} caption='Returning to menu'/>
-			<MenuButton onClick={() => abandonGame()}>Home</MenuButton>
+		<Countdown 
+			total={LEAVE_TIMEOUT} 
+			current={LEAVE_TIMEOUT} 
+			caption='Returning to menu'
+		/>
+		<MenuButton onClick={() => abandonGame()}>Home</MenuButton>
 		</Blackout>}
 	</>;
 }

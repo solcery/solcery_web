@@ -24,13 +24,11 @@ const migrateBrick = (bt, migrationList) => {
 		bt.params = Object.assign({}, newBrick.params);
 		return true;
 	} else {
-		// if (params.debug) console.log(bt.params)
 		for (let param of Object.values(bt.params)) {
 			if (param && param.lib) {
 				if (migrateBrick(param, migrationList)) changed = true;
 			}
 		}
-		// if (params.debug) console.log(bt.params)
 	}
 	return changed;
 };

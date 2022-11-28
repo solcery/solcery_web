@@ -6,30 +6,40 @@ const circumference = 2 * Math.PI * 48;
 export const Countdown = (props) => {
 	const circleRef = useRef();
 	const numberRef = useRef();
-	const seconds = useRef(props.total);
 
-	const update = () => {
+	const seconds = useRef();
+
+	const update = (value) => {
+		let total = props.total;
+		if (circleRef.current) {
+			circleRef.current.style.strokeDashoffset = ((total - value) / total) * circumference
+		}
+		if (numberRef.current) {
+			numberRef.current.innerHTML = value;
+		}
+	}
+
+	const tick = () => {
 		if (!seconds.current) return;
 		if (seconds.current >= 0) {
 			seconds.current = seconds.current - 1;
-			let total = props.total;
-			let current = seconds.current;
-			if (circleRef.current) {
-				circleRef.current.style.strokeDashoffset = ((total - current) / total) * circumference
-			}
-			if (numberRef.current) {
-				numberRef.current.innerHTML = current;
-			}
+			update(seconds.current);
 		}
 	}
 
 	useEffect(() => {
-		let interval = setInterval(() => update(), 1000);
 		if (circleRef.current) {
 			circleRef.current.style.strokeDasharray = circumference;
 		}
-		return () => clearInterval(interval);
 	}, []);
+
+	useEffect(() => {
+		if (!props.total) return;
+		seconds.current = props.current ?? seconds.current;
+		update(props.current);
+		let interval = setInterval(() => tick(), 1000);
+		return () => clearInterval(interval);
+	}, [ props.total, props.current ]);
 
 	return <div className='countdown-container'>
 		<div className='countdown'>

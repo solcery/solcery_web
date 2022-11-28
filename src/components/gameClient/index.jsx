@@ -20,9 +20,7 @@ export default function GameClient(props) {
 	useEffect(() => {
         if (!props.game) return;
         if (props.game.onUpdate) return;
-        props.game.onLogUpdate = log => {
-        	setActionLog([ ...log]);
-        };
+        props.game.onLogUpdate.push(log => setActionLog([ ...log]));
         setActionLog(props.game.actionLog);
     }, [ props.game ])
 
@@ -90,6 +88,9 @@ export default function GameClient(props) {
 	}
 
 	const onUnityGameStateConfirmed = () => {
+		if (props.onGameStateConfirmed) {
+			props.onGameStateConfirmed(step.current);
+		}
 		setUnityReady(true);
 	}
 
@@ -195,7 +196,6 @@ export default function GameClient(props) {
 			return;
 		};
 		const name = `${props.game.id}.${props.game.playerIndex}.iframe`;
-
 		window.addEventListener('message', (message) => {
 			if (message.source.name !== name) {
 				return;

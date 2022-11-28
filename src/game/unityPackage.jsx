@@ -83,6 +83,13 @@ class UnityPackageState {
 			}
 		});
 	}
+
+	onAction(actionType, ctx) {
+		this.actions.push({
+			action_type: actionType,
+			value: ctx
+		})
+	}
 }
 
 export class UnityPackage { 
@@ -189,6 +196,11 @@ export class UnityPackage {
 	onPlaySound(soundId, volume) {
 		if (!this.current) this.newCurrent();
 		this.current.onPlaySound(soundId, volume);
+	}
+
+	onAction(actionType, ctx) {
+		if (!this.current) this.newCurrent();
+		this.current.onAction(actionType, ctx);
 	}
 
 }
