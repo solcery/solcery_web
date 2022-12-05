@@ -21,9 +21,10 @@ export default function PlayPage() {
 	const [ content, setContent ] = useState();
 	const { solceryAPI } = useApi();
 	const [ gameData, setGameData ] = useState();
+	const [ currentStep, setCurrentStep ] = useState();
 	let navigate = useNavigate()
 
-	useEffect(() => {
+	useEffect(() => { // Constructing content
 		if (!engine) return;
 		if (content) return;
 		let targets = [
@@ -53,8 +54,8 @@ export default function PlayPage() {
 			setContent(construction.constructed);
 		});
 	}, [ content, engine ])
-
-	useEffect(() => {
+ 
+	useEffect(() => { // loading build info
 		if (!engine) return;
 		if (!solceryAPI) return;
 		if (unityBuild) return;
@@ -64,7 +65,7 @@ export default function PlayPage() {
 		})
 	}, [ engine, solceryAPI, unityBuild ])
 			
-	useEffect(() => {
+	useEffect(() => { // Creating pseudo-server game
 		if (!content) return;
 		if (!unityBuild) return;
 		if (layoutPresets && layoutPresets.length > 0) {
@@ -98,7 +99,7 @@ export default function PlayPage() {
 		})
 	}, [ content, unityBuild, layoutPresets ])
 
-	useEffect(() => {
+	useEffect(() => { // Creating game sessions, registering onAction callbacks
 		if (!gameData) return;
 		if (games) return;
 		let playerGames = [];
@@ -112,25 +113,43 @@ export default function PlayPage() {
 		setGames(playerGames);
 	}, [ gameData ])
 
-	useEffect(() => {
+	useEffect(() => { // TODO
 		if (!games) return;
 		for (let game of games) {
 			game.onAction = (action) => {
 				if (!action.ctx) {
 					action.ctx = {};
 				}
+				console.log(action)
 				action.ctx.player_index = game.playerIndex;
-				action.playerIndex = game.playerIndex;
+				action.playerIndex = game.playerIndex; // ??
 				gameData.actionLog.push(action);
+				console.log(gameData.actionLog)
 				for (let g of games) {
 					g.updateLog(gameData.actionLog);
 				}
+				setCurrentStep(gameData.actionLog.length - 1);
 			}
 		}
-	}, [ games ]);
+		setCurrentStep(0);
+	}, [ games ])
 
 	const setBotForGame = (index, value) => {
 		games[index].setBotStatus(value);
+	}
+
+	const onUnityReady = (step) => {
+		
+		// console.log('onUnityReady', step)
+		// let next = 0
+		// if (step !== undefined) {
+		// 	next = step + 1;
+		// }
+		// console.log(next)
+		// if (next <= gameData.actionLog.length - 1) {
+		// 	console.log('setting next', next)
+		// 	setCurrentStep(next);
+		// }
 	}
 
 	if (!games) return <></>;
@@ -141,7 +160,11 @@ export default function PlayPage() {
 				<p>Player Index: {game.playerIndex}</p>
 				<Switch onChange={(value) => setBotForGame(index, value)}/>Bot
 			</div>
-			<GameClient game={game}/>
+			<GameClient 
+				game={game} 
+				onUnityReady={(step) => onUnityReady(step)}
+				step={currentStep}
+			/>
 		</div>)}
 	</div>);
 }

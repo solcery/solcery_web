@@ -25,6 +25,7 @@ export default function Builder() {
 			navigate('../validator');
 			return;
 		}
+		console.log(res)
 		setResult(res.constructed)
 	};
 

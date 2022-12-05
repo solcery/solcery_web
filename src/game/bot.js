@@ -1,4 +1,4 @@
-import { BrickRuntime } from '../content/brickLib/runtime';
+import { BrickRuntime } from 'solcery_brick_runtime';
 
 const randomInt = (max) => {
 	return Math.floor(Math.random() * max)

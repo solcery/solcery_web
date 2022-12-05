@@ -1,4 +1,5 @@
 import { ValueRender, FilterRender } from './components';
+import unityCodes from './unityCodes';
 
 const validateBrick = (v) => {
 	if (v.func === 'error') return false;
@@ -93,8 +94,9 @@ export class SBrick {
 				result.subtype = 10000 + meta.getIntId(func.split('.')[1]);
 				result.type = typeByName[brickSignature.lib];
 			} else {
-				result.type = brickSignature.type;
-				result.subtype = brickSignature.subtype;
+				let unityCode = unityCodes[brickSignature.lib][brickSignature.func];
+				result.type = unityCode.type;
+				result.subtype = unityCode.subtype;
 			}
 			result.params = params;
 		}

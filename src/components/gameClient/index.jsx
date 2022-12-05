@@ -5,24 +5,16 @@ import { getTable, insertTable } from '../../utils';
 import './style.css';
 
 const DOWNLOADING_PROGRESS_PERCENTAGE = 20;
+const iframeName = game => `${game.id}.${game.playerIndex}.iframe`
+
 
 export default function GameClient(props) {
 	const [ loaded, setLoaded ] = useState(false);
 	const [ unityReady, setUnityReady ] = useState(false);
-	const [ iframeName, setIframeName ] = useState();
-	const [ actionLog, setActionLog ] = useState();
-	const step = useRef(-1);
-	const firstGameStateSent = useRef(false);
 	const loadingBarRef = useRef();
 	const loadingProgressRef = useRef();
 	const iframeRef = useRef();
-
-	useEffect(() => {
-        if (!props.game) return;
-        if (props.game.onUpdate) return;
-        props.game.onLogUpdate.push(log => setActionLog([ ...log]));
-        setActionLog(props.game.actionLog);
-    }, [ props.game ])
+	const currentStep = useRef();
 
 	const sendToUnity = (funcName, param) => {
 		if (!iframeRef.current) return;
@@ -127,18 +119,29 @@ export default function GameClient(props) {
 
 	useEffect(() => {
 		if (!unityReady) return;
-		if (!actionLog) return;
-		if (step.current < actionLog.length - 1) {
-			if (firstGameStateSent.current) {
-				step.current++;
-			} else {
-				step.current = actionLog.length - 1;
-				firstGameStateSent.current = true;
-			}
-			setUnityReady(false);
-			sendToUnity('UpdateGameState', actionLog[step.current].package);
+		console.warn('log updated, unityReady');
+		console.log(props.game.log.length)
+		if (currentStep.current === undefined) {
+			var nextStep = props.game.log.length - 1;
+		} else {
+			var nextStep = currentStep.current + 1;
 		}
-	}, [ unityReady, actionLog ])
+		console.log(nextStep)
+		console.log(currentStep.current)
+		let pkg = props.game.getUnityPackage(nextStep);
+		if (!pkg) return;
+		currentStep.current = nextStep;
+		setUnityReady(false);
+		console.log(pkg);
+		sendToUnity('UpdateGameState', pkg);
+	}, [ props.game.log.length, unityReady ])
+
+	useEffect(() => {
+		// if (!props.game) return;
+		// if (!unityReady) return;
+		// setUnityReady(false);
+		// sendToUnity('UpdateGameState', pkg);
+	}, [ props.game, unityReady ])
 
 	const onIframeReady = async () => {
 		let unityBuildData = props.game.unityBuild;
@@ -190,12 +193,13 @@ export default function GameClient(props) {
 	}
 
 
+
 	useEffect(() => {
 		if (!props.game) {
 			setLoaded(false);
 			return;
 		};
-		const name = `${props.game.id}.${props.game.playerIndex}.iframe`;
+		const name = iframeName(props.game)
 		window.addEventListener('message', (message) => {
 			if (message.source.name !== name) {
 				return;
@@ -204,17 +208,12 @@ export default function GameClient(props) {
 		});
 
 		window.unityLoading = window.unityLoading ?? {};
-
 		window.unityLoading[name] = (data) => {
 			onUnityLoadingProgress(data.progress)
 		}
-
-		setIframeName(name);
 	}, [ props.game ])
 
 	if (!props.game) return <></>;
-	if (!iframeName) return <></>;
-
 	if (!loaded) {
 		var iframeStyle = {
 			visibility: 'hidden',
@@ -223,7 +222,7 @@ export default function GameClient(props) {
 	}
 	return <div style={{ width: '100%', height:'100%' }}>
 		<iframe 
-			name={iframeName}
+			name={iframeName(props.game)}
 			key='unity'
 			ref={iframeRef} 
 			className={'game-iframe'}
