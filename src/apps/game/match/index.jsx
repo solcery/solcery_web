@@ -1,6 +1,6 @@
 import { useGameApi } from '../../../contexts/gameApi';
 import { usePlayer } from '../../../contexts/player';
-import GameClient from '../../../components/gameClient';
+import { GameClient } from 'solcery_react_unity';
 import { Blackout } from '../../../components/blackout';
 import { MenuButton } from '../../../components/menuButton';
 import { Countdown } from '../../../components/countdown';
@@ -20,10 +20,12 @@ export const Match = () => {
 	const [ personalResult, setPersonalResult ] = useState();
 	const [ afkTimeout, setAfkTimeout ] = useState();
 	const [ newLog, setNewLog ] = useState();
+	const [ step, setStep ] = useState();
 	const serverTime = useRef();
 
 	const onGameStateConfirmed = (step) => {
-		if (step >= game.actionLog.length - 1) {
+		console.log(step)
+		if (step >= game.log.length - 1) {
 			updateLeaveGame();
 		}
 	}
@@ -52,6 +54,7 @@ export const Match = () => {
         data.unityBuild = res.unityBuild;
         data.onAction = sendAction;
         data.playerIndex = myPlayerIndex;
+        console.log('newGame', myPlayerIndex)
         setPersonalResult();
         setGame(new Game(data));
 	}
@@ -59,7 +62,7 @@ export const Match = () => {
 	const updateLeaveGame = () => {
 		let pubkey = publicKey.toBase58();
 		let gameFinished
-		for (let action of game.actionLog) {
+		for (let action of game.log) {
 			if (action.type === 'leaveMatch' && action.player === pubkey) {
 				setPersonalResult('surrender')
 				return;
@@ -115,12 +118,11 @@ export const Match = () => {
 			return;
 		}
 		if (game.id !== match.id) return;
-		if (!game.onLogUpdate.includes(onLogUpdate)) {
-			game.onLogUpdate.push(onLogUpdate)
-		}
-		if (match.actionLog.length > game.actionLog.length) {
+		if (match.actionLog.length > game.log.length) {
 			game.updateLog(match.actionLog);
 		}
+		setStep(game.log.length - 1);
+
 	}, [ match, game, status ]);
 
 	useEffect(() => {
@@ -158,7 +160,7 @@ export const Match = () => {
 			<div className='game-frame'>
 				<GameClient 
 					game={game}
-					onGameStateConfirmed={onGameStateConfirmed}
+					step={step}
 				/>
 			</div>
 		</div>

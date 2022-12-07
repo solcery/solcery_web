@@ -20,7 +20,6 @@
 
       var unityInstance;
 
-
       function chunkSubstr(str, size = 65536) {
         const numChunks = Math.ceil(str.length / size)
         const chunks = new Array(numChunks)
@@ -36,14 +35,12 @@
        const USHORT_SIZE = 65536;
        let data = typeof param === 'string' ? param : JSON.stringify(param);
        const chunks = chunkSubstr(data)
-       // console.log(`Web - sending package to Unity client [${funcName}]: ${data}`);
        for (let i = 0; i < chunks.length; i++) {
          let chunk_package = {
            count: chunks.length,
            index: i,
            value: chunks[i],
          };
-         // console.log(`Web - sending package to Unity client [${funcName}]: ${JSON.stringify(chunk_package)}`);
          unityInstance.SendMessage('ReactToUnity', funcName, JSON.stringify(chunk_package));
        }
       }

@@ -1,3 +1,0 @@
-branch: feature/sprint_15/develop
-SHA: 200ee74ed4fce94837aa13926429a4f1d30930f0
-target: develop 

@@ -1,7 +1,9 @@
 const unityCodes = {
 	action: {},
 	condition: {},
-	value: {}
+	value: {},
+	jsonToken: {},
+	jsonKeyPair: {},
 }
 
 unityCodes.action.void = { type: 0, subtype: 0 };
@@ -27,6 +29,7 @@ unityCodes.action.set_scope_var = { type: 0, subtype: 19 };
 unityCodes.action.console_log = { type: 0, subtype: 0 };
 unityCodes.action.command = { type: 0, subtype: 0 };
 unityCodes.action.push_action = { type: 0, subtype: 20 };
+unityCodes.action.push_action_json = { type: 0, subtype: 21 };
 
 
 
@@ -66,5 +69,13 @@ unityCodes.value.scope_var = { type: 2, subtype: 18 };
 unityCodes.value.set_scope_var = { type: 2, subtype: 19 };
 unityCodes.value.time = { type: 2, subtype: 11 };
 unityCodes.value.animation_id = { type: 2, subtype: 0 };
+
+
+unityCodes.jsonKeyPair.base = { type: 4, subtype: 0 };
+
+unityCodes.jsonToken.int = { type: 5, subtype: 0 };
+unityCodes.jsonToken.string = { type: 5, subtype: 1 };
+unityCodes.jsonToken.object = { type: 5, subtype: 2 };
+unityCodes.jsonToken.array = { type: 5, subtype: 3 };
 
 module.exports = unityCodes;

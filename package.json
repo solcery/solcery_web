@@ -23,6 +23,7 @@
     "dagre": "^0.8.5",
     "deep-object-diff": "^1.1.9",
     "dotenv": "^16.0.3",
+    "html-loader": "^4.2.0",
     "js-md5": "^0.7.3",
     "mongodb": "^4.10.0",
     "node-polyfill-webpack-plugin": "^2.0.1",

@@ -32,18 +32,25 @@ export const BrickEditor = (props) => {
 	);
 
 	const addBrick = useCallback(
-		(brickSignature, bt, parentBrick, paramID) => {
+		(brickSignature, bt, parentBrick, paramID, paramIndex) => {
 			if (!props.onChange) return;
-			const brick = {
-				lib: brickSignature.lib,
-				func: brickSignature.func,
-				params: {},
-			};
-			brickSignature.params.forEach((param) => {
-				brick.params[param.code] = param.value ?? (param.type.default && param.type.default());
-			});
+			let brick;
+			if (brickSignature) {
+				brick = {
+					lib: brickSignature.lib,
+					func: brickSignature.func,
+					params: {},
+				};
+				brickSignature.params.forEach((param) => {
+					brick.params[param.code] = param.value ?? (param.type.default && param.type.default());
+				});
+			}
 			if (parentBrick) {
-				parentBrick.params[paramID] = brick;
+				if (paramIndex) {
+					parentBrick.params[paramID].push(brick);
+				} else {
+					parentBrick.params[paramID] = brick;
+				}
 				onChangeBrickTree(JSON.parse(JSON.stringify(bt)));
 			} else {
 				onChangeBrickTree(brick);
@@ -62,6 +69,26 @@ export const BrickEditor = (props) => {
 			} else {
 				onChangeBrickTree(null);
 			}
+		},
+		[props, onChangeBrickTree]
+	);
+
+	const addBrickArrayParam = useCallback(
+		(bt, parentBrick, paramID) => {
+			if (!props.onChange) return;
+			if (!brick) return;
+			parentBrick.params[paramID].push(null);
+			onChangeBrickTree(JSON.parse(JSON.stringify(bt)));
+		},
+		[props, onChangeBrickTree]
+	);
+
+	const removeBrickArrayParam = useCallback(
+		(bt, brick, paramID, index) => {
+			// if (!props.onChange) return;
+			// if (!brick) return;
+			// parentBrick.params[paramID].push(null);
+			// onChangeBrickTree(JSON.parse(JSON.stringify(bt)));
 		},
 		[props, onChangeBrickTree]
 	);
@@ -142,6 +169,7 @@ export const BrickEditor = (props) => {
 					brickTree,
 					paramCode,
 					onRemoveButtonClicked: removeBrick,
+					onArrayElementAdded: addBrickArrayParam,
 					onPaste: onPaste,
 					onChange: props.onChange
 						? () => {
@@ -162,7 +190,7 @@ export const BrickEditor = (props) => {
 	);
 
 	const makeBrickWithEdgeElements = useCallback(
-		(brickID, brick, brickTree, parentBrick, parentBrickID, paramID) => {
+		(brickID, brick, brickTree, parentBrick, parentBrickID, paramID, paramIndex) => {
 			const elements = [makeBrickElement(brickID, brick, brickTree, parentBrick, paramID)];
 			if (parentBrickID) {
 				elements.push({
@@ -181,8 +209,9 @@ export const BrickEditor = (props) => {
 	const makeBrickTreeElements = useCallback(
 		(brickTree) => {
 			const elements = [];
-
+			console.log('makeBrickTreeElements', brickTree)
 			const processBrick = (brick, parentBrickID = null, parentBrick = null, paramCode = '') => {
+				console.log('processBrick', brick)
 				const brickID = Number(++brickUniqueID).toString();
 				elements.push(...makeBrickWithEdgeElements(brickID, brick, brickTree, parentBrick, parentBrickID, paramCode));
 				let brickSignature = props.brickLibrary[brick.lib][brick.func];
@@ -190,22 +219,29 @@ export const BrickEditor = (props) => {
 					return elements;
 				}
 				brickSignature.params.forEach((param) => {
-					if (!param.type.brickType) return;
-
 					const value = brick.params[param.code];
-					if (value) {
-						processBrick(value, brickID, brick, param.code);
-					} else {
-						const addButtonBrickID = Number(++brickUniqueID).toString();
-						const addButtonElems = makeAddButtonWithEdgeElements(
-							addButtonBrickID,
-							param.type.brickType,
-							brickTree,
-							brick,
-							brickID,
-							param.code
-						);
-						elements.push(...addButtonElems);
+					if (param.type.valueType) {
+						for (let valueBrick of value) {
+							console.log(valueBrick)
+							processBrick(valueBrick, brickID, brick, param.code);
+						}
+					}
+
+					if (param.type.brickType) {
+						if (value) {
+							processBrick(value, brickID, brick, param.code);
+						} else {
+							const addButtonBrickID = Number(++brickUniqueID).toString();
+							const addButtonElems = makeAddButtonWithEdgeElements(
+								addButtonBrickID,
+								param.type.brickType,
+								brickTree,
+								brick,
+								brickID,
+								param.code
+							);
+							elements.push(...addButtonElems);
+						}
 					}
 				});
 			};

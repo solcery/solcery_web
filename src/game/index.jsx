@@ -52,6 +52,7 @@ export class Game { // TODO: Match
 	getUnityPackage(step) { // TODO: move to client
 		let logEntry = this.log[step];
 		if (!logEntry) return;
+		console.log(logEntry)
 		let { action, state } = logEntry;
 		let unityPackage = new UnityPackage({
 			state,

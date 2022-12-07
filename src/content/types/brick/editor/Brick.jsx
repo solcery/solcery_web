@@ -70,8 +70,22 @@ export default function Brick(props) {
 	let nestedParams = [];
 	let inlineParams = [];
 	brickSignature.params.forEach((param) => {
-		if (param.type.brickType) nestedParams.push(param); // TODO appropriate check
-		else inlineParams.push(param);
+		let paramTypeName = param.type.constructor.name
+		console.log(paramTypeName);
+		if (paramTypeName === 'SArray') {
+			console.log(param.type.valueType.constructor.name);
+			if (param.type.valueType.constructor.name === 'SBrick') {
+				nestedParams.push(param)
+			} else {
+				inlineParams.push(param)
+			}
+			return;
+		}
+		if (paramTypeName === 'SBrick') {
+			nestedParams.push(param);
+			return;
+		}
+		inlineParams.push(param);
 	});
 
 	const onRemoveButtonClicked = () => {
@@ -126,10 +140,21 @@ export default function Brick(props) {
 			document.removeEventListener('paste', paste)
 			document.removeEventListener('copy', copy)
 		}
-	}, [])
+	}, []);
+
+	const onArrayElementAdded = (param) => {
+		console.log('onArrayElementAdded')
+		console.log(brick)
+		console.log(param)
+		brick.params[param.code].push(param.type.valueType.default());
+		props.data.onArrayElementAdded(
+			props.data.brickTree,
+			props.data.parentBrick,
+			param.code
+		);
+	}
 
 	let width = Math.max(12, 1 + nestedParams.length * 5);
-	
 	return (
 		<>
 			<div
@@ -186,7 +211,10 @@ export default function Brick(props) {
 								bottom: '-1.5rem',
 							}}
 						>
-							<div className={'handle-label' + (props.data.readonly ? ' readonly' : '')}>{param.name}</div>
+							<div className={'handle-label' + (props.data.readonly ? ' readonly' : '')}>{param.name}
+								
+							</div>
+							
 						</Handle>
 					))}
 				</div>

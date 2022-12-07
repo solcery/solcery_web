@@ -125,6 +125,7 @@ export const build = ({ targets, content }) => {
 		}
 	} catch (error) {
 		console.error(meta.target.name)
+		console.error(error)
 		throw(error) // TODO:
 	} finally {
 		return {

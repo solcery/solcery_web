@@ -6,7 +6,7 @@ import { useBrickLibrary } from '../../contexts/brickLibrary';
 import { build } from '../../content';
 import { useUser } from '../../contexts/user';
 import { useProject } from '../../contexts/project';
-import GameClient from '../../components/gameClient';
+import { GameClient } from 'solcery_react_unity';
 import { notif } from '../../components/notification';
 import { useApi } from '../../contexts/api';
 import { Switch } from 'antd';
@@ -84,11 +84,7 @@ export default function PlayPage() {
 				nfts: playerNfts,
 			})
 		};
-		let actionLog = [
-			{
-				type: 'init',
-			}
-		];
+		let actionLog = [{ type: 'init' }];
 		setGameData({
 			id: 'LOCAL_GAME',
 			players,
@@ -120,11 +116,9 @@ export default function PlayPage() {
 				if (!action.ctx) {
 					action.ctx = {};
 				}
-				console.log(action)
 				action.ctx.player_index = game.playerIndex;
 				action.playerIndex = game.playerIndex; // ??
 				gameData.actionLog.push(action);
-				console.log(gameData.actionLog)
 				for (let g of games) {
 					g.updateLog(gameData.actionLog);
 				}
