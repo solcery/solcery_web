@@ -17,7 +17,7 @@ const Flume = () => {
   return (
     <div style={{ width: '100%', height: 1000 }}>
        <NodeEditor
-        defaultNodes={[{ type: 'onLeftClick' }]}
+        defaultNodes={[{ type: 'result' }]}
         portTypes={config.portTypes}
         nodeTypes={config.nodeTypes}
         // renderNodeHeader = {Header}

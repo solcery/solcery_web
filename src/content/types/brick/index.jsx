@@ -90,7 +90,7 @@ export class SBrick {
 		if (meta.target.format === 'unity') {
 			let func = brickSignature.func;
 			if (func.includes('custom')) {
-				let typeByName = { action: 0, condition: 1, value: 2 };
+				let typeByName = { action: 0, condition: 1, value: 2, jsonKeyPair: 4, jsonToken: 5 };
 				result.subtype = 10000 + meta.getIntId(func.split('.')[1]);
 				result.type = typeByName[brickSignature.lib];
 			} else {

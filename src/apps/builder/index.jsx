@@ -10,6 +10,21 @@ import { Session } from '../../game';
 import { DownloadOutlined } from '@ant-design/icons';
 const { Option } = Select;
 
+let targets = [
+	{
+		name: 'web',
+		format: 'web',
+	},
+	{
+		name: 'unity_local',
+		format: 'unity'
+	},
+	{
+		name: 'bot',
+		format: 'web',
+	},
+];
+
 export default function Builder() {
 	const navigate = useNavigate();
 	const [targets, setTargets] = useState([]);

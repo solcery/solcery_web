@@ -143,6 +143,15 @@ config.addNodeType({
 })
 
 
+config.addNodeType({
+  type: "result",
+  label: "Result",
+  description: "Result",
+  inputs: ports => [
+    ports.condition()
+  ],
+  outputs: ports => [ ]
+})
 
 
 
