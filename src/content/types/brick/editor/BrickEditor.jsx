@@ -211,8 +211,11 @@ export const BrickEditor = (props) => {
 			const elements = [];
 			console.log('makeBrickTreeElements', brickTree)
 			const processBrick = (brick, parentBrickID = null, parentBrick = null, paramCode = '') => {
-				console.log('processBrick', brick)
 				const brickID = Number(++brickUniqueID).toString();
+				if (!brick) {
+					// TODO: add button
+				}
+				console.log('processBrick', brick)
 				elements.push(...makeBrickWithEdgeElements(brickID, brick, brickTree, parentBrick, parentBrickID, paramCode));
 				let brickSignature = props.brickLibrary[brick.lib][brick.func];
 				if (!brickSignature) {

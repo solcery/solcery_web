@@ -23,6 +23,7 @@ import Validator from '../../apps/validator';
 import Autotest from '../../apps/autotest';
 import ProjectConfig from '../../apps/projectConfig';
 import BrickEditor from '../../apps/brickEditor';
+import Flume from '../../apps/flume_node_editor';
 
 export default function Sage() {
 	return (<>
@@ -53,6 +54,7 @@ export default function Sage() {
 										<Route path="profile" element={<Profile />} />
 										<Route path="config" element={<ProjectConfig />} />
 										<Route path="validator" element={<Validator/>} />
+										<Route path="flume" element={<Flume/>} />
 										<Route exact path="" element={<Home/>} />
 									</Route>
 								</Route>

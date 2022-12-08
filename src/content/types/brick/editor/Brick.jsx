@@ -44,6 +44,10 @@ function BrickName(props) {
 	</div>;
 }
 
+const errorSignature = (lib) => ({
+	name: 'Error',
+	params: []
+})
 
 export default function Brick(props) {
 	let { projectId } = useProject();
@@ -56,13 +60,13 @@ export default function Brick(props) {
 	let errorBrick = false;
 	let brickSignature = brickLibrary[brick.lib][brick.func];
 	if (!brickSignature) {
-		brickSignature = brickLibrary[brick.lib].error;
+		brickSignature = errorSignature(brick.lib)
 		errorBrick = true;
 	}
 	if (brick.func === 'arg') {
 		let argSignature = brickLibrary[brick.lib][`arg.${brick.params.name}`];
 		if (!argSignature) {
-			brickSignature = brickLibrary[brick.lib].error;
+			brickSignature = errorSignature(brick.lib)
 			errorBrick = true;
 		}
 	}
@@ -71,9 +75,7 @@ export default function Brick(props) {
 	let inlineParams = [];
 	brickSignature.params.forEach((param) => {
 		let paramTypeName = param.type.constructor.name
-		console.log(paramTypeName);
 		if (paramTypeName === 'SArray') {
-			console.log(param.type.valueType.constructor.name);
 			if (param.type.valueType.constructor.name === 'SBrick') {
 				nestedParams.push(param)
 			} else {
@@ -146,14 +148,12 @@ export default function Brick(props) {
 		console.log('onArrayElementAdded')
 		console.log(brick)
 		console.log(param)
-		brick.params[param.code].push(param.type.valueType.default());
 		props.data.onArrayElementAdded(
 			props.data.brickTree,
-			props.data.parentBrick,
+			brick,
 			param.code
 		);
 	}
-
 	let width = Math.max(12, 1 + nestedParams.length * 5);
 	return (
 		<>
@@ -212,9 +212,13 @@ export default function Brick(props) {
 							}}
 						>
 							<div className={'handle-label' + (props.data.readonly ? ' readonly' : '')}>{param.name}
-								
+								{param.type.valueType && <Button
+									className='handle-label-add'
+									onClick={() => onArrayElementAdded(param)}
+								>
+									New
+								</Button>}
 							</div>
-							
 						</Handle>
 					))}
 				</div>

@@ -72,10 +72,12 @@ unityCodes.value.animation_id = { type: 2, subtype: 0 };
 
 
 unityCodes.jsonKeyPair.base = { type: 4, subtype: 0 };
+unityCodes.jsonKeyPair.arg = { type: 4, subtype: 1 };
 
 unityCodes.jsonToken.int = { type: 5, subtype: 0 };
 unityCodes.jsonToken.string = { type: 5, subtype: 1 };
 unityCodes.jsonToken.object = { type: 5, subtype: 2 };
 unityCodes.jsonToken.array = { type: 5, subtype: 3 };
+unityCodes.jsonToken.arg = { type: 5, subtype: 4 };
 
 module.exports = unityCodes;

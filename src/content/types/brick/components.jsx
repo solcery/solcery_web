@@ -15,14 +15,7 @@ const paramMapSchema = {
 	name: 'SMap',
 	data: {
 		keyType: 'SString',
-		valueType: {
-			name: 'SEnum',
-			data: {
-				required: true,
-				values: ['action', 'condition', 'value'],
-				titles: ['Action', 'Condition', 'Value'],
-			},
-		},
+		valueType: 'SString'
 	},
 };
 

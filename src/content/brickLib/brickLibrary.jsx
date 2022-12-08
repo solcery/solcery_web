@@ -3,10 +3,17 @@ import { contexts } from 'solcery_brick_runtime';
 import { SType } from '../types';
 
 export const paramFromMapEntry = (entry) => {
+	let value = entry.value;
+	let type;
+	if (value === 'condition' || value === 'action' || value === 'value' || value === 'jsonToken') {
+		type = SType.from(`SBrick<${value}>`);
+	} else {
+		type = SType.from(value);
+	}
 	return {
 		code: entry.key,
 		name: entry.key,
-		type: SType.from(`SBrick<${entry.value}>`),
+		type,
 	};
 };
 
