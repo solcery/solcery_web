@@ -69,6 +69,7 @@ unityCodes.value.scope_var = { type: 2, subtype: 18 };
 unityCodes.value.set_scope_var = { type: 2, subtype: 19 };
 unityCodes.value.time = { type: 2, subtype: 11 };
 unityCodes.value.animation_id = { type: 2, subtype: 0 };
+unityCodes.value.sound_id = { type: 2, subtype: 0 };
 
 
 unityCodes.jsonKeyPair.base = { type: 4, subtype: 0 };
