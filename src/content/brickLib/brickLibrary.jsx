@@ -19,6 +19,7 @@ export const paramFromMapEntry = (entry) => {
 
 export class BrickLibrary {
 	bricks = {};
+	brickTypes = {};
 
 	addBrick(brickSignature) {
 		let brick = Object.assign({}, brickSignature);
@@ -37,9 +38,8 @@ export class BrickLibrary {
 	}
 
 	constructor(content) {
-		console.log(contexts)
-		for (let [ contextName, contextBricks ] of Object.entries(contexts)) {
-			for (let [ lib, funcs ] of Object.entries(contextBricks)) {
+		for (let [ contextName, context ] of Object.entries(contexts)) {
+			for (let [ lib, funcs ] of Object.entries(context.bricks)) {
 				for (let [ func, brick ] of Object.entries(funcs)) {
 					brick.lib = lib;
 					brick.func = func;

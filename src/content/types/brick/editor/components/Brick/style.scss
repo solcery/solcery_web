@@ -1,0 +1,67 @@
+:root {
+  --brick-color-default: #261f1c;
+  --brick-color-action: red;
+  --brick-color-condition: green;
+  --brick-color-value: blue;
+}
+
+.brick {
+	border: solid 1px #40342c;
+	border-radius: 0.3rem;
+	background-color: var(--brick-color-default);
+	text-align: center;
+
+	.brick-header {
+		position: relative;
+		diplay: flex;
+		background-color: rgba(0, 0, 0, 0.2);
+		border-radius: 0.3rem 0.3rem 0 0;
+		width: 100%;
+		min-height: 1.5rem;
+		top: 0;
+		left: 0;
+		right: 0;
+
+		.remove-button {
+			position: absolute;
+			right: 0rem;
+			top: 0rem;
+			border-radius: 0.3rem;
+		}
+	}
+
+
+	.brick-body {
+		position: relative;
+		padding-top: 0.2rem;
+		padding-bottom: 0.4rem;
+
+		.brick-param {
+			position: relative;
+			.brick-param-handle {
+				position: absolute;
+			}
+		}
+
+	}
+
+	.brick-header {
+		position: relative;
+		diplay: flex;
+		background-color: rgba(0, 0, 0, 0.2);
+		border-radius: 0.3rem 0.3rem 0 0;
+		width: 100%;
+		min-height: 1.5rem;
+		top: 0;
+		left: 0;
+		right: 0;
+	}
+
+	.brick-name {
+		margin-left: 3rem;
+		margin-right: 3rem;
+		font-size: 0.9rem;
+	}
+
+
+}

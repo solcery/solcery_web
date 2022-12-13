@@ -1,318 +1,182 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import ReactFlow, { isNode, useZoomPanHelper } from 'react-flow-renderer';
-import AddBrickButton from './AddBrickButton';
-import Brick from './Brick';
-import LayoutHelper from './LayoutHelper';
-import makeLayoutedElements from './dagreLayout';
-import { notif } from '../../../../components/notification';
-import './BrickEditor.scss';
+import ReactFlow, { 
+	Background, 
+	applyNodeChanges, 
+	useNodesState, 
+	useEdgesState,
+	updateEdge,
+	addEdge,
+	Handle,
+} from 'reactflow';
+import { Brick } from './components';
+import 'reactflow/dist/style.css';
+import { Button } from 'antd'
+import { BrickTree, convertToNewFormat, buildElements } from './brickTree';
+import { BrickSelector } from './components/BrickSelector';
+import { useBrickLibrary } from 'contexts/brickLibrary';
+import { v4 as uuid } from 'uuid';
+import { getLayoutedElements } from './layout';
 
-let brickUniqueID = 0;
+import dagre from 'dagre';
 
-const nodeTypes = {
-	add: AddBrickButton,
-	brick: Brick,
+const CustomNodeTest = ({ id, data }) => {
+  return (
+    <>
+      <Handle
+        type="target"
+        position="top"
+        style={{ background: '#555' }}
+        onConnect={(params) => console.log('handle onConnect', params)}
+        isConnectable={true}
+      />
+      <div>
+        Custom Inline
+      </div>
+      <Handle
+        type="source"
+        position="bottom"
+        id="b"
+        style={{ bottom: 10, top: 'auto', background: '#555' }}
+        isConnectable={true}
+      />
+    </>
+  );
 };
 
+const nodeTypes = { brick: Brick };
+
+
 export const BrickEditor = (props) => {
+  const { brickLibrary } = useBrickLibrary();
 	let width = props.fullscreen ? window.innerWidth : 300;
 	let height = props.fullscreen ? window.innerHeight : 200;
 
-	const initialFit = useRef(false)
-	const [state, setState] = useState({ elements: [], isLayouted: false });
-	const [brickTree, setBrickTree] = useState(props.brickTree);
-	const { fitView } = useZoomPanHelper();
+	const [nodes, setNodes, onNodesChange] = useNodesState();
+  const [edges, setEdges, onEdgesChange] = useEdgesState();
+  const edgeUpdateSuccessful = useRef(true);
 
-	const onChangeBrickTree = useCallback(
-		(bt) => {
-			setBrickTree(bt);
-			props.onChange && props.onChange(bt);
-		},
-		[props]
-	);
+	const fit = useRef(false)
+	const reactFlowInstance = useRef(false);
 
-	const addBrick = useCallback(
-		(brickSignature, bt, parentBrick, paramID, paramIndex) => {
-			if (!props.onChange) return;
-			let brick;
-			if (brickSignature) {
-				brick = {
-					lib: brickSignature.lib,
-					func: brickSignature.func,
-					params: {},
-				};
-				brickSignature.params.forEach((param) => {
-					brick.params[param.code] = param.value ?? (param.type.default && param.type.default());
-				});
-			}
-			if (parentBrick) {
-				if (paramIndex) {
-					parentBrick.params[paramID].push(brick);
-				} else {
-					parentBrick.params[paramID] = brick;
-				}
-				onChangeBrickTree(JSON.parse(JSON.stringify(bt)));
-			} else {
-				onChangeBrickTree(brick);
-			}
-		},
-		[props, onChangeBrickTree]
-	);
-
-	const removeBrick = useCallback(
-		(bt, parentBrick, paramCode) => {
-			if (!props.onChange) return;
-
-			if (parentBrick) {
-				parentBrick.params[paramCode] = null;
-				onChangeBrickTree(JSON.parse(JSON.stringify(bt)));
-			} else {
-				onChangeBrickTree(null);
-			}
-		},
-		[props, onChangeBrickTree]
-	);
-
-	const addBrickArrayParam = useCallback(
-		(bt, parentBrick, paramID) => {
-			if (!props.onChange) return;
-			if (!brick) return;
-			parentBrick.params[paramID].push(null);
-			onChangeBrickTree(JSON.parse(JSON.stringify(bt)));
-		},
-		[props, onChangeBrickTree]
-	);
-
-	const removeBrickArrayParam = useCallback(
-		(bt, brick, paramID, index) => {
-			// if (!props.onChange) return;
-			// if (!brick) return;
-			// parentBrick.params[paramID].push(null);
-			// onChangeBrickTree(JSON.parse(JSON.stringify(bt)));
-		},
-		[props, onChangeBrickTree]
-	);
-
-	const onPaste = useCallback(
-		(pastedBrickTree, bt, parentBrick, paramCode) => {
-			if (!props.onChange) return;
-			if (parentBrick) {
-				const brickSignature = props.brickLibrary[parentBrick.lib][parentBrick.func];
-				const param = brickSignature.params.find((param) => param.code === paramCode);
-				if (param.type.brickType === pastedBrickTree.lib) {
-					parentBrick.params[paramCode] = pastedBrickTree;
-					onChangeBrickTree(JSON.parse(JSON.stringify(bt)));
-					notif.success('Pasted successfully');
-				} else {
-					notif.error('Paste failed', 'Incompatible brick types')
-				}
-			} else {
-				if (pastedBrickTree.lib === props.brickType || props.brickType === 'any') {
-					onChangeBrickTree(pastedBrickTree);
-					notif.success('Pasted successfully');
-				} else {
-					notif.error('Paste failed', 'Incompatible brick types')
-				}
-			}
-		},
-		[props, onChangeBrickTree]
-	);
-
-	const makeAddButtonElement = useCallback(
-		(brickID, brickType, brickTree, parentBrick, paramCode) => {
-			return {
-				id: brickID,
-				type: 'add',
-				position: { x: 0, y: 0 },
-				data: {
-					brickLibrary: props.brickLibrary,
-					brickClass: props.brickClass,
-					brickType,
-					brickTree,
-					parentBrick,
-					paramCode,
-					onBrickSubtypeSelected: addBrick,
-					onPaste: onPaste,
-					readonly: !props.onChange,
-					fullscreen: props.fullscreen,
-				},
-			};
-		},
-		[props.brickLibrary, props.brickClass, addBrick, onPaste, props.fullscreen, props.onChange]
-	);
-
-	const makeAddButtonWithEdgeElements = useCallback(
-		(brickID, brickType, brickTree, parentBrick, parentBrickID, paramCode) => {
-			const elements = [makeAddButtonElement(brickID, brickType, brickTree, parentBrick, paramCode)];
-			elements.push({
-				id: `e${parentBrickID}-${brickID}`,
-				source: parentBrickID,
-				sourceHandle: `h${parentBrickID}-${paramCode}`,
-				target: brickID,
-				type: 'default',
-			});
-			return elements;
-		},
-		[makeAddButtonElement]
-	);
-
-	const makeBrickElement = useCallback(
-		(brickID, brick, bt, parentBrick, paramCode) => {
-			return {
-				id: brickID,
-				type: 'brick',
-				position: { x: 0, y: 0 },
-				data: { 
-					...props, //??
-					brick,
-					parentBrick,
-					brickTree,
-					paramCode,
-					onRemoveButtonClicked: removeBrick,
-					onArrayElementAdded: addBrickArrayParam,
-					onPaste: onPaste,
-					onChange: props.onChange
-						? () => {
-								onChangeBrickTree(bt);
-						  }
-						: undefined,
-					readonly: !props.onChange,
-				},
-			};
-		},
-		[
-			props,
-			brickTree,
-			removeBrick,
-			onPaste,
-			onChangeBrickTree,
-		]
-	);
-
-	const makeBrickWithEdgeElements = useCallback(
-		(brickID, brick, brickTree, parentBrick, parentBrickID, paramID, paramIndex) => {
-			const elements = [makeBrickElement(brickID, brick, brickTree, parentBrick, paramID)];
-			if (parentBrickID) {
-				elements.push({
-					id: `e${parentBrickID}-${brickID}`,
-					source: parentBrickID,
-					sourceHandle: `h${parentBrickID}-${paramID}`,
-					target: brickID,
-					type: 'default',
-				});
-			}
-			return elements;
-		},
-		[makeBrickElement]
-	);
-
-	const makeBrickTreeElements = useCallback(
-		(brickTree) => {
-			const elements = [];
-			console.log('makeBrickTreeElements', brickTree)
-			const processBrick = (brick, parentBrickID = null, parentBrick = null, paramCode = '') => {
-				const brickID = Number(++brickUniqueID).toString();
-				if (!brick) {
-					// TODO: add button
-				}
-				console.log('processBrick', brick)
-				elements.push(...makeBrickWithEdgeElements(brickID, brick, brickTree, parentBrick, parentBrickID, paramCode));
-				let brickSignature = props.brickLibrary[brick.lib][brick.func];
-				if (!brickSignature) {
-					return elements;
-				}
-				brickSignature.params.forEach((param) => {
-					const value = brick.params[param.code];
-					if (param.type.valueType) {
-						for (let valueBrick of value) {
-							console.log(valueBrick)
-							processBrick(valueBrick, brickID, brick, param.code);
-						}
-					}
-
-					if (param.type.brickType) {
-						if (value) {
-							processBrick(value, brickID, brick, param.code);
-						} else {
-							const addButtonBrickID = Number(++brickUniqueID).toString();
-							const addButtonElems = makeAddButtonWithEdgeElements(
-								addButtonBrickID,
-								param.type.brickType,
-								brickTree,
-								brick,
-								brickID,
-								param.code
-							);
-							elements.push(...addButtonElems);
-						}
-					}
-				});
-			};
-			processBrick(brickTree);
-
-			return elements;
-		},
-		[props.brickLibrary, makeAddButtonWithEdgeElements, makeBrickWithEdgeElements]
-	);
-
-	const onNodeSizesChange = (nodeSizesByID) => {
-		const rootNodePos = { x: width * 0.5, y: height * 0.1 };
-		setState({
-			elements: makeLayoutedElements(state.elements, nodeSizesByID, rootNodePos, isNode),
-			isLayouted: true,
-		});
-	};
+	const [ brickSelectorPosition, setBrickSelectorPosition ] = useState();
 
 	useEffect(() => {
-		let elements = null;
-		if (brickTree) {
-			elements = makeBrickTreeElements(brickTree);
-		} else {
-			elements = [makeAddButtonElement(Number(++brickUniqueID).toString(), props.brickType, null, null, 0)];
-		}
-		setState({ elements: elements, isLayouted: false });
-		if (editorRef.current) {
-			editorRef.current.style.visibility = 'hidden';
-		}
-	}, [brickTree, makeBrickTreeElements, makeAddButtonElement, props.brickType]);
+		if (!props.brickLibrary || !props.brickTree) return;
+		let newFormat = convertToNewFormat(props.brickTree);
+		let elements = buildElements(newFormat);
+		setNodes(elements.nodes);
+		setEdges(elements.edges);
+	}, [ brickLibrary, props.brickTree ])
+
+	const onInit = (instance) => {
+		reactFlowInstance.current = instance;
+	}
+
+	const layout = () => {
+		let layouted = getLayoutedElements(nodes, edges);
+		fit.current = true;
+		setNodes(layouted.nodes);
+		setEdges(layouted.edges);
+	}
+	
+  const onEdgeUpdateStart = useCallback(() => {
+    edgeUpdateSuccessful.current = false;
+  }, []);
+
+  const onEdgeUpdate = useCallback((oldEdge, newConnection) => {
+    edgeUpdateSuccessful.current = true;
+    setEdges((els) => updateEdge(oldEdge, newConnection, els));
+  }, []);
+
+  const onEdgeUpdateEnd = useCallback((_, edge) => {
+    if (!edgeUpdateSuccessful.current) {
+      setEdges((eds) => eds.filter((e) => e.id !== edge.id));
+    }
+
+    edgeUpdateSuccessful.current = true;
+  }, []);
+
+  const onConnect = useCallback((params) => {
+  	console.log(params)
+  	setEdges((els) => addEdge(params, els)), []
+  });
 
 	useEffect(() => {
-		if (state.isLayouted && editorRef.current) {
-			if (!initialFit.current) {
-				initialFit.current = true;
-				fitView();
-				props.onElementLoad && props.onElementLoad(editorRef.current);
+		if (fit.current) {
+			fit.current = false;
+			if (reactFlowInstance.current) {
+				reactFlowInstance.current.fitView()
 			}
-			editorRef.current.style.visibility = 'visible';
 		}
-	}, [initialFit, state.isLayouted, fitView]);
+	}, [ nodes ])
 
-	const editorRef = useRef(null);
+
+	const onPaneContextMenu = (event) => {
+		event.preventDefault();
+		setBrickSelectorPosition({
+			x: event.pageX,
+			y: event.pageY,
+		})
+	}
+
+	const createBrick = (lib, func, position = { x: 0, y: 0 }) => {
+		let id = uuid();
+		let brick = {
+			id,
+			lib, 
+			func,
+			params: {}
+		}
+		const newNode = {
+			id,
+			type: 'brick',
+			position,
+			data: brick,
+		};
+		setNodes(nds => nds.concat(newNode));
+	}
+
+	const onBrickSelected = (brick) => {
+		if (brick) {
+			console.log('SELECTED: ', brick.lib, brick.func);
+			createBrick(brick.lib, brick.func, brickSelectorPosition);
+		}
+		setBrickSelectorPosition();
+	}
+
+	useEffect(() => {
+		console.log('NODES & EDGES', nodes, edges);
+		// TODO: generate
+	}, [ nodes, edges ])
+
 	return (
 		<div
-			ref={editorRef}
 			className="brick-editor"
 			style={{
 				width,
 				height,
 			}}
 		>
-			<ReactFlow
-				nodeTypes={nodeTypes}
-				elements={state.elements}
-				nodesDraggable={false}
-				nodesConnectable={false}
-				selectNodesOnDrag={false}
-				zoomOnDoubleClick={false}
-				paneMoveable={props.fullscreen ? true : false}
-				elementsSelectable={props.fullscreen ? true : false}
-				zoomOnScroll={props.fullscreen ? true : false}
-				zoomOnPinch={props.fullscreen ? true : false}
-				minZoom={props.edit ? 0.4 : 0.001}
-				maxZoom={1}
-			>
-				<LayoutHelper onNodeSizesChange={onNodeSizesChange} />
-			</ReactFlow>
+		<Button onClick={() => layout()}>LAY</Button>
+		<ReactFlow
+			nodeTypes={nodeTypes}
+			nodes={nodes}
+			edges={edges}
+			nodesDraggable
+			onNodesChange={onNodesChange}
+			onEdgesChange={onEdgesChange}
+			onEdgeUpdate={onEdgeUpdate}
+      onEdgeUpdateStart={onEdgeUpdateStart}
+      onEdgeUpdateEnd={onEdgeUpdateEnd}
+      onPaneContextMenu={onPaneContextMenu}
+			onConnect={onConnect}
+			nodesConnectable
+			onInit={onInit}
+			fitView
+		>
+			<Background />
+		</ReactFlow>
+		<BrickSelector position={brickSelectorPosition} onSelected={onBrickSelected} brickLibrary={props.brickLibrary}/>
 		</div>
 	);
 };

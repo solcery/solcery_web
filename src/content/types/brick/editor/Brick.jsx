@@ -1,7 +1,8 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { Handle, Position } from 'react-flow-renderer';
-import { notif } from '../../../../components/notification';
-import { useProject } from '../../../../contexts/project';
+import { notif } from 'components/notification';
+import { useProject } from 'contexts/project';
+import { useBrickLibrary } from 'contexts/brickLibrary';
 import { Tooltip, Button, Input } from 'antd';
 import { CommentOutlined, DashOutlined, CloseOutlined} from '@ant-design/icons';
 const { TextArea } = Input;
@@ -52,9 +53,9 @@ const errorSignature = (lib) => ({
 export default function Brick(props) {
 	let { projectId } = useProject();
 	const hovered = useRef(false);
+	const { brickLibrary } = useBrickLibrary();
 
 	const brick = props.data.brick;
-	const brickLibrary = props.data.brickLibrary;
 
 	// validation
 	let errorBrick = false;
@@ -145,9 +146,6 @@ export default function Brick(props) {
 	}, []);
 
 	const onArrayElementAdded = (param) => {
-		console.log('onArrayElementAdded')
-		console.log(brick)
-		console.log(param)
 		props.data.onArrayElementAdded(
 			props.data.brickTree,
 			brick,
