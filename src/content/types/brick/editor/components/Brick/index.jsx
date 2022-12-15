@@ -4,10 +4,11 @@ import { Tooltip, Button, Input } from 'antd';
 import { CommentOutlined, DashOutlined, CloseOutlined} from '@ant-design/icons';
 import { useBrickLibrary } from 'contexts/brickLibrary';
 const { TextArea } = Input;
+import { v4 as uuid } from 'uuid';
 
 import './style.scss';
 
-const getBrickLibColor = (lib) => {
+export const getBrickLibColor = (lib) => {
 	return `var(--brick-color-${lib})`;
 }
 
@@ -28,6 +29,7 @@ function ArrayParam(props) {
 
 function InlineParam(props) {
 	let { param, brick } = props;
+	const reactFlowInstance = useReactFlow();
 
 	const onChangeTmp = (value) => {
 		brick.params[param.code] = value;
@@ -42,38 +44,56 @@ function InlineParam(props) {
 	</div>
 }
 
+const BrickHandle = (props) => {
+	let { brick, param } = props;
+	const reactFlowInstance = useReactFlow();
+	const { brickLibrary } = useBrickLibrary();
+
+	const onConnect = (connection) => {
+  		let edgeParams = {
+		  	id: `${connection.source}.${connection.sourceHandle}`,
+		  	...connection,
+		  	data: {
+		  		paramCode: connection.sourceHandle,
+		  	}
+		}
+		reactFlowInstance.addEdges(edgeParams);
+	}
+
+	const isValidConnection = (connection) => {
+		let existentEdge = reactFlowInstance.getEdge(`${connection.source}.${connection.sourceHandle}`);
+		if (existentEdge) return false;
+		let targetBrick = reactFlowInstance.getNode(connection.target).data;
+		let sourceBrick = reactFlowInstance.getNode(connection.source).data;
+		let sourceSignature = brickLibrary[sourceBrick.lib][sourceBrick.func];
+		let param = sourceSignature.params.find(p => p.code === connection.sourceHandle);
+		if (!param) return false;
+		return param.type.brickType === targetBrick.lib;
+	}
+
+	return <Handle
+		id={param ? `${param.code}` : 'output'}
+		type={param ? 'source' : 'target'}
+		position={ param ? 'left' : 'right' }
+		style={{ background: getBrickLibColor(param ? param.type.brickType : brick.lib) }}
+		onConnect={onConnect}
+		isValidConnection={isValidConnection}
+		isConnectable
+		className={`brick-handle ${param ? 'input' : 'output'}`}
+	/>
+}
+
+
 function BrickParam(props) {
-	let { param, brick } = props;
-
-	const handleStyle = {
-		top: '50%',
-		position: 'absolute',
-		height: '1rem',
-		width: '1rem',
-		backgroundColor: getBrickLibColor(param.type.brickType),
-	}
-
-	const onConnect = (data) => {
-		console.log('onConnect', data)
-	}
+	let { brick, param } = props;
 
 	return <div className='brick-param'>
 		<div>{param.name}</div>
-		<Handle
-			id={`h.${brick.id}.${param.code}`}
-			type="source"
-			position='left'
-			isConnectable
-			onConnect={onConnect}
-			isValidConnection={() => true}
-			style={handleStyle}
-		/>
+		<BrickHandle brick={brick} param={param}/>
 	</div>
 }
 
 function Param(props) {
-	const { brickLibrary } = useBrickLibrary();
-
 	let { param } = props;
 	if (param.type.brickType) return <BrickParam {...props}/>
 	return <InlineParam {...props}/>;
@@ -81,30 +101,25 @@ function Param(props) {
 
 
 export function Brick(props) {
+	const reactFlowInstance = useReactFlow();
 	const { brickLibrary } = useBrickLibrary();
 	let brick = props.data;
-	const reactFlowInstance = useReactFlow();
 
 	const brickSignature = brickLibrary[brick.lib][brick.func];
 
 	const removeBrick = () => {
-		let nodes = reactFlowInstance.getNodes();
-		let changes = applyNodeChanges([ 
-			{ id: props.id, type: 'remove' }, 
-		], nodes);
-		reactFlowInstance.setNodes(changes);
+		console.log(reactFlowInstance.toObject());
+		let thisNode = reactFlowInstance.getNode(props.id);
+		reactFlowInstance.deleteElements({ nodes: [ thisNode ] });
 	}
 
+	let className = 'brick';
+	if (props.selected) {
+		className += ' selected';
+	}
 	return (<>
-		<Handle
-			type="target"
-			position="right"
-			style={{ background: '#555' }}
-			isConnectable
-		/>
 		<div
-			onClick={() => createBrick('action', 'void')}
-			className={`brick`}
+			className={className}
 			style={{ backgroundColor: getBrickLibColor(brickSignature.lib)}}
 		>
 			<div className='brick-header'>
@@ -114,17 +129,12 @@ export function Brick(props) {
 				</Button>
 			</div>
 			<div className='brick-body'>
+				<BrickHandle brick={brick}/>
 				{brickSignature.params.map((param, index) => <Param 
 					key={index} 
 					brick={brick}
 					param={param}
 				/>)}
-				{/*{inlineParams.map((param) => <param.signature.type.valueRender
-					defaultValue={param.value}
-					onChange={onChangeTmp}
-					type={param.signature.type}
-				/>)}
-				{nestedParams.map((param, index) => <ParamHandle key={index} brick={data.brick} param={param}/>)}*/}
 			</div>
 		</div>
 	</>);

@@ -4,9 +4,6 @@ import { getRectOfNodes } from 'reactflow';
 const dagreGraph = new dagre.graphlib.Graph();
 dagreGraph.setDefaultEdgeLabel(() => ({}));
 
-const nodeWidth = 172;
-const nodeHeight = 50;
-
 export const getLayoutedElements = (nodes, edges, direction = 'RL') => {
   const isHorizontal = direction === 'LR' || direction === 'RL';
   dagreGraph.setGraph({ rankdir: direction });

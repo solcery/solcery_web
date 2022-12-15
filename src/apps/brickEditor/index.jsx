@@ -46,6 +46,7 @@ export default function BrickEditor() {
 
 	const onChangeBrickTree = useCallback(
 		(brickTree) => {
+			console.log('onChangeBrickTree', brickTree)
 			if (!doc) return;
 			value.brickTree = brickTree;
 			let old = getTable(doc.fields, ...splittedPath);
