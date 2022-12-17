@@ -4,20 +4,20 @@ import { Input } from 'antd'
 import { getBrickLibColor } from '../Brick';
 
 import './style.scss';
-import '../Brick/style.scss';
 
 const DraggableBrick = (props) => {
   const { lib, func, name } = props.brick;
+  const { getBrickTypeStyle } = useBrickLibrary();
   const onDragStart = (event, nodeType) => {
     event.dataTransfer.setData('application/reactflow', JSON.stringify(nodeType));
     event.dataTransfer.effectAllowed = 'move';
   };
 
   return <div 
-    className="brick-dnd" 
+    className='brick-dnd' 
+    style={getBrickTypeStyle(lib)}
     onDragStart={(event) => onDragStart(event, { lib, func })} 
     draggable
-    style={{ backgroundColor: getBrickLibColor(lib) }}
   >
     {name}
   </div>
@@ -31,6 +31,7 @@ export const BrickPanel = () => {
   let bricks = [];
   for (let [ lib, funcs ] of Object.entries(brickLibrary)) {
     for (let [ func, brick ] of Object.entries(funcs)) {
+      if (brick.hidden) continue;
       bricks.push({
         lib,
         func,

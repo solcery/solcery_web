@@ -33,9 +33,7 @@ export function convertToNewFormat(src) {
 export function buildElements(src = []) { // TODO: move brickLibrary to layouting part
 	let nodes = [];
 	let edges = [];
-
 	const addNode = (brick, position) => {
-		console.log('addNode')
 		nodes.push({
 			id: `${brick.id}`,
 			type: 'brick',
@@ -52,9 +50,6 @@ export function buildElements(src = []) { // TODO: move brickLibrary to layoutin
 		sourceHandle: `${paramCode}`,
 		target: `${targetId}`,
 		type: 'default',
-		data: {
-			paramCode: paramCode
-		}
 	});
 
 	const extractElements = (brick) => {
@@ -67,8 +62,18 @@ export function buildElements(src = []) { // TODO: move brickLibrary to layoutin
 		addNode(data, brick.position);
 		for (let [ paramCode, value ] of Object.entries(brick.params)) {
 			if (!value) continue;
-			if (Array.isArray(value)) {
-				// TODO:
+			if (Array.isArray(value)) { // array of bricks
+				if (value.length === 0) continue;
+				if (!value[0].brickId) continue;
+				data.params[paramCode] = [];
+				for (let item of value) {
+					let targetBrick = src.find(b => b.id === item.brickId);
+					if (targetBrick) {
+						let itemUuid = uuid();
+						data.params[paramCode].push(itemUuid)
+						addEdge(brick.id, targetBrick.id, `${paramCode}.${itemUuid}`);
+					}
+				}
 				continue;
 			}
 			if (value.brickId) {

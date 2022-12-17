@@ -17,6 +17,7 @@ export const paramFromMapEntry = (entry) => {
 	};
 };
 
+
 export class BrickLibrary {
 	bricks = {};
 	brickTypes = {};

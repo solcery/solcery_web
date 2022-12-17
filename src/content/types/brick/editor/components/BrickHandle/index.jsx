@@ -3,14 +3,11 @@ import { Handle, useReactFlow } from 'reactflow';
 
 import './style.scss';
 
-export const getBrickLibColor = (lib) => {
-	return `var(--brick-color-${lib})`;
-}
-
 export const BrickHandle = (props) => {
-	let { brick, param } = props;
+	let { param, index, brick, uuid } = props;
 	const reactFlowInstance = useReactFlow();
-	const { brickLibrary } = useBrickLibrary();
+	const { brickLibrary, getBrickTypeStyle } = useBrickLibrary();
+	const isOutput = !param;
 
 	const onConnect = (connection) => {
   		let edgeParams = {
@@ -30,19 +27,35 @@ export const BrickHandle = (props) => {
 		let targetBrick = reactFlowInstance.getNode(connection.target).data;
 		let sourceBrick = reactFlowInstance.getNode(connection.source).data;
 		let sourceSignature = brickLibrary[sourceBrick.lib][sourceBrick.func];
-		let param = sourceSignature.params.find(p => p.code === connection.sourceHandle);
+
+		let [ paramCode, index ] = connection.sourceHandle.split('.');
+
+		let param = sourceSignature.params.find(p => p.code === paramCode);
 		if (!param) return false;
-		return param.type.brickType === targetBrick.lib;
+		let valueType = param.type.valueType
+		let validBrickType = valueType ? valueType.brickType : param.type.brickType;
+		return validBrickType === targetBrick.lib;
+	}
+
+	let handleId = 'output';
+	let type = brick.lib;
+	if (param) {
+		handleId = param.code;
+		type = param.type.brickType;
+		if (uuid) {
+			type = param.type.valueType.brickType;
+			handleId += `.${uuid}`;
+		}
 	}
 
 	return <Handle
-		id={param ? `${param.code}` : 'output'}
-		type={param ? 'source' : 'target'}
-		position={ param ? 'left' : 'right' }
-		style={{ background: getBrickLibColor(param ? param.type.brickType : brick.lib) }}
+		id={handleId}
+		type={isOutput ? 'target': 'source'}
+		position={isOutput ? 'right' : 'left'}
 		onConnect={onConnect}
+		style={getBrickTypeStyle(type)}
 		isValidConnection={isValidConnection}
 		isConnectable
-		className={`brick-handle ${param ? 'input' : 'output'}`}
+		className={`brick-handle ${isOutput ? 'output' : 'input'}`}
 	/>
 }

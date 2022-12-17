@@ -9,6 +9,7 @@ export const ValueRender = (props) => {
 	const [revision, setRevision] = useState(0);
 
 	const onChange = (newValue, index) => {
+		console.log('onChange', newValue, index)
 		value[index] = newValue;
 		if (!props.onChange) return;
 		var res = value.filter((entry) => value);
@@ -26,16 +27,11 @@ export const ValueRender = (props) => {
 		props.onChange(value);
 		setRevision(revision + 1);
 	};
-	if (!props.onChange)
-		return (
-			<>
-				{value.map((val, index) => (
-					<div key={index}>
-						[{index}] => <props.type.valueType.valueRender defaultValue={val} type={props.type.valueType} />
-					</div>
-				))}
-			</>
-		);
+	if (!props.onChange) return <>
+		{value.map((val, index) => <div key={index}>
+			[{index}] => <props.type.valueType.valueRender defaultValue={val} type={props.type.valueType} />
+		</div>)}
+	</>
 	return (
 		<>
 			{value.map((val, index) => (
@@ -44,7 +40,6 @@ export const ValueRender = (props) => {
 						{REMOVE_ELEMENT_BUTTON_LABEL}
 					</Button>
 					<props.type.valueType.valueRender
-						path={{ ...props.path, fieldPath: [...props.path.fieldPath, 'lol'] }}
 						defaultValue={val}
 						type={props.type.valueType}
 						onChange={(newValue) => {

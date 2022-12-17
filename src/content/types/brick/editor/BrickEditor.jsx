@@ -9,9 +9,9 @@ import ReactFlow, {
 	addEdge,
 	Handle,
 } from 'reactflow';
-import { Brick, BrickPanel, Root } from './components';
+import { Brick, BrickPanel } from './components';
 import { Button } from 'antd'
-import { buildElements } from './brickTree';
+import { buildElements } from './utils';
 import { useBrickLibrary } from 'contexts/brickLibrary';
 import { getLayoutedElements } from './layout';
 import { useHotkeyContext } from 'contexts/hotkey';
@@ -23,7 +23,6 @@ const multiSelectionKeys = ['Meta', 'Control']
 
 const nodeTypes = { 
 	brick: Brick,
-	root: Root,
 };
 
 const createBrick = (id, signature, position) => {
@@ -127,31 +126,40 @@ export const BrickEditor = (props) => {
 	}
 
 	const saveChanges = useCallback(() => {
+		console.log('save')
 		let bricks = {};
 		for (let node of nodes) {
 			let brick = {
 				id: node.data.id,
 				lib: node.data.lib,
 				func: node.data.func,
-				params: { ...node.data.params }
-			}
-			if (node.data.root) {
-				brick.root = true;
+				params: {}
 			}
 			bricks[node.id] = brick;
 			brick.position = node.position;
-		}
-		for (let edge of edges) {
-			let paramCode = edge.data.paramCode;
-			let targetBrick = bricks[edge.target];
-			if (!targetBrick) {
-				continue;
+			let params = brickLibrary[brick.lib][brick.func].params;
+			for (let param of params) {
+				if (param.type.brickType) { //Brick
+					let edge = edges.find(e => e.id === `${brick.id}.${param.code}`)
+					if (edge) {
+						brick.params[param.code] = { brickId: parseInt(edge.target) };
+					}
+				} else if (param.type.valueType && param.type.valueType.brickType) { // Array of bricks
+					brick.params[param.code] = [];
+					for (let paramUuid of node.data.params[param.code]) {
+						console.log(paramUuid)
+						let edge = edges.find(e => e.id === `${brick.id}.${param.code}.${paramUuid}`)
+						if (edge) {
+							console.log('EDGE!')
+							brick.params[param.code].push({ brickId: parseInt(edge.target) });
+						}
+					}
+				} else {
+					brick.params[param.code] = node.data.params[param.code];
+				}
 			}
-			let brick = bricks[edge.source];
-			brick.params[paramCode] = { 
-				brickId: targetBrick.id
-			};
 		}
+		console.log(Object.values(bricks))
 		props.onSave(Object.values(bricks));
 	}, [ nodes, edges, props.onSave ]);
 
