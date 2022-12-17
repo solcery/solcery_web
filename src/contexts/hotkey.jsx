@@ -31,6 +31,7 @@ export function HotkeyProvider(props) {
 	};
 
 	const addHotkey = useCallback(
+
 		(data) => {
 			if (!listeners) return;
 			let id = listeners[data.key].subscriptions++;

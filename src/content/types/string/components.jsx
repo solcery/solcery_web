@@ -36,6 +36,7 @@ export const ValueRender = (props) => {
 			onChange={(event) => {
 				props.onChange && props.onChange(event.target.value);
 			}}
+			draggable={false}
 		/>
 	);
 };

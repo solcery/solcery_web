@@ -1,13 +1,15 @@
 import { BrickEditor } from './editor/BrickEditor';
 import { ReactFlowProvider } from 'react-flow-renderer';
 import { useNavigate, useParams, Link } from 'react-router-dom';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { paramFromMapEntry } from '../../brickLib/brickLibrary';
-import { Select, Popover } from 'antd';
+import { Button, Select, Popover } from 'antd';
 import { SType } from '../index';
 import { insertTable } from '../../../utils';
 import { useBrickLibrary } from '../../../contexts/brickLibrary';
 import { useUser } from '../../../contexts/user';
+
+import './style.scss';
 
 const { Option } = Select;
 
@@ -37,58 +39,110 @@ const argFromParam = (param) => {
 };
 
 export const ValueRender = (props) => {
+	const [ fullscreen, setFullscreen ] = useState(false);
+	const [ brickTree, setBrickTree ] = useState(props.defaultValue);
 
-	const paramMapType = SType.from(paramMapSchema);
-	const { objectId } = useParams();
-	let brickTree = useRef(props.defaultValue ? props.defaultValue.brickTree : undefined);
-	const [brickParams, setBrickParams] = useState(props.defaultValue ? props.defaultValue.brickParams : []);
-	const { readonlyBricks } = useUser();
-	const navigate = useNavigate();
-
-	const onChangeBrickParams = (bp) => {
-		props.onChange({ brickParams: bp, brickTree: brickTree.current });
-		setBrickParams(paramMapType.clone(bp));
-	};
-	let path = props.path.fieldPath.join('.');
-	if (!objectId) {
-		path = props.path.objectId + '/' + path;
+	const onSave = (value) => {
+		let saved = value;
+		if (saved && saved.length <= 1) { //only root brick
+			console.log('only root')
+			saved = undefined;
+		}
+		setFullscreen(false);
+		setBrickTree(saved);
+		if (props.onChange) {
+			props.onChange(saved)
+		}
 	}
 
-	let onElementLoad; 
-	if (props.onElementLoad) {
-		onElementLoad = (element) => props.onElementLoad(props.path, element);
-	}
+	if (fullscreen) return <div 
+		className='brick-editor-fullscreen' 
+		style={{ 
+			width: window.innerWidth, 
+			height: window.innerHeight
+		}}
+	>
+		<ReactFlowProvider>
+			<BrickEditor 
+				key='fullscreen'
+				brickTree={brickTree}
+				brickType={props.type.brickType}
+				onExit={() => setFullscreen(false)}
+				onSave={props.onChange ? onSave : undefined}
+			/>
+		</ReactFlowProvider>
+	</div>;
+
+	return <div 
+		className='brick-editor-small'
+		onClick={() => setFullscreen(true)}
+	>
+		<div className='highlight-fullscreen'>
+			CLICK TO OPEN
+		</div>
+		<ReactFlowProvider>
+			<BrickEditor 
+				key='small' 
+				brickTree={brickTree}
+				brickType={props.type.brickType}
+			/>
+		</ReactFlowProvider>
+	</div>;
+}
+
+// export const ValueRender = (props) => {
+
+// 	const paramMapType = SType.from(paramMapSchema);
+// 	const { objectId } = useParams();
+// 	let brickTree = useRef(props.defaultValue ? props.defaultValue.brickTree : undefined);
+// 	const [brickParams, setBrickParams] = useState(props.defaultValue ? props.defaultValue.brickParams : []);
+// 	const { readonlyBricks } = useUser();
+// 	const navigate = useNavigate();
+
+// 	const onChangeBrickParams = (bp) => {
+// 		props.onChange({ brickParams: bp, brickTree: brickTree.current });
+// 		setBrickParams(paramMapType.clone(bp));
+// 	};
+// 	let path = props.path.fieldPath.join('.');
+// 	if (!objectId) {
+// 		path = props.path.objectId + '/' + path;
+// 	}
+
+// 	let onElementLoad; 
+// 	if (props.onElementLoad) {
+// 		onElementLoad = (element) => props.onElementLoad(props.path, element);
+// 	}
 	
-	let brickTreeEditor = ( //TODO: Optimize
-		<BrickTreeEditor
-			brickParams={brickParams}
-			brickType={props.type.brickType ?? 'any'}
-			brickTree={brickTree.current}
-			onElementLoad={onElementLoad}
-		/>
-	);
-	return (<>
-		{props.type.params && (<paramMapType.valueRender
-			defaultValue={brickParams}
-			type={paramMapType}
-			onChange={props.onChange && onChangeBrickParams}
-			path={{ ...props.path, fieldPath: [...props.path.fieldPath, 'brickParams'] }}
-		/>)}
-		{props.onChange || readonlyBricks ? (
-			<div
-				onClick={() => {
-					navigate(path);
-				}}
-			>
-				{brickTreeEditor}
-			</div>
-		) : (
-			<Popover content={brickTreeEditor}>
-				<Link to={path}>{brickTree.current ? `Brick. ${props.type.brickType ?? 'any'}` : 'Empty'}</Link>
-			</Popover>
-		)}
-	</>);
-};
+// 	let brickTreeEditor = ( //TODO: Optimize
+// 		<BrickTreeEditor
+// 			brickParams={brickParams}
+// 			brickType={props.type.brickType ?? 'any'}
+// 			brickTree={brickTree.current}
+// 			onElementLoad={onElementLoad}
+// 		/>
+// 	);
+// 	return (<>
+// 		{props.type.params && (<paramMapType.valueRender
+// 			defaultValue={brickParams}
+// 			type={paramMapType}
+// 			onChange={props.onChange && onChangeBrickParams}
+// 			path={{ ...props.path, fieldPath: [...props.path.fieldPath, 'brickParams'] }}
+// 		/>)}
+// 		{props.onChange || readonlyBricks ? (
+// 			<div
+// 				onClick={() => {
+// 					navigate(path);
+// 				}}
+// 			>
+// 				{brickTreeEditor}
+// 			</div>
+// 		) : (
+// 			<Popover content={brickTreeEditor}>
+// 				<Link to={path}>{brickTree.current ? `Brick. ${props.type.brickType ?? 'any'}` : 'Empty'}</Link>
+// 			</Popover>
+// 		)}
+// 	</>);
+// };
 
 export const BrickTreeEditor = (props) => {
 	const [ownBrickLibrary, setOwnBrickLibrary] = useState();

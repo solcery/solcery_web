@@ -9,72 +9,57 @@ import ReactFlow, {
 	addEdge,
 	Handle,
 } from 'reactflow';
-import { Brick } from './components';
-import 'reactflow/dist/style.css';
+import { Brick, BrickPanel, Root } from './components';
 import { Button } from 'antd'
-import { BrickTree, convertToNewFormat, buildElements } from './brickTree';
-import { BrickPanel } from './components/BrickPanel';
+import { buildElements } from './brickTree';
 import { useBrickLibrary } from 'contexts/brickLibrary';
-import { v4 as uuid } from 'uuid';
 import { getLayoutedElements } from './layout';
-
+import { useHotkeyContext } from 'contexts/hotkey';
 import dagre from 'dagre';
+
+import 'reactflow/dist/style.css';
 
 const multiSelectionKeys = ['Meta', 'Control']
 
-
-const CustomNodeTest = ({ id, data }) => {
-	return (
-		<>
-			<Handle
-				type="target"
-				position="top"
-				style={{ background: '#555' }}
-				onConnect={(params) => console.log('handle onConnect', params)}
-				isConnectable={true}
-			/>
-			<div>
-				Custom Inline
-			</div>
-			<Handle
-				type="source"
-				position="bottom"
-				id="b"
-				style={{ bottom: 10, top: 'auto', background: '#555' }}
-				isConnectable={true}
-			/>
-		</>
-	);
+const nodeTypes = { 
+	brick: Brick,
+	root: Root,
 };
 
-const nodeTypes = { brick: Brick };
+const createBrick = (id, signature, position) => {
+	return {
+		id: `${id}`,
+		type: 'brick',
+		deletable: signature.func !== 'root',
+		position: position ?? { x: 0, y: 0 },
+		dragHandle: '.brick-bg',
+		data: {
+			id,
+			lib: signature.lib, 
+			func: signature.func,
+			params: {}
+		},
+	}
+};
 
-const getNextNodeId = (nodes) => `${Math.max(...nodes.map(node => parseInt(node.id))) + 1}`;
+const getNextNodeId = (nodes) => Math.max(0, ...nodes.map(node => parseInt(node.id))) + 1;
 
 export const BrickEditor = (props) => {
+	const { addHotkey, removeHotkey } = useHotkeyContext();
 	const { brickLibrary } = useBrickLibrary();
-	let width = props.fullscreen ? window.innerWidth : 300;
-	let height = props.fullscreen ? window.innerHeight : 200;
 
-	const [nodes, setNodes, onNodesChange] = useNodesState([]);
-	const [edges, setEdges, onEdgesChange] = useEdgesState([]);
+	const [nodes, setNodes, onNodesChange] = useNodesState();
+	const [edges, setEdges, onEdgesChange] = useEdgesState();
 	const edgeUpdateSuccessful = useRef(true);
 	const brickEditorRef = useRef();
 
-	const fit = useRef(false)
+	const fitRequired = useRef(false)
 	const [ reactFlowInstance, setReactFlowInstance ] = useState();
-
-	useEffect(() => {
-		if (!brickLibrary || !props.brickTree) return;
-		let elements = buildElements(props.brickTree, brickLibrary);
-		setNodes(elements.nodes);
-		setEdges(elements.edges);
-	}, [ brickLibrary, props.brickTree ])
 
 	const layout = () => {
 		let layouted = getLayoutedElements(nodes, edges, 'RL');
+		fitRequired.current = true;
 		setNodes(layouted.nodes);
-		setEdges(layouted.edges);
 	}
 	
 	const onEdgeUpdateStart = useCallback((event, edge) => {
@@ -93,30 +78,6 @@ export const BrickEditor = (props) => {
 		edgeUpdateSuccessful.current = true;
 	}, []);
 
-	useEffect(() => {
-		if (!reactFlowInstance) return;
-		reactFlowInstance.fitView();	
-	}, [ reactFlowInstance ])
-
-	const createBrick = (lib, func, position = { x: 0, y: 0 }) => {
-		setNodes(nds => {
-			let id = getNextNodeId(nds);
-			const newNode = {
-				id,
-				type: 'brick',
-				position,
-				dragHandle: '.brick-header',
-				data: {
-					id: parseInt(id),
-					lib, 
-					func,
-					params: {}
-				},
-			};
-			return nds.concat(newNode)
-		});
-	}
-
 	const onDragOver = useCallback((event) => {
 		event.preventDefault();
 		event.dataTransfer.dropEffect = 'move';
@@ -127,22 +88,56 @@ export const BrickEditor = (props) => {
 
 		const reactFlowBounds = brickEditorRef.current.getBoundingClientRect();
 		const jsonBrick = event.dataTransfer.getData('application/reactflow');
-		// check if the dropped element is valid
 		if (typeof jsonBrick === 'undefined' || !jsonBrick) return;
-		let brick = JSON.parse(jsonBrick);
+		let brickSignature = JSON.parse(jsonBrick);
 		const position = reactFlowInstance.project({
 			x: event.clientX - reactFlowBounds.left,
 			y: event.clientY - reactFlowBounds.top,
 		});
-		createBrick(brick.lib, brick.func, position)
+		setNodes(nds => {
+			let id = getNextNodeId(nds);
+			let brick = createBrick(id, brickSignature, position);
+			return nds.concat(brick);
+		})
 	}, [ reactFlowInstance ]);
 
-	// onChange
 	useEffect(() => {
-		if (!props.onChange) return;
+		if (!props.brickType) return;
+		let { nodes, edges } = buildElements(props.brickTree);
+		if (nodes.length === 0 && props.onSave) {
+			nodes.push(createBrick(0, { 
+				lib: props.brickType, 
+				func: 'root'
+			}))
+		}
+		setNodes(nodes);
+		setEdges(edges);
+	}, [ props.brickType, props.brickTree, props.onSave ])
+
+	useEffect(() => {
+		if (!fitRequired.current) return;
+		if (!reactFlowInstance) return;
+		fitRequired.current = false;
+		reactFlowInstance.fitView();
+	}, [ nodes, reactFlowInstance ])
+
+
+	const exit = () => {
+		props.onExit();
+	}
+
+	const saveChanges = useCallback(() => {
 		let bricks = {};
 		for (let node of nodes) {
-			let brick = node.data;
+			let brick = {
+				id: node.data.id,
+				lib: node.data.lib,
+				func: node.data.func,
+				params: { ...node.data.params }
+			}
+			if (node.data.root) {
+				brick.root = true;
+			}
 			bricks[node.id] = brick;
 			brick.position = node.position;
 		}
@@ -157,44 +152,85 @@ export const BrickEditor = (props) => {
 				brickId: targetBrick.id
 			};
 		}
-		props.onChange(Object.values(bricks))
-	}, [ nodes, edges, props.onChange ])
+		props.onSave(Object.values(bricks));
+	}, [ nodes, edges, props.onSave ]);
 
+	useEffect(() => {
+		if (!props.onExit) return;
+		const hotkeySubscription = addHotkey({
+			key: 'Escape',
+			callback: exit,
+		})
+		return () => removeHotkey('Escape', hotkeySubscription);
+	}, [ props.onExit ]);
 
-	return (
-		<div
-			className="brick-editor"
-			style={{ width, height }}
-			ref={brickEditorRef}
-		>
+	useEffect(() => {
+		if (!props.onSave) return;
+		const hotkeySubscription = addHotkey({
+			key: 'Ctrl+KeyS',
+			callback: saveChanges,
+			noDefault: true,
+		})
+		return () => removeHotkey('Ctrl+KeyS', hotkeySubscription);
+	}, [ props.onSave, saveChanges ])
+
+	
+
+	const interactionProps = {
+		elementsSelectable: !!props.onSave,
+		nodesConnectable: !!props.onSave,
+		nodesDraggable: !!props.onSave,
+		panOnDrag: !!props.onExit,
+		zoomOnScroll: !!props.onExit,
+	}
+
+	if (props.onSave) {
+		interactionProps.onEdgeUpdate = onEdgeUpdate;
+		interactionProps.onEdgeUpdateStart = onEdgeUpdateStart;
+		interactionProps.onEdgeUpdateEnd = onEdgeUpdateEnd;
+		interactionProps.onDrop = onDrop;
+		interactionProps.onDragOver = onDragOver;
+		interactionProps.onNodesChange = onNodesChange
+		interactionProps.onEdgesChange = onEdgesChange
+	}
+
+	if (!props.onSave) {
+		interactionProps.minZoom = 0.01;
+	}
+
+	if (!brickLibrary) return;
+	return <div
+		style={{ width: '100%', height: '100%' }}
+		ref={brickEditorRef}
+	>
 		<ReactFlow
-			onDragOver={onDragOver}
-			onDrop={onDrop}
+			onInit={setReactFlowInstance}
 			nodeTypes={nodeTypes}
 			nodes={nodes}
 			edges={edges}
-			nodesDraggable
-			onNodesChange={onNodesChange}
-			onEdgesChange={onEdgesChange}
-			onEdgeUpdate={onEdgeUpdate}
-			onEdgeUpdateStart={onEdgeUpdateStart}
-			onEdgeUpdateEnd={onEdgeUpdateEnd}
+			
 			multiSelectionKeyCode={multiSelectionKeys}
-			onInit={setReactFlowInstance}
-			nodesConnectable
+
+			{...interactionProps}
 			fitView
+			proOptions={{ hideAttribution: true }}
 		>
-			<Panel position='top-left'>
-				<BrickPanel/>
-			</Panel>
-			<Panel position='top-right'>
-				<Button onClick={() => layout()}>Layout</Button>
-			</Panel>
-			<Background />
+			{props.onSave && <Panel position='top-left'>
+					<BrickPanel/>
+				</Panel>
+			}
+			{props.onExit && <>
+				<Panel position='top-right'>
+					<Button onClick={exit}>EXIT</Button>
+					{props.onSave && <>
+						<Button onClick={saveChanges}>SAVE</Button>
+						<Button onClick={() => layout()}>Layout</Button>	
+					</>}
+				</Panel>
+				<Background />
+			</>}
 		</ReactFlow>
-		{/*<BrickSelector position={brickSelectorPosition} onSelected={onBrickSelected} brickLibrary={props.brickLibrary}/>*/}
-		</div>
-	);
+	</div>;
 };
 
 export default BrickEditor;

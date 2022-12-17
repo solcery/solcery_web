@@ -30,44 +30,57 @@ export function convertToNewFormat(src) {
 	return nodes;
 }
 
-export function buildElements(src, brickLibrary) { // TODO: move brickLibrary to layouting part
+export function buildElements(src = []) { // TODO: move brickLibrary to layouting part
 	let nodes = [];
 	let edges = [];
-	const uuidsByIndex = {};
-	const extractElements = (brick) => {
-		let node = {
+
+	const addNode = (brick, position) => {
+		console.log('addNode')
+		nodes.push({
 			id: `${brick.id}`,
 			type: 'brick',
-			dragHandle: '.brick-header',
-			position: brick.position ?? { x: 0, y: 0 },
+			deletable: brick.func !== 'root',
+			dragHandle: '.brick-bg',
+			position: position ?? { x: 0, y: 0 },
 			data: brick,
+		});
+	}
+
+	const addEdge = (sourceId, targetId, paramCode) => edges.push({
+		id: `${sourceId}.${paramCode}`,
+		source: `${sourceId}`,
+		sourceHandle: `${paramCode}`,
+		target: `${targetId}`,
+		type: 'default',
+		data: {
+			paramCode: paramCode
 		}
-		nodes.push(node);
-		let paramSignatures = brickLibrary[brick.lib][brick.func].params;
-		for (let param of paramSignatures) {
-			let value = brick.params[param.code];
+	});
+
+	const extractElements = (brick) => {
+		let data = {
+			id: brick.id,
+			lib: brick.lib,
+			func: brick.func,
+			params: { ...brick.params }
+		}
+		addNode(data, brick.position);
+		for (let [ paramCode, value ] of Object.entries(brick.params)) {
 			if (!value) continue;
 			if (Array.isArray(value)) {
 				// TODO:
 				continue;
 			}
 			if (value.brickId) {
-				let edge = {
-					id: `${brick.id}.${param.code}`,
-					source: `${brick.id}`,
-					sourceHandle: `${param.code}`,
-					target: `${value.brickId}`,
-					type: 'default',
-					data: {
-						paramCode: param.code
-					}
+				let targetBrick = src.find(b => b.id === value.brickId);
+				if (targetBrick) {
+					addEdge(brick.id, targetBrick.id, paramCode)
 				}
-				edges.push(edge);
 			}
 		}
 	}
-	for (let brick of src) {
-		extractElements(brick)
+	for (let node of src) {
+		extractElements(node)
 	}
 	return { nodes, edges };
 }

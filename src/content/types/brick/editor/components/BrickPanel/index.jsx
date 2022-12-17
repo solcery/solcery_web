@@ -26,7 +26,6 @@ const DraggableBrick = (props) => {
 export const BrickPanel = () => {
   const { brickLibrary } = useBrickLibrary();
   const [ filter, setFilter ] = useState();
-  console.log(brickLibrary)
 
   if (!brickLibrary) return;
   let bricks = [];

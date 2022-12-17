@@ -80,6 +80,7 @@ export default function BrickEditor() {
 			<Button onClick={save}>SAVE</Button>
 			<Button onClick={cancel}>CANCEL</Button>
 			<Button onClick={toggleComments}>{showAllComments ? 'Hide comments' : 'Show comments' }</Button>
+			<div style={{ width: 800, height: 600 }}>
 			{value && (
 				<BrickTreeEditor
 					fullscreen
@@ -90,6 +91,7 @@ export default function BrickEditor() {
 					showAllComments={showAllComments}
 				/>
 			)}
+			</div>
 		</div>
 	);
 }

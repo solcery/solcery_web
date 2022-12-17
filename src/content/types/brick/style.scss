@@ -1,0 +1,40 @@
+.brick-editor-small {
+	width: 300px;
+	height: 200px;
+	position: relative;
+
+	.highlight-fullscreen {
+		opacity: 0;
+		background-color: white;
+		z-index: 2;
+		position: absolute;
+		display: inline;
+		left: 0;
+		top: 0;
+		bottom: 0px;
+		right: 0px;
+		text-align: center;
+		line-height: 200px;
+		cursor: pointer;
+		line-height: 200px;
+		font-family: 'Montserrat' sans-serif;
+		font-size: 20px;
+		font-weight: 500;
+		transition: 200ms all;
+
+		&:hover {
+			opacity: 1;
+			background-color: rgba(255, 255, 255, 0.3);
+
+		}
+	}
+
+}
+
+.brick-editor-fullscreen {
+	left: 0;
+	top: 0;
+	position: fixed;
+	background-color: black;
+	z-index: 10;
+}
