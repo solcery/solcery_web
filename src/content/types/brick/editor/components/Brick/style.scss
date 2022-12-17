@@ -16,7 +16,7 @@
 		width: 100%;
 		height: 100%;
 		background-color: var(--brick-color-default);
-		opacity: 0.5;
+		opacity: 0.7;
 		background-color: red;
 		border-radius: 5px;
 		z-index: 0;
@@ -28,7 +28,7 @@
 		border: solid 1px #2abdd2;
 
 		.brick-bg {
-			opacity: 0.7;
+			opacity: 0.9;
 		}
 
 	}
@@ -92,6 +92,7 @@
 	}
 
 	.brick-name {
+		text-align: center;
 		margin-left: 3rem;
 		margin-right: 3rem;
 		font-size: 0.9rem;

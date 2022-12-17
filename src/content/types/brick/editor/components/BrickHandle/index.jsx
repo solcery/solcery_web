@@ -26,6 +26,7 @@ export const BrickHandle = (props) => {
 	const isValidConnection = (connection) => {
 		let existentEdge = reactFlowInstance.getEdge(`${connection.source}.${connection.sourceHandle}`);
 		if (existentEdge) return false;
+		if (connection.target === connection.source) return;
 		let targetBrick = reactFlowInstance.getNode(connection.target).data;
 		let sourceBrick = reactFlowInstance.getNode(connection.source).data;
 		let sourceSignature = brickLibrary[sourceBrick.lib][sourceBrick.func];
