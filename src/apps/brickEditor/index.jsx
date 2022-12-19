@@ -4,9 +4,13 @@ import { useHotkey } from '../../contexts/hotkey';
 import { useDocument } from '../../contexts/document';
 import { useUser } from '../../contexts/user';
 import { Button } from 'antd';
-import { BrickTreeEditor } from '../../content/types/brick/components';
 import { getTable } from '../../utils';
 import './style.css';
+
+const BrickTreeEditor = (props) => {
+
+};
+
 
 export default function BrickEditor() {
 	const navigate = useNavigate();

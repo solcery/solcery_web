@@ -1,11 +1,12 @@
-import { BrickEditor } from './editor/BrickEditor';
+import { BrickEditor } from './editor';
+import { ParamsSelector } from './params';
 import { ReactFlowProvider } from 'react-flow-renderer';
 import { useState, useEffect, useCallback } from 'react';
 import { BrickLibrary } from '../../brickLib/brickLibrary';
-import { Button, Select, Input } from 'antd';
-import { BrickEditorProvider, useBrickEditor } from 'contexts/brickLibrary';
+import { Select } from 'antd';
+import { BrickLibraryProvider, useBrickLibrary } from 'contexts/brickLibrary';
+
 import { useContent } from 'contexts/content';
-import { ArrayComponent } from 'components/ArrayComponent';
 
 import './style.scss';
 
@@ -54,79 +55,6 @@ function BrickTree(props) {
 	</div>;
 }
 
-function BrickTypeSelector(props) {
-	const { brickLibrary } = useBrickEditor();
-
-	if (!brickLibrary) return;
-
-	const onChange = (value) => {
-		props.onChange(value)
-	}
-	const options = brickLibrary.getTypes();
-
-	return <Select 
-		defaultValue={props.defaultValue} 
-		onChange={onChange} 
-		placeholder='Select brick type...' 
-		className='brick-type-selector'
-	>
-		{options.map(brickType => <Option key={brickType.code} value={brickType.code}>
-			<div className='brick-type-option'style={{ backgroundColor: brickType.color }}>{brickType.name}</div>
-		</Option>)}
-	</Select>
-}
-
-function ParamSignature(props) {
-	const [ param, setParam ] = useState(props.defaultValue ?? {})
-	const { brickLibrary } = useBrickEditor();
-
-	const onParamChanged = (prop, value) => {
-		param[prop] = value;
-		if (!props.onChange) return;
-		props.onChange(param);
-	}
-
-	if (!props.onChange) {
-		let backgroundColor = brickLibrary.getTypeColor(param.type);
-		return <div className='brick-type-option'style={{ backgroundColor }}>
-			{param.name}
-		</div>
-	}
-
-	return <div style = {{ display: 'flex' }}>
-		Name: <Input 
-			onChange={event => onParamChanged('name', event.target.value)}
-			style={{ width: 200 }}
-			defaultValue={param.name}
-		/>
-		Type: <BrickTypeSelector
-			onChange={value => onParamChanged('type', value)}
-			defaultValue={param.type}
-		/>
-	</div>
-}
-
-function ParamsSelector(props) {
-
-	if (props.onChange) {
-		var onChange = (value) => {
-			if (!props.onChange) return;
-			if (!value) {
-				props.onChange(value);
-				return;
-			}
-			props.onChange(value.filter(v => v.name && v.type));
-		}
-	}
-
-	return <ArrayComponent 
-		className='brick-params-selector'
-		defaultValue={props.defaultValue}
-		itemComponent={ParamSignature}
-		onChange={onChange}
-	/>
-}
-
 export function ValueRender(props) {
 
 	const getBrickType = (nodes) => {
@@ -167,7 +95,7 @@ export function ValueRender(props) {
 	}, [ content ]);
 
 	if (!brickLibrary) return;
-	return <BrickEditorProvider 
+	return <BrickLibraryProvider 
 		brickLibrary={brickLibrary} 
 		brickParams={params}
 		readonly={!props.onChange}
@@ -182,14 +110,10 @@ export function ValueRender(props) {
 			onChange={props.onChange ? onNodesChanged : undefined}
 			brickType={brickType}
 		/>}
-	</BrickEditorProvider>
+	</BrickLibraryProvider>
 }
 
-export const BrickTreeEditor = (props) => {
-
-};
-
-export const FilterRender = (props) => {
+export const FilterRender = (props) => { // TODO: brickTypeSelector from params
 	let defaultValue = props.defaultValue ?? 'action';
 	const titles = {
 		action: 'Action',

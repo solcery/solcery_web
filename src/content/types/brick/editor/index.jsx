@@ -12,7 +12,7 @@ import ReactFlow, {
 import { Brick, BrickPanel } from './components';
 import { Button } from 'antd'
 import { buildElements, createBrick } from './utils';
-import { useBrickEditor } from 'contexts/brickLibrary';
+import { useBrickLibrary } from 'contexts/brickLibrary';
 import { getLayoutedElements } from './layout';
 import { useHotkeyContext } from 'contexts/hotkey';
 import dagre from 'dagre';
@@ -29,7 +29,7 @@ const getNextNodeId = (nodes) => Math.max(0, ...nodes.map(node => parseInt(node.
 
 export const BrickEditor = (props) => {
 	const { addHotkey, removeHotkey } = useHotkeyContext();
-	const { brickLibrary } = useBrickEditor();
+	const { brickLibrary } = useBrickLibrary();
 
 	const [nodes, setNodes, onNodesChange] = useNodesState();
 	const [edges, setEdges, onEdgesChange] = useEdgesState();
