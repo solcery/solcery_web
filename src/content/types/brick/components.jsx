@@ -2,197 +2,240 @@ import { BrickEditor } from './editor/BrickEditor';
 import { ReactFlowProvider } from 'react-flow-renderer';
 import { useNavigate, useParams, Link } from 'react-router-dom';
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { paramFromMapEntry } from '../../brickLib/brickLibrary';
-import { Button, Select, Popover } from 'antd';
+import { BrickLibrary } from '../../brickLib/brickLibrary';
+import { Button, Select, Popover, Input } from 'antd';
 import { SType } from '../index';
 import { insertTable } from '../../../utils';
-import { useBrickLibrary } from '../../../contexts/brickLibrary';
-import { useUser } from '../../../contexts/user';
+import { BrickLibraryProvider, useBrickLibrary } from 'contexts/brickLibrary';
+import { BrickParamsProvider } from 'contexts/brickParams';
+import { useContent } from 'contexts/content';
+import { useUser } from 'contexts/user';
+import { v4 as uuid } from 'uuid';
 
 import './style.scss';
 
 const { Option } = Select;
 
-const paramMapSchema = {
-	name: 'SMap',
-	data: {
-		keyType: 'SString',
-		valueType: 'SString'
-	},
-};
+function BrickTree(props) {
+	const [ mode, setMode ] = useState('small');
 
-const argFromParam = (param) => {
-	return {
-		lib: param.type.brickType,
-		func: `arg`,
-		name: `Arg [${param.name}]`,
-		params: [
-			{
-				code: 'name',
-				name: 'Name',
-				type: SType.from('SString'),
-				value: param.code,
-				readonly: true,
-			},
-		],
-	};
-};
-
-export const ValueRender = (props) => {
-	const [ fullscreen, setFullscreen ] = useState(false);
-	const [ brickTree, setBrickTree ] = useState(props.defaultValue);
-
-	const onSave = (value) => {
-		let saved = value;
-		if (saved && saved.length <= 1) { //only root brick
-			console.log('only root')
-			saved = undefined;
-		}
-		setFullscreen(false);
-		setBrickTree(saved);
-		if (props.onChange) {
-			props.onChange(saved)
-		}
+	var wrapperProps = {
+		className: `brick-editor-${mode}`,
+	}
+	var brickEditorProps = {
+		key: mode,
+		brickTree: props.defaultValue,
+		brickType: props.brickType,
 	}
 
-	if (fullscreen) return <div 
-		className='brick-editor-fullscreen' 
-		style={{ 
+	if (mode === 'fullscreen') {
+		wrapperProps.style = {
 			width: window.innerWidth, 
 			height: window.innerHeight
-		}}
-	>
-		<ReactFlowProvider>
-			<BrickEditor 
-				key='fullscreen'
-				brickTree={brickTree}
-				brickType={props.type.brickType}
-				onExit={() => setFullscreen(false)}
-				onSave={props.onChange ? onSave : undefined}
-			/>
-		</ReactFlowProvider>
-	</div>;
+		}
+		brickEditorProps.onExit = () => setMode('small');
+		if (props.onChange) {
+			brickEditorProps.onSave = (value) => {
+				setMode('small');
+				if (!props.onChange) return;
+				let saved = value;
+				if (saved && saved.length <= 1) { // Root only means empty graph
+					saved = undefined;
+				}
+				props.onChange(saved)
+			}
+		}
+	} else {
+		wrapperProps.onClick = () => setMode('fullscreen');
+	}
 
-	return <div 
-		className='brick-editor-small'
-		onClick={() => setFullscreen(true)}
-	>
-		<div className='highlight-fullscreen'>
+	return <div {...wrapperProps}>
+		{mode === 'small' && <div className='highlight-fullscreen'>
 			CLICK TO OPEN
-		</div>
+		</div>}
 		<ReactFlowProvider>
-			<BrickEditor 
-				key='small' 
-				brickTree={brickTree}
-				brickType={props.type.brickType}
-			/>
+			<BrickEditor {...brickEditorProps}/>
 		</ReactFlowProvider>
 	</div>;
 }
 
-// export const ValueRender = (props) => {
-
-// 	const paramMapType = SType.from(paramMapSchema);
-// 	const { objectId } = useParams();
-// 	let brickTree = useRef(props.defaultValue ? props.defaultValue.brickTree : undefined);
-// 	const [brickParams, setBrickParams] = useState(props.defaultValue ? props.defaultValue.brickParams : []);
-// 	const { readonlyBricks } = useUser();
-// 	const navigate = useNavigate();
-
-// 	const onChangeBrickParams = (bp) => {
-// 		props.onChange({ brickParams: bp, brickTree: brickTree.current });
-// 		setBrickParams(paramMapType.clone(bp));
-// 	};
-// 	let path = props.path.fieldPath.join('.');
-// 	if (!objectId) {
-// 		path = props.path.objectId + '/' + path;
-// 	}
-
-// 	let onElementLoad; 
-// 	if (props.onElementLoad) {
-// 		onElementLoad = (element) => props.onElementLoad(props.path, element);
-// 	}
-	
-// 	let brickTreeEditor = ( //TODO: Optimize
-// 		<BrickTreeEditor
-// 			brickParams={brickParams}
-// 			brickType={props.type.brickType ?? 'any'}
-// 			brickTree={brickTree.current}
-// 			onElementLoad={onElementLoad}
-// 		/>
-// 	);
-// 	return (<>
-// 		{props.type.params && (<paramMapType.valueRender
-// 			defaultValue={brickParams}
-// 			type={paramMapType}
-// 			onChange={props.onChange && onChangeBrickParams}
-// 			path={{ ...props.path, fieldPath: [...props.path.fieldPath, 'brickParams'] }}
-// 		/>)}
-// 		{props.onChange || readonlyBricks ? (
-// 			<div
-// 				onClick={() => {
-// 					navigate(path);
-// 				}}
-// 			>
-// 				{brickTreeEditor}
-// 			</div>
-// 		) : (
-// 			<Popover content={brickTreeEditor}>
-// 				<Link to={path}>{brickTree.current ? `Brick. ${props.type.brickType ?? 'any'}` : 'Empty'}</Link>
-// 			</Popover>
-// 		)}
-// 	</>);
-// };
-
-export const BrickTreeEditor = (props) => {
-	const [ownBrickLibrary, setOwnBrickLibrary] = useState();
+function BrickTypeSelector(props) {
 	const { brickLibrary } = useBrickLibrary();
 
-	const mapParams = (paramsArray) => {
-		let bricks = {};
-		paramsArray
-			.filter((entry) => entry.key !== '')
-			.map((entry) => paramFromMapEntry(entry))
-			.forEach((param) => {
-				let arg = argFromParam(param);
-				let argCode = arg.params[0].value;
-				insertTable(bricks, arg, arg.lib, `arg.${argCode}`);
-			});
-		return bricks;
-	};
+	if (!brickLibrary) return;
+
+	const onChange = (value) => {
+		props.onChange(value)
+	}
+	const options = brickLibrary.getTypes();
+
+	return <Select 
+		defaultValue={props.defaultValue} 
+		onChange={onChange} 
+		placeholder='Select brick type...' 
+		className='brick-type-selector'
+	>
+		{options.map(brickType => <Option key={brickType.code} value={brickType.code}>
+			<div className='brick-type-option'style={{ backgroundColor: brickType.color }}>{brickType.name}</div>
+		</Option>)}
+	</Select>
+}
+
+function ParamSignature(props) {
+	const [ param, setParam ] = useState(props.defaultValue ?? {})
+
+	const onParamChanged = (prop, value) => {
+		param[prop] = value;
+		if (!props.onChange) return;
+		props.onChange(param);
+	}
+
+	return <div style = {{ display: 'flex' }}>
+		Name: <Input 
+			onChange={event => onParamChanged('name', event.target.value)}
+			style={{ width: 200 }}
+			defaultValue={param.name}
+		/>
+		Type: <BrickTypeSelector
+			onChange={value => onParamChanged('type', value)}
+			defaultValue={param.type}
+		/>
+	</div>
+}
+
+function ArrayComponent(props) {
+
+	const [ items, setItems ] = useState(props.defaultValue ?? []);
+	const [ itemUuids, setItemUuids ] = useState(); 
 
 	useEffect(() => {
-		if (!brickLibrary) return;
-		let bricks = {};
+		setItemUuids(items.map(item => uuid()));
+	}, [ items ])
 
-		Object.entries(brickLibrary).forEach(([lib, libBricks]) =>
-			Object.entries(libBricks).forEach(([brickFunc, brick]) => insertTable(bricks, brick, lib, brickFunc))
-		);
+	const update = (items) => {
+		if (!props.onChange) return;
+		props.onChange(items);
+	}
 
-		if (props.brickParams) {
-			let paramsLibrary = mapParams(props.brickParams);
-			Object.entries(paramsLibrary).forEach(([lib, libBricks]) =>
-				Object.entries(libBricks).forEach(([brickFunc, brick]) => insertTable(bricks, brick, lib, brickFunc))
-			);
+	const onItemChanged = (uuid, value) => {
+		let index = itemUuids.find(item => item === uuid);
+		if (index < 0) return;
+		items[index] = value;
+		update(items)
+	}
+
+	const onItemRemoved = (uuid) => {
+		let index = itemUuids.find(item => item === uuid);
+		if (index < 0) return;
+		items.splice(index, 1);
+		itemUuids.splice(index, 1);
+		setItemUuids([...itemUuids])
+		update(items)
+	};
+
+	const onItemAdded = () => {
+		items.push({});
+		itemUuids.push(uuid());
+		setItemUuids([...itemUuids])
+		update(items);
+	};
+
+	if (!itemUuids) return;
+	return <div className={props.className} style={props.style}>
+		{itemUuids.map((uuid, index) => <div key={uuid}>
+			<Button onClick={() => onItemRemoved(uuid)}>-</Button>
+			<props.itemComponent 
+				defaultValue={items[index]}
+				onChange={(value) => onItemChanged(uuid, value)} 
+			/>
+		</div>)}
+		<Button onClick={() => onItemAdded()}>+</Button>
+	</div>
+}
+
+function ParamsSelector(props) {
+
+	const onChange = (value) => {
+		if (!props.onChange) return;
+		if (!value) {
+			props.onChange(value);
+			return;
 		}
-		setOwnBrickLibrary(bricks);
-	}, [brickLibrary, props.brickParams]);
+		props.onChange(value.filter(v => v.name && v.type));
+	}
 
-	if (!ownBrickLibrary) return <>Loading...</>;
-	return (
-		<ReactFlowProvider>
-			{!props.fullscreen && <div style={{ width: '100%', height: '100%', pointerEvents: 'none' }}>
-				<BrickEditor 
-					{...props}
-					brickLibrary={ownBrickLibrary}
-				/>
-			</div>}
-			{props.fullscreen && <BrickEditor 
-				{...props}
-				brickLibrary={ownBrickLibrary}
-			/>}
-		</ReactFlowProvider>
-	);
+	return <ArrayComponent 
+		className='brick-params-selector'
+		defaultValue={props.defaultValue}
+		itemComponent={ParamSignature}
+		onChange={onChange}
+	/>
+	// return <div className='brick-params-selector'>
+	// 	{Object.entries(data).map(([ uuid, param ]) => <div style={{ display: 'flex' }} key={uuid}>
+	// 		<Button onClick={() => removeElement(uuid)}>-</Button>
+	// 		<ParamSignature 
+	// 			onChange={(value) => onParamChanged(uuid, value)}
+	// 			defaultValue={param}
+	// 		/>
+	// 	</div>)}
+	// 	<Button onClick={addNewElement}>+</Button>
+	// </div>
+}
+
+export function ValueRender(props) {
+
+	const getBrickType = (nodes) => {
+		if (!nodes) return;
+		let rootNode = nodes.find(node => node.func === 'root');
+		if (!rootNode) return;
+		return rootNode.lib;
+	}
+
+	let defaultValue = props.defaultValue ?? {};
+	const [ nodes, setNodes ] = useState(defaultValue.nodes);
+	const [ params, setParams ] = useState(defaultValue.params);
+	const [ brickType, setBrickType ] = useState(props.type.brickType ?? getBrickType(nodes));
+
+	const [ brickLibrary, setBrickLibrary ] = useState();
+	const { content } = useContent();
+
+	const onChange = (nodes, params) => {
+		if (!props.onChange) return;
+		props.onChange({ nodes, params })
+	}
+
+	const onParamsChanged = useCallback((params) => {
+		setParams(params);
+		onChange(nodes, params)
+	}, [ nodes ])
+
+	const onNodesChanged = useCallback((nodes) => {
+		setNodes(nodes);
+		onChange(nodes, params)
+	}, [ params ]);
+
+	useEffect(() => {
+		if (!content) return;
+		let bl = new BrickLibrary();
+		bl.addCustomBricks(content);
+		setBrickLibrary(bl)
+	}, [ content ]);
+
+	if (!brickLibrary) return;
+
+	return <BrickLibraryProvider brickLibrary={brickLibrary} brickParams={params}>
+		{props.type.params && <ParamsSelector defaultValue={params} onChange={onParamsChanged}/>}
+		{!brickType && <BrickTypeSelector onChange={setBrickType}/>}
+		{brickType && <BrickTree
+			defaultValue={nodes}
+			onChange={onNodesChanged}
+			brickType={brickType}
+		/>}
+	</BrickLibraryProvider>
+}
+
+export const BrickTreeEditor = (props) => {
+
 };
 
 export const FilterRender = (props) => {

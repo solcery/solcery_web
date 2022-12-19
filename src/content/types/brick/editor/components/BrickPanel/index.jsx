@@ -1,22 +1,23 @@
-import React, { useState } from 'react';
-import { useBrickLibrary } from 'contexts/brickLibrary'
+import React, { useState, useEffect } from 'react';
+import { useBrickLibrary } from 'contexts/brickLibrary';
 import { Input } from 'antd'
 import { getBrickLibColor } from '../Brick';
 
 import './style.scss';
 
 const DraggableBrick = (props) => {
-  const { lib, func, name } = props.brick;
-  const { getBrickTypeStyle } = useBrickLibrary();
-  const onDragStart = (event, nodeType) => {
-    event.dataTransfer.setData('application/reactflow', JSON.stringify(nodeType));
+  const { lib, func, name, defaultParams } = props;
+  const { brickLibrary } = useBrickLibrary();
+
+  const onDragStart = (event) => {
+    event.dataTransfer.setData('application/reactflow', JSON.stringify({ lib, func, defaultParams }));
     event.dataTransfer.effectAllowed = 'move';
   };
 
   return <div 
     className='brick-dnd' 
-    style={getBrickTypeStyle(lib)}
-    onDragStart={(event) => onDragStart(event, { lib, func })} 
+    style={{ backgroundColor: brickLibrary.getTypeColor(lib) }}
+    onDragStart={(event) => onDragStart(event)} 
     draggable
   >
     {name}
@@ -24,29 +25,49 @@ const DraggableBrick = (props) => {
 }
 
 export const BrickPanel = () => {
-  const { brickLibrary } = useBrickLibrary();
-  const [ filter, setFilter ] = useState();
+  const { brickLibrary, brickParams } = useBrickLibrary();
 
-  if (!brickLibrary) return;
-  let bricks = [];
-  for (let [ lib, funcs ] of Object.entries(brickLibrary)) {
-    for (let [ func, brick ] of Object.entries(funcs)) {
-      if (brick.hidden) continue;
-      bricks.push({
-        lib,
-        func,
-        name: brick.name
-      })
+  const [ filter, setFilter ] = useState();
+  const [ options, setOptions ] = useState([]);
+
+  useEffect(() => {
+    if (!brickLibrary) return;
+    let newOptions = brickLibrary.getBricks()
+      .filter(brick => !brick.hidden)
+      .map(brick => ({
+        lib: brick.lib,
+        func: brick.func,
+        name: brick.name,
+      }));
+      
+    if (brickParams) {
+      for (let param of brickParams) {
+        newOptions.push({
+          lib: param.type,
+          func: 'arg',
+          name: `Arg [${param.name}]`,
+          defaultParams: {
+            name: param.name,
+          }
+        })
+      }
     }
-  }
-  if (filter) {
-    bricks = bricks.filter(b => b.name.toLowerCase().includes(filter.toLowerCase()));
-  }
+
+    if (filter) {
+      newOptions = newOptions.filter(b => b.name.toLowerCase().includes(filter.toLowerCase()));
+    }
+    setOptions(newOptions);
+  }, [ brickLibrary, brickParams, filter ])
+
+
   return (
     <div className='brick-panel'>
       <Input allowClear placeholder='Filter...' onChange={event => setFilter(event.target.value)}/>
       <div className='brick-list'>
-        {bricks.map((brick, index) => <DraggableBrick key={index} brick={brick}/>)}
+        {options.map((option, index) => <DraggableBrick 
+          key={index} 
+          {...option}
+        />)}
       </div>
     </div>
   );

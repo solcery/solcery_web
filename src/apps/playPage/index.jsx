@@ -1,14 +1,13 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Game } from '../../game';
+import { Game } from 'game';
 import Unity, { UnityContext } from 'react-unity-webgl';
-import { useBrickLibrary } from '../../contexts/brickLibrary';
-import { build } from '../../content';
-import { useUser } from '../../contexts/user';
-import { useProject } from '../../contexts/project';
+import { build } from 'content';
+import { useUser } from 'contexts/user';
+import { useProject } from 'contexts/project';
 import { GameClient } from 'solcery_react_unity';
-import { notif } from '../../components/notification';
-import { useApi } from '../../contexts/api';
+import { notif } from 'components/notification';
+import { useApi } from 'contexts/api';
 import { Switch } from 'antd';
 
 import './style.scss';

@@ -2,7 +2,6 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Game } from '../../game';
 import Unity, { UnityContext } from 'react-unity-webgl';
-import { useBrickLibrary } from '../../contexts/brickLibrary';
 import { build } from '../../content';
 import { useUser } from '../../contexts/user';
 import { useProject } from '../../contexts/project';

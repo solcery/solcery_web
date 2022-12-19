@@ -1,12 +1,14 @@
 import { useBrickLibrary } from 'contexts/brickLibrary';
+import { useBrick } from '../../contexts/brick';
 import { Handle, useReactFlow } from 'reactflow';
 
 import './style.scss';
 
 export const BrickHandle = (props) => {
-	let { param, index, brick, uuid } = props;
+	let { param, index, uuid } = props;
+	const { brick } = useBrick();
 	const reactFlowInstance = useReactFlow();
-	const { brickLibrary, getBrickTypeStyle } = useBrickLibrary();
+	const { brickLibrary } = useBrickLibrary();
 	const isOutput = !param;
 
 	const onConnect = (connection) => {
@@ -26,7 +28,7 @@ export const BrickHandle = (props) => {
 		if (connection.target === connection.source) return;
 		let targetBrick = reactFlowInstance.getNode(connection.target).data;
 		let sourceBrick = reactFlowInstance.getNode(connection.source).data;
-		let sourceSignature = brickLibrary[sourceBrick.lib][sourceBrick.func];
+		let sourceSignature = brickLibrary.getBrick(sourceBrick.lib, sourceBrick.func);
 
 		let [ paramCode, index ] = connection.sourceHandle.split('.');
 
@@ -53,9 +55,9 @@ export const BrickHandle = (props) => {
 		type={isOutput ? 'target': 'source'}
 		position={isOutput ? 'right' : 'left'}
 		onConnect={onConnect}
-		style={getBrickTypeStyle(type)}
+		style={{ backgroundColor: brickLibrary.getTypeColor(type) }}
 		isValidConnection={isValidConnection}
-		isConnectable
+		isConnectable={!props.locked}
 		className={`brick-handle ${isOutput ? 'output' : 'input'}`}
 	/>
 }

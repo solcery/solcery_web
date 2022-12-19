@@ -1,0 +1,38 @@
+.brick-param-inline {
+	padding-left: 10px;
+	padding-right: 10px;
+
+	.param-value {
+		pointer-events: all;
+	}
+
+	.param-name {
+		margin-left: 10px;
+		color: #bbb;
+		font-size: 14px;
+		font-style: italic;
+		pointer-events: none;
+	}
+}
+
+.brick-param-brick {
+	pointer-events: all;
+	position: relative;
+	height: 30px;
+	text-align: left;
+	padding-left: 6px;
+	line-height: 30px;
+
+	.param-name {
+		pointer-events: none;
+		position: absolute;
+	}
+
+	.delete-button {
+		width: 10px;
+		pointer-events: all;
+		right: 0px;
+		position: absolute;
+		display: inline;
+	}
+}

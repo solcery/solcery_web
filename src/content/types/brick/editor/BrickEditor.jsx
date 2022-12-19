@@ -11,7 +11,7 @@ import ReactFlow, {
 } from 'reactflow';
 import { Brick, BrickPanel } from './components';
 import { Button } from 'antd'
-import { buildElements } from './utils';
+import { buildElements, createBrick } from './utils';
 import { useBrickLibrary } from 'contexts/brickLibrary';
 import { getLayoutedElements } from './layout';
 import { useHotkeyContext } from 'contexts/hotkey';
@@ -23,22 +23,6 @@ const multiSelectionKeys = ['Meta', 'Control']
 
 const nodeTypes = { 
 	brick: Brick,
-};
-
-const createBrick = (id, signature, position) => {
-	return {
-		id: `${id}`,
-		type: 'brick',
-		deletable: signature.func !== 'root',
-		position: position ?? { x: 0, y: 0 },
-		dragHandle: '.brick-bg',
-		data: {
-			id,
-			lib: signature.lib, 
-			func: signature.func,
-			params: {}
-		},
-	}
 };
 
 const getNextNodeId = (nodes) => Math.max(0, ...nodes.map(node => parseInt(node.id))) + 1;
@@ -88,14 +72,14 @@ export const BrickEditor = (props) => {
 		const reactFlowBounds = brickEditorRef.current.getBoundingClientRect();
 		const jsonBrick = event.dataTransfer.getData('application/reactflow');
 		if (typeof jsonBrick === 'undefined' || !jsonBrick) return;
-		let brickSignature = JSON.parse(jsonBrick);
+		let { lib, func, defaultParams } = JSON.parse(jsonBrick);
 		const position = reactFlowInstance.project({
 			x: event.clientX - reactFlowBounds.left,
 			y: event.clientY - reactFlowBounds.top,
 		});
 		setNodes(nds => {
 			let id = getNextNodeId(nds);
-			let brick = createBrick(id, brickSignature, position);
+			let brick = createBrick(id, { lib, func }, position, defaultParams);
 			return nds.concat(brick);
 		})
 	}, [ reactFlowInstance ]);
@@ -126,7 +110,6 @@ export const BrickEditor = (props) => {
 	}
 
 	const saveChanges = useCallback(() => {
-		console.log('save')
 		let bricks = {};
 		for (let node of nodes) {
 			let brick = {
@@ -137,7 +120,9 @@ export const BrickEditor = (props) => {
 			}
 			bricks[node.id] = brick;
 			brick.position = node.position;
-			let params = brickLibrary[brick.lib][brick.func].params;
+			let brickSignature = brickLibrary.getBrick(brick.lib, brick.func);
+			if (!brickSignature) continue;
+			let params = brickSignature.params;
 			for (let param of params) {
 				if (param.type.brickType) { //Brick
 					let edge = edges.find(e => e.id === `${brick.id}.${param.code}`)
@@ -147,10 +132,8 @@ export const BrickEditor = (props) => {
 				} else if (param.type.valueType && param.type.valueType.brickType) { // Array of bricks
 					brick.params[param.code] = [];
 					for (let paramUuid of node.data.params[param.code]) {
-						console.log(paramUuid)
 						let edge = edges.find(e => e.id === `${brick.id}.${param.code}.${paramUuid}`)
 						if (edge) {
-							console.log('EDGE!')
 							brick.params[param.code].push({ brickId: parseInt(edge.target) });
 						}
 					}
@@ -159,7 +142,6 @@ export const BrickEditor = (props) => {
 				}
 			}
 		}
-		console.log(Object.values(bricks))
 		props.onSave(Object.values(bricks));
 	}, [ nodes, edges, props.onSave ]);
 

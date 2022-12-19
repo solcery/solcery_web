@@ -1,46 +1,27 @@
 import React, { useContext, useEffect, useState, useCallback } from 'react';
-import { BrickLibrary } from '../content/brickLib/brickLibrary';
-import { useProject } from './project';
-
-const brickTypeColors = {
-	default: '#261f1c',
-	action: '#6D8BAC',
-	condition: '#e8b463',
-	value: '#788C7F',
-	jsonKeyPair: '#6272a4',
-	jsonToken: '#bd93f9',
-}
-
-function getBrickTypeStyle(brickType) {
-	let backgroundColor = brickTypeColors.default;
-	if (brickType && brickTypeColors[brickType]) {
-		backgroundColor = brickTypeColors[brickType];
-	}
-	return { backgroundColor };
-}
+import { BrickLibrary } from 'content/brickLib/brickLibrary';
 
 const BrickLibraryContext = React.createContext(undefined);
 
-export function BrickLibraryProvider(props) {
-	const { engine } = useProject();
-	const [brickLibrary, setBrickLibrary] = useState(undefined);
-
-	const load = useCallback(async () => {
-		let content = await engine.getContent({ objects: true, templates: true });
-		let bl = new BrickLibrary(content);
-		setBrickLibrary(bl.bricks);
-	}, [ engine ]);
+export function BrickLibraryProvider(props) { // TODO
+	const [ brickLibrary, setBrickLibrary ] = useState();
+	const [ brickParams, setBrickParams ] = useState();
 
 	useEffect(() => {
-		load();
-	}, [load]);
+		setBrickLibrary(props.brickLibrary)
+	}, [ props.brickLibrary ])
 
-	return <BrickLibraryContext.Provider value={{ getBrickTypeStyle, brickLibrary, load }}>
+	useEffect(() => {
+		setBrickParams(props.brickParams)
+	}, [ props.brickParams ])
+
+	return <BrickLibraryContext.Provider value={{ brickLibrary, brickParams }}>
 		{props.children}
-	</BrickLibraryContext.Provider>;
+	</BrickLibraryContext.Provider>
 }
 
 export function useBrickLibrary() {
-	const { brickLibrary, load, getBrickTypeStyle } = useContext(BrickLibraryContext);
-	return { brickLibrary, load, getBrickTypeStyle };
+	const { brickLibrary, brickParams } = useContext(BrickLibraryContext);
+	return { brickLibrary, brickParams };
 }
+ 

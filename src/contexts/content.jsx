@@ -8,7 +8,7 @@ export function ContentProvider(props) {
 	const { engine } = useProject();
 	let [ cachedContent, setCachedContent ] = useState();
 	let contentHash = useRef(undefined);
-	let contentUpdating = useRef(false)
+	let contentUpdating = useRef(false);
 
 	useEffect(() => {
 		if (!engine) return;

@@ -1,28 +1,59 @@
-import { insertTable } from '../../utils';
+import { insertTable } from 'utils';
 import { contexts } from 'solcery_brick_runtime';
 import { SType } from '../types';
 
-export const paramFromMapEntry = (entry) => {
-	let value = entry.value;
-	let type;
-	if (value === 'condition' || value === 'action' || value === 'value' || value === 'jsonToken') {
-		type = SType.from(`SBrick<${value}>`);
-	} else {
-		type = SType.from(value);
-	}
-	return {
-		code: entry.key,
-		name: entry.key,
-		type,
-	};
-};
-
+const brickTypes = [
+	{
+		code: 'action',
+		name: 'Action',
+		color: '#6D8BAC',
+	},
+	{
+		code: 'condition',
+		name: 'Condition',
+		color: '#e8b463',
+	},
+	{
+		code: 'value',
+		name: 'Value',
+		color: '#788C7F',
+	},
+	{
+		code: 'jsonKeyPair',
+		name: 'JSON KeyPair',
+		color: '#6272a4',
+	},
+	{
+		code: 'jsonToken',
+		name: 'JSON Token',
+		color: '#bd93f9',
+	},
+]
 
 export class BrickLibrary {
-	bricks = {};
-	brickTypes = {};
+	bricks = [];
+
+	constructor(src) {
+		if (src) {
+			for (let brick of src) {
+				this.addBrick(brick);
+			}
+			return;
+		}
+		for (let [ contextName, context ] of Object.entries(contexts)) {
+			for (let [ lib, funcs ] of Object.entries(context.bricks)) {
+				for (let [ func, brick ] of Object.entries(funcs)) {
+					brick.lib = lib;
+					brick.func = func;
+					this.addBrick(brick)
+				}
+			}
+		}
+
+	}
 
 	addBrick(brickSignature) {
+		if (this.getBrick(brickSignature.lib, brickSignature.func)) return;
 		let brick = Object.assign({}, brickSignature);
 		brick.params = brickSignature.params.map((param) => {
 			let newParam = Object.assign({}, param);
@@ -35,39 +66,64 @@ export class BrickLibrary {
 			}
 			return newParam;
 		});
-		insertTable(this.bricks, brick, brick.lib, brick.func);
+		this.bricks.push(brick)
 	}
 
-	constructor(content) {
-		for (let [ contextName, context ] of Object.entries(contexts)) {
-			for (let [ lib, funcs ] of Object.entries(context.bricks)) {
-				for (let [ func, brick ] of Object.entries(funcs)) {
-					brick.lib = lib;
-					brick.func = func;
-					this.addBrick(brick)
-				}
-			}
-		}
-		if (!content || !content.objects) return;
+	addCustomBricks(content) {
 		let customBricksObjects = content.objects
 			.filter((obj) => obj.template === 'customBricks')
 			.filter((obj) => obj.fields.enabled)
-			.filter((obj) => obj.fields.brick && obj.fields.brick.brickTree);
+			.filter((obj) => obj.fields.brick && obj.fields.brick.nodes);
 		for (let obj of customBricksObjects) {
-			let params = [];
-			if (obj.fields.brick.brickParams) {
-				params = obj.fields.brick.brickParams.map((entry) => paramFromMapEntry(entry));
+			let brick = obj.fields.brick;
+			if (brick.params) {
+				var params = brick.params.map(({ type, name }) => ({
+					name,
+					code: name,
+					type: SType.from(`SBrick<${type}>`),
+				}));
 			}
-			let brick = {
+			let rootNode = brick.nodes.find(node => node.func === 'root');
+			if (!rootNode) continue;
+			let res = {
 				name: obj.fields.name,
 				params,
-				lib: obj.fields.brick.brickTree.lib,
+				lib: rootNode.lib,
 				func: `custom.${obj._id}`,
 			}
 			if (obj.fields.hidden) {
-				brick.hidden = true;
+				res.hidden = true;
 			}
-			this.addBrick(brick)
+			this.addBrick(res)
 		}
 	}
+
+	getBrick(lib, func) {
+		return this.bricks.find(b => b.lib === lib && b.func === func);
+	}
+
+	getBricks() {
+		return [...this.bricks];
+	}
+
+	getType(lib) {
+		return brickTypes.find(bt => bt.code === lib);
+	}
+
+	getTypeColor(lib) {
+		if (!lib || lib === 'error') return 'red';
+		let bt = brickTypes.find(bt => bt.code === lib);
+		return bt ? bt.color : 'red';
+	}
+
+	getTypes() {
+		return brickTypes;
+	}
+
+	expand(bricks) {
+		for (let brick of bricks) {
+			this.addBrick(brick);
+		}
+	}
+
 }

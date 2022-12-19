@@ -9,7 +9,6 @@ export const ValueRender = (props) => {
 	const [revision, setRevision] = useState(0);
 
 	const onChange = (newValue, index) => {
-		console.log('onChange', newValue, index)
 		value[index] = newValue;
 		if (!props.onChange) return;
 		var res = value.filter((entry) => value);

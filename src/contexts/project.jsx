@@ -1,6 +1,5 @@
 import React, { useContext, useEffect, useState, useCallback } from 'react';
 import { useParams, Outlet } from 'react-router-dom';
-import { BrickLibraryProvider } from './brickLibrary';
 import { ContentProvider } from './content';
 import { UserProvider } from './user';
 import { AuthProvider } from './auth';
@@ -31,9 +30,7 @@ export function ProjectProvider(props) {
 		<ProjectContext.Provider value={{ projectId, engine }}>
 			<UserProvider>
 				<ContentProvider>
-					<BrickLibraryProvider>
-						<Outlet />
-					</BrickLibraryProvider>
+					<Outlet />
 				</ContentProvider>
 			</UserProvider>
 		</ProjectContext.Provider>
