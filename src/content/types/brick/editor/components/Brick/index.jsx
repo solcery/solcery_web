@@ -1,16 +1,15 @@
 import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { Handle, useReactFlow, useUpdateNodeInternals } from 'reactflow';
 import { Tooltip, Button, Input } from 'antd';
-import { useBrickLibrary } from 'contexts/brickLibrary';
+import { useBrickEditor } from 'contexts/brickLibrary';
 import { Header, Params, BrickHandle } from './components'
 const { TextArea } = Input;
-import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import { BrickProvider, useBrick } from './contexts/brick';
 
 import './style.scss';
 
 export function Brick(props) {
-	const { brickLibrary } = useBrickLibrary();
+	const { brickLibrary } = useBrickEditor();
 	const [ brick, setBrick ] = useState(props.data);
 	const signature = useMemo(() => brickLibrary.getBrick(brick.lib, brick.func), [ brickLibrary, brick ]);
 
@@ -32,7 +31,7 @@ export function Brick(props) {
 
 function Body(props) {
 	const { brick } = useBrick();
-	const { brickLibrary} = useBrickLibrary();
+	const { brickLibrary} = useBrickEditor();
 
 	let backgroundColor = props.color ?? brickLibrary.getTypeColor(brick.lib);
 
@@ -91,7 +90,7 @@ function RootBody() {
 
 function ArgBody() {
 	const { brick } = useBrick();
-	const { brickParams } = useBrickLibrary();
+	const { brickParams } = useBrickEditor();
 
 	let argName = brick.params.name;
 	if (!brickParams || !brickParams.find(param => param.name === argName)) {

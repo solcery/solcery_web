@@ -1,27 +1,19 @@
-import React, { useContext, useEffect, useState, useCallback } from 'react';
+import React, { useContext } from 'react';
 import { BrickLibrary } from 'content/brickLib/brickLibrary';
 
-const BrickLibraryContext = React.createContext(undefined);
+const BrickEditorContext = React.createContext(undefined);
 
-export function BrickLibraryProvider(props) { // TODO
-	const [ brickLibrary, setBrickLibrary ] = useState();
-	const [ brickParams, setBrickParams ] = useState();
+export function BrickEditorProvider(props) { // TODO
 
-	useEffect(() => {
-		setBrickLibrary(props.brickLibrary)
-	}, [ props.brickLibrary ])
-
-	useEffect(() => {
-		setBrickParams(props.brickParams)
-	}, [ props.brickParams ])
-
-	return <BrickLibraryContext.Provider value={{ brickLibrary, brickParams }}>
+	const { brickParams, brickLibrary, readonly } = props;
+	
+	return <BrickEditorContext.Provider value={{ brickParams, brickLibrary, readonly }}>
 		{props.children}
-	</BrickLibraryContext.Provider>
+	</BrickEditorContext.Provider>
 }
 
-export function useBrickLibrary() {
-	const { brickLibrary, brickParams } = useContext(BrickLibraryContext);
-	return { brickLibrary, brickParams };
+export function useBrickEditor() {
+	const { brickParams, brickLibrary, readonly } = useContext(BrickEditorContext);
+	return { brickParams, brickLibrary, readonly };
 }
  

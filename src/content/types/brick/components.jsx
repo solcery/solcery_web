@@ -1,16 +1,11 @@
 import { BrickEditor } from './editor/BrickEditor';
 import { ReactFlowProvider } from 'react-flow-renderer';
-import { useNavigate, useParams, Link } from 'react-router-dom';
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { BrickLibrary } from '../../brickLib/brickLibrary';
-import { Button, Select, Popover, Input } from 'antd';
-import { SType } from '../index';
-import { insertTable } from '../../../utils';
-import { BrickLibraryProvider, useBrickLibrary } from 'contexts/brickLibrary';
-import { BrickParamsProvider } from 'contexts/brickParams';
+import { Button, Select, Input } from 'antd';
+import { BrickEditorProvider, useBrickEditor } from 'contexts/brickLibrary';
 import { useContent } from 'contexts/content';
-import { useUser } from 'contexts/user';
-import { v4 as uuid } from 'uuid';
+import { ArrayComponent } from 'components/ArrayComponent';
 
 import './style.scss';
 
@@ -60,7 +55,7 @@ function BrickTree(props) {
 }
 
 function BrickTypeSelector(props) {
-	const { brickLibrary } = useBrickLibrary();
+	const { brickLibrary } = useBrickEditor();
 
 	if (!brickLibrary) return;
 
@@ -83,11 +78,19 @@ function BrickTypeSelector(props) {
 
 function ParamSignature(props) {
 	const [ param, setParam ] = useState(props.defaultValue ?? {})
+	const { brickLibrary } = useBrickEditor();
 
 	const onParamChanged = (prop, value) => {
 		param[prop] = value;
 		if (!props.onChange) return;
 		props.onChange(param);
+	}
+
+	if (!props.onChange) {
+		let backgroundColor = brickLibrary.getTypeColor(param.type);
+		return <div className='brick-type-option'style={{ backgroundColor }}>
+			{param.name}
+		</div>
 	}
 
 	return <div style = {{ display: 'flex' }}>
@@ -103,65 +106,17 @@ function ParamSignature(props) {
 	</div>
 }
 
-function ArrayComponent(props) {
-
-	const [ items, setItems ] = useState(props.defaultValue ?? []);
-	const [ itemUuids, setItemUuids ] = useState(); 
-
-	useEffect(() => {
-		setItemUuids(items.map(item => uuid()));
-	}, [ items ])
-
-	const update = (items) => {
-		if (!props.onChange) return;
-		props.onChange(items);
-	}
-
-	const onItemChanged = (uuid, value) => {
-		let index = itemUuids.find(item => item === uuid);
-		if (index < 0) return;
-		items[index] = value;
-		update(items)
-	}
-
-	const onItemRemoved = (uuid) => {
-		let index = itemUuids.find(item => item === uuid);
-		if (index < 0) return;
-		items.splice(index, 1);
-		itemUuids.splice(index, 1);
-		setItemUuids([...itemUuids])
-		update(items)
-	};
-
-	const onItemAdded = () => {
-		items.push({});
-		itemUuids.push(uuid());
-		setItemUuids([...itemUuids])
-		update(items);
-	};
-
-	if (!itemUuids) return;
-	return <div className={props.className} style={props.style}>
-		{itemUuids.map((uuid, index) => <div key={uuid}>
-			<Button onClick={() => onItemRemoved(uuid)}>-</Button>
-			<props.itemComponent 
-				defaultValue={items[index]}
-				onChange={(value) => onItemChanged(uuid, value)} 
-			/>
-		</div>)}
-		<Button onClick={() => onItemAdded()}>+</Button>
-	</div>
-}
-
 function ParamsSelector(props) {
 
-	const onChange = (value) => {
-		if (!props.onChange) return;
-		if (!value) {
-			props.onChange(value);
-			return;
+	if (props.onChange) {
+		var onChange = (value) => {
+			if (!props.onChange) return;
+			if (!value) {
+				props.onChange(value);
+				return;
+			}
+			props.onChange(value.filter(v => v.name && v.type));
 		}
-		props.onChange(value.filter(v => v.name && v.type));
 	}
 
 	return <ArrayComponent 
@@ -170,16 +125,6 @@ function ParamsSelector(props) {
 		itemComponent={ParamSignature}
 		onChange={onChange}
 	/>
-	// return <div className='brick-params-selector'>
-	// 	{Object.entries(data).map(([ uuid, param ]) => <div style={{ display: 'flex' }} key={uuid}>
-	// 		<Button onClick={() => removeElement(uuid)}>-</Button>
-	// 		<ParamSignature 
-	// 			onChange={(value) => onParamChanged(uuid, value)}
-	// 			defaultValue={param}
-	// 		/>
-	// 	</div>)}
-	// 	<Button onClick={addNewElement}>+</Button>
-	// </div>
 }
 
 export function ValueRender(props) {
@@ -222,16 +167,22 @@ export function ValueRender(props) {
 	}, [ content ]);
 
 	if (!brickLibrary) return;
-
-	return <BrickLibraryProvider brickLibrary={brickLibrary} brickParams={params}>
-		{props.type.params && <ParamsSelector defaultValue={params} onChange={onParamsChanged}/>}
+	return <BrickEditorProvider 
+		brickLibrary={brickLibrary} 
+		brickParams={params}
+		readonly={!props.onChange}
+	>
+		{props.type.params && <ParamsSelector 
+			defaultValue={params} 
+			onChange={props.onChange ? onParamsChanged : undefined}
+		/>}
 		{!brickType && <BrickTypeSelector onChange={setBrickType}/>}
 		{brickType && <BrickTree
 			defaultValue={nodes}
-			onChange={onNodesChanged}
+			onChange={props.onChange ? onNodesChanged : undefined}
 			brickType={brickType}
 		/>}
-	</BrickLibraryProvider>
+	</BrickEditorProvider>
 }
 
 export const BrickTreeEditor = (props) => {

@@ -1,4 +1,4 @@
-import { useBrickLibrary } from 'contexts/brickLibrary';
+import { useBrickEditor } from 'contexts/brickLibrary';
 import { useBrick } from '../../contexts/brick';
 import { Handle, useReactFlow } from 'reactflow';
 
@@ -8,7 +8,7 @@ export const BrickHandle = (props) => {
 	let { param, index, uuid } = props;
 	const { brick } = useBrick();
 	const reactFlowInstance = useReactFlow();
-	const { brickLibrary } = useBrickLibrary();
+	const { brickLibrary } = useBrickEditor();
 	const isOutput = !param;
 
 	const onConnect = (connection) => {

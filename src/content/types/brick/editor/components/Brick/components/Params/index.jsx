@@ -94,7 +94,6 @@ function Param(props) {
 
 export function Params() {
 	const { signature, brick } = useBrick();
-	console.log('params', signature)
 	if (!signature) return;
 	return <>
 		{signature.params.map((param, index) => <Param 

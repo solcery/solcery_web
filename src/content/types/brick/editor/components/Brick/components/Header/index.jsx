@@ -2,6 +2,7 @@ import { CloseOutlined } from '@ant-design/icons';
 import { useReactFlow } from 'reactflow';
 import { Tooltip, Button } from 'antd';
 import { useBrick } from '../../contexts/brick';
+import { useBrickEditor } from 'contexts/brickLibrary';
 
 import './style.scss';
 
@@ -18,6 +19,7 @@ function BrickTitle(props) {
 
 export function Header({ title }) {
 	const { brick } = useBrick();
+	const { readonly } = useBrickEditor();
 	const reactFlowInstance = useReactFlow();
 
 	const removeBrick = () => {
@@ -27,7 +29,7 @@ export function Header({ title }) {
 
 	return <div className='brick-header'>
 		<BrickTitle title={title}/>
-		{brick.func !== 'root' && <Button size='small' className='remove-button' onClick={removeBrick}>
+		{!readonly && brick.func !== 'root' && <Button size='small' className='remove-button' onClick={removeBrick}>
 			<CloseOutlined/>
 		</Button>}
 	</div>

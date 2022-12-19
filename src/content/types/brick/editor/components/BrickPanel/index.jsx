@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useBrickLibrary } from 'contexts/brickLibrary';
+import { useBrickEditor } from 'contexts/brickLibrary';
 import { Input } from 'antd'
 import { getBrickLibColor } from '../Brick';
 
@@ -7,7 +7,7 @@ import './style.scss';
 
 const DraggableBrick = (props) => {
   const { lib, func, name, defaultParams } = props;
-  const { brickLibrary } = useBrickLibrary();
+  const { brickLibrary } = useBrickEditor();
 
   const onDragStart = (event) => {
     event.dataTransfer.setData('application/reactflow', JSON.stringify({ lib, func, defaultParams }));
@@ -25,7 +25,7 @@ const DraggableBrick = (props) => {
 }
 
 export const BrickPanel = () => {
-  const { brickLibrary, brickParams } = useBrickLibrary();
+  const { brickLibrary, brickParams } = useBrickEditor();
 
   const [ filter, setFilter ] = useState();
   const [ options, setOptions ] = useState([]);
