@@ -151,7 +151,7 @@ export function convertToNewFormat(src) {
 		}
 		nodes.push(extracted);
 		for (let [ paramCode, value] of Object.entries(brick.params)) {
-			if (!value) continue;
+			if (value === undefined || value === null) continue;
 			if (value.lib) {
 				extracted.params[paramCode] = {
 					brickId: extractBrick(value).id,
