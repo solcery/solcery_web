@@ -23,10 +23,13 @@ export const execute = async (func, extra) => {
 };
 
 export const validate = ({ content }) => {
+	return { status: true }; // TODO
+	let bickLibrary = new BrickLibrary();
+	brickLibrary.addCustomBricks(content);
 	let meta = {
 		errors: [],
 		status: true,
-		brickLibrary: new BrickLibrary(content).bricks,
+		brickLibrary,
 		content,
 	};
 	let templates = content.templates.map((template) => new Template(template));
@@ -61,10 +64,12 @@ export const build = ({ targets, content }) => {
 	if (!validationResult.status) {
 		return validationResult;
 	}
+	let brickLibrary = new BrickLibrary();
+	brickLibrary.addCustomBricks(content);
 	let meta = {
 		intIds: {},
 		objectCodes: {},
-		brickLibrary: new BrickLibrary(content).bricks,
+		brickLibrary,
 
 		addIntId: function (objectId) {
 			let intId = Object.keys(this.intIds).length + 1;

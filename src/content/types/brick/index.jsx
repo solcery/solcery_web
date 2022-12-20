@@ -31,6 +31,7 @@ export class SBrick {
 	}
 
 	validate = (value, meta) => {
+		return true; // TODO
 		if (value === undefined) return;
 		let v = value;
 		if (v.brickParams) v = v.brickTree;
@@ -62,59 +63,56 @@ export class SBrick {
 	};
 
 	construct = (value, meta) => {
-		if (value === undefined) return; //TODO: Общий обходчик бриков на констракт и validate
-		let v = value;
-		if (v.brickParams) v = v.brickTree;
-		if (!v) return undefined;
-		let brickSignature = meta.brickLibrary[v.lib][v.func];
-		if (!brickSignature)
+		if (!meta.nodes) {
+			if (!value) return;
+			if (!value.nodes) return;
+			meta.nodes = value.nodes;
+			let rootNode = value.nodes.find(node => node.func === 'root');
+			if (!rootNode) return;
+			let res = this.construct(rootNode.params.value, meta);
+			meta.nodes = undefined;
+			return res;
+		}
+		if (!value) return;
+
+		let { brickId } = value;
+		let brick = meta.nodes.find(node => node.id === brickId);
+		if (!brick) return;
+
+		let brickSignature = meta.brickLibrary.getBrick(brick.lib, brick.func);
+		if (!brickSignature) {
 			throw new Error(
 				`Error constructing object [${meta.object._id}]! Brick [${v.lib}.${v.func}] - no signature found!`
 			);
-		let result = {
-			name: brickSignature.name,
-		};
-		let params = [];
-		for (let paramSig of brickSignature.params) {
-			let param = v.params[paramSig.code];
-			if (param === undefined) {
-				throw new Error(
-					`Error constructing object [${meta.object._id}]! Brick [${v.lib}.${v.func}] - no param 'paramSig.code' found!`
-				);
-			}
-			params.push({
-				name: paramSig.code,
-				value: paramSig.type.construct(param, meta),
-			});
 		}
+		let params = {};
+		for (let param of brickSignature.params) {
+			let value = brick.params[param.code];
+			params[param.code] = param.type.construct(value, meta);
+		}
+
+		var res = {}
 		if (meta.target.format === 'unity') {
-			let func = brickSignature.func;
-			if (func.includes('custom')) {
-				let typeByName = { action: 0, condition: 1, value: 2, jsonKeyPair: 4, jsonToken: 5 };
-				result.subtype = 10000 + meta.getIntId(func.split('.')[1]);
-				result.type = typeByName[brickSignature.lib];
+			res.type = unityCodes[brickSignature.lib]._type;
+			res.params = [];
+			if (brickSignature.func.includes('custom')) {
+				res.subtype = 10000 + meta.getIntId(brickSignature.func.split('.')[1]);
 			} else {
-				console.log(brickSignature)
-				let unityCode = unityCodes[brickSignature.lib][brickSignature.func];
-				result.type = unityCode.type;
-				result.subtype = unityCode.subtype;
+				res.subtype = unityCodes[brickSignature.lib][brickSignature.func];
 			}
-			result.params = params;
+			for (let [ name, value ] of Object.entries(params)) {
+				res.params.push({ name, value });
+			}
 		}
 		if (meta.target.format === 'web') {
-			result.lib = brickSignature.lib;
-			result.func = brickSignature.func;
-			let func = brickSignature.func;
-			if (func.includes('custom')) {
-				result.func = 'custom.' + meta.getIntId(func.split('.')[1]);
+			res.lib = brickSignature.lib;
+			res.func = brickSignature.func;
+			if (res.func.includes('custom')) {
+				res.func = 'custom.' + meta.getIntId(res.func.split('.')[1]);
 			}
-			let newParams = {};
-			for (let param of params) {
-				newParams[param.name] = param.value;
-			}
-			result.params = newParams;
+			res.params = params;
 		}
-		return result;
+		return res;
 	};
 	valueRender = ValueRender;
 	default = () => null;

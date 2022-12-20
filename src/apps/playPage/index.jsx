@@ -49,6 +49,7 @@ export default function PlayPage() {
 				notif.error('Error', 'Content is not valid');
 				navigate('../validator');
 			}
+			console.log(construction.constructed)
 			construction.constructed.unity = construction.constructed.unity_local;
 			setContent(construction.constructed);
 		});
