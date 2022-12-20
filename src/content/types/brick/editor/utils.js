@@ -1,35 +1,5 @@
 import { v4 as uuid } from 'uuid';
 
-export function convertToNewFormat(src) {
-	let maxId = 0;
-	let nodes = [];
-
-	const extractBrick = (brick) => {
-		let extracted = {
-			id: ++maxId,
-			lib: brick.lib,
-			func: brick.func,
-			params: {}
-		}
-		nodes.push(extracted);
-		for (let [ paramCode, value] of Object.entries(brick.params)) {
-			if (!value) continue;
-			if (value.lib) {
-				extracted.params[paramCode] = {
-					brickId: extractBrick(value).id,
-				}
-				continue;
-			}
-			extracted.params[paramCode] = value;
-		}		
-		return extracted;
-	}
-	if (src) {
-		extractBrick(src);
-	}
-	return nodes;
-}
-
 export function createBrick(id, signature, position = { x: 0, y: 0}, params = {}) {
 	return {
 		id: `${id}`,

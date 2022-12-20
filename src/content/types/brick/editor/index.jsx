@@ -15,7 +15,6 @@ import { buildElements, createBrick } from './utils';
 import { useBrickLibrary } from 'contexts/brickLibrary';
 import { getLayoutedElements } from './layout';
 import { useHotkeyContext } from 'contexts/hotkey';
-import dagre from 'dagre';
 
 import 'reactflow/dist/style.css';
 
@@ -40,7 +39,7 @@ export const BrickEditor = (props) => {
 	const [ reactFlowInstance, setReactFlowInstance ] = useState();
 
 	const layout = () => {
-		let layouted = getLayoutedElements(nodes, edges, 'RL');
+		let layouted = getLayoutedElements(nodes, edges, 'RL', brickLibrary);
 		fitRequired.current = true;
 		setNodes(layouted.nodes);
 	}

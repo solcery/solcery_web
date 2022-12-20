@@ -1,5 +1,5 @@
 import { BrickEditor } from './editor';
-import { ParamsSelector } from './params';
+import { ParamsSelector, BrickTypeSelector } from './params';
 import { ReactFlowProvider } from 'react-flow-renderer';
 import { useState, useEffect, useCallback } from 'react';
 import { BrickLibrary } from '../../brickLib/brickLibrary';

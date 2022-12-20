@@ -5,7 +5,7 @@
 	background-color: rgba(0, 0, 0, 0.2);
 	border-radius: 5px 5px 0 0;
 	width: 100%;
-	min-height: 1.5rem;
+	height: 30px;
 	top: 0;
 	left: 0;
 	right: 0;
@@ -17,11 +17,14 @@
 		top: 0rem;
 		border-radius: 5px;
 	}
-}
 
-.brick-name {
-	text-align: center;
-	margin-left: 3rem;
-	margin-right: 3rem;
-	font-size: 0.9rem;
+	.brick-name {
+		// background-color: green;
+		text-align: center;
+		padding: 3px 35px;
+		height: 30px;
+		font-size: 15px;
+		line-height: 24px;
+		width: 100%;
+	}
 }

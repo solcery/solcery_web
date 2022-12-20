@@ -1,11 +1,11 @@
 import dagre from 'dagre';
 import { getRectOfNodes } from 'reactflow';
 
-const dagreGraph = new dagre.graphlib.Graph();
-dagreGraph.setDefaultEdgeLabel(() => ({}));
-
-export const getLayoutedElements = (nodes, edges, direction = 'RL') => {
+export const getLayoutedElements = (nodes, edges, direction = 'RL', brickLibrary) => {
+  const dagreGraph = new dagre.graphlib.Graph();
+  dagreGraph.setDefaultEdgeLabel(() => ({}));
   const isHorizontal = direction === 'LR' || direction === 'RL';
+
   dagreGraph.setGraph({ rankdir: direction });
   nodes.forEach((node) => {
   	let width = 180;
@@ -16,8 +16,19 @@ export const getLayoutedElements = (nodes, edges, direction = 'RL') => {
   		height = rect.height;
   		node.width = width;
   		node.height = height;
-  	}
+  	} 
     dagreGraph.setNode(node.id, { width, height });
+    let signature = brickLibrary.getBrick(node.data.lib, node.data.func);
+    if (!signature) return;
+    for (let param of signature.params) { // Фrrays are automatically in order
+      if (param.type.brickType) {
+        let edgeId = `${node.id}.${param.code}`;
+        let edge = edges.find(edge => edge.id === edgeId)
+        if (!edge) return;
+        dagreGraph.setEdge(edge.source, edge.target); 
+        continue;
+      }
+    }
   });
 
   edges.forEach((edge) => {

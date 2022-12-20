@@ -1,7 +1,7 @@
 import { Button, Input } from 'antd';
 import { useState } from 'react';
 import { useProject } from '../../contexts/project';
-import { migrator } from './migrations/20.11.22_soundVolume';
+import { migrator } from './migrations/20.12.22_newBricks';
 
 const { TextArea } = Input;
 
