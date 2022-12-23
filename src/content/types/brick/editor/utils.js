@@ -17,12 +17,14 @@ export function createBrick(id, signature, position = { x: 0, y: 0}, params = {}
 	}
 };
 
-export function createEdge(sourceId, targetId, sourceHandle, isPipeline) { // TODO: style => type
+export function createEdge(sourceId, targetId, sourceHandle) { // TODO: style => type
+	let isPipeline = sourceHandle === '_next';
 	if (isPipeline) {
 		var pipelineProps = {
-			markerEnd: {
-				type: MarkerType.ArrowClosed,
-			},
+			// markerEnd: {
+			// 	type: MarkerType.ArrowClosed,
+			// },
+			animated: true,
 			style: { strokeWidth: '3px' }
 		}
 	}
@@ -51,8 +53,8 @@ export function buildElements(src = []) { // TODO: move brickLibrary to layoutin
 		return node;
 	}
 
-	const addEdge = (sourceId, targetId, sourceHandle, isPipeline) => {
-		let edge = createEdge(sourceId, targetId, sourceHandle, isPipeline);
+	const addEdge = (sourceId, targetId, sourceHandle) => {
+		let edge = createEdge(sourceId, targetId, sourceHandle);
 		edges.push(edge);
 	}
 
@@ -77,9 +79,7 @@ export function buildElements(src = []) { // TODO: move brickLibrary to layoutin
 			if (value.brickId) {
 				let targetBrick = src.find(b => b.id === value.brickId);
 				if (targetBrick) {
-					let style;
-					let isPipeline = targetBrick.lib === 'action'
-					addEdge(brick.id, targetBrick.id, paramCode, isPipeline);
+					addEdge(brick.id, targetBrick.id, paramCode);
 				}
 			}
 		}

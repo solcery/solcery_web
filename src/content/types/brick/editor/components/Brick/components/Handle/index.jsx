@@ -31,18 +31,14 @@ const BrickHandle = (props) => {
 	const getEdgeId = (connection) => `${connection.source}.${connection.sourceHandle}`;
 
 	const onConnect = (connection) => {
-		console.log(connection)
 		let targetNode = reactFlowInstance.getNode(connection.target);
-		let isPipeline = targetNode.data.lib === 'action';
-		let edgeParams = createEdge(connection.source, connection.target, connection.sourceHandle, isPipeline);
-  		console.log(edgeParams)
+		let edgeParams = createEdge(connection.source, connection.target, connection.sourceHandle);
 		reactFlowInstance.addEdges(edgeParams);
 	}
 
 	const isValidConnection = (connection) => {
 		let edgeId = getEdgeId(connection);
 		let existentEdge = reactFlowInstance.getEdge(`${connection.source}.${connection.sourceHandle}`);
-		console.log('isValidConnection', existentEdge)
 		if (existentEdge) return false;
 		if (connectionValidator) {
 			return connectionValidator(connection);

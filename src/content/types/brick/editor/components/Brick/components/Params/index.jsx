@@ -1,6 +1,6 @@
-import { useReactFlow } from 'reactflow';
+import { useReactFlow, useEdges } from 'reactflow';
 import { ParamHandle } from '../Handle';
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { Button } from 'antd'
 import { v4 as uuid } from 'uuid';
 import { useBrick } from '../../contexts/brick';
@@ -11,6 +11,7 @@ function BrickArrayParam(props) {
 	const reactFlowInstance = useReactFlow();
 	let { param, brick } = props;
 	const [ value, setValue ] = useState(brick.params[param.code] ?? []);
+	const edges = useEdges();
 
 	const handleDrop = (droppedItem) => {
 		if (!droppedItem.destination) return;
@@ -27,6 +28,19 @@ function BrickArrayParam(props) {
 	useEffect(() => {
 		brick.params[param.code] = value;
 	}, [ value ])
+
+	useMemo(() => {
+		let params = [];
+		for (let uuid of value) {
+			let edge = edges.find(edge => edge.id === `${brick.id}.${param.code}.${uuid}`);
+			if (edge) {
+				params.push({
+					brickId: parseInt(edge.target),
+				})
+			}
+		}
+		brick.params[param.code] = params;
+	}, [ edges, brick, param, value ])
 
 	const removeElement = (index) => {
 		let uuid = value[index];
@@ -52,8 +66,31 @@ function BrickArrayParam(props) {
 
 function BrickParam(props) {
 	let { param, side } = props;
+	const { brick } = useBrick();
+	const edges = useEdges();
+
+	const edge = useMemo(() => {
+		if (brick.func === 'custom.6305d4f51fda3a808531435f') {
+			console.log(edges)
+		}
+		let edge = edges.find(edge => edge.id === `${brick.id}.${param.code}`)
+		if (edge) {
+			brick.params[param.code] = {
+				brickId: parseInt(edge.target)
+			}
+		}
+		return edge;
+	}, [ brick, param, edges ]);
+	if (brick.func === 'custom.6305d4f51fda3a808531435f') {
+		console.log(edge)
+	}
+
+	if (!param.optional && !edge) {
+		var style = { color: 'red' };
+	}
+
 	return <div className={`brick-param-brick ${side}`}>
-		<div className={`param-name`}>{param.name}</div>
+		<div className={`param-name`} style={style}>{param.name}</div>
 		<ParamHandle param={param} side={side}/>
 	</div>
 }

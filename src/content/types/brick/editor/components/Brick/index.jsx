@@ -33,6 +33,7 @@ export function Brick(props) {
 function Body(props) {
 	const { brick } = useBrick();
 	const { brickLibrary} = useBrickLibrary();
+	brick.position = props.position;
 
 	let backgroundColor = props.color ?? brickLibrary.getTypeColor(brick.lib);
 

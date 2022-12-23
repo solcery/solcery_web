@@ -11,7 +11,7 @@ import ReactFlow, {
 } from 'reactflow';
 import { Brick, BrickPanel } from './components';
 import { Button } from 'antd'
-import { buildElements, createBrick } from './utils';
+import { buildElements, createBrick, createEdge } from './utils';
 import { useBrickLibrary } from 'contexts/brickLibrary';
 import { getLayoutedElements } from './layout';
 import { useHotkeyContext } from 'contexts/hotkey';
@@ -45,20 +45,19 @@ export const BrickEditor = (props) => {
 	}
 	
 	const onEdgeUpdateStart = useCallback((event, edge) => {
-		console.log('START')
 		edgeUpdateSuccessful.current = false;
 	}, []);
 
 	const onEdgeUpdate = useCallback((oldEdge, newConnection) => {
 		edgeUpdateSuccessful.current = true;
-		setEdges((els) => updateEdge(oldEdge, newConnection, els));
+		let newEdge = createEdge(newConnection.source, newConnection.target, newConnection.sourceHandle);
+		setEdges((eds) => eds.filter(e => e.id !== oldEdge.id).concat(newEdge));
 	}, []);
 
 	const onEdgeUpdateEnd = useCallback((event, edge, connection, arg) => {
-		console.log('END:', event, connection, arg)
 		if (!edgeUpdateSuccessful.current) {
-			setEdges((eds) => eds.filter((e) => e.id !== edge.id));
-		}
+			setEdges((eds) => eds.filter(e => e.id !== edge.id));
+		};
 		edgeUpdateSuccessful.current = true;
 	}, []);
 
@@ -112,6 +111,8 @@ export const BrickEditor = (props) => {
 
 	const saveChanges = useCallback(() => { // TODO: move to utils
 		let bricks = {};
+		let bricks1 = nodes.map(node => node.data);
+		console.log(bricks1)
 		for (let node of nodes) {
 			let brick = {
 				id: node.data.id,
