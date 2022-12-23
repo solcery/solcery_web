@@ -5,7 +5,7 @@ export const ValueRender = (props) => {
 	let valueRenderRef = useRef();
 
 	useEffect(() => {
-		if (props.isFilter) {
+		if (props.isFilter) { // TODO: ???
 			setTimeout(() => valueRenderRef.current?.focus(), 100);
 		}
 	});
@@ -16,7 +16,7 @@ export const ValueRender = (props) => {
 
 	return props.type.textArea ? (
 		<Input.TextArea
-			style={props.type.width && { width: `${props.type.width}px` }}
+			// style={props.type.width && { width: `${props.type.width}px` }}
 			type="text"
 			ref={valueRenderRef}
 			rows={props.type.textArea.rows ?? 5}
@@ -28,7 +28,7 @@ export const ValueRender = (props) => {
 		/>
 	) : (
 		<Input
-			style={props.type.width && { width: `${props.type.width}px` }}
+			// style={props.type.width && { width: `${props.type.width}px` }}
 			type="text"
 			ref={valueRenderRef}
 			defaultValue={props.defaultValue}

@@ -1,5 +1,5 @@
 import { useReactFlow } from 'reactflow';
-import { BrickHandle } from '../BrickHandle';
+import { ParamHandle } from '../Handle';
 import { useState, useEffect } from 'react'
 import { Button } from 'antd'
 import { v4 as uuid } from 'uuid';
@@ -40,24 +40,27 @@ function BrickArrayParam(props) {
 	}	
 
 	return <div style={{pointerEvents: 'all'}}>
-		{value.map((uuid, index) => <BrickParam 
-			key={index} 
-			index={index} 
-			uuid={uuid} 
-			brick={brick} 
-			param={param}
-			onDelete={() => removeElement(index)}
-		/>)}
+		{value.map((uuid, index) => <div key={uuid} className='brick-param-brick'>
+			<div className='param-name'>{param.name} [{index}]</div>
+			<ParamHandle param={param} pipeline={param.pipeline}/>
+			<Button className='delete-button' onClick={() => removeElement(index)}>X</Button>
+		</div>)}
 		<Button onClick={addElement}>+</Button>
 	</div>
+}
 
-	return <div style={{pointerEvents: 'all'}}>
-		{value.map((elem, index) => <BrickParam key={index} index={index} brick={brick} param={param}/>)}
+
+function BrickParam(props) {
+	let { param, side } = props;
+	return <div className={`brick-param-brick ${side}`}>
+		<div className={`param-name`}>{param.name}</div>
+		<ParamHandle param={param} side={side}/>
 	</div>
 }
 
 function InlineParam(props) {
-	let { param, brick } = props;
+	const { param } = props;
+	const { brick } = useBrick();
 	const reactFlowInstance = useReactFlow();
 
 	const onChangeTmp = (value) => {
@@ -76,16 +79,7 @@ function InlineParam(props) {
 	</div>
 }
 
-function BrickParam(props) {
-	let { brick, param, index, uuid, onDelete } = props;
-	return <div className='brick-param-brick'>
-		<div className='param-name'>{param.name} {index}</div>
-		<BrickHandle brick={brick} param={param} uuid={uuid}/>
-		{onDelete && <Button className='delete-button' onClick={onDelete}>X</Button>}
-	</div>
-}
-
-function Param(props) {
+export function Param(props) {
 	let { param } = props;
 	if (param.type.brickType) return <BrickParam {...props}/>
 	if (param.type.valueType && param.type.valueType.brickType) return <BrickArrayParam {...props}/>

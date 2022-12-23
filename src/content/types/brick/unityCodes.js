@@ -31,6 +31,7 @@ unityCodes.action.console_log = 0;
 unityCodes.action.command = 0;
 unityCodes.action.push_action = 20;
 unityCodes.action.push_action_json = 21;
+unityCodes.action.link = 22;
 
 
 unityCodes.condition._type = 1;
@@ -44,6 +45,7 @@ unityCodes.condition.or = 6;
 unityCodes.condition.and = 7;
 unityCodes.condition.iter_or = 8;
 unityCodes.condition.iter_and = 9;
+unityCodes.condition.link = 10;
 
 
 unityCodes.value._type = 2;
@@ -71,11 +73,13 @@ unityCodes.value.scope_var = 18;
 unityCodes.value.set_scope_var = 19;
 unityCodes.value.time = 11;
 unityCodes.value.animation_id = 0;
+unityCodes.value.link = 20;
 
 
 unityCodes.jsonKeyPair._type = 4;
 unityCodes.jsonKeyPair.base = 0;
 unityCodes.jsonKeyPair.arg = 1;
+unityCodes.jsonKeyPair.link = 2;
 
 unityCodes.jsonToken._type = 5;
 unityCodes.jsonToken.int = 0;
@@ -83,5 +87,6 @@ unityCodes.jsonToken.string = 1;
 unityCodes.jsonToken.object = 2;
 unityCodes.jsonToken.array = 3;
 unityCodes.jsonToken.arg = 4;
+unityCodes.jsonKeyPair.link = 5;
 
 module.exports = unityCodes;

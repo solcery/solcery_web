@@ -8,11 +8,11 @@ import './style.scss';
 
 function BrickTitle(props) {
 	if (props.onDoubleClick) return <Tooltip title='Double click to open'>
-		<div onDoubleClick={props.onDoubleClick} className="brick-name custom" style={props.titleStyle}>
+		<div onDoubleClick={props.onDoubleClick} className="brick-name">
 			{props.title}
 		</div>
 	</Tooltip>;
-	return <div className="brick-name" style={props.titleStyle}>
+	return <div className="brick-name">
 		{props.title}
 	</div>;
 }

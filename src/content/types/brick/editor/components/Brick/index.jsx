@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react'
 import { Handle, useReactFlow, useUpdateNodeInternals } from 'reactflow';
 import { Tooltip, Button, Input } from 'antd';
 import { useBrickLibrary } from 'contexts/brickLibrary';
-import { Header, Params, BrickHandle } from './components'
+import { Header, OutputHandle, Pipeline, Param } from './components'
 const { TextArea } = Input;
 import { BrickProvider, useBrick } from './contexts/brick';
 
@@ -16,7 +16,6 @@ export function Brick(props) {
 	let nodeType = 'default';
 	if (brick.func === 'arg') nodeType = 'arg';
 	if (brick.func === 'root') nodeType = 'root';
-
 	return <BrickProvider 
 		brick={brick} 
 		signature={signature}
@@ -29,6 +28,8 @@ export function Brick(props) {
 	</BrickProvider>
 }
 
+
+
 function Body(props) {
 	const { brick } = useBrick();
 	const { brickLibrary} = useBrickLibrary();
@@ -39,6 +40,7 @@ function Body(props) {
 		<div className='brick-bg' style={{ backgroundColor }}/>
 		<Header title={props.title}/>
 		<div className='brick-body'>
+			
 			{props.children}
 		</div>
 	</>;
@@ -54,7 +56,7 @@ function ErrorBody({ error }) {
 		}
 	}
 	return <Body title='Error' color='red'>
-		<BrickHandle/>
+		<OutputHandle/>
 		<div style={{ padding: '3px' }}>{error}</div>
 		{nestedParams.map((param, index) => <Handle //TODO: use proper handle
 			key={index}
@@ -75,23 +77,87 @@ function DefaultBody(props) {
 	}
 	
 	if (error) return <ErrorBody error={error}/>
+
+	let rows = [];
+
+	const addElement = (position, element) => {
+		if (position === 'fullRow')  {
+			rows.push({
+				fullRow: element,
+			});
+			return;
+		}
+		if (position === 'left') {
+			let nextFree = rows.find(row => row.right && !row.left);
+			if (nextFree) {
+				nextFree.left = element
+			} else {
+				rows.push({
+					left: element,
+				})
+			}
+			return;
+		}
+		if (position === 'right') {
+			let nextFree = rows.find(row => row.left && !row.right);
+			if (nextFree) {
+				nextFree.right = element
+			} else {
+				rows.push({
+					right: element,
+				})
+			}
+			return;
+		}
+	}
+	if (brick.func !== 'root') {
+		let outputSide = brick.lib === 'action' ? 'left' : 'right'
+		addElement(outputSide, <OutputHandle side={outputSide}/>);
+	}
+	for (let param of signature.params) {
+		if (param.type.brickType === 'action') {
+			addElement('right', <Param 
+				param={param}
+				side='right'
+			/>)
+			continue;
+		} 
+		if (param.type.brickType) {
+			addElement('left', <Param 
+				param={param}
+				side='left'
+			/>)
+			continue;
+		}
+		addElement('left', <Param 
+			param={param}
+			side='left'
+		/>)
+	}
+
 	return <Body title={signature.name}>
-		<BrickHandle/>
-		<Params/>
+		{rows.map((row, index) => <BrickRow key={index} {...row}/>)}
 	</Body>
 }
 
+function BrickRow({ fullRow, left, right }) {
+	if (fullRow) return <div className='brick-row'>
+		<div className='item full'>{fullRow}</div>
+	</div>
+
+	return <div className='brick-row'>
+		{left && <div className='item left'>{left}</div>}
+		{right && <div className='item right'>{right}</div>}
+	</div>
+}
+
 function RootBody() {
-	return <Body title='Root'>
-		<Params/>
-		<div style={{ padding: '3px' }}>I AM ROOT!</div>
-	</Body>
+	return <DefaultBody/>
 }
 
 function ArgBody() {
 	const { brick } = useBrick();
 	const { brickParams } = useBrickLibrary();
-
 	let argName = brick.params.name;
 	if (!brickParams || !brickParams.find(param => param.name === argName)) {
 		var error = `Missing ${brick.lib} param [${argName}]`;
@@ -99,9 +165,9 @@ function ArgBody() {
 
 	if (error) return <ErrorBody error={error}/>
 
-	return <Body title='Argument1'>
-		<BrickHandle/>
+	return <DefaultBody>
 		<div style={{ padding: '3px' }}>{argName}</div>
-	</Body>;
-}
+	</DefaultBody>;
 
+	
+}

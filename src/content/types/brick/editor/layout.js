@@ -6,6 +6,20 @@ export const getLayoutedElements = (nodes, edges, direction = 'RL', brickLibrary
   dagreGraph.setDefaultEdgeLabel(() => ({}));
   const isHorizontal = direction === 'LR' || direction === 'RL';
 
+  const addEdge = (edge) => {
+    let targetNode = nodes.find(node => node.id === edge.target);
+    if (targetNode.data.lib === 'action') {
+      let weight = 1;
+      let minlen = 1;
+      dagreGraph.setEdge(edge.target, edge.source, {
+        weight,
+        minlen
+      }); 
+    } else {
+      dagreGraph.setEdge(edge.source, edge.target, { weight: 1 }); 
+    }
+  }
+
   dagreGraph.setGraph({ rankdir: direction });
   nodes.forEach((node) => {
   	let width = 180;
@@ -25,14 +39,14 @@ export const getLayoutedElements = (nodes, edges, direction = 'RL', brickLibrary
         let edgeId = `${node.id}.${param.code}`;
         let edge = edges.find(edge => edge.id === edgeId)
         if (!edge) return;
-        dagreGraph.setEdge(edge.source, edge.target); 
+        addEdge(edge)
         continue;
       }
     }
   });
 
   edges.forEach((edge) => {
-    dagreGraph.setEdge(edge.source, edge.target);
+    addEdge(edge)
   });
   dagre.layout(dagreGraph);
 

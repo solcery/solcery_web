@@ -45,6 +45,7 @@ export const BrickEditor = (props) => {
 	}
 	
 	const onEdgeUpdateStart = useCallback((event, edge) => {
+		console.log('START')
 		edgeUpdateSuccessful.current = false;
 	}, []);
 
@@ -53,7 +54,8 @@ export const BrickEditor = (props) => {
 		setEdges((els) => updateEdge(oldEdge, newConnection, els));
 	}, []);
 
-	const onEdgeUpdateEnd = useCallback((_, edge) => {
+	const onEdgeUpdateEnd = useCallback((event, edge, connection, arg) => {
+		console.log('END:', event, connection, arg)
 		if (!edgeUpdateSuccessful.current) {
 			setEdges((eds) => eds.filter((e) => e.id !== edge.id));
 		}
@@ -108,7 +110,7 @@ export const BrickEditor = (props) => {
 		props.onExit();
 	}
 
-	const saveChanges = useCallback(() => {
+	const saveChanges = useCallback(() => { // TODO: move to utils
 		let bricks = {};
 		for (let node of nodes) {
 			let brick = {
@@ -163,8 +165,6 @@ export const BrickEditor = (props) => {
 		return () => removeHotkey('Ctrl+KeyS', hotkeySubscription);
 	}, [ props.onSave, saveChanges ])
 
-	
-
 	const interactionProps = {
 		elementsSelectable: !!props.onSave,
 		nodesConnectable: !!props.onSave,
@@ -179,8 +179,8 @@ export const BrickEditor = (props) => {
 		interactionProps.onEdgeUpdateEnd = onEdgeUpdateEnd;
 		interactionProps.onDrop = onDrop;
 		interactionProps.onDragOver = onDragOver;
-		interactionProps.onNodesChange = onNodesChange
-		interactionProps.onEdgesChange = onEdgesChange
+		interactionProps.onNodesChange = onNodesChange;
+		interactionProps.onEdgesChange = onEdgesChange;
 	}
 
 	if (!props.onSave) {

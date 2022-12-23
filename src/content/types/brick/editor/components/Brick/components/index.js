@@ -1,5 +1,6 @@
 import { Header } from './Header';
-import { Params } from './Params';
-import { BrickHandle } from './BrickHandle';
+import { Param } from './Params';
+import { Pipeline } from './Pipeline';
+import { ParamHandle, OutputHandle } from './Handle';
 
-export { Header, Params, BrickHandle };
+export { Header, Param, ParamHandle, OutputHandle, Pipeline };

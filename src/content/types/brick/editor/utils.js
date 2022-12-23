@@ -1,4 +1,5 @@
 import { v4 as uuid } from 'uuid';
+import { MarkerType } from 'reactflow';
 
 export function createBrick(id, signature, position = { x: 0, y: 0}, params = {}) {
 	return {
@@ -16,9 +17,30 @@ export function createBrick(id, signature, position = { x: 0, y: 0}, params = {}
 	}
 };
 
+export function createEdge(sourceId, targetId, sourceHandle, isPipeline) { // TODO: style => type
+	if (isPipeline) {
+		var pipelineProps = {
+			markerEnd: {
+				type: MarkerType.ArrowClosed,
+			},
+			style: { strokeWidth: '3px' }
+		}
+	}
+	return {
+		id: `${sourceId}.${sourceHandle}`,
+		source: `${sourceId}`,
+		sourceHandle: `${sourceHandle}`,
+		target: `${targetId}`,
+		targetHandle: '_out',
+		type: 'default',
+		...pipelineProps
+	}
+}
+
 export function buildElements(src = []) { // TODO: move brickLibrary to layouting part
 	let nodes = [];
 	let edges = [];
+
 	const addNode = (brick) => {
 		let id = brick.id;
 		let position = brick.position;
@@ -29,13 +51,10 @@ export function buildElements(src = []) { // TODO: move brickLibrary to layoutin
 		return node;
 	}
 
-	const addEdge = (sourceId, targetId, paramCode) => edges.push({
-		id: `${sourceId}.${paramCode}`,
-		source: `${sourceId}`,
-		sourceHandle: `${paramCode}`,
-		target: `${targetId}`,
-		type: 'default',
-	});
+	const addEdge = (sourceId, targetId, sourceHandle, isPipeline) => {
+		let edge = createEdge(sourceId, targetId, sourceHandle, isPipeline);
+		edges.push(edge);
+	}
 
 	const extractElements = (brick) => {
 		let node = addNode(brick);
@@ -58,7 +77,9 @@ export function buildElements(src = []) { // TODO: move brickLibrary to layoutin
 			if (value.brickId) {
 				let targetBrick = src.find(b => b.id === value.brickId);
 				if (targetBrick) {
-					addEdge(brick.id, targetBrick.id, paramCode)
+					let style;
+					let isPipeline = targetBrick.lib === 'action'
+					addEdge(brick.id, targetBrick.id, paramCode, isPipeline);
 				}
 			}
 		}

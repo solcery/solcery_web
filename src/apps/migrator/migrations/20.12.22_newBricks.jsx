@@ -24,6 +24,15 @@ export const getLayoutedElements = (nodes, edges, direction = 'RL', brickLibrary
   dagreGraph.setDefaultEdgeLabel(() => ({}));
   const isHorizontal = direction === 'LR' || direction === 'RL';
 
+  const addEdge = (edge) => {
+    let targetNode = nodes.find(node => node.id === edge.target);
+    if (targetNode.data.lib === 'action') {
+      dagreGraph.setEdge(edge.target, edge.source); 
+    } else {
+      dagreGraph.setEdge(edge.source, edge.target); 
+    }
+  }
+
   dagreGraph.setGraph({ rankdir: direction });
   nodes.forEach((node) => {
   	let width = 230;
@@ -32,7 +41,7 @@ export const getLayoutedElements = (nodes, edges, direction = 'RL', brickLibrary
   	node.height = height;
     let signature = brickLibrary.getBrick(node.data.lib, node.data.func);
   	if (signature) {
-  		width = Math.min(250, 130 + signature.name.length * 7);
+  		width = Math.min(300, 130 + signature.name.length * 7);
   		height = 30;
   		for (let param of signature.params) {
   			if (param.type.brickType) {
@@ -53,14 +62,14 @@ export const getLayoutedElements = (nodes, edges, direction = 'RL', brickLibrary
         let edgeId = `${node.id}.${param.code}`;
         let edge = edges.find(edge => edge.id === edgeId)
         if (!edge) return;
-        dagreGraph.setEdge(edge.source, edge.target); 
+        addEdge(edge); 
         continue;
       }
     }
   });
 
   edges.forEach((edge) => {
-    dagreGraph.setEdge(edge.source, edge.target);
+    addEdge(edge);
   });
   dagre.layout(dagreGraph);
 
@@ -137,13 +146,76 @@ export function buildElements(src = []) { // TODO: move brickLibrary to layoutin
 	return { nodes, edges };
 }
 
+function appendBrick(tails, brick) {
+	for (let tail of tails) {
+		let appended = { brickId: brick.id};
+		if (tail.func === 'if_then') {
+			if (!tail.params.then) tail.params.then = appended;
+			if (!tail.params.else) tail.params.else = appended;
+		} else {
+			tail.params._next = appended;
+		}
+	}
+}
+
+function filterInPlace(a, condition) {
+  let i = 0, j = 0;
+
+  while (i < a.length) {
+    const val = a[i];
+    if (condition(val, i, a)) a[j++] = val;
+    i++;
+  }
+
+  a.length = j;
+  return a;
+}
+
 
 export function convertToNewFormat(src) {
-	let maxId = 0;
+	let maxId = 1;
 	let nodes = [];
 
+	function buildPipeline(brick) {
+		if (brick.lib !== 'action') return { head: brick, tails: [ brick ] };
+		if (brick.func === 'two') {
+			let action1 = nodes.find(node => node.id === brick.params.action1.brickId);
+			let action2 = nodes.find(node => node.id === brick.params.action2.brickId);
+			let action1pipe = buildPipeline(action1);
+			let action2pipe = buildPipeline(action2);
+			appendBrick(action1pipe.tails, action2pipe.head);
+			filterInPlace(nodes, node => node.id !== brick.id)
+			return { head: action1pipe.head, tails: action2pipe.tails };
+		}
+		if (brick.func === 'if_then') {
+			let tails = [];
+			if (brick.params.then) {
+				let actionThen = nodes.find(node => node.id === brick.params.then.brickId);
+				let tailsThen = buildPipeline(actionThen).tails;
+				tails = tails.concat(tailsThen);
+			}
+			if (brick.params.else) {
+				let actionElse = nodes.find(node => node.id === brick.params.else.brickId);
+				let tailsElse = buildPipeline(actionElse).tails;
+				tails = tails.concat(tailsElse)
+			}
+			if (!brick.params.else || !brick.params.then) {
+				tails = tails.concat(brick);
+			}
+
+			return { head: brick, tails };
+		}
+		for (let param of Object.values(brick.params)) {
+			if (param.brickId === undefined) continue;
+			let childBrick = nodes.find(node => node.id === param.brickId);
+			let { head, tails } = buildPipeline(childBrick);
+			param.brickId = head.id;
+		}
+		return { head: brick, tails: [ brick ]};
+	}
+
 	const extractBrick = (brick) => {
-		let extracted = {
+		var extracted = {
 			id: ++maxId,
 			lib: brick.lib,
 			func: brick.func,
@@ -152,6 +224,13 @@ export function convertToNewFormat(src) {
 		nodes.push(extracted);
 		for (let [ paramCode, value] of Object.entries(brick.params)) {
 			if (value === undefined || value === null) continue;
+			if (value.func === 'custom.6305d1e81aa9e92b91bb50a5') {
+				value.func = 'if_then';
+				value.params = {
+					if: value.params.Condition,
+					then: value.params.Action,
+				}
+			}
 			if (value.lib) {
 				extracted.params[paramCode] = {
 					brickId: extractBrick(value).id,
@@ -167,26 +246,25 @@ export function convertToNewFormat(src) {
 				extracted.params[paramCode] = value;
 			}
 		}		
+		
+
 		return extracted;
 	}
 	if (src) {
-		nodes.push({
-			id: ++maxId,
+		let extracted = extractBrick(src);
+		let { head } = buildPipeline(extracted);
+		nodes.unshift({
+			id: 1,
 			lib: src.lib,
 			func: 'root',
 			params: {
 				value: {
-					brickId: 2,
+					brickId: head.id,
 				}
 			}
 		})
-		extractBrick(src);
 	}
 	return nodes;
-}
-
-const debug = {
-	log: false,
 }
 
 const saveChanges = (nodes, edges, brickLibrary) => {
@@ -250,7 +328,6 @@ export const migrator = (content) => {
 
 	const brickLibrary = new BrickLibrary();
 	brickLibrary.addCustomBricks(content);
-	console.log(brickLibrary)
 
 	for (let object of content.objects) { // layouting
 		let changed = false;
