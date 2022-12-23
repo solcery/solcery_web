@@ -70,9 +70,6 @@ function BrickParam(props) {
 	const edges = useEdges();
 
 	const edge = useMemo(() => {
-		if (brick.func === 'custom.6305d4f51fda3a808531435f') {
-			console.log(edges)
-		}
 		let edge = edges.find(edge => edge.id === `${brick.id}.${param.code}`)
 		if (edge) {
 			brick.params[param.code] = {
@@ -81,9 +78,6 @@ function BrickParam(props) {
 		}
 		return edge;
 	}, [ brick, param, edges ]);
-	if (brick.func === 'custom.6305d4f51fda3a808531435f') {
-		console.log(edge)
-	}
 
 	if (!param.optional && !edge) {
 		var style = { color: 'red' };

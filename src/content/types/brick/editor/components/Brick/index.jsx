@@ -16,6 +16,11 @@ export function Brick(props) {
 	let nodeType = 'default';
 	if (brick.func === 'arg') nodeType = 'arg';
 	if (brick.func === 'root') nodeType = 'root';
+	props.data.position = {
+		x: props.xPos,
+		y: props.yPos
+	}
+
 	return <BrickProvider 
 		brick={brick} 
 		signature={signature}
@@ -33,15 +38,13 @@ export function Brick(props) {
 function Body(props) {
 	const { brick } = useBrick();
 	const { brickLibrary} = useBrickLibrary();
-	brick.position = props.position;
 
 	let backgroundColor = props.color ?? brickLibrary.getTypeColor(brick.lib);
 
 	return <>
 		<div className='brick-bg' style={{ backgroundColor }}/>
 		<Header title={props.title}/>
-		<div className='brick-body'>
-			
+		<div className='brick-body'>	
 			{props.children}
 		</div>
 	</>;

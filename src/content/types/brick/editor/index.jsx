@@ -110,41 +110,8 @@ export const BrickEditor = (props) => {
 	}
 
 	const saveChanges = useCallback(() => { // TODO: move to utils
-		let bricks = {};
-		let bricks1 = nodes.map(node => node.data);
-		console.log(bricks1)
-		for (let node of nodes) {
-			let brick = {
-				id: node.data.id,
-				lib: node.data.lib,
-				func: node.data.func,
-				params: {}
-			}
-			bricks[node.id] = brick;
-			brick.position = node.position;
-			let brickSignature = brickLibrary.getBrick(brick.lib, brick.func);
-			if (!brickSignature) continue;
-			let params = brickSignature.params;
-			for (let param of params) {
-				if (param.type.brickType) { //Brick
-					let edge = edges.find(e => e.id === `${brick.id}.${param.code}`)
-					if (edge) {
-						brick.params[param.code] = { brickId: parseInt(edge.target) };
-					}
-				} else if (param.type.valueType && param.type.valueType.brickType) { // Array of bricks
-					brick.params[param.code] = [];
-					for (let paramUuid of node.data.params[param.code]) {
-						let edge = edges.find(e => e.id === `${brick.id}.${param.code}.${paramUuid}`)
-						if (edge) {
-							brick.params[param.code].push({ brickId: parseInt(edge.target) });
-						}
-					}
-				} else {
-					brick.params[param.code] = node.data.params[param.code];
-				}
-			}
-		}
-		props.onSave(Object.values(bricks));
+		let bricks = nodes.map(node => node.data);
+		props.onSave(bricks);
 	}, [ nodes, edges, props.onSave ]);
 
 	useEffect(() => {
