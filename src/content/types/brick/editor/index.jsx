@@ -180,10 +180,7 @@ export const BrickEditor = (props) => {
 			fitView
 			proOptions={{ hideAttribution: true }}
 		>
-			{props.onSave && <Panel position='top-left'>
-					<BrickPanel/>
-				</Panel>
-			}
+			{props.onSave && <BrickPanel/>}
 			{props.onExit && <>
 				<Panel position='top-right'>
 					<Button onClick={exit}>EXIT</Button>

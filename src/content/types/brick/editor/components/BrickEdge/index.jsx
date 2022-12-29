@@ -16,6 +16,7 @@ export function BrickEdge(props) {
     target,
     targetX,
     targetY,
+    selected,
     sourcePosition,
     targetPosition,
     data,
@@ -35,6 +36,10 @@ export function BrickEdge(props) {
       stroke: brickLibrary.getTypeColor(targetNode.data.lib),
       strokeWidth: 1.5,
     }
+    if (selected) {
+      style.filter = 'drop-shadow(0px 0px 3px #2abdd2)'
+      style.stroke = '#2abdd2';
+    }
     if (param.pipeline) {
       style = {
         ...style,
@@ -45,7 +50,7 @@ export function BrickEdge(props) {
       }
     }
     return style;
-  }, [ props.source, props.target, data ])
+  }, [ props.source, props.target, data, selected ])
 
   const [edgePath] = getBezierPath({
     sourceX,

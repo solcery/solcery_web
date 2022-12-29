@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useBrickLibrary } from 'contexts/brickLibrary';
 import { Input } from 'antd'
 import { getBrickLibColor } from '../Brick';
@@ -16,11 +16,11 @@ const DraggableBrick = (props) => {
 
   return <div 
     className='brick-dnd' 
-    style={{ backgroundColor: brickLibrary.getTypeColor(lib) }}
     onDragStart={(event) => onDragStart(event)} 
     draggable
   >
-    {name}
+    <div className='brick-dnd-title'>{name}</div>
+    <div className='brick-dnd-bg' style={{ backgroundColor: brickLibrary.getTypeColor(lib) }}/>
   </div>
 }
 
@@ -30,6 +30,7 @@ export const BrickPanel = () => {
   const [ filter, setFilter ] = useState();
   const [ options, setOptions ] = useState([]);
   const [ maximized, setMaximized ] = useState(false);
+  const inputRef = useRef();
 
   useEffect(() => {
     if (!brickLibrary) return;
@@ -62,23 +63,37 @@ export const BrickPanel = () => {
 
   const close = () => {
     setMaximized(false);
-    setFilter()
   }
 
+  useEffect(() => {
+    if (!inputRef.current) return;
+    if (maximized) {
+      inputRef.current.focus();
+    } else {
+      inputRef.current.blur();
+    }
+  }, [ maximized ])
 
   return (
-    <div className='brick-panel' 
+    <div className={`brick-panel ${maximized ? 'maximized' : ''}`}
       onMouseEnter={() => setMaximized(true)} 
       onMouseLeave={close}
     >
-      {maximized && <Input autoFocus allowClear placeholder='Filter...' onChange={event => setFilter(event.target.value)}/>}
-      {maximized && <div className='brick-list'>
+      <Input 
+        className='brick-list-filter' 
+        disabled={!maximized}
+        ref={inputRef}
+        allowClear 
+        placeholder='Filter...' 
+        onChange={event => setFilter(event.target.value)}
+      />
+      <div className='brick-list'>
         {options.map((option, index) => <DraggableBrick 
           key={index} 
           {...option}
         />)}
-      </div>}
-      {!maximized && <div className='open-icon'/>}
+      </div>
+      
     </div>
   );
 };

@@ -10,7 +10,7 @@ import { createEdge } from '../../../../utils';
 
 import './style.scss'
 
-function BrickHandle(props) {
+function BrickHandle(props) { // Handle for brick-type params
 	const { brick } = useBrick();
 	let { id, brickType, side, title, required, defaultable, onChange, defaultValue } = props;
 	const { brickLibrary } = useBrickLibrary();
@@ -116,7 +116,7 @@ function BrickArrayParam(props) {
 	/>
 }
 
-function InlineBrick(props) {
+function InlineBrick(props) { // Default brick constructor for defaultable params
 	const { brick, onChange } = props;
 	const { brickLibrary } = useBrickLibrary();
 
@@ -136,7 +136,7 @@ function InlineBrick(props) {
 	</>
 }
 
-function BrickParam(props) {
+function BrickParam(props) { // Param, which is a brick
 	let { param, side, defaultValue } = props;
 
 	return <BrickHandle 
@@ -152,7 +152,7 @@ function BrickParam(props) {
 	/>
 }
 
-function InlineParam(props) {
+function InlineParam(props) { // Param, which is not a brick
 	const { param } = props;
 	const { brick } = useBrick();
 	const reactFlowInstance = useReactFlow();
