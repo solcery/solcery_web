@@ -1,92 +1,155 @@
 import { useReactFlow, useEdges } from 'reactflow';
-import { ParamHandle } from '../Handle';
+import { Handle } from '../Handle';
 import { useState, useEffect, useMemo } from 'react'
-import { Button } from 'antd'
+import { Button, Input } from 'antd'
 import { v4 as uuid } from 'uuid';
 import { useBrick } from '../../contexts/brick';
+import { useBrickLibrary } from 'contexts/brickLibrary';
+import { ArrayComponent } from 'components/ArrayComponent';
+import { createEdge } from '../../../../utils';
 
 import './style.scss'
 
-function BrickArrayParam(props) {
+function BrickHandle(props) {
+	const { brick } = useBrick();
+	let { id, brickType, side, title, required, defaultable, onChange, defaultValue } = props;
+	const { brickLibrary } = useBrickLibrary();
 	const reactFlowInstance = useReactFlow();
-	let { param, brick } = props;
-	const [ value, setValue ] = useState(brick.params[param.code] ?? []);
-	const edges = useEdges();
+	const [ value, setValue ] = useState(defaultValue); // undefined || { brickId } || { lib: }
 
-	const handleDrop = (droppedItem) => {
-		if (!droppedItem.destination) return;
-		var updatedList = [...value];
-		const [reorderedItem] = updatedList.splice(droppedItem.source.index, 1);
-		updatedList.splice(droppedItem.destination.index, 0, reorderedItem);
-		setValue(updatedList);
-	};
+	const color = useMemo(() => brickLibrary.getTypeColor(brickType), [ brickLibrary, brickType ]);
 
-	const addElement = () => {
-		setValue(value.concat(uuid()));
+	const onDisconnect = () => {
+		let defaultBrick = brickLibrary.default(brickType);
+		setValue(defaultBrick);
+		onChange(defaultBrick)
 	}
 
-	useEffect(() => {
-		brick.params[param.code] = value;
-	}, [ value ])
+	const onConnect = (connection) => {
+		let brickId = parseInt(connection.target);
+		setValue({ brickId })
+		onChange({ brickId }, connection)
+	}
 
-	useMemo(() => {
-		let params = [];
-		for (let uuid of value) {
-			let edge = edges.find(edge => edge.id === `${brick.id}.${param.code}.${uuid}`);
-			if (edge) {
-				params.push({
-					brickId: parseInt(edge.target),
-				})
+	if (title) {
+		if (value === undefined) {
+			if (required && !defaultable) {
+				var style = { color: 'red' }
 			}
+		} else if (value.brickId) {
+			var style = { color: 'white' }	
 		}
-		brick.params[param.code] = params;
-	}, [ edges, brick, param, value ])
+	}
 
-	const removeElement = (index) => {
-		let uuid = value[index];
-		let edge = reactFlowInstance.getEdge(`${brick.id}.${param.code}.${uuid}`);
-		if (edge) {
-			reactFlowInstance.deleteElements({ edges: [ edge ]})
-		}
-		let spliced = [...value];
-		spliced.splice(index, 1);
-		setValue(spliced)
-	}	
-
-	return <div style={{pointerEvents: 'all'}}>
-		{value.map((uuid, index) => <div key={uuid} className='brick-param-brick'>
-			<div className='param-name'>{param.name} [{index}]</div>
-			<ParamHandle param={param} pipeline={param.pipeline}/>
-			<Button className='delete-button' onClick={() => removeElement(index)}>X</Button>
-		</div>)}
-		<Button onClick={addElement}>+</Button>
-	</div>
+	return <Handle 
+		id={id} 
+		side={side} 
+		onConnect={onConnect} 
+		onDisconnect={onDisconnect}
+		color={color}
+	>
+		{title && <div className={`param-name ${side}`} style={style}>{title}</div>}
+		{required && defaultable && !value.brickId && <InlineBrick 
+			brick={value} 
+			onChange={props.onChange}
+		/>}
+	</Handle>
 }
 
-
-function BrickParam(props) {
-	let { param, side } = props;
+function BrickArrayParam(props) {
 	const { brick } = useBrick();
-	const edges = useEdges();
+	let { param, defaultValue, side } = props;
+	const brickType = param.type.valueType.brickType;
+	const reactFlowInstance = useReactFlow();
+	const { brickLibrary } = useBrickLibrary();
+	const [ value, setValue ] = useState(defaultValue ? [...defaultValue] : []);
 
-	const edge = useMemo(() => {
-		let edge = edges.find(edge => edge.id === `${brick.id}.${param.code}`)
-		if (edge) {
-			brick.params[param.code] = {
-				brickId: parseInt(edge.target)
-			}
-		}
-		return edge;
-	}, [ brick, param, edges ]);
-
-	if (!param.optional && !edge) {
-		var style = { color: 'red' };
+	const updateValue = (newValue) => {
+		props.onChange(value);	
+		setValue(newValue);
 	}
 
-	return <div className={`brick-param-brick ${side}`}>
-		<div className={`param-name`} style={style}>{param.name}</div>
-		<ParamHandle param={param} side={side}/>
-	</div>
+	const onItemChanged = (index, v) => {
+		value[index] = v;
+		updateValue([...value]);
+	}
+
+	const onItemRemoved = (index) => {
+		let edges = reactFlowInstance.getEdges();
+		edges = edges.filter(edge => edge.source !== `${brick.id}` || edge.sourceHandle !== `${param.code}.${index}`);
+		for (let i = index; i < value.length; i++) {
+			let edge = edges.find(edge => edge.source === `${brick.id}` && edge.sourceHandle === `${param.code}.${i}`);
+			if (!edge) continue;
+			edge.sourceHandle = `${param.code}.${i-1}`;
+		}
+		reactFlowInstance.setEdges(edges);
+		value.splice(index, 1);
+		updateValue([...value]);
+	}
+
+	const onItemAdded = () => {
+		let defaultBrick = brickLibrary.default(brickType);
+		updateValue(value.concat(defaultBrick))
+	};
+
+	const elementProps = (index) => {
+		return {
+			id: `${param.code}.${index}`,
+			brickType,
+			side: side,
+			paramCode: param.code,
+			title: `${param.name} ${index}`,
+			required: true,
+			defaultable: true,
+			defaultValue: value[index],
+			onChange: value => onItemChanged(index, value),
+		}
+	};
+
+	return <ArrayComponent
+		quantity={value.length}
+		elementProps={elementProps}
+		onItemRemoved={onItemRemoved}
+		onItemAdded={onItemAdded}
+		ItemComponent={BrickHandle}
+		style={{ pointerEvents: 'all' }}
+	/>
+}
+
+function InlineBrick(props) {
+	const { brick, onChange } = props;
+	const { brickLibrary } = useBrickLibrary();
+
+	const onChangeParam = (paramCode, value) => {
+		brick.params[paramCode] = value;
+		props.onChange(brick);
+	}
+
+	const signature = brickLibrary.getBrick(brick.lib, brick.func);
+	return <>
+		{signature.params.filter(param => !param.optional).map(param => <param.type.valueRender
+			key={param.code}
+			defaultValue={brick.params[param.code]}
+			onChange={(value) => onChangeParam(param.code, value)}
+			type={param.type}
+		/>)}
+	</>
+}
+
+function BrickParam(props) {
+	let { param, side, defaultValue } = props;
+
+	return <BrickHandle 
+		id={param.code} 
+		brickType={param.type.brickType}
+		defaultValue={defaultValue}
+		side={side} 
+		paramCode={param.code}
+		onChange={props.onChange}
+		title={param.name}
+		required={!param.optional}
+		defaultable={!param.noDefault}
+	/>
 }
 
 function InlineParam(props) {
@@ -94,16 +157,12 @@ function InlineParam(props) {
 	const { brick } = useBrick();
 	const reactFlowInstance = useReactFlow();
 
-	const onChangeTmp = (value) => {
-		brick.params[param.code] = value;
-	}
-
 	return <div className='brick-param-inline'>
 		<div className='param-name'>{param.name}</div>
 		<div className='param-value'>
 			<param.type.valueRender
 				defaultValue={brick.params[param.code]}
-				onChange={!param.readonly ? onChangeTmp : undefined}
+				onChange={!param.readonly ? props.onChange : undefined}
 				type={param.type}
 			/>
 		</div>
@@ -112,9 +171,22 @@ function InlineParam(props) {
 
 export function Param(props) {
 	let { param } = props;
-	if (param.type.brickType) return <BrickParam {...props}/>
-	if (param.type.valueType && param.type.valueType.brickType) return <BrickArrayParam {...props}/>
-	return <InlineParam {...props}/>;
+	const { brick } = useBrick();
+
+	const onChange = (value) => {
+		brick.params[param.code] = value;
+	}
+
+	let ParamComponent = InlineParam;
+	if (param.type.brickType) ParamComponent = BrickParam;
+	if (param.type.valueType && param.type.valueType.brickType) ParamComponent = BrickArrayParam;
+
+	return <ParamComponent 
+		side={props.side}
+		onChange={onChange}
+		param={param}
+		defaultValue={brick.params[param.code]}
+	/>;
 }
 
 export function Params() {

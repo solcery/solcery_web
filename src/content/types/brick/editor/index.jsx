@@ -9,9 +9,9 @@ import ReactFlow, {
 	addEdge,
 	Handle,
 } from 'reactflow';
-import { Brick, BrickPanel } from './components';
+import { Brick, BrickPanel, BrickEdge } from './components';
 import { Button } from 'antd'
-import { buildElements, createBrick, createEdge } from './utils';
+import { buildElements, createBrick } from './utils';
 import { useBrickLibrary } from 'contexts/brickLibrary';
 import { getLayoutedElements } from './layout';
 import { useHotkeyContext } from 'contexts/hotkey';
@@ -23,6 +23,10 @@ const multiSelectionKeys = ['Meta', 'Control']
 const nodeTypes = { 
 	brick: Brick,
 };
+
+const edgeTypes = {
+	edge: BrickEdge,
+}
 
 const getNextNodeId = (nodes) => Math.max(0, ...nodes.map(node => parseInt(node.id))) + 1;
 
@@ -49,9 +53,9 @@ export const BrickEditor = (props) => {
 	}, []);
 
 	const onEdgeUpdate = useCallback((oldEdge, newConnection) => {
-		edgeUpdateSuccessful.current = true;
-		let newEdge = createEdge(newConnection.source, newConnection.target, newConnection.sourceHandle);
-		setEdges((eds) => eds.filter(e => e.id !== oldEdge.id).concat(newEdge));
+		if (newConnection.target === oldEdge.target) {
+			edgeUpdateSuccessful = true;
+		}
 	}, []);
 
 	const onEdgeUpdateEnd = useCallback((event, edge, connection, arg) => {
@@ -72,14 +76,14 @@ export const BrickEditor = (props) => {
 		const reactFlowBounds = brickEditorRef.current.getBoundingClientRect();
 		const jsonBrick = event.dataTransfer.getData('application/reactflow');
 		if (typeof jsonBrick === 'undefined' || !jsonBrick) return;
-		let { lib, func, defaultParams } = JSON.parse(jsonBrick);
+		let { lib, func, params } = JSON.parse(jsonBrick);
 		const position = reactFlowInstance.project({
 			x: event.clientX - reactFlowBounds.left,
 			y: event.clientY - reactFlowBounds.top,
 		});
 		setNodes(nds => {
 			let id = getNextNodeId(nds);
-			let brick = createBrick(id, { lib, func }, position, defaultParams);
+			let brick = createBrick(id, { lib, func }, position, params);
 			return nds.concat(brick);
 		})
 	}, [ reactFlowInstance ]);
@@ -88,10 +92,14 @@ export const BrickEditor = (props) => {
 		if (!props.brickType) return;
 		let { nodes, edges } = buildElements(props.brickTree);
 		if (nodes.length === 0 && props.onSave) {
-			nodes.push(createBrick(0, { 
-				lib: props.brickType, 
-				func: 'root'
-			}))
+			let rootValue = brickLibrary.default(props.brickType)
+			nodes.push(createBrick(
+				0, 
+				{ 
+					lib: props.brickType, 
+					func: 'root',
+				}
+			));
 		}
 		setNodes(nodes);
 		setEdges(edges);
@@ -109,9 +117,8 @@ export const BrickEditor = (props) => {
 		props.onExit();
 	}
 
-	const saveChanges = useCallback(() => { // TODO: move to utils
-		let bricks = nodes.map(node => node.data);
-		props.onSave(bricks);
+	const saveChanges = useCallback(() => {
+		props.onSave(nodes.map(node => node.data));
 	}, [ nodes, edges, props.onSave ]);
 
 	useEffect(() => {
@@ -163,6 +170,7 @@ export const BrickEditor = (props) => {
 		<ReactFlow
 			onInit={setReactFlowInstance}
 			nodeTypes={nodeTypes}
+			edgeTypes={edgeTypes}
 			nodes={nodes}
 			edges={edges}
 			

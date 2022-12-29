@@ -29,7 +29,20 @@
 			font-size: 15px;
 			font-weight: 550;
 			margin-top: 5px;
+
+			&:hover {
+				transform: scale(1.1);
+				opacity: 0.9;
+				padding-left: 30px;
+				cursor: move;
+			}
 		}
+	}
+
+	.open-icon {
+		width: 80px;
+		height: 80px;
+		background-color: red;
 	}
 
 }

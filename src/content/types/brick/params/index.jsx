@@ -15,11 +15,20 @@ export function BrickTypeSelector(props) {
 	const onChange = (value) => {
 		props.onChange(value)
 	}
-	const options = brickLibrary.getTypes();
 
+	if (!props.onChange) {
+		if (!props.defaultValue) return;
+		return <div 
+			className='brick-type-option'
+			style={{ backgroundColor: brickType.color }}
+		>
+			{brickType.name}
+		</div>
+	};
+	const options = brickLibrary.getTypes();
 	return <Select 
 		defaultValue={props.defaultValue} 
-		onChange={onChange} 
+		onChange={props.onChange} 
 		placeholder='Select brick type...' 
 		className='brick-type-selector'
 	>
@@ -74,7 +83,7 @@ export function ParamsSelector(props) {
 	return <ArrayComponent 
 		className='brick-params-selector'
 		defaultValue={props.defaultValue}
-		itemComponent={ParamSignature}
+		ItemComponent={ParamSignature}
 		onChange={onChange}
 	/>
 }

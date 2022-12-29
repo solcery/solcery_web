@@ -119,6 +119,13 @@ function DefaultBody(props) {
 		addElement(outputSide, <OutputHandle side={outputSide}/>);
 	}
 	for (let param of signature.params) {
+		if (param.type.valueType && param.type.valueType.brickType === 'action') {
+			addElement('right', <Param 
+				param={param}
+				side='right'
+			/>)
+			continue;
+		}
 		if (param.type.brickType === 'action') {
 			addElement('right', <Param 
 				param={param}

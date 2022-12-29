@@ -4,50 +4,18 @@ import { v4 as uuid } from 'uuid';
 
 export function ArrayComponent(props) {
 
-	const [ items, setItems ] = useState(props.defaultValue ?? []);
-	const [ itemUuids, setItemUuids ] = useState(); 
+	const { quantity, elementProps, ItemComponent, style } = props;
 
-	useEffect(() => {
-		setItemUuids(items.map(item => uuid()));
-	}, [ items ])
+	if (quantity === undefined) return;
+	if (!elementProps) return;
 
-	const update = (items) => {
-		if (!props.onChange) return;
-		props.onChange(items);
-	}
+	const items = Array.from(Array(quantity).keys());
 
-	const onItemChanged = (uuid, value) => {
-		let index = itemUuids.find(item => item === uuid);
-		if (index < 0) return;
-		items[index] = value;
-		update(items)
-	}
-
-	const onItemRemoved = (uuid) => {
-		let index = itemUuids.find(item => item === uuid);
-		if (index < 0) return;
-		items.splice(index, 1);
-		itemUuids.splice(index, 1);
-		setItemUuids([...itemUuids])
-		update(items)
-	};
-
-	const onItemAdded = () => {
-		items.push({});
-		itemUuids.push(uuid());
-		setItemUuids([...itemUuids])
-		update(items);
-	};
-
-	if (!itemUuids) return;
-	return <div className={props.className} style={props.style}>
-		{itemUuids.map((uuid, index) => <div key={uuid}>
-			{props.onChange && <Button onClick={() => onItemRemoved(uuid)}>-</Button>}
-			<props.itemComponent 
-				defaultValue={items[index]}
-				onChange={props.onChange ? (value) => onItemChanged(uuid, value) : undefined} 
-			/>
+	return <div style={style}>
+		{items.map((key, index) => <div key={key} style={{ display: 'flex' }}>
+			<ItemComponent {...elementProps(index)} />
+			<Button onClick={() => props.onItemRemoved(index)}>-</Button>
 		</div>)}
-		{props.onChange && <Button onClick={() => onItemAdded()}>+</Button>}
+		<Button style= {{ width: '100%' }} onClick={() => props.onItemAdded()}>+</Button>
 	</div>
 }

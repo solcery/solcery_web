@@ -15,31 +15,38 @@
 	pointer-events: none;
 }
 
+.param-name {
+	pointer-events: none;
+	margin-left: 5px;
+	margin-right: 5px;
+
+	&.left {
+		text-align: left;
+	}
+
+	&.right {
+
+		margin-left: auto;
+		text-align: right;
+	}
+}
+
 .brick-param-brick {
+	display: flex;
 	pointer-events: all;
 	position: relative;
 	height: 30px;
 	line-height: 30px;
 
-	.param-name {
-		pointer-events: none;
-		position: absolute;
-		margin-left: 5px;
-		margin-right: 5px;
-	}
 
 	&.left { 
 		left: 0;
-		.param-name {
-			text-align: left;
-		}
+		flex-direction: left;
 	}
 
 	&.right {
-		.param-name {
-			right: 0;
-			text-align: right;
-		}
+		right: 0;
+		flex-direction: right;
 	}
 
 

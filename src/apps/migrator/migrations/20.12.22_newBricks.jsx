@@ -120,9 +120,9 @@ export function buildElements(src = []) { // TODO: move brickLibrary to layoutin
 			if (!value) continue;
 			if (Array.isArray(value)) { // array of bricks
 				if (value.length === 0) continue;
-				if (!value[0].brickId) continue;
 				node.data.params[paramCode] = [];
 				for (let item of value) {
+					if (!item.brickId) continue;
 					let targetBrick = src.find(b => b.id === item.brickId);
 					if (targetBrick) {
 						let itemUuid = uuid();
@@ -148,12 +148,15 @@ export function buildElements(src = []) { // TODO: move brickLibrary to layoutin
 
 function appendBrick(tails, brick) {
 	for (let tail of tails) {
-		let appended = { brickId: brick.id};
 		if (tail.func === 'if_then') {
-			if (!tail.params.then) tail.params.then = appended;
-			if (!tail.params.else) tail.params.else = appended;
+			if (!tail.params.then.brickId) {
+				tail.params.then = { brickId: brick.id };
+			};
+			if (!tail.params.else.brickId) {
+				tail.params.else = { brickId: brick.id };
+			};
 		} else {
-			tail.params._next = appended;
+			tail.params._next = { brickId: brick.id};
 		}
 	}
 }
@@ -171,6 +174,11 @@ function filterInPlace(a, condition) {
   return a;
 }
 
+const isDefault = (brick) => {
+	if (brick.lib === 'action' && brick.func === 'void') return true;
+	if (brick.lib === 'condition' && brick.func === 'const') return true;
+	if (brick.lib === 'value' && brick.func === 'const') return true;
+}
 
 export function convertToNewFormat(src) {
 	let maxId = 1;
@@ -179,79 +187,129 @@ export function convertToNewFormat(src) {
 	function buildPipeline(brick) {
 		if (brick.lib !== 'action') return { head: brick, tails: [ brick ] };
 		if (brick.func === 'two') {
+			filterInPlace(nodes, node => node.id !== brick.id)
 			let action1 = nodes.find(node => node.id === brick.params.action1.brickId);
 			let action2 = nodes.find(node => node.id === brick.params.action2.brickId);
 			let action1pipe = buildPipeline(action1);
 			let action2pipe = buildPipeline(action2);
 			appendBrick(action1pipe.tails, action2pipe.head);
-			filterInPlace(nodes, node => node.id !== brick.id)
 			return { head: action1pipe.head, tails: action2pipe.tails };
 		}
 		if (brick.func === 'if_then') {
 			let tails = [];
-			if (brick.params.then) {
+			if (brick.params.then.brickId) {
 				let actionThen = nodes.find(node => node.id === brick.params.then.brickId);
-				let tailsThen = buildPipeline(actionThen).tails;
-				tails = tails.concat(tailsThen);
+				let thenPipeline = buildPipeline(actionThen);
+				brick.params.then = { brickId: thenPipeline.head.id };
+				tails = tails.concat(thenPipeline.tails);
 			}
-			if (brick.params.else) {
+			if (brick.params.else.brickId) {
 				let actionElse = nodes.find(node => node.id === brick.params.else.brickId);
-				let tailsElse = buildPipeline(actionElse).tails;
-				tails = tails.concat(tailsElse)
+				let elsePipeline = buildPipeline(actionElse);
+				brick.params.else = { brickId: elsePipeline.head.id };
+				tails = tails.concat(elsePipeline.tails)
 			}
-			if (!brick.params.else || !brick.params.then) {
+			if (!brick.params.else.brickId || !brick.params.then.brickId) {
 				tails = tails.concat(brick);
 			}
 
 			return { head: brick, tails };
 		}
-		for (let param of Object.values(brick.params)) {
-			if (param.brickId === undefined) continue;
-			let childBrick = nodes.find(node => node.id === param.brickId);
+		for (let [ paramCode, value ] of Object.entries(brick.params)) {
+			if (value.brickId === undefined) continue;
+			let childBrick = nodes.find(node => node.id === value.brickId);
+			if (childBrick.lib !== 'action') continue;
 			let { head, tails } = buildPipeline(childBrick);
-			param.brickId = head.id;
+			brick.params[paramCode] = { brickId: head.id };
 		}
 		return { head: brick, tails: [ brick ]};
 	}
 
+	const migrateBrick = (src) => {
+		if (src.func === 'custom.6305d1e81aa9e92b91bb50a5') {
+			return {
+				lib: 'action',
+				func: 'if_then',
+				params: {
+					if: src.params.Condition,
+					then: src.params.Action,
+					else: {
+						lib: 'action',
+						func: 'void',
+						params: {}
+					}
+				}
+			}
+		}
+		if (src.func === 'custom.6305d22963590279329c0bd7') {
+			return {
+				lib: 'condition',
+				func: 'const',
+				params: {
+					value: true,
+				}
+			}
+		}
+		if (src.func === 'custom.6305d24d1911c1b8d049edb8') {
+			return {
+				lib: 'condition',
+				func: 'const',
+				params: {
+					value: false,
+				}
+			}
+		}
+		if (src.lib === 'action' && src.func === 'two') {
+			if (isDefault(src.params.action1)) {
+				return JSON.parse(JSON.stringify(src.params.action2))
+			} else if (isDefault(src.params.action2)) {
+				return JSON.parse(JSON.stringify(src.params.action1))
+			} else {
+				return JSON.parse(JSON.stringify(src));
+			}
+		}
+		return src;
+	}
+
 	const extractBrick = (brick) => {
-		var extracted = {
+		let extracted = {
 			id: ++maxId,
 			lib: brick.lib,
 			func: brick.func,
-			params: {}
+			params: {},
 		}
 		nodes.push(extracted);
 		for (let [ paramCode, value] of Object.entries(brick.params)) {
 			if (value === undefined || value === null) continue;
-			if (value.func === 'custom.6305d1e81aa9e92b91bb50a5') {
-				value.func = 'if_then';
-				value.params = {
-					if: value.params.Condition,
-					then: value.params.Action,
-				}
-			}
 			if (value.lib) {
-				extracted.params[paramCode] = {
-					brickId: extractBrick(value).id,
+				let migratedValue = migrateBrick(value);
+				if (isDefault(migratedValue)) {
+					extracted.params[paramCode] = migratedValue;
+				} else {
+					extracted.params[paramCode] = {
+						brickId: extractBrick(migratedValue).id,
+					}
 				}
 			} else if (Array.isArray(value) && value[0].lib) {
 				extracted.params[paramCode] = [];
 				for (let nestedBrick of value) {
-					extracted.params[paramCode].push({
-						brickId: extractBrick(nestedBrick).id,
-					})
+					let migratedValue = migrateBrick(nestedBrick);
+					if (isDefault(migratedValue)) {
+						extracted.params[paramCode] = migratedValue;
+					} else {
+						extracted.params[paramCode] = {
+							brickId: extractBrick(migratedValue).id,
+						}
+					}
 				}
 			} else {
 				extracted.params[paramCode] = value;
 			}
-		}		
-		
-
+		}
 		return extracted;
 	}
 	if (src) {
-		let extracted = extractBrick(src);
+		let extracted = extractBrick(migrateBrick(src));
 		let { head } = buildPipeline(extracted);
 		nodes.unshift({
 			id: 1,
@@ -283,6 +341,10 @@ const saveChanges = (nodes, edges, brickLibrary) => {
 		let params = brickSignature.params;
 		for (let param of params) {
 			if (param.type.brickType) { //Brick
+				if (node.data.params[param.code] && !node.data.params[param.code].brickId) { // inline
+					brick.params[param.code] = node.data.params[param.code];
+					continue;
+				}
 				let edge = edges.find(e => e.id === `${brick.id}.${param.code}`)
 				if (edge) {
 					brick.params[param.code] = { brickId: parseInt(edge.target) };
@@ -342,6 +404,11 @@ export const migrator = (content) => {
 		}
 		if (changed) objects.push(object);
 	}
-
+	// return {};
 	return { objects };
 };
+
+
+
+// 6305d22963590279329c0bd7 true
+// 6305d24d1911c1b8d049edb8 false

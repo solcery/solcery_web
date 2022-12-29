@@ -10,7 +10,7 @@ const DraggableBrick = (props) => {
   const { brickLibrary } = useBrickLibrary();
 
   const onDragStart = (event) => {
-    event.dataTransfer.setData('application/reactflow', JSON.stringify({ lib, func, defaultParams }));
+    event.dataTransfer.setData('application/reactflow', JSON.stringify(brickLibrary.new(lib, func, defaultParams)));
     event.dataTransfer.effectAllowed = 'move';
   };
 
@@ -29,6 +29,7 @@ export const BrickPanel = () => {
 
   const [ filter, setFilter ] = useState();
   const [ options, setOptions ] = useState([]);
+  const [ maximized, setMaximized ] = useState(false);
 
   useEffect(() => {
     if (!brickLibrary) return;
@@ -59,16 +60,25 @@ export const BrickPanel = () => {
     setOptions(newOptions);
   }, [ brickLibrary, brickParams, filter ])
 
+  const close = () => {
+    setMaximized(false);
+    setFilter()
+  }
+
 
   return (
-    <div className='brick-panel'>
-      <Input allowClear placeholder='Filter...' onChange={event => setFilter(event.target.value)}/>
-      <div className='brick-list'>
+    <div className='brick-panel' 
+      onMouseEnter={() => setMaximized(true)} 
+      onMouseLeave={close}
+    >
+      {maximized && <Input autoFocus allowClear placeholder='Filter...' onChange={event => setFilter(event.target.value)}/>}
+      {maximized && <div className='brick-list'>
         {options.map((option, index) => <DraggableBrick 
           key={index} 
           {...option}
         />)}
-      </div>
+      </div>}
+      {!maximized && <div className='open-icon'/>}
     </div>
   );
 };

@@ -17,25 +17,21 @@ export function createBrick(id, signature, position = { x: 0, y: 0}, params = {}
 	}
 };
 
-export function createEdge(sourceId, targetId, sourceHandle) { // TODO: style => type
-	let isPipeline = sourceHandle === '_next';
-	if (isPipeline) {
-		var pipelineProps = {
-			// markerEnd: {
-			// 	type: MarkerType.ArrowClosed,
-			// },
-			animated: true,
-			style: { strokeWidth: '3px' }
-		}
+export function createEdge(sourceId, targetId, paramCode, index) { // TODO: style => type
+	let sourceHandle = `${paramCode}`;
+	if (index !== undefined) {
+		sourceHandle += `.${index}`;
 	}
 	return {
 		id: `${sourceId}.${sourceHandle}`,
 		source: `${sourceId}`,
-		sourceHandle: `${sourceHandle}`,
+		sourceHandle,
 		target: `${targetId}`,
 		targetHandle: '_out',
-		type: 'default',
-		...pipelineProps
+		type: 'edge',
+		data: {
+			paramCode,
+		},
 	}
 }
 
@@ -53,33 +49,23 @@ export function buildElements(src = []) { // TODO: move brickLibrary to layoutin
 		return node;
 	}
 
-	const addEdge = (sourceId, targetId, sourceHandle) => {
-		let edge = createEdge(sourceId, targetId, sourceHandle);
-		edges.push(edge);
-	}
-
 	const extractElements = (brick) => {
 		let node = addNode(brick);
 		for (let [ paramCode, value ] of Object.entries(brick.params)) {
 			if (!value) continue;
 			if (Array.isArray(value)) { // array of bricks
-				if (value.length === 0) continue;
-				if (!value[0].brickId) continue;
-				node.data.params[paramCode] = [];
-				for (let item of value) {
+				value.forEach((item, index) => {
+					if (!item.brickId) return;
 					let targetBrick = src.find(b => b.id === item.brickId);
-					if (targetBrick) {
-						let itemUuid = uuid();
-						node.data.params[paramCode].push(itemUuid)
-						addEdge(brick.id, targetBrick.id, `${paramCode}.${itemUuid}`);
-					}
-				}
+					if (!targetBrick) return;
+					edges.push(createEdge(brick.id, targetBrick.id, paramCode, index));
+				});
 				continue;
 			}
 			if (value.brickId) {
 				let targetBrick = src.find(b => b.id === value.brickId);
 				if (targetBrick) {
-					addEdge(brick.id, targetBrick.id, paramCode);
+					edges.push(createEdge(brick.id, targetBrick.id, paramCode));
 				}
 			}
 		}

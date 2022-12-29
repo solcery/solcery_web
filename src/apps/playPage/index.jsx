@@ -132,8 +132,7 @@ export default function PlayPage() {
 		games[index].setBotStatus(value);
 	}
 
-	const onUnityReady = (step) => {
-		
+	const onUnityReady = (step) => {	
 		// console.log('onUnityReady', step)
 		// let next = 0
 		// if (step !== undefined) {

@@ -1,90 +1,86 @@
 import { useBrickLibrary } from 'contexts/brickLibrary';
 import { useBrick } from '../../contexts/brick';
-import { Handle, useReactFlow } from 'reactflow';
-import { useCallback } from 'react';
+import { Handle as ReactFlowHandle, useReactFlow, useEdges } from 'reactflow';
+import { useCallback, useMemo, useEffect, useState } from 'react';
 import { createEdge } from '../../../../utils';
+import { v4 as uuid } from 'uuid';
 
 import './style.scss';
 
-const isValidParamConnection = (connection, brickLibrary, reactFlowInstance) => {
-	let existentEdge = reactFlowInstance.getEdge(`${connection.source}.${connection.sourceHandle}`);
-	if (existentEdge) return false;
-	if (connection.target === connection.source) return;
-	let targetBrick = reactFlowInstance.getNode(connection.target).data;
-	let sourceBrick = reactFlowInstance.getNode(connection.source).data;
-	let sourceSignature = brickLibrary.getBrick(sourceBrick.lib, sourceBrick.func);
-
-	let [ paramCode, ...path ] = connection.sourceHandle.split('.');
-
-	let param = sourceSignature.params.find(p => p.code === paramCode);
-	if (!param) return false;
-	let valueType = param.type.valueType
-	let validBrickType = valueType ? valueType.brickType : param.type.brickType;
-	return validBrickType === targetBrick.lib;
-}
-
-const BrickHandle = (props) => {
-	let { id, inverted, type, position, brickType, connectionValidator, style } = props;
+export function Handle(props) {
 	const { brick } = useBrick();
+	const { id, side, color } = props;
 	const reactFlowInstance = useReactFlow();
+	const { brickLibrary } = useBrickLibrary();
+	const edges = useEdges();
 
-	const getEdgeId = (connection) => `${connection.source}.${connection.sourceHandle}`;
+	const type = props.type ?? 'source';
+	const edge = useMemo(() => {
+		let handleType = `${type}Handle`;
+		return edges.find(edge => edge[type] === `${brick.id}` && edge[handleType] === id);
+	}, [ edges, id ]);
+	const [ connected, setConnected ] = useState(!!edge);
 
-	const onConnect = (connection) => {
-		let targetNode = reactFlowInstance.getNode(connection.target);
-		let edgeParams = createEdge(connection.source, connection.target, connection.sourceHandle);
-		reactFlowInstance.addEdges(edgeParams);
+	useEffect(() => {
+		if (!edge && connected) {
+			if (props.onDisconnect) props.onDisconnect();
+			setConnected(false);
+			return;
+		}
+		if (edge && !connected) {
+			if (props.onConnect) props.onConnect(edge);
+			setConnected(true);
+			return;
+		}
+	}, [ edge, connected, props.onConnect, props.onDisconnect ])
+
+	if (connected) {
+		var style = { backgroundColor: color }
+	} else {
+		var style = { border: `solid 4px ${color}` }
 	}
-
 	const isValidConnection = (connection) => {
-		let edgeId = getEdgeId(connection);
-		let existentEdge = reactFlowInstance.getEdge(`${connection.source}.${connection.sourceHandle}`);
-		if (existentEdge) return false;
-		if (connectionValidator) {
-			return connectionValidator(connection);
+		if (connection.target === connection.source) return;
+		let sourceBrick = reactFlowInstance.getNode(connection.source).data;
+		let targetBrick = reactFlowInstance.getNode(connection.target).data;
+		let sourceSignature = brickLibrary.getBrick(sourceBrick.lib, sourceBrick.func);
+		let [ paramCode ] = connection.sourceHandle.split('.');
+		let param = sourceSignature.params.find(p => p.code === paramCode);
+		if (param.type.valueType) {
+			var brickType = param.type.valueType.brickType;
+		} else {
+			var brickType = param.type.brickType;
+		}
+		if (brickType !== targetBrick.lib) return;
+		if (props.isValidConnection) {
+			return props.isValidConnection(connection);
 		}
 		return true;
 	}
 
-	return <Handle
-		id={id}
-		type={type}
-		position={position}
-		onConnect={onConnect}
-		isConnectable
-		style={style}
-		isValidConnection={(connection) => isValidConnection(connection)}
-		className={`brick-handle ${position}`}
-	/>
-}
+	const onConnect = (connection) => {
+		const [ paramCode, index ] = connection.sourceHandle.split('.');
+		let edgeId = index === undefined  ? `${paramCode}` : `${paramCode}.${uuid()}`;
+		let newEdge = createEdge(connection.source, connection.target, paramCode, index);
+		let oldEdge = reactFlowInstance.getEdges().find(edge => edge.source === connection.source && edge.sourceHandle === connection.sourceHandle);
+		if (oldEdge) {
+			reactFlowInstance.deleteElements({ edges: [ oldEdge ]});
+		}
+		reactFlowInstance.addEdges(newEdge);
+	}
 
-export function ParamHandle(props) {
-	const { param, side } = props;
-	const { brickLibrary } = useBrickLibrary();
-	const reactFlowInstance = useReactFlow();
-
-	const connectionValidator = useCallback((connection) => {
-		if (connection.target === connection.source) return;
-		let targetBrick = reactFlowInstance.getNode(connection.target).data;
-		let sourceBrick = reactFlowInstance.getNode(connection.source).data;
-		let sourceSignature = brickLibrary.getBrick(sourceBrick.lib, sourceBrick.func);
-
-		let [ paramCode, ...path ] = connection.sourceHandle.split('.');
-
-		let param = sourceSignature.params.find(p => p.code === paramCode);
-		if (!param) return false;
-		let valueType = param.type.valueType
-		let validBrickType = valueType ? valueType.brickType : param.type.brickType;
-		return validBrickType === targetBrick.lib;
-	})
-
-	return <BrickHandle 
-		id={param.code} 
-		brickType={param.type.brickType} 
-		type='source'
-		style={{ backgroundColor: brickLibrary.getTypeColor(param.type.brickType) }}
-		position={side}
-	/>
+	return <div className={`brick-handle-row ${side}`}>
+		{props.children}
+		<ReactFlowHandle
+			id={id}
+			type={type}
+			position={side}
+			onConnect={onConnect}
+			style={style}
+			isValidConnection={isValidConnection}
+			className={`brick-handle ${side}`}
+		/>
+	</div>
 }
 
 export function OutputHandle(props) {
@@ -92,14 +88,13 @@ export function OutputHandle(props) {
 	const { brick } = useBrick();
 	const { brickLibrary } = useBrickLibrary();
 
-	return <div className='brick-output'>		
-		<BrickHandle 
-			id={'_out'} 
-			brickType={brick.lib} 
-			type='target'
-			style={{ backgroundColor: brickLibrary.getTypeColor(brick.lib) }}	
-			position={side}
-		/>
-	</div>
+	const color = useMemo(() => brickLibrary.getTypeColor(brick.lib), [ brickLibrary, brick ]);
+
+	return <Handle
+		id='_out'
+		type='target'
+		color={color}
+		side={side}
+	/>
 }
 

@@ -14,6 +14,10 @@ const { Option } = Select;
 
 function BrickTree(props) {
 	const [ mode, setMode ] = useState('small');
+	const [ innerSize, setInnerSize ] = useState({
+		width: window.innerWidth,
+		height: window.innerHeight,
+	})
 
 	var wrapperProps = {
 		className: `brick-editor-${mode}`,
@@ -24,11 +28,10 @@ function BrickTree(props) {
 		brickType: props.brickType,
 	}
 
+	
+
 	if (mode === 'fullscreen') {
-		wrapperProps.style = {
-			width: window.innerWidth, 
-			height: window.innerHeight
-		}
+		wrapperProps.style = innerSize;
 		brickEditorProps.onExit = () => setMode('small');
 		if (props.onChange) {
 			brickEditorProps.onSave = (value) => {
@@ -44,6 +47,21 @@ function BrickTree(props) {
 	} else {
 		wrapperProps.onClick = () => setMode('fullscreen');
 	}
+
+	useEffect(() => {
+		if (mode !== 'fullscreen') return;
+		const onResize = () => {
+			setInnerSize({
+				width: window.innerWidth,
+				height: window.innerHeight,
+			})
+		}
+
+		window.addEventListener('resize', onResize);
+		return () => {
+			window.removeEventListener('resize', onResize)
+		}
+	}, [ mode ])
 
 	return <div {...wrapperProps}>
 		{mode === 'small' && <div className='highlight-fullscreen'>
@@ -104,7 +122,7 @@ export function ValueRender(props) {
 			defaultValue={params} 
 			onChange={props.onChange ? onParamsChanged : undefined}
 		/>}
-		{!brickType && <BrickTypeSelector onChange={setBrickType}/>}
+		{!brickType && <BrickTypeSelector onChange={props.onChange ? setBrickType : undefined}/>}
 		{brickType && <BrickTree
 			defaultValue={nodes}
 			onChange={props.onChange ? onNodesChanged : undefined}

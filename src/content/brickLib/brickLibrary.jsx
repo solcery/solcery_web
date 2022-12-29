@@ -8,26 +8,31 @@ const brickTypes = [
 		name: 'Action',
 		color: '#6D8BAC',
 		inverted: true,
+		default: 'void',
 	},
 	{
 		code: 'condition',
 		name: 'Condition',
 		color: '#e8b463',
+		default: 'const',
 	},
 	{
 		code: 'value',
 		name: 'Value',
 		color: '#788C7F',
+		default: 'const',
 	},
 	{
 		code: 'jsonKeyPair',
 		name: 'JSON KeyPair',
 		color: '#6272a4',
+		default: 'base',
 	},
 	{
 		code: 'jsonToken',
 		name: 'JSON Token',
 		color: '#bd93f9',
+		default: 'object'
 	},
 ]
 
@@ -134,6 +139,36 @@ export class BrickLibrary {
 		for (let brick of bricks) {
 			this.addBrick(brick);
 		}
+	}
+
+	new(lib, func, params = {}) {
+		let signature = this.getBrick(lib, func);
+		let brick = {
+			lib: signature.lib,
+			func: signature.func,
+			params: {},
+		}
+		for (let param of signature.params) {
+			if (params[param.code]) {
+				brick.params[param.code] = params[param.code];
+				continue;
+			}
+			if (param.optional || param.noDefault) continue;
+			if (param.type.brickType) {
+				console.log(param.type.brickType)
+				brick.params[param.code] = this.default(param.type.brickType);
+			} else {
+				brick.params[param.code] = param.type.default();
+			}
+		}
+		return brick;
+	}
+
+	default(lib) {
+		let type = this.getType(lib);
+		let func = type.default;
+		if (!func) throw new Error(`No default brick of type ${type}`);
+		return this.new(lib, func);
 	}
 
 }

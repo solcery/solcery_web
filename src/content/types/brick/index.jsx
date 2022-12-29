@@ -75,8 +75,11 @@ export class SBrick {
 		}
 		if (!value) return;
 
-		let { brickId } = value;
-		let brick = meta.nodes.find(node => node.id === brickId);
+		if (!value.brickId) { // inline
+			var brick = value;
+		} else {
+			var brick = meta.nodes.find(node => node.id === value.brickId);
+		}
 		if (!brick) return;
 
 		let brickSignature = meta.brickLibrary.getBrick(brick.lib, brick.func);
