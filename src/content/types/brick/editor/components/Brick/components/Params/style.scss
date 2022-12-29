@@ -13,10 +13,6 @@
 	font-size: 14px;
 	font-style: italic;
 	pointer-events: none;
-}
-
-.param-name {
-	pointer-events: none;
 	margin-left: 5px;
 	margin-right: 5px;
 
@@ -33,7 +29,7 @@
 
 .brick-param-brick {
 	display: flex;
-	pointer-events: all;
+	pointer-events: none;
 	position: relative;
 	height: 30px;
 	line-height: 30px;

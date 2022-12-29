@@ -139,3 +139,12 @@ export const build = ({ targets, content }) => {
 		};
 	}
 };
+
+
+export const FieldRender = (props) => {
+	const containerRef = useRef();
+
+	return <div>
+		<props.type.valueRender {...props}/>
+	</div>
+}

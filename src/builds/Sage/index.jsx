@@ -40,7 +40,7 @@ export default function Sage() {
 												<Route exact path="schema" element={<TemplateSchema />} />
 												<Route path=":objectId" element={<ObjectDocProvider />}>
 													<Route exact path="" element={<ObjectPage />} />
-													<Route path=":brickPath" element={<BrickEditor />} />
+													<Route path=":fieldPath" element={<ObjectPage />} />
 												</Route>
 												<Route exact path="" element={<TemplatePage />} />
 											</Route>

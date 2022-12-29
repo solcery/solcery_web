@@ -103,6 +103,8 @@ export class BrickLibrary {
 			let res = {
 				name: obj.fields.name,
 				params,
+				url: `template/customBricks/${obj._id}/brick`,
+				description: obj.fields.description,
 				lib: rootNode.lib,
 				func: `custom.${obj._id}`,
 			}

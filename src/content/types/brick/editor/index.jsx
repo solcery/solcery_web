@@ -42,6 +42,11 @@ export const BrickEditor = (props) => {
 	const fitRequired = useRef(false)
 	const [ reactFlowInstance, setReactFlowInstance ] = useState();
 
+	const onInit = (reactFlowInstance) => {
+		setReactFlowInstance(reactFlowInstance);
+		if (props.onInit) props.onInit();
+	}
+
 	const layout = () => {
 		let layouted = getLayoutedElements(nodes, edges, 'RL', brickLibrary);
 		fitRequired.current = true;
@@ -72,6 +77,7 @@ export const BrickEditor = (props) => {
 
 	const onDrop = useCallback((event) => {
 		event.preventDefault();
+		console.log(reactFlowInstance)
 
 		const reactFlowBounds = brickEditorRef.current.getBoundingClientRect();
 		const jsonBrick = event.dataTransfer.getData('application/reactflow');
@@ -168,7 +174,7 @@ export const BrickEditor = (props) => {
 		ref={brickEditorRef}
 	>
 		<ReactFlow
-			onInit={setReactFlowInstance}
+			onInit={onInit}
 			nodeTypes={nodeTypes}
 			edgeTypes={edgeTypes}
 			nodes={nodes}

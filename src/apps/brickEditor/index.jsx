@@ -16,7 +16,7 @@ export default function BrickEditor() {
 	const navigate = useNavigate();
 	const { doc } = useDocument();
 	const { showBrickComments } = useUser();
-	let { templateCode, objectId, brickPath } = useParams();
+	let { templateCode, objectId, fieldPath } = useParams();
 	const [value, setValue] = useState();
 	const [splittedPath, setSplittedPath] = useState();
 	const [ showAllComments, setShowAllComments ] = useState(false);
@@ -35,8 +35,8 @@ export default function BrickEditor() {
 	}, [ navigate, splittedPath ])
 
 	useEffect(() => {
-		setSplittedPath(brickPath.split('.'));
-	}, [brickPath]);
+		setSplittedPath(fieldPath.split('.'));
+	}, [fieldPath]);
 
 	useEffect(() => {
 		if (!doc || !splittedPath) return;

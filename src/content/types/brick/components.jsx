@@ -5,6 +5,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { BrickLibrary } from '../../brickLib/brickLibrary';
 import { Select } from 'antd';
 import { BrickLibraryProvider, useBrickLibrary } from 'contexts/brickLibrary';
+import { useParams } from 'react-router-dom';
 
 import { useContent } from 'contexts/content';
 
@@ -13,7 +14,7 @@ import './style.scss';
 const { Option } = Select;
 
 function BrickTree(props) {
-	const [ mode, setMode ] = useState('small');
+	const [ mode, setMode ] = useState(props.fullscreen ? 'fullscreen' : 'small');
 	const [ innerSize, setInnerSize ] = useState({
 		width: window.innerWidth,
 		height: window.innerHeight,
@@ -22,13 +23,13 @@ function BrickTree(props) {
 	var wrapperProps = {
 		className: `brick-editor-${mode}`,
 	}
+
 	var brickEditorProps = {
 		key: mode,
 		brickTree: props.defaultValue,
 		brickType: props.brickType,
+		onInit: props.onInit,
 	}
-
-	
 
 	if (mode === 'fullscreen') {
 		wrapperProps.style = innerSize;
@@ -74,6 +75,7 @@ function BrickTree(props) {
 }
 
 export function ValueRender(props) {
+	const { fieldPath } = useParams();
 
 	const getBrickType = (nodes) => {
 		if (!nodes) return;
@@ -124,6 +126,8 @@ export function ValueRender(props) {
 		/>}
 		{!brickType && <BrickTypeSelector onChange={props.onChange ? setBrickType : undefined}/>}
 		{brickType && <BrickTree
+			fullscreen={props.path.join('.') === fieldPath}
+			onInit={props.onElementLoad}
 			defaultValue={nodes}
 			onChange={props.onChange ? onNodesChanged : undefined}
 			brickType={brickType}

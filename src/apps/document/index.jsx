@@ -2,7 +2,8 @@ import { Table, Button } from 'antd';
 import React, { useState, useEffect } from 'react';
 import { useHotkey } from '../../contexts/hotkey';
 import { notif } from '../../components/notification';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useParams } from 'react-router-dom';
+import { FieldRender } from 'content/types'
 import './style.css';
 
 const { Column } = Table;
@@ -11,6 +12,7 @@ export default function DocumentEditor(props) {
 	const [revision, setRevision] = useState(1);
 	const [ changed, setChanged ] = useState(false);
 	const location = useLocation();
+	const { templateCode, objectId, fieldPath } = useParams();
 
 	const exit = useHotkey('Escape', () => {
 		if (changed && !window.confirm('You have unsaved changed. Still leave?')) return;
@@ -66,16 +68,6 @@ export default function DocumentEditor(props) {
 		setRevision(revision + 1);
 	};
 
-	const onElementLoad = (path, element) => {
-		let autoScroll = location.state?.scrollToField;
-		if (autoScroll && path.fieldPath[0] === autoScroll) {
-			let newLocationState = Object.assign({}, location.state);
-			delete newLocationState.scrollToField;
-			window.history.replaceState(newLocationState, document.title);
-			element.scrollIntoView({ block: 'center' });
-		}
-	}
-
 	if (!props.doc) return <>Loading</>;
 	let tableData = Object.values(props.doc.schema).map(field => ({
 		key: field.code,
@@ -83,7 +75,6 @@ export default function DocumentEditor(props) {
 		value: props.doc.fields[field.code],
 		status: props.doc.fieldStatus[field.code],
 		onChange: !field.readonly ? (value) => editDoc(value, [field.code]) : undefined,
-		onElementLoad,
 	}));
 
 	return (
@@ -102,17 +93,14 @@ export default function DocumentEditor(props) {
 					title="Value"
 					key="value"
 					dataIndex="value"
-					render={(text, record) => (
-						<record.field.type.valueRender
-							onElementLoad={onElementLoad}
+					render={(text, record) => <div>
+						<FieldRender
 							defaultValue={record.value}
 							onChange={record.onChange}
 							type={record.field.type}
-							path={{ //TODO: Doesn't work properly
-								fieldPath: [record.field.code],
-							}}
+							path={[record.field.code]}
 						/>
-					)}
+					</div>}
 				/>
 			</Table>
 			<Button style={{ width: '100%' }} onClick={changed ? save : exit}>

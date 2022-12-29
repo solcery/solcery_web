@@ -1,7 +1,8 @@
 .brick-header {
 	pointer-events: none;
 	position: relative;
-	diplay: flex;
+	display: flex;
+	flex-direction: right;
 	background-color: rgba(0, 0, 0, 0.2);
 	border-radius: 5px 5px 0 0;
 	width: 100%;
@@ -13,25 +14,24 @@
 
 	.remove-button {
 		pointer-events: all;
-		position: absolute;
 		right: 0rem;
 		top: 0rem;
 		border-radius: 5px;
+		height: 100%;
 	}
 
 	.brick-name {
-		overflow: hidden;
+		flex: 1;
+		padding: 0px 5px;
+		display: block;
 		text-align: center;
-		margin: 0px 35px 0px 10px;
-		height: 30px;
 		font-size: 15px;
 		line-height: 30px;
-		z-index: 100;
+		z-index: 2;
 
 		&:hover {
 			overflow: visible;
 			height: unset;
-			background-color: red;
 		}
 	}
 

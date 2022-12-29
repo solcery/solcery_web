@@ -11,6 +11,8 @@ import { SDate } from './date';
 import { SStruct } from './struct';
 import { SSound } from './sound';
 
+import { FieldRender } from './FieldRender';
+
 const _stypebyclassname = {
 	SInt: SInt,
 	SString: SString,
@@ -57,4 +59,5 @@ export const SType = {
 	},
 };
 
+export { FieldRender };
 

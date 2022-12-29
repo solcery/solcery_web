@@ -83,7 +83,7 @@ export default function StorageViewer({ template, docs, fields, onExitEditMode }
 					moduleName: template.code,
 					objectId: object._id,
 					templateCode: template.code,
-					fieldPath: [ field.code ],
+					path: [ field.code ],
 
 				}}
 				onChange={!field.readonly ? (value) => docs[index].setField(value, [ field.code ]) : undefined}

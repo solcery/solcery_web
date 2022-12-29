@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Button } from 'antd';
+import { FieldRender } from '../FieldRender';
 
 const ADD_ELEMENT_BUTTON_LABEL = ' + ';
 const REMOVE_ELEMENT_BUTTON_LABEL = ' - ';
@@ -38,12 +39,11 @@ export const ValueRender = (props) => {
 					<Button onClick={() => removeElement(index)} >
 						{REMOVE_ELEMENT_BUTTON_LABEL}
 					</Button>
-					<props.type.valueType.valueRender
+					<FieldRender
 						defaultValue={val}
 						type={props.type.valueType}
-						onChange={(newValue) => {
-							onChange(newValue, index);
-						}}
+						onChange={newValue => onChange(newValue, index)}
+						path={[ ...props.path, index ]}
 					/>
 				</div>
 			))}

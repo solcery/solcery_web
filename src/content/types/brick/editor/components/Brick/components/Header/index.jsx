@@ -3,18 +3,33 @@ import { useReactFlow } from 'reactflow';
 import { Tooltip, Button } from 'antd';
 import { useBrick } from '../../contexts/brick';
 import { useBrickLibrary } from 'contexts/brickLibrary';
+import { useMemo } from 'react';
+import { Link } from 'react-router-dom';
+import { useProject } from 'contexts/project';
 
 import './style.scss';
 
 function BrickTitle(props) {
-	if (props.onDoubleClick) return <Tooltip title='Double click to open'>
-		<div onDoubleClick={props.onDoubleClick} className="brick-name">
-			{props.title}
-		</div>
-	</Tooltip>;
+	const { brick } = useBrick();
+	const { brickLibrary } = useBrickLibrary();
+	const { projectId } = useProject();
+
+	const signature = useMemo(() => brickLibrary.getBrick(brick.lib, brick.func), [ brick, brickLibrary ]);
+
+	if (signature) {
+		var description = signature.description;
+		var url = signature.url;
+		
+	}
+
 	return <div className="brick-name">
+		{(description || url) && <Tooltip title={description}>
+			<Link style={{ pointerEvents: 'all' }} to={`/${projectId}/${url}`} target='_blank'>
+				{`[?] `}
+			</Link>
+		</Tooltip>}
 		{props.title}
-	</div>;
+	</div>
 }
 
 export function Header({ title }) {

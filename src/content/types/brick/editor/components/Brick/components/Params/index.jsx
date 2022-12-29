@@ -7,6 +7,7 @@ import { useBrick } from '../../contexts/brick';
 import { useBrickLibrary } from 'contexts/brickLibrary';
 import { ArrayComponent } from 'components/ArrayComponent';
 import { createEdge } from '../../../../utils';
+import { FieldRender } from 'content/types';
 
 import './style.scss'
 
@@ -127,12 +128,16 @@ function InlineBrick(props) { // Default brick constructor for defaultable param
 
 	const signature = brickLibrary.getBrick(brick.lib, brick.func);
 	return <>
-		{signature.params.filter(param => !param.optional).map(param => <param.type.valueRender
-			key={param.code}
-			defaultValue={brick.params[param.code]}
-			onChange={(value) => onChangeParam(param.code, value)}
-			type={param.type}
-		/>)}
+		{signature.params.filter(param => !param.optional).map(param => <div 
+			key={param.code} 
+			style={{ pointerEvents: 'all' }}
+		>
+			<FieldRender
+				defaultValue={brick.params[param.code]}
+				onChange={(value) => onChangeParam(param.code, value)}
+				type={param.type}
+			/>
+		</div>)}
 	</>
 }
 
@@ -160,7 +165,7 @@ function InlineParam(props) { // Param, which is not a brick
 	return <div className='brick-param-inline'>
 		<div className='param-name'>{param.name}</div>
 		<div className='param-value'>
-			<param.type.valueRender
+			<FieldRender
 				defaultValue={brick.params[param.code]}
 				onChange={!param.readonly ? props.onChange : undefined}
 				type={param.type}
