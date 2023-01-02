@@ -1,6 +1,6 @@
 .brick-param-inline {
-	padding-left: 10px;
-	padding-right: 10px;
+	display: flex;
+	flex-direction: row;
 
 	.param-value {
 		pointer-events: all;
@@ -10,7 +10,7 @@
 
 .param-name {
 	color: #bbb;
-	font-size: 14px;
+	line-height: 30px;
 	font-style: italic;
 	pointer-events: none;
 	margin-left: 5px;
@@ -21,7 +21,6 @@
 	}
 
 	&.right {
-
 		margin-left: auto;
 		text-align: right;
 	}

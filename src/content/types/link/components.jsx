@@ -62,7 +62,7 @@ export const ValueRender = (props) => {
 		<Select
 			showSearch
 			style={{
-				width: 200,
+				minWidth: 80,
 			}}
 			dropdownMatchSelectWidth={false}
 			onChange={onChange}

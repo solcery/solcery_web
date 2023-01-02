@@ -9,6 +9,8 @@ import { ArrayComponent } from 'components/ArrayComponent';
 import { createEdge } from '../../../../utils';
 import { FieldRender } from 'content/types';
 
+import { useDocument } from 'contexts/document';
+
 import './style.scss'
 
 function BrickHandle(props) { // Handle for brick-type params
@@ -42,7 +44,12 @@ function BrickHandle(props) { // Handle for brick-type params
 		}
 	}
 
-	return <Handle 
+	if (!value && required) {
+		console.log('ALARM')
+		onDisconnect();
+		return;
+	}
+ 	return <Handle 
 		id={id} 
 		side={side} 
 		onConnect={onConnect} 

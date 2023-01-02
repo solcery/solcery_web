@@ -5,6 +5,25 @@ import { getBrickLibColor } from '../Brick';
 
 import './style.scss';
 
+const DraggableComment = (props) => {
+  const onDragStart = (event) => {
+    event.dataTransfer.setData('application/reactflow', JSON.stringify({ 
+      nodeType: 'comment',
+      size: {
+        width: 100,
+        height: 80,
+      }
+    }));
+    event.dataTransfer.effectAllowed = 'move';
+  };
+  return <div
+    onDragStart={(event) => onDragStart(event)} 
+    draggable
+  >
+    Comment
+  </div>
+}
+
 const DraggableBrick = (props) => {
   const { lib, func, name, defaultParams } = props;
   const { brickLibrary } = useBrickLibrary();
@@ -79,6 +98,7 @@ export const BrickPanel = () => {
       onMouseEnter={() => setMaximized(true)} 
       onMouseLeave={close}
     >
+      <DraggableComment/>
       <Input 
         className='brick-list-filter' 
         disabled={!maximized}

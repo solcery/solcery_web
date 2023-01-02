@@ -98,6 +98,7 @@ export class BrickLibrary {
 					name: 'Next',
 					type: SType.from('SBrick<action>'),
 					optional: true,
+					pipeline: true,
 				})
 			}
 			let res = {

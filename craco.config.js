@@ -33,6 +33,7 @@ module.exports = () => {
           "os": require.resolve("os-browserify/browser"),
           "stream": require.resolve("stream-browserify"),
           "path": require.resolve("path-browserify"),
+          "web-worker": require.resolve("web-worker"),
           "crypto": require.resolve("crypto-browserify"),
           "timers": require.resolve("timers-browserify"),
           "zlib": require.resolve("browserify-zlib"),

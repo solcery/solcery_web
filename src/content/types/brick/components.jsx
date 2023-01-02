@@ -76,7 +76,6 @@ function BrickTree(props) {
 
 export function ValueRender(props) {
 	const { fieldPath } = useParams();
-
 	const getBrickType = (nodes) => {
 		if (!nodes) return;
 		let rootNode = nodes.find(node => node.func === 'root');

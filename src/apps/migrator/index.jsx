@@ -11,7 +11,7 @@ export default function Migrator() {
 
 	const applyMigrator = async () => {
 		let content = await engine.getContent({ objects: true, templates: true });
-		let migrated = migrator(content);
+		let migrated = await migrator(content);
 		setResult(JSON.stringify(migrated, undefined, 2));
 		engine.migrate(migrated);
 	};

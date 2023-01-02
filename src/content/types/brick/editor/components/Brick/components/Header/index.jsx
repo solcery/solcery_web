@@ -28,12 +28,12 @@ function BrickTitle(props) {
 				{`[?] `}
 			</Link>
 		</Tooltip>}
-		{props.title}
+		[{brick.id}] {props.title}
 	</div>
 }
 
 export function Header({ title }) {
-	const { brick } = useBrick();
+	const { brick, selected } = useBrick();
 	const { readonly } = useBrickLibrary();
 	const reactFlowInstance = useReactFlow();
 
@@ -44,7 +44,16 @@ export function Header({ title }) {
 
 	return <div className='brick-header'>
 		<BrickTitle title={title}/>
-		{!readonly && brick.func !== 'root' && <Button size='small' className='remove-button' onClick={removeBrick}>
+		{!readonly && brick.func !== 'root' && <Button 
+			size='small' 
+			className='remove-button' 
+			onClick={removeBrick}
+			disabled={!selected}
+			style={{ 
+				pointerEvents: !selected ? 'none' : 'all',
+				opacity: selected ? 1 : 0,
+			}}
+		>
 			<CloseOutlined/>
 		</Button>}
 	</div>

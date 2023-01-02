@@ -1,19 +1,32 @@
 import { v4 as uuid } from 'uuid';
 import { MarkerType } from 'reactflow';
 
-export function createBrick(id, signature, position = { x: 0, y: 0}, params = {}) {
+export function createComment(comment) {
 	return {
-		id: `${id}`,
+		id: `${comment.id}`,
+		type: 'comment',
+		deletable: true,
+		position: comment.position,
+		data: comment,
+	}
+}
+
+export function createNode(src) {
+	if (src.nodeType === 'comment') {
+		return createComment(src);
+	}
+	return createBrick(src);
+}
+
+export function createBrick(brick) {
+	return {
+		id: `${brick.id}`,
 		type: 'brick',
-		deletable: signature.func !== 'root',
-		position,
+		deletable: brick.func !== 'root',
+		position: brick.position,
 		dragHandle: '.brick-bg',
-		data: {
-			id,
-			lib: signature.lib, 
-			func: signature.func,
-			params,
-		},
+		zIndex: 1,
+		data: brick,
 	}
 };
 
@@ -35,22 +48,34 @@ export function createEdge(sourceId, targetId, paramCode, index) { // TODO: styl
 	}
 }
 
-export function buildElements(src = []) { // TODO: move brickLibrary to layouting part
+export function buildElements(src = [], offsetId = 0, offsetPosition) { // TODO: move brickLibrary to layouting part
 	let nodes = [];
 	let edges = [];
 
 	const addNode = (brick) => {
-		let id = brick.id;
-		let position = brick.position;
-		let signature = { lib: brick.lib, func: brick.func };
-		let params = { ...brick.params }
-		let node = createBrick(id, signature, position, params);
-		nodes.push(node);
-		return node;
+		let data = {
+			...brick
+		}
+		data.id += offsetId;
+		if (offsetPosition) {
+			data.position.x += offsetPosition.x ?? 0;
+			data.position.y += offsetPosition.y ?? 0;
+		}
+		nodes.push(createBrick(data));
+	}
+
+	const addEdge = (sourceId, targetId, paramCode, index) => {
+		edges.push(createEdge(sourceId + offsetId, targetId + offsetId, paramCode, index));
+	}
+
+	const addComment = (src) => {
+		let data = {...src};
+		data.id += offsetId;
+		nodes.push(createComment(data));
 	}
 
 	const extractElements = (brick) => {
-		let node = addNode(brick);
+		addNode(brick);
 		for (let [ paramCode, value ] of Object.entries(brick.params)) {
 			if (!value) continue;
 			if (Array.isArray(value)) { // array of bricks
@@ -58,20 +83,28 @@ export function buildElements(src = []) { // TODO: move brickLibrary to layoutin
 					if (!item.brickId) return;
 					let targetBrick = src.find(b => b.id === item.brickId);
 					if (!targetBrick) return;
-					edges.push(createEdge(brick.id, targetBrick.id, paramCode, index));
+					item.brickId += offsetId;
+					addEdge(brick.id, targetBrick.id, paramCode, index);
 				});
 				continue;
 			}
 			if (value.brickId) {
 				let targetBrick = src.find(b => b.id === value.brickId);
 				if (targetBrick) {
-					edges.push(createEdge(brick.id, targetBrick.id, paramCode));
+					value.brickId += offsetId;
+					addEdge(brick.id, targetBrick.id, paramCode);
 				}
 			}
 		}
 	}
-	for (let node of src) {
-		extractElements(node)
+	if (Array.isArray(src)) {
+		for (let node of src) {
+			if (node.nodeType === 'comment') {
+				addComment(node);
+			} else {
+				extractElements(node)
+			}
+		}
 	}
 	return { nodes, edges };
 }

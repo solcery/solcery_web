@@ -11,6 +11,7 @@ import './style.scss';
 export function Brick(props) {
 	const { brickLibrary } = useBrickLibrary();
 	const [ brick, setBrick ] = useState(props.data);
+	const brickRef = useRef();
 	const signature = useMemo(() => brickLibrary.getBrick(brick.lib, brick.func), [ brickLibrary, brick ]);
 
 	let nodeType = 'default';
@@ -24,8 +25,9 @@ export function Brick(props) {
 	return <BrickProvider 
 		brick={brick} 
 		signature={signature}
+		selected={props.selected}
 	>
-		<div className={`brick ${props.selected ? 'selected' : ''}`}>	
+		<div ref={brickRef} className={`brick ${props.selected ? 'selected' : ''}`}>	
 			{nodeType === 'arg' && <ArgBody/>}
 			{nodeType === 'root' && <RootBody/>}
 			{nodeType === 'default' && <DefaultBody/>}

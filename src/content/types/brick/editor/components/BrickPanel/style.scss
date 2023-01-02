@@ -1,8 +1,12 @@
 .brick-panel {
 	background-color: rgba(255, 255, 255, 0.1);
-	// background: rgba(255, 255, 255, 0.4);
-	// min-width: 300px;
 	width: 300px;
+	top: 2.5vh;
+	bottom: 2.5vh;
+	box-shadow: 0 0 25px 10px rgba(255, 255, 255, 0.3);
+	display: flex;
+	flex-direction: column;
+	padding-bottom: 10px;
 
 	
 	transform: translateX(-80%);
@@ -17,26 +21,11 @@
 	}
 
 	.brick-list {
-		overflow-y: scroll;
-		overflow-x: visible;
-		padding: 0px 10px;
-		height: 90vh;
+		overflow: hidden;
+		padding: 10px 10px;
+		height: 88vh;
 		opacity: 0.3;
 		transition: all 0.2s cubic-bezier(0.63, 0.15, 0.03, 1.12);
-
-		&::-webkit-scrollbar {
-			width: 0.5em;
-			height: 0.5em;
-		}
-
-		&::-webkit-scrollbar-thumb {
-			background-color: rgba(255,255,255,.3);
-			border-radius: 3px;
-
-			&:hover {
-				background: rgba(255,255,255,.5);
-			}
-		}
 
 
 		.brick-dnd {
@@ -88,10 +77,30 @@
 
 	&.maximized {
 		transform: none;
+		box-shadow: 0 0 6px 2px rgba(255, 255, 255, 0.7);
+		background-color: black;
 
 		.brick-list {
 			opacity: 1;
-			background-color: black;
+			overflow-y: scroll;
+
+			.brick-dnd {
+				border: solid 1px #888;
+			}
+
+			&::-webkit-scrollbar {
+				width: 0.5em;
+				height: 0.5em;
+			}
+
+			&::-webkit-scrollbar-thumb {
+				background-color: rgba(255,255,255,.5);
+				border-radius: 3px;
+
+				&:hover {
+					background: rgba(255,255,255,.9);
+				}
+			}
 		}
 	}
 

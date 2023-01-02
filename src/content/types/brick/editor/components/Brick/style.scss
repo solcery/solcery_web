@@ -7,7 +7,6 @@
 	max-width: 300px;
 	min-width: 130px;
 	border: solid 1px #fff;
-	
 
 	.brick-bg {
 		box-sizing: border-box;
@@ -19,25 +18,29 @@
 		opacity: 0.7;
 		border-radius: 5px;
 		z-index: 0;
-		cursor: move;
+		cursor: pointer;
+
+		
 	}
 
 	&.selected {
 		box-shadow: 0 0 6px 4px #2abdd2;
-		border: solid 1px #2abdd2;
+		border: solid 1px #fff;
 
 		.brick-bg {
 			opacity: 0.9;
+			cursor: move;
 		}
 
 	}
 
 	.brick-body {
 		display: flex;
+		gap: 5px;
 		flex-direction: column;
 		position: relative;
-		padding-top: 5px;
-		padding-bottom: 4px;
+		padding-top: 6px;
+		padding-bottom: 6px;
 		min-height: 25px;
 		pointer-events: none;
 
@@ -49,6 +52,7 @@
 			.item {
 				flex-grow: 1;
 				flex-shrink: 1;
+				min-width: 40px;
 			}
 
 		}

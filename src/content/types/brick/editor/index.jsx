@@ -8,13 +8,15 @@ import ReactFlow, {
 	updateEdge,
 	addEdge,
 	Handle,
+	SelectionMode,
 } from 'reactflow';
-import { Brick, BrickPanel, BrickEdge } from './components';
+import { Brick, BrickPanel, BrickEdge, Comment } from './components';
 import { Button } from 'antd'
-import { buildElements, createBrick } from './utils';
+import { buildElements, createNode } from './utils';
 import { useBrickLibrary } from 'contexts/brickLibrary';
-import { getLayoutedElements } from './layout';
-import { useHotkeyContext } from 'contexts/hotkey';
+import { elkLayout } from './layout';
+import { useHotkeyContext, useHotkey } from 'contexts/hotkey';
+import { notif } from 'components/notification';
 
 import 'reactflow/dist/style.css';
 
@@ -22,6 +24,7 @@ const multiSelectionKeys = ['Meta', 'Control']
 
 const nodeTypes = { 
 	brick: Brick,
+	comment: Comment,
 };
 
 const edgeTypes = {
@@ -42,15 +45,101 @@ export const BrickEditor = (props) => {
 	const fitRequired = useRef(false)
 	const [ reactFlowInstance, setReactFlowInstance ] = useState();
 
+
+	const copy = (event) => {
+		if (event.target.tagName === 'INPUT') return;
+		event.preventDefault();
+		if (!reactFlowInstance) return;
+		let selectedNodes = reactFlowInstance.getNodes().filter(node => node.selected && node.data.func !== 'root');
+		let bricks = selectedNodes.map(node => node.data);
+		let jsonData = JSON.stringify(bricks);
+		event.clipboardData.setData('text/plain', jsonData)
+	}	
+
+	const cut = (event) => {
+		if (event.target.tagName === 'INPUT') return;
+		event.preventDefault();
+		if (!reactFlowInstance) return;
+		let selectedNodes = reactFlowInstance.getNodes().filter(node => node.selected && node.data.func !== 'root');
+		let bricks = selectedNodes.map(node => node.data);
+		let jsonData = JSON.stringify(bricks);
+		event.clipboardData.setData('text/plain', jsonData)
+		reactFlowInstance.deleteElements({ nodes: selectedNodes });
+	}
+
+	const paste = (event) => {
+		if (!reactFlowInstance) return;
+		let jsonData = (event.clipboardData || window.clipboardData).getData('text');
+		let data;
+		try {
+			data = JSON.parse(jsonData);
+		} catch (e) {
+			notif.error('Invalid brick', e.message);
+			return;
+		}
+		let offsetId = getNextNodeId(reactFlowInstance.getNodes());
+		let elements = buildElements(data, offsetId);
+		if (elements.nodes.length === 0 && elements.edges.length === 0) {
+			notif.warning('No bricks found in clipboard');
+			return;
+		}
+		const offsetX = 100;
+		const offsetY = 100;
+
+		for (let node of elements.nodes) {
+			node.selected = true;
+			node.position.x += offsetX;
+			node.position.y += offsetY;
+			node.data.position.x += offsetX;
+			node.data.position.y += offsetY;
+		}
+		let nodes = reactFlowInstance.getNodes();
+		for (let node of nodes) {
+			node.selected = false;
+		}
+
+		for (let edge of elements.edges) {
+			edge.selected = true;
+		}
+		let edges = reactFlowInstance.getEdges();
+		for (let edge of edges) {
+			edge.selected = false;
+		}
+		reactFlowInstance.setNodes(nodes.concat(elements.nodes));
+		reactFlowInstance.setEdges(edges.concat(elements.edges));
+		notif.success('Pasted successfully');
+	}
+
+	useEffect(() => {
+		if (!reactFlowInstance) return;
+		if (!props.onSave) return;
+		window.addEventListener('copy', copy);
+		window.addEventListener('cut', cut);
+		window.addEventListener('paste', paste);
+		return () => {
+			window.removeEventListener('copy', copy);
+			window.addEventListener('cut', cut);
+			window.removeEventListener('paste', paste);
+		}
+	}, [ reactFlowInstance, props.onSave ])
+
 	const onInit = (reactFlowInstance) => {
 		setReactFlowInstance(reactFlowInstance);
 		if (props.onInit) props.onInit();
 	}
 
-	const layout = () => {
-		let layouted = getLayoutedElements(nodes, edges, 'RL', brickLibrary);
-		fitRequired.current = true;
-		setNodes(layouted.nodes);
+	const layout = async () => {
+		let layoutedGraph = await elkLayout(nodes, edges, brickLibrary);
+		let nds = reactFlowInstance.getNodes();
+	    nds.forEach((node) => {
+	      const nodeWithPosition = layoutedGraph.children.find(child => child.id === node.id);
+	      if (!nodeWithPosition) return;
+	      node.position = {
+	        x: nodeWithPosition.x,
+	        y: nodeWithPosition.y
+	      }
+	    });
+	    setNodes([ ...nds ]);
 	}
 	
 	const onEdgeUpdateStart = useCallback((event, edge) => {
@@ -77,35 +166,41 @@ export const BrickEditor = (props) => {
 
 	const onDrop = useCallback((event) => {
 		event.preventDefault();
-		console.log(reactFlowInstance)
 
 		const reactFlowBounds = brickEditorRef.current.getBoundingClientRect();
-		const jsonBrick = event.dataTransfer.getData('application/reactflow');
-		if (typeof jsonBrick === 'undefined' || !jsonBrick) return;
-		let { lib, func, params } = JSON.parse(jsonBrick);
+		const jsonNode = event.dataTransfer.getData('application/reactflow');
+		if (typeof jsonNode === 'undefined' || !jsonNode) return;
+		let node = JSON.parse(jsonNode);
 		const position = reactFlowInstance.project({
 			x: event.clientX - reactFlowBounds.left,
 			y: event.clientY - reactFlowBounds.top,
 		});
-		setNodes(nds => {
-			let id = getNextNodeId(nds);
-			let brick = createBrick(id, { lib, func }, position, params);
-			return nds.concat(brick);
-		})
+		let nodes = reactFlowInstance.getNodes();
+		let id = getNextNodeId(nodes);
+		let newNode = createNode({ ...node, id, position });
+		console.log(newNode)
+		reactFlowInstance.setNodes(nodes.concat(newNode));
 	}, [ reactFlowInstance ]);
+
+
 
 	useEffect(() => {
 		if (!props.brickType) return;
 		let { nodes, edges } = buildElements(props.brickTree);
 		if (nodes.length === 0 && props.onSave) {
 			let rootValue = brickLibrary.default(props.brickType)
-			nodes.push(createBrick(
-				0, 
-				{ 
-					lib: props.brickType, 
-					func: 'root',
+			nodes.push(createNode({ 
+				id: 0,
+				lib: props.brickType, 
+				func: 'root',
+				position: {
+					x: 0,
+					y: 0,
+				},
+				params: {
+
 				}
-			));
+			}));
 		}
 		setNodes(nodes);
 		setEdges(edges);
@@ -150,8 +245,8 @@ export const BrickEditor = (props) => {
 		elementsSelectable: !!props.onSave,
 		nodesConnectable: !!props.onSave,
 		nodesDraggable: !!props.onSave,
-		panOnDrag: !!props.onExit,
-		zoomOnScroll: !!props.onExit,
+		nodesFocusable: !!props.onSave,
+		// zoomOnScroll: !!props.onExit,
 	}
 
 	if (props.onSave) {
@@ -179,10 +274,15 @@ export const BrickEditor = (props) => {
 			edgeTypes={edgeTypes}
 			nodes={nodes}
 			edges={edges}
+
+			{...interactionProps}
+			panOnDrag={false}
+			panOnScroll={true}
+			selectionOnDrag
+			selectionMode={SelectionMode.Partial}
 			
 			multiSelectionKeyCode={multiSelectionKeys}
 
-			{...interactionProps}
 			fitView
 			proOptions={{ hideAttribution: true }}
 		>
